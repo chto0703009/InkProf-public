@@ -1,0 +1,33 @@
+InkProf v0.9 - Release validation
+Date: 2026-09-30
+
+Environment: macOS, MATLAB R2025b, Python 3.13.
+
+Public-source automated checks:
+- Python unittest suite: 96 tests passed.
+- MATLAB suite: 86 tests passed across the full run and an environment-test
+  rerun. The full run passed 85 tests; the remaining test initially failed
+  because a temporary .venv symlink resolved outside the checkout. Replacing
+  it with a real local venv fixed the environment check; all three tests in
+  testPython then passed, with none incomplete. No test was weakened.
+- The local venv reused installed development dependency packages through a
+  .pth file. A fresh installation from the package index was not tested.
+- Recorded third-party license inventory and installed versions checked.
+- Included CxF3 schema hash matches the recorded unmodified source.
+- Staged source boundary and high-confidence credential-pattern scan checked.
+
+Documentation:
+- Swedish and English presentations: 4 pages each.
+- Swedish and English workflow guides: 11 pages each.
+- Public repository URL and link annotations checked on every PDF page.
+- Layout reviewed; updated footer samples visually inspected.
+- PDF font attribution/license texts included as embedded attachments and
+  in the source archive.
+
+Distribution:
+- New public Git history, independent of the private development history.
+- Unclear-rights targets/reference files, vendor screenshots and dependent
+  fixture tests excluded. See RELEASE_SCOPE.md.
+- Source release; MATLAB, Python and ArgyllCMS runtimes are not bundled.
+- No new hardware/print qualification was performed by these automated runs.
+  Automated results do not establish instrument compatibility or ISO certification.

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CxF xmlns="http://colorexchangeformat.com/CxF3-core">
+ <Resources>
+  <ObjectCollection>
+   <Object Id="patch1" Name="Synthetic neutral" ObjectType="Target">
+    <CreationDate>2026-09-28T12:00:00Z</CreationDate>
+    <ColorValues>
+     <ReflectanceSpectrum ColorSpecification="spec" StartWL="390">0.1 0.5 1.1</ReflectanceSpectrum>
+     <ColorCIELab ColorSpecification="spec"><L>50</L><A>1</A><B>-2</B></ColorCIELab>
+     <ColorCIEXYZ ColorSpecification="spec"><X>20</X><Y>21</Y><Z>22</Z></ColorCIEXYZ>
+    </ColorValues>
+    <DeviceColorValues><ColorRGB ColorSpecification="spec"><MaxRange>100</MaxRange><R>10</R><G>20</G><B>30</B></ColorRGB></DeviceColorValues>
+   </Object>
+  </ObjectCollection>
+  <ColorSpecificationCollection><ColorSpecification Id="spec"><MeasurementSpec>
+   <MeasurementType>Spectrum_Reflectance</MeasurementType>
+   <GeometryChoice><UnknownGeometry>synthetic fixture</UnknownGeometry></GeometryChoice>
+   <WavelengthRange StartWL="400" Increment="10"/>
+  </MeasurementSpec></ColorSpecification></ColorSpecificationCollection>
+ </Resources>
+</CxF>

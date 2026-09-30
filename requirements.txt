@@ -1,0 +1,3 @@
+# InkProf measurement bridge; Python >=3.10,<4.
+# chartread helpers require only the Python standard library.
+# Optional spectral analysis dependencies: requirements-analysis.txt.

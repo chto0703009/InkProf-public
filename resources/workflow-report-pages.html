@@ -1,0 +1,66 @@
+<style>
+body{max-width:none;margin:0;padding:0;background:#e9edef}
+.report-page{width:210mm;height:297mm;box-sizing:border-box;padding:28mm 18mm 24mm;margin:12px auto;position:relative;background:white;box-shadow:0 2px 12px #0002;color:#19303c}
+.report-page header{position:absolute;top:10mm;left:18mm;right:18mm;text-align:center;font-size:16pt;line-height:1.3;font-weight:500}
+.report-page footer{position:absolute;left:18mm;right:18mm;bottom:11mm;display:grid;grid-template-columns:34mm 1fr 23mm;gap:4mm;font-size:8pt;line-height:1.3;color:#52656e;align-items:end}
+.report-page footer .user{text-align:center;overflow-wrap:anywhere}
+.report-page footer .number{text-align:right;white-space:nowrap}
+.page-content{height:245mm;font-size:10pt;line-height:1.4;overflow-wrap:anywhere;display:flow-root}
+.page-content h1{font-size:22pt;margin:0 0 5mm}.page-content h2{font-size:14pt;margin:5mm 0 3mm}
+.page-content p{margin:0 0 3mm}.page-content table{font-size:9pt}.page-content th,.page-content td{padding:2mm}
+.page-content .detail{font:8.5pt/1.4 monospace;margin:0 0 2mm;white-space:pre-wrap}
+.page-content img{max-height:190mm;object-fit:contain}
+.page-content ul{margin:0 0 2mm;padding-left:6mm}
+@page{size:A4;margin:0}
+@media print{body{background:white}.report-page{margin:0;box-shadow:none;break-after:page}.report-page:last-child{break-after:auto}}
+</style>
+<script>
+(async()=>{
+ const metadata=__REPORT_FURNITURE__;
+ await document.fonts.ready;
+ await Promise.all(Array.from(document.images).map(i=>i.decode().catch(()=>{})));
+ const originals=Array.from(document.body.children).filter(n=>!['STYLE','SCRIPT'].includes(n.tagName));
+ const units=[];
+ for(const node of originals){
+  if(node.tagName==='PRE'){
+   for(const line of node.textContent.split('\n')){const p=document.createElement('p');p.className='detail';p.textContent=line||'\u00a0';units.push(p);}
+  }else if(node.tagName==='UL'){
+   for(const li of node.children){const ul=document.createElement('ul');ul.append(li.cloneNode(true));units.push(ul);}
+  }else{units.push(node.cloneNode(true));}
+ }
+ originals.forEach(n=>n.remove());
+ const pages=[];let content;
+ function page(){
+  const sheet=document.createElement('section');sheet.className='report-page';
+  const header=document.createElement('header');header.textContent=metadata.header;sheet.append(header);
+  content=document.createElement('main');content.className='page-content';sheet.append(content);
+  const footer=document.createElement('footer');
+  for(const [name,text] of [['date',metadata.date],['user',metadata.user],['number','']]){
+   const span=document.createElement('span');span.className=name;span.textContent=text;footer.append(span);
+  }
+  sheet.append(footer);document.body.append(sheet);pages.push(sheet);
+ }
+ const over=()=>content.scrollHeight>content.clientHeight+1;
+ page();
+ for(const unit of units){
+  content.append(unit);
+  if(over()&&content.children.length>1){
+   unit.remove();const last=content.lastElementChild;let heading=null;
+   if(last&&/^H[1-6]$/.test(last.tagName)){heading=last;heading.remove();}
+   page();if(heading)content.append(heading);content.append(unit);
+  }
+  // Split long text rather than clipping notes or histories at the page edge.
+  if(over()&&['P','PRE'].includes(unit.tagName)){
+   const text=unit.textContent;unit.remove();let rest=text;
+   while(rest.length){
+    const part=unit.cloneNode(false);content.append(part);let low=0,high=rest.length;
+    while(low<high){const mid=Math.ceil((low+high)/2);part.textContent=rest.slice(0,mid);if(over())high=mid-1;else low=mid;}
+    if(!low){part.remove();page();continue;}
+    part.textContent=rest.slice(0,low);rest=rest.slice(low);if(rest.length)page();
+   }
+  }
+ }
+ pages.forEach((p,i)=>p.querySelector('.number').textContent=`${i+1} (${pages.length})`);
+ document.documentElement.dataset.reportPages=pages.length;
+})();
+</script>

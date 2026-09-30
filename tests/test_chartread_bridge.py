@@ -1,0 +1,67 @@
+"""Transport tests use a fake child, never a measuring instrument."""
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'bridge'))
+from chartread_bridge import chart_to_ti2
+
+
+def chart():
+    return dict(schemaVersion=1, documentType='inkprof.measurement-chart', colorSpace='RGB', patchCount=1,
+                patches=[dict(sampleId='1', sampleLoc='1A', rgbPercent=[0, 50, 100])],
+                exchangeTables=[dict(signature='CTI2', fields=['SAMPLE_ID', 'SAMPLE_LOC','RGB_R','RGB_G','RGB_B'],
+                metadata=[dict(tokens=['COLOR_REP','RGB'])], rows=[dict(values=['1','1A','0','0','0'])])])
+
+
+@unittest.skipUnless(os.name == 'posix', 'PTY adapter supports POSIX')
+class BridgeTests(unittest.TestCase):
+    def test_numeric_tokens_are_unquoted(self):
+        c = chart()
+        c['exchangeTables'][0]['fields'] += ['XYZ_X', 'XYZ_Y', 'XYZ_Z']
+        c['exchangeTables'][0]['rows'][0]['values'] += ['1.2e-3', '0.0', '100']
+        raw = chart_to_ti2(c)
+        row = raw.split('BEGIN_DATA\n')[1].splitlines()[0]
+        self.assertEqual(row, '\"1\" \"1A\" 0 50 100 1.2e-3 0.0 100')
+
+    def test_rgb_guard(self):
+        c = chart(); c['patches'][0]['rgbPercent'] = [0, 0, 0, 0]
+        with self.assertRaises(ValueError): chart_to_ti2(c)
+
+    def test_interaction_and_resume_guard(self):
+        with tempfile.TemporaryDirectory(prefix='InkProf bridge ') as directory:
+            folder = Path(directory)
+            (folder/'chart.json').write_text(json.dumps(chart()))
+            fake = folder/'fake chartread'
+            fake.write_text('#!'+sys.executable+'\nimport sys\nfrom pathlib import Path\n'
+                            'if "-?" in sys.argv: print("Fake chartread test version");sys.exit(1)\n'
+                            'print("TEST prompt",flush=True)\ninput()\nPath("chart.ti3").write_text("synthetic test only")\n')
+            fake.chmod(0o755)
+            proc = subprocess.Popen([sys.executable, str(ROOT/'bridge/chartread_bridge.py'), str(folder), str(fake), '--scan-tolerance', '1', '--direction', 'forward'],
+                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+            try:
+                events=[]
+                while True:
+                    event=json.loads(proc.stdout.readline());events.append(event)
+                    if event['event']=='output' and 'TEST prompt' in event['text']:
+                        proc.stdin.write(json.dumps(dict(command='key',text='\r'))+'\n');proc.stdin.flush()
+                    if event['event']=='exited': break
+                self.assertEqual(proc.wait(timeout=5),0)
+                self.assertFalse(events[-1]['validated'])
+                started = next(e for e in events if e['event'] == 'started')
+                self.assertEqual(started['arguments'][1:], ['-v', '-T', '1', '-B', 'chart'])
+                self.assertTrue((folder/'chart.ti2').exists())
+                # A rerun cannot overwrite a saved result without explicit resume.
+                failed=subprocess.run([sys.executable,str(ROOT/'bridge/chartread_bridge.py'),str(folder),str(fake)],capture_output=True,text=True,timeout=5)
+                self.assertNotEqual(failed.returncode,0)
+                self.assertIn('use resume',failed.stdout)
+            finally:
+                if proc.poll() is None: proc.kill();proc.wait()
+                proc.stdin.close();proc.stdout.close()
+
+if __name__=='__main__': unittest.main()

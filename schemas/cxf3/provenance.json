@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "CxF3 core 3.0.018",
+  "owner": "X-Rite, Inc.",
+  "sourceRepository": "https://github.com/colour-science/colour-cxf",
+  "sourceRevision": "703301d1e5e827153292c9a3cad8c7e0ce083ac0",
+  "schemaSource": "https://raw.githubusercontent.com/colour-science/colour-cxf/703301d1e5e827153292c9a3cad8c7e0ce083ac0/CxF3_Core.xsd",
+  "sha256": "21b882740ab1e0e11ff83cd90f4adb5add0eb9cee0a81c1574f39744297d838a",
+  "license": "../../licenses/cxf3/CxF_Schema_Open_License.pdf",
+  "modified": false,
+  "retrieved": "2026-09-28",
+  "note": "Official X-Rite resource page linked this schema; download endpoint was inaccessible. Bytes obtained from Colour Developers mirror. XSD validation is not ISO CxF/X certification."
+}

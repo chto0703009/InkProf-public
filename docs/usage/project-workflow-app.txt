@@ -1,0 +1,140 @@
+INKPROF – PROJEKTAPP, ITERATIONER OCH RESULTATLOGG
+
+Befintligt kodprojekt: /Users/christer/Desktop/InkProf
+Starta i MATLAB:
+  cd('/Users/christer/Desktop/InkProf')
+  startInkProfApp();
+
+Appen är en MATLAB uifigure-app i .m-format och kräver inte App Designer
+eller extra MATLAB-toolboxar. Befintliga Python- och Argyllberoenden gäller.
+
+PROJEKT
+Välj Nytt projekt eller Öppna projekt. Ett befintligt projekt ska innehålla
+inkprof-project.json. createProject körs endast för nya mappar.
+Varje operation använder det valda projektet; nya resultat får egna mappar.
+Appen ändrar inte MATLAB:s aktuella katalog eller globala projektinställningar.
+
+ARBETSORDNING
+RGB-definition -> sparad TIFF16 -> mätning i appen (efter separat utskrift)
+-> mätgranskning -> B1 -> automatisk iteration eller B2/B3 -> Fit/Grid/C1
+-> sparad C2-TIFF16 -> C2-mätning i appen -> C3 -> återkoppling.
+Därefter väljs godkännande -> spara ICC och slutrapport, eller sparad
+kompletterings-TIFF16 -> kompletteringsmätning -> nästa iteration.
+Alla TIFF16-filer skrivs ut separat av användaren. Appen sparar endast
+filerna och kräver ingen utskriftsregistrering för att starta mätningen.
+
+En öppnad dialog räknas inte som ett färdigt steg. Mätningen måste sparas
+och rätt revision väljas. Mätningens chart.json och TI3 kontrolleras med
+SHA-256; målidentiteten måste stämma med det valda utskriftsmålet.
+Granska mätningen och välj en ny accepterad revision efter ommätning.
+
+B2 är valfritt vid automatisk profilering men obligatoriskt vid manuell B3.
+RoleFile kan väljas vid automatisk profilering. Utan separat rollfil följs
+iterateProfiles befintliga regler; inga oberoende utvecklingsdata uppfinns.
+Fortsatta iterationer använder continueRefinement och det kombinerade
+träningsunderlaget. C1 med allvarliga larm spärrar C2.
+
+BEFINTLIGA DATA
+Befintliga workflow-projekt återupptas från workflow.json.
+Äldre projekt utan workflow.json får en ny arbetsgång. Inga gamla steg
+markeras automatiskt klara enbart på grund av filnamn. Välj/importera
+RGB-definitionen och välj befintligt TIFF16-paket i renderingssteget.
+Välj därefter den befintliga mätrevisionen och dokumentera mätgranskningen.
+Ett befintligt utskriftspaket behöver sitt manifest och sina metadata.
+JSON-mätningar utanför projektet kopieras med hela sessionsmappen, så att
+original, TI3, chart.json och rådata följer med. Välj därför en avgränsad
+sessionsmapp, inte en JSON-fil bland osorterade dokument.
+
+STATUS OCH SPÄRRAR
+workflow.json lagrar projektidentitet, iteration, aktuell operation,
+status, resultatfiler, kontrollsummor, beroenden och historik.
+Spärrarna gäller även ProjectWorkflow.run, inte enbart knapparna.
+Om ett tidigare steg körs om blir beroende resultat inaktuella.
+Avbrutna eller misslyckade operationer låser inte upp senare steg.
+Ändrade eller borttagna underlag stoppar nästa operation.
+Äldre filer och resultat bevaras; appen skriver nya versioner i nya mappar.
+Fristående äldre inkprof-funktioner kan fortfarande användas utanför appen;
+de omfattas inte automatiskt av appens steglås.
+
+ITERATIONER
+Varje iteration har ett nummer, UUID och koppling till föregående iteration.
+Iterationshistorik visar händelser med tid, steg, resultat och sparade detaljer.
+Vid fortsättning arkiveras föregående stegstatus och kandidatkopplingar.
+Nästa kandidat kräver nya C1-, C2- och C3-steg och ett nytt godkännande.
+Ett tidigare godkännande gäller aldrig automatiskt för nästa kandidat.
+Gamla resultatfiler kan öppnas via sökvägarna i historiken/loggen.
+
+RESULTATLOGG
+Öppna resultatlogg visar projektets result-log.txt i MATLAB Editor.
+Loggen registrerar starter, färdiga steg, fel, ersatta resultat, iterationer,
+parametrar, filreferenser, kontrollsummor och tillgängliga resultatsammanfattningar.
+result-log.jsonl innehåller samma händelser i maskinläsbar form.
+Under långvarig automatisk iteration finns dessutom motorns progress.log,
+progress.jsonl och iteration.json i profiliterationens mapp.
+Öppna resultat för valt steg visar en lista med dess sparade resultatfiler.
+
+EXPORT
+Efter användarens godkännande skapas exports/<id>/ med en byte-identisk ICC,
+final-report.pdf, final-report.html, final-report.json och final-report.txt. Slutrapporten redovisar
+projekt, iteration, ICC-kontrollsumma, C3-statistik, gråskala, träningsfel,
+kontroller, återkoppling, mätvillkor, beslut och iterationshistorik.
+Knappen Öppna slutrapport öppnar HTML-rapporten i webbläsaren. Den kan också
+läsas som vanlig text. Underlagen kopieras intill rapporten, med kontrollsummor.
+Rapporten binds till den faktiskt sparade ICC-filen och det aktuella
+godkännandet. Fel under rapportsparning lämnar slutsteget ofärdigt.
+C3-rapport, återkoppling, godkännande och snapshots av projekt/arbetsgång
+följer också med.
+Den kompletta historiken och rådata bevaras i projektmappen.
+
+UTSKRIFT OCH BEDÖMNING
+Appen levererar sparade TIFF16-filer; utskrift och torkning sker utanför appen.
+Instrumentmätningen startas inifrån appens respektive mätsteg.
+Appen intygar inte utskriftsvillkor; okända uppgifter förblir okända.
+Grundmål och kompletteringsmål skrivs ut som device RGB utan ICC.
+C2 har redan ICC applicerad en gång: ingen ytterligare färgomvandling.
+Slutligt godkännande kräver användarens avsedda användning och begränsningar.
+Appen intygar inte ISO-överensstämmelse eller verklig utskriftskvalitet.
+
+AVBRUTEN MATLAB-SESSION
+.workflow.lock hindrar samtidiga operationer i samma projekt. Den tas bort
+normalt efter operationen. Efter en krasch: kontrollera att ingen operation
+eller annan MATLAB-session arbetar i projektet, ta sedan bort låsfilen och
+öppna appen igen. Ett running-steg kan köras om; det blir inte klart av sig själv.
+Skadad eller okänd JSON stoppas med fel, inte genom automatisk nollställning.
+
+TESTNING
+Tester i tests/testProjectWorkflow.m täcker spärrar, återöppning, kontrollsummor,
+fel mätningstyp, avbrott, inaktuella steg, samtidighetslås, gränssnitt,
+iterationsövergång, sparad TIFF16 utan utskriftssteg och ICC med slutrapport. Fysisk instrumentmätning/utskrift behöver verifieras med
+användarens instrument och material.
+
+UPPGRADERING AV TIDIGARE ARBETSGÅNG
+Äldre utskriftsbekräftelser och historik bevaras men är inte längre
+förutsättningar för mätning. En tidigare ICC-export utan slutrapport
+markeras inaktuell; kör Spara ICC och slutrapport för en ny komplett leverans.
+
+VALFRIA SPARPLATSER FÖR ICC OCH RAPPORT
+Spara ICC och slutrapport öppnar två Spara som-dialoger. Välj filnamn och
+mapp för ICC (.icc/.icm) och därefter rapport (.pdf/.html). De kan ligga i
+olika mappar. PDF och HTML sparas båda, med samma namn, på rapportens valda plats. Avbryter du någon dialog startar inte sparningen.
+Projektet behåller egna kopior och sparar valda platser i delivery.json
+samt resultatloggen. Befintliga projektfiler skyddas mot överskrivning.
+HTML-rapporten får en unik <rapportnamn>-underlag-<id>-mapp bredvid sig.
+Behåll den tillsammans med HTML-filen när rapporten flyttas eller delas.
+Knappen Öppna slutrapport öppnar alltid den bevarade projektkopian.
+
+PDF OCH 3D
+Slutrapporten skapas alltid i PDF och HTML. PDF-funktionen använder befintliga
+requirements-report.txt (reportlab). Båda formaten innehåller en 3D-stillbild
+när det aktuella C2-underlaget finns. I appen öppnar Visa 3D en roterbar vy
+med zoom och information om enskilda patchar. Vyn blir tillgänglig efter C2.
+Den visar ICC-profilens beräknade kontrollfärger i CIELAB D50, inte uppmätta
+värden eller hela skrivarens färgomfång. Färgerna på skärmen är sRGB-förhandsvisningar.
+HTML-filen och dess underlagsmapp ska hållas tillsammans; PDF kan läsas självständigt.
+
+SIDHUVUD OCH SIDFOT
+PDF och HTML använder TIFF:ens sidhuvud: InkProf Quality Profiling RGB printer.
+Varje sida har rapportdatum, användare och sidnummer (totalt antal sidor),
+exempelvis 2 (5). Användaren anges vid sparning; inloggat användarnamn föreslås.
+Uppgifterna sparas i rapportens JSON. HTML sidindelas automatiskt när den öppnas.
+PDF och HTML kan få olika sidantal eftersom formaten har olika textlayout.

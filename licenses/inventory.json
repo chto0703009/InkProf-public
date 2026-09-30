@@ -1,0 +1,121 @@
+{
+  "reviewed": "2026-09-27",
+  "scope": "Installed runtime Python packages excluding installer pip; additional external notices. Not exhaustive legal clearance.",
+  "pythonPackages": [
+    {
+      "name": "colour-science",
+      "version": "0.4.6",
+      "notices": [
+        {
+          "packagePath": "colour_science-0.4.6.dist-info/licenses/LICENSE",
+          "savedPath": "licenses/dependencies/colour-science-0.4.6/licenses/LICENSE",
+          "sha256": "cd9efcd4b6ac5218189d90ffc25f9766f8411e62c5526c452145e1cc8b19baf7"
+        }
+      ]
+    },
+    {
+      "name": "numpy",
+      "version": "2.2.6",
+      "notices": [
+        {
+          "packagePath": "numpy-2.2.6.dist-info/LICENSE.txt",
+          "savedPath": "licenses/dependencies/numpy-2.2.6/LICENSE.txt",
+          "sha256": "b4ae62887f4dd6e9430b1a8d7017a3ba84c5d7aa630b9d17ed6f25c21b0ec5b4"
+        }
+      ]
+    },
+    {
+      "name": "scipy",
+      "version": "1.15.3",
+      "notices": [
+        {
+          "packagePath": "scipy-1.15.3.dist-info/LICENSE.txt",
+          "savedPath": "licenses/dependencies/scipy-1.15.3/LICENSE.txt",
+          "sha256": "7552d2566b7098980454bb7883385d227fbb4dfa1d622cc5c85c3e8a3f23606f"
+        }
+      ]
+    },
+    {
+      "name": "reportlab",
+      "version": "4.4.3",
+      "notices": [
+        {
+          "packagePath": "reportlab-4.4.3.dist-info/licenses/LICENSE",
+          "savedPath": "licenses/dependencies/reportlab-4.4.3/licenses/LICENSE",
+          "sha256": "ef831761646313921375fc2cb888e8eeaf7da213d0b92852c10c42f3a0b4d138"
+        }
+      ]
+    },
+    {
+      "name": "ImageIO",
+      "version": "2.37.4",
+      "notices": [
+        {
+          "packagePath": "imageio-2.37.4.dist-info/licenses/LICENSE",
+          "savedPath": "licenses/dependencies/imageio-2.37.4/licenses/LICENSE",
+          "sha256": "c453cf1368bb9e009e4d7e5334fc78511e665316a612ef54ee4fe1245678fe2c"
+        }
+      ]
+    },
+    {
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "notices": [
+        {
+          "packagePath": "typing_extensions-4.16.0.dist-info/licenses/LICENSE",
+          "savedPath": "licenses/dependencies/typing_extensions-4.16.0/licenses/LICENSE",
+          "sha256": "3b2f81fe21d181c499c59a256c8e1968455d6689d269aa85373bfb6af41da3bf"
+        }
+      ]
+    },
+    {
+      "name": "charset-normalizer",
+      "version": "3.5.1",
+      "notices": [
+        {
+          "packagePath": "charset_normalizer-3.5.1.dist-info/licenses/LICENSE",
+          "savedPath": "licenses/dependencies/charset-normalizer-3.5.1/licenses/LICENSE",
+          "sha256": "6d0d41bfe170ac6c7dc248c9a63e254d0fb45a60d50a8257d0af92c6e249b887"
+        }
+      ]
+    },
+    {
+      "name": "pillow",
+      "version": "12.3.0",
+      "notices": [
+        {
+          "packagePath": "pillow-12.3.0.dist-info/licenses/LICENSE",
+          "savedPath": "licenses/dependencies/pillow-12.3.0/licenses/LICENSE",
+          "sha256": "dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce"
+        }
+      ]
+    }
+  ],
+  "additionalNotices": [
+    {
+      "source": "/usr/local/Cellar/argyll-cms/3.5.0/License.txt",
+      "savedPath": "licenses/ArgyllCMS-3.5.0-AGPL.txt",
+      "sha256": "432d251a78dbc966e6add13f9f3b40a53daca222208e50cb514cfc77e7d85af6"
+    },
+    {
+      "source": "/usr/local/Cellar/argyll-cms/3.5.0/ReadMe.txt",
+      "savedPath": "licenses/ArgyllCMS-3.5.0-ReadMe.txt",
+      "sha256": "9b4623175bdb95a79dcb76da77fca492ca2674590dc682aae41ab89fbeba0fa0"
+    },
+    {
+      "source": "/usr/local/Cellar/argyll-cms/3.5.0/doc/DocLicense.txt",
+      "savedPath": "licenses/ArgyllCMS-documentation-license.txt",
+      "sha256": "9cc5d8fd3a28a3b5442cabac353870252aa6d26904202124c92f7825ec346905"
+    },
+    {
+      "source": ".venv/lib/python3.13/site-packages/reportlab/fonts/bitstream-vera-license.txt",
+      "savedPath": "licenses/Bitstream-Vera.txt",
+      "sha256": "3361d054759a2fc686a2c058be82deaf9c2e6fe549be9004d7935a6c1736315d"
+    },
+    {
+      "source": "https://raw.githubusercontent.com/colour-science/colour-cxf/703301d1e5e827153292c9a3cad8c7e0ce083ac0/licenses/CxF_Schema_Open_License.pdf",
+      "savedPath": "licenses/cxf3/CxF_Schema_Open_License.pdf",
+      "sha256": "24b06b1d008c8c8cfaf0bd7d3eb092428b2974364685397bd31181820c2a3f4f"
+    }
+  ]
+}

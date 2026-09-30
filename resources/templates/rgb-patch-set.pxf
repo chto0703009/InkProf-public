@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cc:CxF xmlns:cc="http://colorexchangeformat.com/CxF3-core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<cc:FileInformation>
+		<cc:Creator>InkProf</cc:Creator>
+		<cc:CreationDate>2000-01-01T00:00:00+00:00</cc:CreationDate>
+		<cc:Description>Prism CXF3 file</cc:Description>
+	</cc:FileInformation>
+	<cc:Resources>
+		<cc:ObjectCollection>
+</cc:ObjectCollection>
+		<cc:ColorSpecificationCollection>
+			<cc:ColorSpecification Id="Unknown">
+				<cc:MeasurementSpec>
+					<cc:MeasurementType>Colorimetric_Reflectance</cc:MeasurementType>
+					<cc:GeometryChoice>
+						<cc:UnknownGeometry>Target</cc:UnknownGeometry>
+					</cc:GeometryChoice>
+				</cc:MeasurementSpec>
+			</cc:ColorSpecification>
+		</cc:ColorSpecificationCollection>
+	</cc:Resources>
+	<cc:CustomResources>
+		<xrp:Prism xmlns:xrp="http://www.xrite.com/products/prism" release="2.0">
+  <xrp:CustomAttributes BarCodeEnabled="False" ColorCorrectionPatchCount="None" ColorSpace="RGB" DarkLightRatio="50" DimensionUnit="2" HeaderEdgeSizePercent="-2147483648" ImagePath="" InkLimit="300" LockWriteProtection="False" LowTestChartResolution="False" MeasurementDevice="i1Pro 3" MeasurementDeviceSerialNumber="0" MeasurementMode="1" MeasurementPerPatch="0" Media_Type="Translucent Media" NumberEmissiveSpotPatches="0" NumberLightTablePatches="0" NumberOfSecondaryPatchesToGenerate="100" NumberPatchColumns="0" NumberPatchPages="1" NumberPatchRows="0" NumberReflectiveMediaSpotPatches="0" NumberReflectiveSpotPatches="0" NumberSecondChartPatches="0" NumberViewingEmissiveSpotPatches="0" NumberViewingReflectiveSpotPatches="0" OptimizeProfile="" PLUS_1_COLOR="Orange|68.02|43.06|68.15|1|2|50|50|1" PLUS_2_COLOR="Green|87.82|-81.04|71.47|1|2|50|50|2" PLUS_3_COLOR="Red|54.28|78.98|64.91|1|2|50|50|3" PLUS_4_COLOR="Blue|29.57|67.02|-128|1|2|50|50|4" PageHeight="210.06" PageWidth="296.93" Paper="" PaperFormat="2" PaperOrientation="Landscape" PaperType="Not Specified (default)" PatchSizeHeightPercent="16.666666666666664" PatchSizeHeightValue="7.00" PatchSizeWidthPercent="10.526315789473683" PatchSizeWidthValue="8.00" PrintMarginBottom="0.00" PrintMarginLeft="0.00" PrintMarginRight="0.00" PrintMarginTop="0.00" PrinterName="" PrinterType="Not specified (default)" ScramblePatches="False" SelectedMeasurementCondition="-1" TestChartType="RGB Variable" TightMarginsEnabled="False" TitleString="InkProf RGB patches" UseLegacyTestChart="False" UsePatchSettingDefaults="True" ViewingLightgboxMeasurementsUsed="False" WriteProtected="False" linearMeasurements="" numLinearSteps="28" numberCorePatches="0" numberImagePatches="0" numberSpotPatches="0"/>
+  <ProfileSettings DeviceType="Printer">
+    <!-- Members of ProfileParams -->
+    <ProfileVersion value="4"/>
+    <EmbeddedProfileVersion value="-1"/>
+    <ChromaticAdaptation>Bradford</ChromaticAdaptation>
+    <!-- Members of PrinterProfileParams -->
+    <BlackGeneration>
+      <BlackType>2</BlackType>
+      <UseMaximumBlack>0</UseMaximumBlack>
+      <BlackWidthType>1</BlackWidthType>
+      <BlackWidth>50</BlackWidth>
+      <NumberOfCurvePoints>4</NumberOfCurvePoints>
+      <KPoints>0 0 18.9465 100 </KPoints>
+      <LPoints>0 30 65 100 </LPoints>
+      <CurveType>4</CurveType>
+    </BlackGeneration>
+    <InkLimiting>
+      <InkLimit>300</InkLimit>
+      <ColorSpace>5</ColorSpace>
+    </InkLimiting>
+    <ProfileInkColorSpace>5</ProfileInkColorSpace>
+    <Saturation>50</Saturation>
+    <UseMediaSmoothness>0</UseMediaSmoothness>
+    <SmoothnessMedianOverall>-1</SmoothnessMedianOverall>
+    <Smoothness>50</Smoothness>
+    <Contrast>50</Contrast>
+    <NeutralizeGray>0</NeutralizeGray>
+    <ChromaAdjust>50</ChromaAdjust>
+    <DarkeningForHighChroma>0</DarkeningForHighChroma>
+    <WhitePointPaperDeltaEThreshold>3.5</WhitePointPaperDeltaEThreshold>
+    <TableSizeAToB>Medium</TableSizeAToB>
+    <TableSizeBToA>Medium</TableSizeBToA>
+    <BitDepth>16</BitDepth>
+  </ProfileSettings>
+</xrp:Prism>
+
+	</cc:CustomResources>
+</cc:CxF>

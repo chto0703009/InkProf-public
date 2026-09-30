@@ -1,0 +1,30 @@
+[
+  {
+    "font": "DejaVuSans.ttf",
+    "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
+    "noticeSource": "Embedded TrueType name records 0, 13 and 14",
+    "fontFilesDistributed": false
+  },
+  {
+    "font": "Ubuntu-B.ttf",
+    "sha256": "c90e629e932f768909bdce1481ccd259d8aff1490a4bc1cf94d5413492317336",
+    "noticeSource": "Embedded TrueType name records 0, 13 and 14",
+    "fontFilesDistributed": false
+  },
+  {
+    "font": "Inconsolata-Regular.ttf",
+    "sha256": "127875d255d4c5973ca57267a43bb9d1c04397e6c7d236984a595b6cdcb12b7c",
+    "noticeSource": "Embedded TrueType name records 0, 13 and 14",
+    "fontFilesDistributed": false
+  },
+  {
+    "notice": "Ubuntu-Font-Licence-1.0.txt",
+    "source": "https://assets.ubuntu.com/v1/81e5605d-ubuntu-font-licence-1.0.txt",
+    "sha256": "2f0015108d68627bd788d313f529c21ff4da2c2c42a5e1f3883acc83480f9002"
+  },
+  {
+    "notice": "Inconsolata-OFL.txt",
+    "source": "https://raw.githubusercontent.com/googlefonts/Inconsolata/main/OFL.txt",
+    "sha256": "5d362a6f8690517fd9a5573128a081d8bbbb2f92714cf00556e08fbbe9600426"
+  }
+]

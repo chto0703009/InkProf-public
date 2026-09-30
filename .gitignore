@@ -1,0 +1,25 @@
+# Local operating system and editor files
+.DS_Store
+*.asv
+*.autosave
+*.swp
+
+# Local runtime environments and generated output
+.venv/
+__pycache__/
+*.pyc
+work/
+tmp/
+logs/
+
+# Measurement projects belong outside the source repository.
+# Deliberate, small test fixtures can be committed under tests/fixtures/.
+projects/
+measurements/
+local-config/
+
+# Machine-specific FreeFileSync jobs and synchronization state
+*.ffs_gui
+*.ffs_batch
+*.ffs_db
+*.ffs_lock
