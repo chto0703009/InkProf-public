@@ -26,9 +26,18 @@ hint=uitextarea(right,'Editable','off','Value',{'Välj ett projekt.'});
 details=uitextarea(right,'Editable','off','Tag','workflowDetails');
 runButton=uibutton(right,'Text','Utför valt steg','Tag','runWorkflowStep','Enable','off','ButtonPushedFcn',@run);
 uibutton(right,'Text','Öppna resultat för valt steg','ButtonPushedFcn',@openResult);
-uilabel(right,'Text','Resultat och arbetsposition sparas i projektet.','WordWrap','on');
+legal=uigridlayout(right,[1 2]);legal.Padding=[0 0 0 0];legal.ColumnWidth={'1x',170};
+uilabel(legal,'Text','Resultat och arbetsposition sparas i projektet.','WordWrap','on');
+uibutton(legal,'Text','Licens och ansvar','Tag','licenseNotice','ButtonPushedFcn',@showLicense);
 status=uilabel(g,'Text','Redo','WordWrap','on','Tag','workflowStatus');
 if projectFolder~="",loadProject(projectFolder);end
+    function showLicense(~,~)
+        config=inkprof.paths();
+        message=inkprof.internal.warrantyNotice()+newline+newline+ ...
+            "InkProf: GNU GPL version 3 eller senare. Fullständig licens: "+ ...
+            string(fullfile(config.Root,'LICENSE'))+newline+"https://www.gnu.org/licenses/gpl-3.0.html";
+        uialert(fig,message,'Licens och ansvar','Icon','info');
+    end
     function loadProject(folder)
         w=inkprof.ProjectWorkflow(folder);selected=string(w.State.currentStep);refresh();
     end

@@ -58,6 +58,8 @@ def create(folder):
                               ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                               ('LINEBELOW', (0, 0), (-1, -1), .3, colors.lightgrey)]))
     story += [table, Spacer(1, 5*mm), p('Träningsfel är inte oberoende verifiering. Utskriften görs separat av användaren. Utskriftskedjan är inte verifierad av appen.')]
+    if r.get('warrantyNotice'):
+        story += [p('Garanti och ansvar', 'Heading2'), p(r['warrantyNotice'])]
     if (folder / 'profile-lab-3d.png').is_file():
         story += [PageBreak(), p('Profilens beräknade kontrollfärger i 3D', 'Heading2'),
                   p('Kontrollmålets patchar i CIELAB D50. Detta är profilens beräknade värden, inte mätningar eller hela skrivarens färgomfång.'),
