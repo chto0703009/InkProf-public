@@ -158,13 +158,61 @@ classdef ProjectWorkflow < handle
                 if isempty(relocations),relocations=relocation;else,relocations(end+1)=relocation;end
             end
             record=inkprof.updateProject(obj.Root,Step="project-details-edited", ...
-                Name=newName,User=details.User,Printing=details.Printing,Relocations=relocations);
+                Name=newName,User=details.User,Printing=details.Printing,Relocations=relocations,FolderName=string(java.io.File(char(obj.Root)).getName()));
             previous=struct('name',before.name,'user',"",'printing',before.printing);
             if isfield(before,'user'),previous.user=before.user;end
             obj.event("project-details","updated",struct('before',previous,'after', ...
                 struct('name',record.name,'user',record.user,'printing',record.printing)));
             obj.save();clear lock
             record=inkprof.updateProject(obj.Root,Step="project-details-audited");
+        end
+        function record=reconcileFolderName(obj,action)
+            % Explicit user decision after an external folder rename.
+            arguments
+                obj
+                action (1,1) string {mustBeMember(action,["accept","restore","cancel"])}
+            end
+            lock=obj.lock();obj.reload();
+            mismatch=inkprof.internal.projectFolderStatus(obj.Root);
+            before=jsondecode(fileread(fullfile(obj.Root,'inkprof-project.json')));
+            if ~mismatch.changed,record=before;return;end
+            decision=struct('utc',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")), ...
+                'user',string(java.lang.System.getProperty('user.name')),'action',action, ...
+                'savedFolderName',mismatch.savedName,'detectedFolderName',mismatch.actualName, ...
+                'previousProjectName',string(before.name),'detectedPath',obj.Root, ...
+                'resultingPath',obj.Root,'resultingProjectName',string(before.name),'status',"pending",'message',"");
+            try
+                if action=="accept"
+                    newName=inkprof.internal.projectFolderName(mismatch.actualName);
+                    assert(newName==mismatch.actualName,'inkprof:ProjectName','Remove leading or trailing spaces from the folder name before accepting it.');
+                    obj.invalidate("export");obj.save();
+                    record=inkprof.updateProject(obj.Root,Step="external-folder-name-accepted",Name=newName,FolderName=newName);
+                    decision.resultingProjectName=newName;
+                elseif action=="restore"
+                    savedName=inkprof.internal.projectFolderName(mismatch.savedName);
+                    previousRoot=obj.Root;newRoot=fullfile(fileparts(obj.Root),savedName);
+                    assert(~isfolder(newRoot)&&~isfile(newRoot),'inkprof:Exists','The saved folder name is already occupied. Nothing was overwritten.');
+                    manifestLock=fullfile(obj.Root,'.manifest.lock');
+                    assert(java.io.File(char(manifestLock)).createNewFile(),'inkprof:ProjectBusy','Project metadata is being updated. Retry when it finishes.');
+                    renameCleanup=onCleanup(@()delete(fullfile(obj.Root,'.manifest.lock')));
+                    java.nio.file.Files.move(java.io.File(char(obj.Root)).toPath(),java.io.File(char(newRoot)).toPath(),javaArray('java.nio.file.CopyOption',0));
+                    obj.Root=newRoot;clear renameCleanup
+                    relocations=before.relocations;
+                    relocation=struct('from',previousRoot,'to',newRoot,'utc',decision.utc);
+                    if isempty(relocations),relocations=relocation;else,relocations(end+1)=relocation;end
+                    record=inkprof.updateProject(obj.Root,Step="external-folder-name-restored",FolderName=savedName,Relocations=relocations);
+                end
+                decision.resultingPath=obj.Root;
+                decision.status="completed";if action=="cancel",decision.status="cancelled";end
+            catch err
+                decision.status="failed";decision.message=string(err.message);
+                obj.event("folder-name",decision.status,decision);obj.save();
+                inkprof.updateProject(obj.Root,Step="folder-name-decision",FolderDecision=decision);
+                rethrow(err)
+            end
+            obj.event("folder-name",decision.status,decision);obj.save();
+            record=inkprof.updateProject(obj.Root,Step="folder-name-decision",FolderDecision=decision);
+            clear lock
         end
         function file=resolve(obj,relative)
             file=inkprof.internal.absolutePath(fullfile(obj.Root,string(relative)));

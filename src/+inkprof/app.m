@@ -33,7 +33,9 @@ legal=uigridlayout(right,[1 2]);legal.Padding=[0 0 0 0];legal.ColumnWidth={'1x',
 uilabel(legal,'Text','Results and progress are saved in the project.','WordWrap','on');
 uibutton(legal,'Text','Licence and liability','Tag','licenseNotice','ButtonPushedFcn',@showLicense);
 status=uilabel(g,'Text','Ready','WordWrap','on','Tag','workflowStatus');
-if projectFolder~="",loadProject(projectFolder);end
+if projectFolder~=""
+    try,loadProject(projectFolder);catch err,uialert(fig,err.message,'Open project');end
+end
     function showLicense(~,~)
         config=inkprof.paths();
         message=inkprof.internal.warrantyNotice("en")+newline+newline+ ...
@@ -53,7 +55,19 @@ if projectFolder~="",loadProject(projectFolder);end
     function loadProject(folder)
         check=inkprof.verifyProject(folder);
         if ~check.passed,uialert(fig,strjoin(check.issues,newline),'Project integrity check failed');return;end
-        w=inkprof.ProjectWorkflow(folder);selected=string(w.State.currentStep);refresh();
+        candidate=inkprof.ProjectWorkflow(folder);
+        mismatch=inkprof.internal.projectFolderStatus(candidate.Root);
+        if mismatch.changed
+            message="The project folder name differs from the saved name."+newline+newline+ ...
+                "Saved folder name: "+mismatch.savedName+newline+"Current folder name: "+mismatch.actualName+newline+newline+ ...
+                "Use the current folder name as the new project name, or restore the saved folder name?";
+            choice=uiconfirm(fig,message,'Project folder renamed','Icon','warning', ...
+                'Options',{'Use folder name','Restore saved name','Cancel'},'DefaultOption',3,'CancelOption',3);
+            action="cancel";if strcmp(choice,'Use folder name'),action="accept";elseif strcmp(choice,'Restore saved name'),action="restore";end
+            candidate.reconcileFolderName(action);
+            if action=="cancel",return;end
+        end
+        w=candidate;selected=string(w.State.currentStep);refresh();
     end
     function newProject(~,~)
         if busy,return;end

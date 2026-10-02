@@ -6,6 +6,8 @@ arguments
  options.Step (1,1) string = "manual-refresh"
  options.Name (1,1) string = ""
  options.User (1,1) string = ""
+ options.FolderName (1,1) string = ""
+ options.FolderDecision (1,1) struct = struct
  options.Printing (1,1) struct = struct
  options.Relocations = []
 end
@@ -56,6 +58,14 @@ if strlength(strtrim(options.Name))>0,record.name=strtrim(options.Name);end
 if strlength(strtrim(options.User))>0,record.user=strtrim(options.User);end
 for field=string(fieldnames(options.Printing))'
  record.printing.(field)=options.Printing.(field);
+end
+if options.FolderName~="",record.folderName=options.FolderName;end
+if ~isempty(fieldnames(options.FolderDecision))
+ if ~isfield(record,'folderNameHistory')||isempty(record.folderNameHistory)
+  record.folderNameHistory=options.FolderDecision;
+ else
+  record.folderNameHistory(end+1)=options.FolderDecision;
+ end
 end
 if ~isempty(options.Relocations),record.relocations=options.Relocations;end
 entry=struct('revision',record.revision,'utc',record.updatedUTC,'step',options.Step, ...
