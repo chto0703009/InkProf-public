@@ -14,3 +14,5 @@ For v0.9 installation, current features and limitations, start with the [root RE
 - [Licences and provenance](../THIRD_PARTY_NOTICES.md)
 
 Detailed usage and research notes are mostly in Swedish. Historical notes may link to deliberately excluded private inputs or earlier planning documents. See [public release scope](../RELEASE_SCOPE.md).
+
+- [Testade plattformar / Tested platforms](usage/tested-platforms.md)

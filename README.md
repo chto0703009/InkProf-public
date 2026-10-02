@@ -1,5 +1,7 @@
 # InkProf v0.9
 
+**Platform testing:** InkProf has been tested on macOS only. Windows and Linux have not been tested. See [tested platforms and limitations](docs/usage/tested-platforms.md).
+
 **InkProf - When colours have to be right**
 
 **InkProf - När färgerna måste bli rätt**

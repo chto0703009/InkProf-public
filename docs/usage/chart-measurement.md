@@ -9,7 +9,7 @@
 En import eller omordning i programmet ändrar inte ett redan utskrivet ark. Om det befintliga arket mäts i ett annat program kan dess mätfil importeras separat med bevarad patchkoppling.
 
 
-Status 2026-09-26: Terminal-flödet och MATLAB-bryggan har läst ett sjuraders kontrastmål med i1Pro 2 och importerat alla 143 källpatchar. Den nya modala dialogen är testad med simulerad process och syntetiska mätdata; grundflödet är också fysiskt provat framåt med i1Pro 2. Parläget med medelvärdesbildning återstår att prova fysiskt. Interaktiv PTY-brygga stöds på macOS/Linux; Windows väntar på en separat konsoladapter.
+Status 2026-09-26: Terminal-flödet och MATLAB-bryggan har läst ett sjuraders kontrastmål med i1Pro 2 och importerat alla 143 källpatchar. Den nya modala dialogen är testad med simulerad process och syntetiska mätdata; grundflödet är också fysiskt provat framåt med i1Pro 2. Parläget med medelvärdesbildning återstår att prova fysiskt. Den interaktiva PTY-bryggan använder POSIX. InkProf är endast testat på macOS; Linux är inte testat och Windows väntar på en separat konsoladapter.
 
 ## Mätvariation, medelvärde och hanteringskontroll
 
@@ -316,7 +316,7 @@ SpectraLab v1.2.1-dev `tools/spotread_manual_measure.py` and
 `spectralab/+spectralab/+drivers/+spotread/Parser.m` (GPLv3). InkProf uses its own
 PTY bridge and reflection settings, not SpectraLab's emissive configuration.
 Argyll's [spotread documentation](https://www.argyllcms.com/doc/spotread.html)
-defines the command-line interface. Current transport support is macOS/Linux.
+defines the command-line interface. The transport uses POSIX features. InkProf has been tested on macOS only; Linux and Windows remain untested.
 
 Automated tests use a fake instrument, including failed calibration, retry,
 complete spectrum parsing, modal review and discard, immutable replacement,
