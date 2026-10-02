@@ -100,3 +100,7 @@ and its source candidate, with separate SHA-256 checksums. The portable report
 bundle includes the named delivery in `underlag/delivered/` and the original
 candidate as `underlag/profile.icc`. Existing exports are not modified retroactively;
 export again to obtain the matching filename and internal display name.
+
+In step 14, **Open selected step results → Save ICC and report copies...**
+opens the ICC save dialog first, followed by the report destination dialog.
+The PDF and HTML choices in the results list open the existing reports.

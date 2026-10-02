@@ -159,12 +159,13 @@ end
             status.Text="Last active step: "+string(w.State.currentStep)+" | saved revision "+w.State.revision;
         catch err,status.Text=err.message;runButton.Enable='off';end
     end
-    function run(~,~)
+    function run(~,~,saveElsewhere)
+        if nargin<3,saveElsewhere=false;end
         if isempty(w)||busy,return;end
         progress=[];watch=[];started=[];finished=false;message="";
         active=selected;
         try
-            o=optionsFor(selected);if isempty(o),return;end
+            o=optionsFor(selected,saveElsewhere);if isempty(o),return;end
             busy=true;runButton.Enable='off';started=datetime('now');
             index=find(string({defs.id})==active);
             data=table.Data;data{index,2}='Running';table.Data=data;
@@ -245,7 +246,7 @@ end
             uialert(fig,"TIFF16 print copies and PRINTING.txt saved in:"+newline+destination,'Print files saved','Icon','success');
         catch err,uialert(fig,err.message,'Print copy');end
     end
-    function o=optionsFor(id)
+    function o=optionsFor(id,saveElsewhere)
         o=struct;
         if id=="definition"
             choice=uiconfirm(fig,'Create an RGB target or import an existing definition?','RGB target','Options',{'Create','Import','Cancel'},'CancelOption',3);
@@ -299,13 +300,16 @@ end
             if id=="numericalExport"
                 message="Save the current ICC and a numerical report (PDF and HTML). This does not approve print accuracy. Project copies are retained; external copies include all supporting files.";
             end
-            choice=uiconfirm(fig,message,'Save profile and report', ...
-                'Options',{'Also save copies elsewhere','Save in project only','Cancel'},'DefaultOption',1,'CancelOption',3);
+            choice='Also save copies elsewhere';
+            if ~saveElsewhere
+                choice=uiconfirm(fig,message,'Save profile and report', ...
+                    'Options',{'Also save copies elsewhere','Save in project only','Cancel'},'DefaultOption',1,'CancelOption',3);
+            end
             if strcmp(choice,'Cancel'),o=[];return;end
             if strcmp(choice,'Save in project only'),return;end
             record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
             iccName=inkprof.internal.iccDeliveryName(string(record.name));
-            [n,p]=uiputfile({'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Save an additional ICC copy - project copy is retained',fullfile(w.Root,iccName));
+            [n,p]=uiputfile({'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Choose where to save the ICC profile',fullfile(w.Root,iccName));
             if isequal(n,0),o=[];return;end
             o.ICCDestination=string(fullfile(p,n));
             reportName='measurement-certificate.pdf';if id=="numericalExport",reportName='numerical-report.pdf';end
@@ -375,11 +379,26 @@ end
         end
     end
     function openResult(~,~)
-        if isempty(w),return;end
+        if isempty(w)||busy,return;end
         s=w.State.steps.(selected);names=fieldnames(s.outputs);
         if isempty(names),return;end
-        [ix,ok]=listdlg('ListString',names,'SelectionMode','single','PromptString','Open results');
-        if ok,open(w.output(selected,names{ix}));end
+        labels=names;
+        deliveryStep=any(selected==["export","numericalExport"]);
+        if deliveryStep
+            labels(strcmp(names,'profile'))={'Save ICC and report copies...'};
+            labels(strcmp(names,'finalReport'))={'Open HTML report'};
+            labels(strcmp(names,'reportPDF'))={'Open PDF report'};
+            labels(strcmp(names,'reportJSON'))={'Open report data (JSON)'};
+            labels(strcmp(names,'reportText'))={'Open text report'};
+            labels(strcmp(names,'delivery'))={'Open delivery receipt (saved locations)'};
+        end
+        [ix,ok]=listdlg('ListString',labels,'SelectionMode','single','PromptString','Choose a result or save copies');
+        if ~ok,return;end
+        if deliveryStep&&strcmp(names{ix},'profile')
+            run([],[],true);
+        else
+            open(w.output(selected,names{ix}));
+        end
     end
     function closeApp(~,~)
         if busy
