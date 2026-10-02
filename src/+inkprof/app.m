@@ -165,6 +165,15 @@ end
         progress=[];watch=[];started=[];finished=false;message="";
         active=selected;
         try
+            w.reload();
+            [ready,reason]=w.ready(active);
+            if ~ready
+                if active=="export"
+                    reason="Step 14 requires print verification and approval for the current profile. An approval from an earlier iteration cannot be reused."+newline+newline+ ...
+                        "To save a numerically checked profile without a separate verification print, select step 19: Save ICC + report without print verification.";
+                end
+                uialert(fig,reason,'Step not available','Icon','info');return;
+            end
             o=optionsFor(selected,saveElsewhere);if isempty(o),return;end
             busy=true;runButton.Enable='off';started=datetime('now');
             index=find(string({defs.id})==active);
@@ -435,7 +444,7 @@ switch id
  case "c2",s="Save C2 as TIFF16. The ICC profile has already been applied once. Print separately without further colour conversion, then measure in the app.";
  case {"measurement","c2measurement","refinemeasurement"},s="When your separately printed sheet is ready, start instrument measurement here. The app uses the saved target TI2 and saves measurement results in the project.";
  case "numericalExport",s="Optional after step 8: save the current ICC and a numerical report without a new verification print. Your decision and the absence of separate print verification are recorded. This does not mark steps 9–14 complete.";
- case "export",s="The ICC profile already exists in the project. This step saves the approved profile and creates its measurement certificate in the project. Optionally save additional copies elsewhere. The exported certificate and all supporting files are saved together in one report folder.";
+ case "export",s="This step requires print verification and approval for the current iteration. To finish without a separate verification print, use step 19. The ICC profile already exists in the project. This step saves the approved profile and creates its measurement certificate in the project. Optionally save additional copies elsewhere. The exported certificate and all supporting files are saved together in one report folder.";
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
  case "compare",s="Compare this ICC with the previous iteration on common RGB and Lab samples. Profile differences do not prove improved print accuracy; fresh independent print verification is still required.";
  case "approve",s="Record the intended use, quality requirements and accepted limitations. This is the user's decision after physical C2/C3 verification, not ISO certification.";
