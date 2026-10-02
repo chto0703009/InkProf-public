@@ -66,7 +66,7 @@ end
 fig=uifigure('Name','InkProf – Saved measurement','Position',[100 100 1180 720], ...
     'WindowStyle','modal','Color',[.96 .97 .98],'Tag','InkProfMeasurementResult');
 fig.UserData=struct('folder',folder,'chartIndex',result.chartIndex);
-grid=uigridlayout(fig,[6 1]);grid.RowHeight={35,32,'1x',48,125,36};grid.Padding=[18 14 18 14];
+grid=uigridlayout(fig,[6 1]);grid.RowHeight={35,32,'1x',70,125,36};grid.Padding=[18 14 18 14];
 uilabel(grid,'Text',sprintf('Saved measurement – %d of %d source patches',result.measuredSourcePatches,result.expectedSourcePatches), ...
     'FontSize',21,'FontWeight','bold','FontColor',[.1 .22 .3]);
 bar=uigridlayout(grid,[1 5]);bar.ColumnWidth={45,110,'1x',155,80};bar.Padding=[0 0 0 0];
@@ -192,12 +192,12 @@ if ~isempty(rankedIndices),showRankedPatch(rankedIndices(1));end
         m=measured(i);
         if spotReplaced(i)&&all(isfinite(spotLab(i,:)))
             v=spotLab(i,:);
-            valuesLabel.Text=sprintf('Patch %s | Accepted spot Lab: L* %.3f   a* %.3f   b* %.3f',coordinate,v(1),v(2),v(3));
+            valuesLabel.Text=sprintf('Patch %s | Saved Lab after remeasurement: L* %.3f   a* %.3f   b* %.3f\nThese are measured colour coordinates, not changes (ΔL*, Δa*, Δb*).',coordinate,v(1),v(2),v(3));
         elseif ~p(i).isPadding && m>0 && isfield(result.data,'lab') && ...
                 size(result.data.lab,1)>=m && size(result.data.lab,2)==3 && ...
                 all(isfinite(result.data.lab(m,:)))
             v=result.data.lab(m,:);
-            valuesLabel.Text=sprintf('Patch %s | Measured Lab: L* %.3f   a* %.3f   b* %.3f',coordinate,v(1),v(2),v(3));
+            valuesLabel.Text=sprintf('Patch %s | Measured Lab: L* %.3f   a* %.3f   b* %.3f\nThese are measured colour coordinates, not changes (ΔL*, Δa*, Δb*).',coordinate,v(1),v(2),v(3));
         else
             v=double(p(i).rgbPercent);
             valuesLabel.Text=sprintf('Patch %s | Target RGB (%%): R %.3f   G %.3f   B %.3f — indication only',coordinate,v(1),v(2),v(3));
@@ -220,7 +220,7 @@ if ~isempty(rankedIndices),showRankedPatch(rankedIndices(1));end
             overridden=isfield(result,'patchOverrides')&&any(string({result.patchOverrides.sampleLoc})==string(p(i).sampleLoc));
             if overridden
                 lines(end+1)="Accepted spot replacement. Original paired readings and warnings remain historical evidence.";
-                if isfinite(spotChange(i)),lines(end+1)=sprintf('Accepted spot versus previous value: %.4f dE00.',spotChange(i));end
+                if isfinite(spotChange(i)),lines(end+1)=sprintf('CHANGE from previous measurement: %.4f dE00 (ΔE00, overall colour difference; not profile accuracy).',spotChange(i));end
             end
             if isfield(result,'pairedReadings') && ~overridden
                 pair=find(result.pairedReadings.originalChartIndex==i);
@@ -230,7 +230,7 @@ if ~isempty(rankedIndices),showRankedPatch(rankedIndices(1));end
             end
             lines(end+1)="A measurement is available and linked to this patch.";
             if ~isempty(result.data.xyz),lines(end+1)="Measured XYZ (TI3 scale): "+join(compose('%.5f',result.data.xyz(m,:)),"  ");end
-            if ~isempty(result.data.lab),lines(end+1)="Measured Lab: "+join(compose('%.5f',result.data.lab(m,:)),"  ");end
+            if ~isempty(result.data.lab),lines(end+1)="SAVED MEASURED Lab (L*, a*, b*; not changes): "+join(compose('%.5f',result.data.lab(m,:)),"  ");end
             if ~isempty(result.data.spectra)
                 waves=reshape(result.data.wavelengthNm,1,[]);values=result.data.spectra(m,:);
                 lines(end+1)="Spectrum, wavelength nm : value (original TI3 scale):";

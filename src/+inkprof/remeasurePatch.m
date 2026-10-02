@@ -17,10 +17,10 @@ uilabel(g,'Text','Remeasure patch '+upper(coordinate),'FontSize',22,'FontWeight'
 uilabel(g,'Text','Close other measurement sessions. Use the same print, backing and i1 Pro 2. Native M0 reflection only. Place the instrument stationary at the centre of the selected patch. Click Measure patch in this window; the instrument button is not needed. Do not swipe.','WordWrap','on');
 status=uilabel(g,'Text','Press Start to connect and calibrate.','WordWrap','on','Tag','spotStatus');
 log=uitextarea(g,'Editable','off','FontName','Monospaced','Value',{'The original measurement remains unchanged until you accept.'});
-review=uitable(g,'Data',cell(0,3),'ColumnName',{'Value (D50/2)','Previous','New spot reading'}, ...
-    'ColumnWidth',{170,200,'auto'},'RowName',{},'ColumnEditable',false,'Visible','off','Tag','spotReviewValues');
+review=uitable(g,'Data',cell(0,4),'ColumnName',{'Value (D50 / 2° observer)','Previous measured value','New measured value','Change: new − previous'}, ...
+    'ColumnWidth',{180,190,190,'auto'},'RowName',{},'ColumnEditable',false,'Visible','off','Tag','spotReviewValues');
 review.Layout.Row=4;review.Layout.Column=1;
-comparison=uilabel(g,'Text','','WordWrap','on','Tag','spotComparison','FontSize',17,'FontWeight','bold');
+comparison=uilabel(g,'Text','','WordWrap','on','Tag','spotComparison','FontSize',14,'FontWeight','bold');
 comparison.Layout.Row=5;comparison.Layout.Column=1;
 bar=uigridlayout(g,[1 3]);bar.Layout.Row=6;bar.Layout.Column=1;bar.ColumnWidth={'1x','1x','1x'};
 % Reserve the entire footer height for buttons, without nested default padding.
@@ -73,9 +73,9 @@ fig.DeleteFcn=@cleanup;
                         labels={'L*';'a*';'b*';'X';'Y';'Z'};
                         old=[v.previousLab(:);previous.data.xyz(spot.request.measurementIndex,:)'];
                         new=[v.newLab(:);spot.xyz(:)];
-                        review.Data=[labels,num2cell(old),num2cell(new)];
+                        review.Data=[labels,num2cell(old),num2cell(new),cellstr(compose('%+.3f',new-old))];
                         log.Visible='off';review.Visible='on';
-                        comparison.Text=sprintf('Patch %s: new versus previous = %.3f dE00.\nThis is a change in measurement, not profile accuracy.',upper(coordinate),v.deltaE00);
+                        comparison.Text=sprintf('Patch %s — colour difference from previous measurement: %.3f dE00 (ΔE00).\nMeasured L*, a*, b* are colour coordinates, not changes. Change = new − previous.\nΔE00 summarises the colour difference; it is not profile accuracy.',upper(coordinate),v.deltaE00);
                         status.Text='Review the previous and new values below. Accept replaces only this patch; Discard keeps the previous value.';
                         accept.Text=sprintf('Accept %s (dE00 %.3f)',upper(coordinate),v.deltaE00);drawnow;accept.Enable='on';
                         inkprof.internal.recordProjectStep(folder,'Single-patch candidate awaiting review');

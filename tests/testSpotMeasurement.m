@@ -57,7 +57,7 @@ end
 accept=findall(fig,'Tag','spotAccept');waitEnabled(accept);
 verifyTrue(tc,contains(string(findall(fig,'Tag','spotComparison').Text),'dE00'));
 review=findall(fig,'Tag','spotReviewValues');verifyEqual(tc,string(review.Visible),"on");
-verifySize(tc,review.Data,[6 3]);verifyEqual(tc,review.Data{4,2},20);verifyEqual(tc,review.Data{4,3},10);
+verifySize(tc,review.Data,[6 4]);verifyEqual(tc,string(review.Data{4,4}),"-10.000");verifyEqual(tc,review.Data{4,2},20);verifyEqual(tc,review.Data{4,3},10);
 verifyTrue(tc,contains(string(accept.Text),'Accept B1 (dE00'));
 folder=fig.UserData.attemptFolder;verifyTrue(tc,isfile(fullfile(folder,'candidate.json')));
 fig.CloseRequestFcn(fig,[]);decision=jsondecode(fileread(fullfile(folder,'decision.json')));verifyEqual(tc,string(decision.decision),"discarded");verifyEqual(tc,numel(dir(fullfile(w,'measurement-*.json'))),1);
