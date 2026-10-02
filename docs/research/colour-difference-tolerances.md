@@ -39,7 +39,7 @@ inte samma uppgift.
   ISO 12647-7. Ett sådant tal kan vara ett eget strängare mål för utvalda
   färger, med tydligt angivna mät- och bedömningsvillkor.
 
-Ett konkret exempel är bvdm:s *MediaStandard Print 2018*, tabell 30, tryckt
+Ett konkret exempel är *MediaStandard Print 2018* från Bundesverband Druck und Medien (bvdm), Tysklands tryck- och medieförbund, tabell 30, tryckt
 sida 50. Där sammanfattas jobbrelaterad digital provtryckskontroll med
 mediekil utifrån ISO 12647-7:2016:
 
@@ -54,7 +54,7 @@ Det finns ytterligare krav. Tabellen är **inte ett komplett certifieringsprov**
 och får inte överföras direkt till InkProfs valfria RGB-mål. Den visar varför
 varken ”alla proofs måste vara under 1” eller ”alla värden under 5 är godkända”
 är en korrekt sammanfattning.
-[bvdm, MediaStandard Print 2018, tabell 30](https://www.bvdm-online.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50).
+[Bundesverband Druck und Medien (bvdm), MediaStandard Print 2018, tabell 30](https://www.bvdm-online.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50).
 
 De exakta kraven för ett formellt standardpåstående behöver kontrolleras mot
 vald standardutgåva och hela dess provningsförfarande. Här har offentliga
@@ -160,3 +160,7 @@ prov enligt en uttryckligen vald standard.
 
 Relaterat: [automatisk profiliteration](../usage/automatic-profile-iteration.md),
 [iterationsstrategi](../planning/profile-iteration-strategy.md).
+
+Bundesverband Druck und Medien (bvdm) är Tysklands branschorganisation för tryck och medier och utgivare av *MediaStandard Print*. ISO betyder International Organization for Standardization (Internationella standardiseringsorganisationen). Branschpublikationen sammanfattar standardkrav; den ersätter inte själva ISO-standarden.
+
+Se även [förkortningar och begrepp](../usage/abbreviations.md).

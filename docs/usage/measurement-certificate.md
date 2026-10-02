@@ -62,7 +62,7 @@ Gränsen är en **ISO-relaterad jämförelsereferens**, inte en generell klassni
 
 sRGB-provet beräknas från uppmätt Lab D50 via Bradford-anpassning till D65 och sRGB-kodning. Färger utanför sRGB klipps och märks med *. Hexvärdet sparas och visas som text även om dokumentet skrivs ut utan färg. ΔE00-värdet kommer från C3-mätjämförelsen och beräknas inte från skärmens sRGB-färg. JSON lagrar urvalsgräns, källa, antal bedömda patchar, fel, överskridande och färgdata för varje post.
 
-Källa: [bvdm, MediaStandard Print 2018, tabell 30, tryckt sida 50](https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf), kontrollerad 2026-10-02.
+Källa: [Bundesverband Druck und Medien (bvdm), MediaStandard Print 2018, tabell 30, tryckt sida 50](https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf), kontrollerad 2026-10-02.
 
 ## Instrumentidentitet
 
@@ -77,3 +77,7 @@ Mätcertifikatets JSON innehåller `instruments.measurement` och
 och serienummer visas separat för profilering och kontroll i PDF, HTML och
 text. Äldre mätningar kan använda sin sparade, kontrollsummeverifierade
 instrumentutskrift utan att originalmätningen ändras.
+
+Bundesverband Druck und Medien (bvdm) är Tysklands branschorganisation för tryck och medier och utgivare av *MediaStandard Print*. ISO betyder International Organization for Standardization (Internationella standardiseringsorganisationen). Branschpublikationen sammanfattar standardkrav; den ersätter inte själva ISO-standarden.
+
+Se även [förkortningar och begrepp](abbreviations.md).

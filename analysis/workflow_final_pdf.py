@@ -61,7 +61,7 @@ def create(folder):
             grid=Table(rows,colWidths=[57*mm]*3,hAlign='LEFT')
             grid.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('GRID',(0,0),(-1,-1),.3,colors.lightgrey),('LEFTPADDING',(0,0),(-1,-1),1),('RIGHTPADDING',(0,0),(-1,-1),1)]))
             story += [grid,Spacer(1,3*mm)]
-        story += [p('Källa: MediaStandard Print 2018, tabell 30 (ISO 12647-7:2016).')]
+        story += [p('Källa: Bundesverband Druck und Medien (bvdm), Tysklands tryck- och medieförbund: MediaStandard Print 2018, tabell 30 (ISO 12647-7:2016).')]
     if r.get('fwa'):
         story += [KeepTogether([p('FWA/OBA - val och resultat','Heading2'),p(r['fwa']['summaryText'])])]
     if r.get('reproductionLimits'):
