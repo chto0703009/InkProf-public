@@ -34,6 +34,8 @@ w=tc.TestData.w;saveDefinition(tc);
 folder=fullfile(w.Root,'targets','printed');inkprof.createTarget(folder,Source=w.output('definition','definition'),DPI=100,Paper="A4-landscape");
 w.run('render',struct('Source',folder));verifyTrue(tc,w.ready('measurement'));
 verifyTrue(tc,isfile(w.output('render','TIFF16_sida_1')));
+summary=inkprof.internal.savedTargetSummary(w,"render");
+verifyTrue(tc,contains(summary(1),"patches in"));verifyTrue(tc,contains(summary(1),"TIFF16 file(s)"));
 printParent=string(tempname);mkdir(printParent);printCleanup=onCleanup(@()rmdir(printParent,'s'));
 destination=w.savePrintCopy("render",printParent);
 verifyTrue(tc,isfile(fullfile(destination,'PRINTING.txt')));

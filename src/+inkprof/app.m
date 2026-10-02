@@ -117,7 +117,16 @@ end
             printButton.Enable=matlab.lang.OnOffSwitchState(assessment.(selected).valid&&any(startsWith(string(fieldnames(w.State.steps.(selected).outputs)),"TIFF16_")));
             step=w.State.steps.(selected);lines=["Iteration "+w.State.cycle;"Status: "+string(data{index,2});"";string(step.message);"";"Saved results:"];
             names=string(fieldnames(step.outputs));
-            if isempty(names),lines(end+1)="No results yet.";end
+            if isempty(names)
+                lines(end+1)="This selected step has not produced results yet.";
+                previous=string(w.State.currentStep);
+                if previous~=selected&&isfield(w.State.steps,previous)&&assessment.(previous).valid
+                    saved=inkprof.internal.savedTargetSummary(w,previous);
+                    if ~isempty(saved),lines=[lines;"";"Already saved in this project:";saved];end
+                end
+            elseif assessment.(selected).valid
+                lines=[lines;inkprof.internal.savedTargetSummary(w,selected);""];
+            end
             for name=names',lines=[lines;name+":";w.resolve(step.outputs.(name));""];end %#ok<AGROW>
             details.Value=cellstr(lines);
             record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
@@ -149,6 +158,8 @@ end
             end
             w.run(active,o);finished=true;
             message="Complete: "+string(defs(index).label)+". Results saved.";
+            saved=inkprof.internal.savedTargetSummary(w,active);
+            if ~isempty(saved),message=message+" "+saved(1);end
         catch err
             message=string(err.message);
             stopProgress();
@@ -169,7 +180,7 @@ end
         if finished&&any(active==["render","c2","refine"])
             outputs=w.State.steps.(active).outputs;keys=string(fieldnames(outputs));keys=keys(startsWith(keys,"TIFF16_"));
             paths=strings(0,1);for key=keys',paths(end+1)=w.resolve(outputs.(key));end
-            choice=uiconfirm(fig,"Saved "+numel(paths)+" TIFF16 page(s):"+newline+strjoin(paths,newline)+newline+newline+ ...
+            choice=uiconfirm(fig,strjoin(inkprof.internal.savedTargetSummary(w,active),newline)+newline+strjoin(paths,newline)+newline+newline+ ...
                 "Keep the project originals. You can copy the print files to another folder.",'TIFF16 saved', ...
                 'Options',{'Copy for printing','Done'},'DefaultOption',1,'CancelOption',2,'Icon','success');
             if strcmp(choice,'Copy for printing'),copyPrintStep(active);end
