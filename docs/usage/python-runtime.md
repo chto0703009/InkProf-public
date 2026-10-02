@@ -1,6 +1,6 @@
 # Lokal och valfri Python-miljö
 
-Python behövs inte för targetgenerering i MATLAB. Runtime-stödet förbereder en framtida mätbrygga; det är ännu ingen chartread-integration.
+Python behövs inte för targetgenerering i MATLAB. Python används av den implementerade chartread-bryggan, spektralanalysen, profileringen och rapporterna.
 
 ## Skapa miljön på varje dator
 
@@ -8,17 +8,17 @@ Utgå från InkProfs rotmapp. På macOS/Linux:
 
 ```sh
 python3 -m venv .venv
-.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python -m pip install -r requirements-report.txt
 ```
 
 På Windows:
 
 ```powershell
 py -3 -m venv .venv
-.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe -m pip install -r requirements-report.txt
 ```
 
-Den Python som används för att skapa miljön måste vara 3.10 eller senare inom 3.x. Välj vid behov den installerade Python-filens fullständiga sökväg. Kopiera aldrig `.venv` eller `local-config` mellan datorer. Båda är ignorerade av Git. `requirements.txt` versionshanteras och innehåller för närvarande inga externa paket; exakta beroendeversioner läggs till när bryggan implementeras.
+Den Python som används för att skapa miljön måste vara 3.11–3.13 för hela analys- och rapportflödet. Välj vid behov den installerade Python-filens fullständiga sökväg. Kopiera aldrig `.venv` eller `local-config` mellan datorer. Båda är ignorerade av Git. `requirements-report.txt` inkluderar analys- och rapportberoenden med versionskrav. Granskade beroendeversioner och licenser dokumenteras i `licenses/inventory.json`.
 
 ## Upptäckt och kontroll
 
