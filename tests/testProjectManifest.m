@@ -52,3 +52,19 @@ verifyEqual(tc,string(b.printing.printer),"Printer A");verifyEqual(tc,string(b.p
 old=jsondecode(fileread(fullfile(p,'.manifest-history','000001.json')));
 verifyEqual(tc,string(old.name),"Original");verifyEqual(tc,string(old.user),"Alice");
 end
+function testFinderMetadataDoesNotMaskEvidenceChanges(tc)
+w=string(tempname);cleanup=onCleanup(@()remove(w));inkprof.createProject(w);
+f=fullfile(w,'sources','.DS_Store');fid=fopen(f,'w');fprintf(fid,'Finder');fclose(fid);
+evidence=fullfile(w,'sources','measurement.json');inkprof.internal.writeJson(evidence,struct('value',1));
+a=inkprof.updateProject(w);verifyFalse(tc,any(inkprof.internal.isFinderMetadata(string({a.files.path}))));
+% Simulate an older manifest that included Finder metadata.
+a.files(end+1)=struct('path',"sources/.DS_Store",'sha256',"outdated",'bytes',6,'documentType',"");
+inkprof.internal.writeJson(fullfile(w,'inkprof-project.json'),a);
+verifyTrue(tc,inkprof.verifyProject(w).passed);
+delete(f);verifyTrue(tc,inkprof.verifyProject(w).passed);
+a=inkprof.updateProject(w,WorkflowMetadataOnly=true);
+verifyFalse(tc,any(inkprof.internal.isFinderMetadata(string({a.files.path}))));
+inkprof.internal.writeJson(evidence,struct('value',2));
+result=inkprof.verifyProject(w);verifyFalse(tc,result.passed);
+verifyTrue(tc,any(contains(result.issues,'Changed file: sources/measurement.json')));
+end

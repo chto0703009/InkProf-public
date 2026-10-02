@@ -23,10 +23,14 @@ assert(record.schemaVersion==1&&string(record.documentType)=="inkprof.profiling-
 listing=dir(fullfile(root,'**','*'));listing=listing(~[listing.isdir]);
 files=struct('path',{},'sha256',{},'bytes',{},'documentType',{});
 links=struct('from',{},'field',{},'sha256',{},'matches',{});
-if options.WorkflowMetadataOnly,files=record.files;end
+if options.WorkflowMetadataOnly
+ files=record.files;
+ if ~isempty(files),files=files(~inkprof.internal.isFinderMetadata(string({files.path})));end
+end
 for k=1:numel(listing)
  f=fullfile(listing(k).folder,listing(k).name);
  rel=replace(extractAfter(string(f),strlength(root)+1),"\","/");
+ if inkprof.internal.isFinderMetadata(rel),continue;end
  if any(rel==["inkprof-project.json",".manifest.lock",".workflow.lock"])||startsWith(rel,".manifest-")||startsWith(rel,".workflow-"),continue;end
  if options.WorkflowMetadataOnly&&~any(rel==["workflow.json","result-log.jsonl","result-log.txt"]),continue;end
  kind="";

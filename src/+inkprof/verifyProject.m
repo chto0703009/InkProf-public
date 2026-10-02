@@ -13,6 +13,7 @@ for name=[".workflow.lock",".manifest.lock"]
 end
 for entry=reshape(r.files,1,[])
  relative=string(entry.path);
+ if inkprof.internal.isFinderMetadata(relative),continue;end
  path=inkprof.internal.absolutePath(fullfile(root,relative));
  if ~startsWith(path,root+filesep)
   issues(end+1)="Reference points outside the project: "+relative;
