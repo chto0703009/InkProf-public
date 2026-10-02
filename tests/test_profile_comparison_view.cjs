@@ -1,0 +1,20 @@
+const fs = require('node:fs'), vm = require('node:vm'), assert = require('node:assert/strict');
+const nodes = {}, dots = [];
+const context = new Proxy({}, {get: (o,k) => k === 'arc' ? (x,y) => dots.push([x,y]) : () => {}});
+for (const id of ['view','slice','lightness','width','level','counts']) nodes[id] = {style:{},value:'',getContext:()=>context,setPointerCapture:()=>{}};
+nodes.slice.checked = true;nodes.lightness.value = '50';nodes.width.value = '5';
+const sandbox = vm.createContext({document:{getElementById:id=>nodes[id]},groups:[[[50,20,30],[52,20,30],[10,-20,0]],[[50,0,0],[90,0,20]]]});
+vm.runInContext(fs.readFileSync(require('node:path').join(__dirname,'../analysis/profile_comparison_view.js'),'utf8'),sandbox);
+assert.equal(dots.length,3);assert.deepEqual(dots[0],dots[1]); // L* is not a spatial axis in 2D.
+assert.match(nodes.counts.textContent,/previous 2, current 1/);
+const initial=vm.runInContext('angle',sandbox);
+nodes.view.onpointerdown({clientX:0,pointerId:1});nodes.view.onpointermove({clientX:100});
+assert.equal(vm.runInContext('angle',sandbox),initial);
+nodes.lightness.value='10';dots.length=0;nodes.lightness.oninput();assert.equal(dots.length,1);
+nodes.slice.checked=false;dots.length=0;nodes.slice.oninput();assert.equal(dots.length,5);
+assert.equal(nodes.lightness.disabled,true);assert.equal(nodes.width.disabled,true);
+nodes.view.onpointerdown({clientX:0,pointerId:1});nodes.view.onpointermove({clientX:20});
+assert.notEqual(vm.runInContext('angle',sandbox),initial);
+nodes.slice.checked=true;nodes.lightness.value='50';dots.length=0;nodes.slice.oninput();
+assert.deepEqual(dots[0],dots[1]);assert.equal(nodes.lightness.disabled,false);
+console.log('2D projection, lightness slicing, fixed scale, 3D toggle and rotation passed.');
