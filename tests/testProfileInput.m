@@ -4,7 +4,7 @@ end
 function testFreezeAndReject(tc)
 root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
 w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
-project=inkprof.createProject(fullfile(w,'project'),Printing=struct('printer',"Project printer",'paperSurface',"Matte",'ink',"Project ink",'profileName',"Project ICC",'profileDescription',"Project description",'profileDataMode',"storedXYZ",'profileB2AQuality',"medium"));
+project=inkprof.createProject(fullfile(w,'project'),Printing=struct('printer',"Project printer",'paperSurface',"Matte",'ink',"Project ink",'dryingHours',"24",'profileName',"Project ICC",'profileDescription',"Project description",'profileDataMode',"storedXYZ",'profileB2AQuality',"medium"));
 target=fullfile(w,'target');inkprof.createTarget(target,PatchCount=40,GraySteps=4,DPI=100);
 session=fullfile(project,'measurements','synthetic');inkprof.prepareChart(fullfile(target,'target.ti2'),session);
 doc=inkprof.importCgats(fullfile(target,'target.ti2'));doc.tables=doc.tables(1);doc.tables.signature="CTI3";
@@ -21,6 +21,7 @@ verifyTrue(tc,isfile(recipeFile));verifyEqual(tc,string(recipe.colorimetry.mode)
 verifyFalse(tc,recipe.colorimetry.fwaCompensation);
 verifyEqual(tc,string(recipe.printing.printer),"Project printer");
 verifyEqual(tc,string(recipe.printing.ink),"Project ink");
+verifyEqual(tc,string(recipe.printing.dryingHours),"24");
 verifyTrue(tc,any(string(recipe.engine.plannedArguments)=="-Z"));
 verifyError(tc,@()inkprof.createProfileRecipe(folder,DataMode="spectral",ShowDialog=false),'inkprof:RecipeData');
 readback=jsondecode(fileread(recipeFile));verifyEqual(tc,string(readback.name),"Test recipe");

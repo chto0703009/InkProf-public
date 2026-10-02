@@ -239,3 +239,10 @@ När appen är ledig verifieras projektets sparade filer. Bekräftelsen visar
 sparplats och senaste spartid (UTC) innan appen stängs. Integritetsfel visas
 som varning och repareras inte automatiskt. Keep open är förvalt. Close app
 avslutar InkProf-fönstret, inte MATLAB. Öppna samma projekt för att fortsätta.
+
+TORKTID I RECEPT OCH UTSKRIFTSKOPIOR
+Drying time (hours) anges på ett ställe: Project details > Printing settings.
+Profiling recipe visar samma värde skrivskyddat för projektbundna recept.
+Värdet följer med i recipe.json, mätcertifikatet och PRINTING.txt vid kopiering
+av TIFF16 för utskrift. Äldre projekt utan värde visas som unknown; ingen
+faktisk torktid eller genomförd torkning antas automatiskt.
