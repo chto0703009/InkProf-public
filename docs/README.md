@@ -4,9 +4,9 @@ For v0.9 installation, current features and limitations, start with the [root RE
 
 - [Presentation, English](usage/InkProf-presentation-English.pdf)
 - [Profiling workflow and MATLAB guide, English](usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Presentation, svenska](usage/InkProf-presentation.pdf)
-- [Profileringskedja och MATLAB-guide, svenska](usage/InkProf-profileringskedja-MATLAB-guide.pdf)
-- [Projektappen](usage/project-workflow-app.txt)
+- [Presentation, Swedish](usage/InkProf-presentation.pdf)
+- [Profiling workflow and MATLAB guide, Swedish](usage/InkProf-profileringskedja-MATLAB-guide.pdf)
+- [Project app (Swedish)](usage/project-workflow-app.txt)
 - [Automatic profile iteration](usage/automatic-profile-iteration.md)
 - [Verification feedback](usage/verification-feedback.md)
 - [Refinement continuation](usage/refinement-continuation.md)
@@ -15,6 +15,6 @@ For v0.9 installation, current features and limitations, start with the [root RE
 
 Detailed usage and research notes are mostly in Swedish. Historical notes may link to deliberately excluded private inputs or earlier planning documents. See [public release scope](../RELEASE_SCOPE.md).
 
-- [Testade plattformar / Tested platforms](usage/tested-platforms.md)
+- [Tested platforms](usage/tested-platforms.md)
 
-- [Förkortningar och begrepp](usage/abbreviations.md)
+- [Abbreviations and terminology (Swedish)](usage/abbreviations.md)

@@ -1,0 +1,57 @@
+# InkProf v0.9 – svensk beskrivning
+
+[English description](README.md)
+
+**InkProf – När färgerna måste bli rätt**
+
+InkProf hjälper dig att skapa och kontrollera färgprofiler för kombinationen skrivare, papper och bläck. En tydlig arbetsgång samlar målbild, mätningar, profilering och oberoende utskriftskontroll i ett projekt. Syftet är att göra arbetet spårbart och lättare att upprepa när färgerna måste bli rätt.
+
+InkProf är en app i MATLAB med öppen källkod. Varje projekt har en egen mapp, en sparad arbetsgång i JSON (JavaScript Object Notation, ett format för strukturerade data) och en läsbar resultatlogg. Appen stoppar steg vars förutsättningar inte är uppfyllda. Du kan stänga appen medan utskrifter torkar och senare öppna samma projekt.
+
+## Arbetsgång
+
+1. Skapa eller importera ett färgmål med RGB-värden (rött, grönt och blått).
+2. Spara målet som TIFF med 16 bitar per färgkanal. Utskriften görs separat.
+3. Mät med en kompatibel spektrometer från appen och granska den mätversion som ska användas.
+4. Bygg en färgprofil i ICC-format (International Color Consortium) med ArgyllCMS och utför numeriska kontroller.
+5. Spara, skriv ut och mät ett separat kontrollmål för fysisk verifiering.
+6. Bedöm resultatet, gör vid behov en ny iteration och spara efter godkännande profil och mätcertifikat i PDF- och HTML-format på valfri plats.
+
+Certifikatet samlar projektuppgifter, mätresultat, instrumentuppgifter och ansvarsförhållanden. Det har datum och utrymme för underskrift på papper. En tredimensionell färgvy visar profilens beräknade kontrollfärger; den är inte en uppmätt bild av hela skrivarens färgomfång.
+
+## Projektuppgifter och flytt mellan datorer
+
+Projektdefinitionen samlar användare, skrivare, papper, yta, bläck, utskriftsinställningar och torktid. Uppgifterna kan rättas senare och används av efterföljande steg. Ändrade utskriftsuppgifter kan kräva ny profilering och verifiering; tidigare mätningar och historik bevaras.
+
+När projektet byter namn via appen byter även mappen namn. Om mappen har döpts om utanför appen får användaren bekräfta hur namnet ska hanteras. För att flytta projektet, avsluta aktiva operationer och kopiera hela projektmappen inklusive dolda filer. Appen kontrollerar registrerade filers integritet när projektet öppnas. Installera program och beroenden separat på den andra datorn.
+
+## Installation och testade miljöer
+
+Detta är en källkodsutgåva. MATLAB, Python och ArgyllCMS installeras separat. Se den [engelska installationsanvisningen](README.md#install-and-start) för kommandon och versionsuppgifter.
+
+**InkProf är testat på macOS. Windows och Linux är inte testade.** Grundläggande mätning har provats med i1Pro 2; alla instrumentlägen är inte kvalificerade. Se [testade plattformar och begränsningar](docs/usage/tested-platforms.md).
+
+## Dokumentation
+
+- [Svensk presentation (PDF)](docs/usage/InkProf-presentation.pdf)
+- [Svensk profileringskedja och MATLAB-guide (PDF)](docs/usage/InkProf-profileringskedja-MATLAB-guide.pdf)
+- [Projektappen och arbetsgången](docs/usage/project-workflow-app.txt)
+- [Mätcertifikat](docs/usage/measurement-certificate.md)
+- [Förkortningar och begrepp](docs/usage/abbreviations.md)
+- [Engelsk beskrivning och dokumentation](README.md)
+
+## Kvalitet och begränsningar
+
+En skapad profil är inte i sig ett bevis på god utskriftskvalitet. Resultatet begränsas av vad skrivaren, papperet och bläcket kan återge. Inställningar, torkning, instrument och mätningar måste kontrolleras för den aktuella användningen. När kontrollresultat används för att förbättra profilen krävs oberoende data för en senare slutkontroll.
+
+Hänvisningar till ISO (International Organization for Standardization, Internationella standardiseringsorganisationen) innebär inte att InkProf intygar överensstämmelse med en standard. Bundesverband Druck und Medien (bvdm), Tysklands branschorganisation för tryck och medier, ger ut MediaStandard Print som sammanfattar standardkrav. Publikationen ersätter inte själva ISO-standarden.
+
+## Licens, garanti och ansvar
+
+Copyright © 2026 Christer Törnkvist. InkProfs egen kod och dokumentation är licensierad enligt GNU General Public License, version 3 eller senare (GPL-3.0-or-later). Se [licensen](LICENSE), [tredjepartsnotiser](THIRD_PARTY_NOTICES.md) och [licensunderlag](licenses/). Tredjepartsresurser behåller sina egna licenser; MATLAB kräver separat licens.
+
+InkProf tillhandahålls i befintligt skick utan garantier. Användaren ansvarar för att kontrollera mätningar, profiler och utskriftsresultat före användning. I den utsträckning tillämplig lag tillåter ansvarar upphovsrättsinnehavaren inte för skador eller förluster som uppstår genom användningen. Se licensens avsnitt 15–17. Denna sammanfattning ersätter inte licensen.
+
+Rapportera reproducerbara fel via [GitHub Issues](https://github.com/chto0703009/InkProf-public/issues). Ta först bort privata mätningar och personuppgifter.
+
+Kontakt: Christer Törnkvist – christer@borgasundsfotografiska.se

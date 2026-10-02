@@ -4,7 +4,7 @@
 
 **InkProf - When colours have to be right**
 
-**InkProf - När färgerna måste bli rätt**
+[Swedish description / Svenska](README.sv.md)
 
 InkProf is an open-source MATLAB application for RGB printer profiling: colour targets, spectral measurements, ICC generation, independent print verification and traceable refinement. Each project has its own folder, a persistent JSON workflow, prerequisites and a readable results log. You can close the app while prints dry and resume the same project later.
 
@@ -43,8 +43,8 @@ Choose **New project** or **Open project**. Create your own RGB target or import
 
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Svensk presentation (PDF)](docs/usage/InkProf-presentation.pdf)
-- [Svensk MATLAB-guide (PDF)](docs/usage/InkProf-profileringskedja-MATLAB-guide.pdf)
+- [Swedish presentation (PDF)](docs/usage/InkProf-presentation.pdf)
+- [Swedish MATLAB guide (PDF)](docs/usage/InkProf-profileringskedja-MATLAB-guide.pdf)
 - [Project app, step guards and recovery (Swedish)](docs/usage/project-workflow-app.txt)
 - [Release notes](docs/releases/v0.9.md) and [public release scope](RELEASE_SCOPE.md)
 
@@ -89,7 +89,6 @@ Third-party resources keep their own licences. ArgyllCMS is installed separately
 
 InkProf is provided as is, without warranties. Users are responsible for checking measurements, ICC profiles and print results before use. To the extent permitted by applicable law, the copyright holder is not liable for damage or loss arising from use. See GNU GPL v3, sections 15–17. This summary does not replace the licence.
 
-InkProf tillhandahålls i befintligt skick utan garantier. Användaren ansvarar för att kontrollera mätningar, ICC-profiler och utskriftsresultat före användning. I den utsträckning tillämplig lag tillåter ansvarar upphovsrättsinnehavaren inte för skador eller förluster som uppstår genom användningen. Se GNU GPL v3, avsnitt 15–17.
 
  Report reproducible issues through [GitHub Issues](https://github.com/chto0703009/InkProf-public/issues), removing private measurements and personal data first.
 
@@ -103,4 +102,4 @@ The HTML final report automatically rotates the predicted CIELAB control colours
 
 ## Measurement certificate
 
-The final profiling report is now a **measurement certificate (mätcertifikat)** with project and printing details, the limits of printer/paper/ink reproduction, and a dated page for handwritten signature. It states the customer's responsibility when the customer prints the targets or supplies project information, subject to mandatory law and the provider's own responsibilities. See [certificate documentation](docs/usage/measurement-certificate.md).
+The final profiling report is now a **measurement certificate** with project and printing details, the limits of printer/paper/ink reproduction, and a dated page for handwritten signature. It states the customer's responsibility when the customer prints the targets or supplies project information, subject to mandatory law and the provider's own responsibilities. See [certificate documentation](docs/usage/measurement-certificate.md).
