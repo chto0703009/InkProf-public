@@ -136,6 +136,35 @@ classdef ProjectWorkflow < handle
             end
             clear lock
         end
+        function destination=savePrintCopy(obj,id,parent)
+            lock=obj.lock();obj.reload();
+            [ok,reason]=obj.valid(id);assert(ok,'inkprof:WorkflowBlocked','%s',reason);
+            parent=inkprof.internal.absolutePath(parent);
+            assert(isfolder(parent),'inkprof:PrintCopy','Select an existing destination folder.');
+            assert(parent~=obj.Root&&~startsWith(parent,obj.Root+filesep),'inkprof:PrintCopy','Select a folder outside the project.');
+            outputs=obj.State.steps.(id).outputs;keys=string(fieldnames(outputs));keys=keys(startsWith(keys,"TIFF16_"));
+            assert(~isempty(keys),'inkprof:PrintCopy','This step has no saved TIFF16 pages.');
+            token=string(java.util.UUID.randomUUID());destination=fullfile(parent,"InkProf-"+id+"-"+token);mkdir(destination);
+            files=struct('name',{},'sha256',{});
+            for key=keys'
+                source=obj.resolve(outputs.(key));[~,name,ext]=fileparts(source);name=name+ext;
+                copyfile(source,fullfile(destination,name));hash=inkprof.internal.sha256(source);
+                assert(inkprof.internal.sha256(fullfile(destination,name))==hash,'inkprof:Integrity','Print copy checksum mismatch.');
+                files(end+1)=struct('name',name,'sha256',hash);
+            end
+            if string(id)=="c2"
+                instructions="C2 verification target. The ICC profile has already been applied once. Print at 100% with ALL further colour conversion OFF."+newline+ ...
+                    "Black point compensation (BPC): OFF, deliberately for this verification target. BPC adapts dark tones to the printer and paper black level; it is not used for this measurement.";
+            else
+                instructions="Profiling target. Print at 100% as device RGB with ALL colour conversion OFF. No ICC profile has been applied.";
+            end
+            instructions=instructions+newline+"Use the project's printer, paper, ink and print settings. Allow the documented drying time. Return to the same project to measure.";
+            f=fopen(fullfile(destination,'PRINTING.txt'),'w','n','UTF-8');assert(f>=0);fprintf(f,'%s',instructions);fclose(f);
+            record=struct('documentType',"inkprof.print-delivery",'step',string(id),'iteration',obj.State.cycle,'destination',destination,'files',files,'instructions',instructions);
+            folder=obj.newFolder('reports');mkdir(folder);inkprof.internal.writeJson(fullfile(folder,'print-delivery.json'),record);
+            obj.event(id,"print-copy-saved",record);obj.save();
+            inkprof.updateProject(obj.Root,Step="print-copy-saved");clear lock
+        end
         function setFWA(obj,enabled,source)
             arguments
                 obj

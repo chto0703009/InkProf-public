@@ -23,12 +23,13 @@ projectLabel=uilabel(projectBar,'Text','Create a new project or select an existi
 verifyButton=uibutton(projectBar,'Text','Verify project','Tag','verifyProject','Enable','off','ButtonPushedFcn',@verifyCurrentProject);
 body=uigridlayout(g,[1 2]);body.ColumnWidth={490,'1x'};body.Padding=[0 0 0 0];
 table=uitable(body,'ColumnName',{'Step','Status'},'ColumnWidth',{350,105},'ColumnEditable',false,'Tag','workflowSteps','CellSelectionCallback',@select);
-right=uigridlayout(body,[6 1]);right.RowHeight={34,100,'1x',42,42,36};right.Padding=[10 0 0 0];
+right=uigridlayout(body,[7 1]);right.RowHeight={34,100,'1x',42,42,42,36};right.Padding=[10 0 0 0];
 titleLabel=uilabel(right,'FontSize',18,'FontWeight','bold','Text','Workflow');
 hint=uitextarea(right,'Editable','off','Value',{'Select a project.'});
 details=uitextarea(right,'Editable','off','Tag','workflowDetails');
 runButton=uibutton(right,'Text','Run selected step','Tag','runWorkflowStep','Enable','off','ButtonPushedFcn',@run);
 uibutton(right,'Text','Open selected step results','ButtonPushedFcn',@openResult);
+printButton=uibutton(right,'Text','Copy TIFF16 for printing…','Tag','copyPrintTIFF','Enable','off','ButtonPushedFcn',@copyPrint);
 legal=uigridlayout(right,[1 2]);legal.Padding=[0 0 0 0];legal.ColumnWidth={'1x',170};
 uilabel(legal,'Text','Results and progress are saved in the project.','WordWrap','on');
 uibutton(legal,'Text','Licence and liability','Tag','licenseNotice','ButtonPushedFcn',@showLicense);
@@ -111,6 +112,7 @@ end
             table.Data=data;index=find(string({defs.id})==selected);titleLabel.Text=defs(index).label;
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
             hint.Value=cellstr([reason;instruction(selected)]);
+            printButton.Enable=matlab.lang.OnOffSwitchState(assessment.(selected).valid&&any(startsWith(string(fieldnames(w.State.steps.(selected).outputs)),"TIFF16_")));
             step=w.State.steps.(selected);lines=["Iteration "+w.State.cycle;"Status: "+string(data{index,2});"";string(step.message);"";"Saved results:"];
             names=string(fieldnames(step.outputs));
             if isempty(names),lines(end+1)="No results yet.";end
@@ -162,6 +164,14 @@ end
             end
         end
         refresh();status.Text=message;
+        if finished&&any(active==["render","c2","refine"])
+            outputs=w.State.steps.(active).outputs;keys=string(fieldnames(outputs));keys=keys(startsWith(keys,"TIFF16_"));
+            paths=strings(0,1);for key=keys',paths(end+1)=w.resolve(outputs.(key));end
+            choice=uiconfirm(fig,"Saved "+numel(paths)+" TIFF16 page(s):"+newline+strjoin(paths,newline)+newline+newline+ ...
+                "Keep the project originals. You can copy the print files to another folder.",'TIFF16 saved', ...
+                'Options',{'Copy for printing','Done'},'DefaultOption',1,'CancelOption',2,'Icon','success');
+            if strcmp(choice,'Copy for printing'),copyPrintStep(active);end
+        end
         function updateProgress(~,~)
             if ~isvalid(fig),return;end
             elapsed=seconds(datetime('now')-started);
@@ -185,6 +195,18 @@ end
             if ~isempty(watch)&&isvalid(watch),stop(watch);delete(watch);end
             if ~isempty(progress)&&isvalid(progress),close(progress);end
         end
+    end
+    function copyPrint(~,~)
+        if isempty(w)||busy,return;end
+        copyPrintStep(selected);
+    end
+    function copyPrintStep(id)
+        parent=uigetdir(char(fileparts(w.Root)),'Choose destination for TIFF16 print copies');
+        if isequal(parent,0),return;end
+        try
+            destination=w.savePrintCopy(id,string(parent));refresh();
+            uialert(fig,"TIFF16 print copies and PRINTING.txt saved in:"+newline+destination,'Print files saved','Icon','success');
+        catch err,uialert(fig,err.message,'Print copy');end
     end
     function o=optionsFor(id)
         o=struct;

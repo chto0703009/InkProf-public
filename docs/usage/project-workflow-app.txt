@@ -221,3 +221,13 @@ ICC-profilering visar en förloppsruta med förfluten tid och senaste loggfas,
 inklusive när kontrollmålets TIFF16 sparas. Ingen uppskattad procent visas.
 Efter avslutat steg uppdateras status automatiskt och nästa tillgängliga steg
 markeras. Slutförd export väljer inte automatiskt alternativet för förfining.
+
+TIFF16 FÖR SEPARAT UTSKRIFT
+Efter Save TIFF16, C2 eller förfiningsmål visas en bekräftelse med antal sidor
+och sökvägar. Copy for printing öppnar ett mappval utanför projektet och
+skapar en unik mapp med byte-identiska TIFF16-filer samt PRINTING.txt.
+Projektoriginalen behålls. Avbrutet mappval påverkar inte det färdiga steget.
+Markera ett färdigt TIFF-steg och använd Copy TIFF16 for printing för att
+kopiera igen senare. Destination och kontrollsummor dokumenteras i projektets
+print-delivery.json, workflow.json och resultatlogg. C2-instruktionen förklarar
+att profilen redan applicerats och att svartpunktskompensation (BPC) är av.
