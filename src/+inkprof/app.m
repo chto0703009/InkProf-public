@@ -9,15 +9,18 @@ fig=uifigure('Name','InkProf | Projects and iterations','Position',[80 70 1220 8
 fig.CloseRequestFcn=@closeApp;
 g=uigridlayout(fig,[5 1]);g.RowHeight={42,40,48,'1x',42};g.Padding=[18 14 18 14];
 heading=uilabel(g,'Text','InkProf | Project-based profiling','FontSize',23,'FontWeight','bold');
-bar=uigridlayout(g,[1 7]);bar.Padding=[0 0 0 0];bar.ColumnWidth={125,125,100,140,140,140,100};
+bar=uigridlayout(g,[1 8]);bar.Padding=[0 0 0 0];bar.ColumnWidth={115,115,130,85,130,130,135,90};
 uibutton(bar,'Text','New project','Tag','newProject','ButtonPushedFcn',@newProject);
 uibutton(bar,'Text','Open project','Tag','openProject','ButtonPushedFcn',@openProject);
+detailsButton=uibutton(bar,'Text','Project details','Tag','editProjectDetails','Enable','off','ButtonPushedFcn',@editDetails);
 uibutton(bar,'Text','Refresh','ButtonPushedFcn',@(~,~)refresh());
 uibutton(bar,'Text','Open results log','Tag','openResultLog','ButtonPushedFcn',@openLog);
 uibutton(bar,'Text','Iteration history','Tag','iterationHistory','ButtonPushedFcn',@history);
 reportButton=uibutton(bar,'Text','Open final report','Tag','openFinalReport','Enable','off','ButtonPushedFcn',@openReport);
 labButton=uibutton(bar,'Text','View 3D','Tag','showProfile3D','Enable','off','ButtonPushedFcn',@show3D);
-projectLabel=uilabel(g,'Text','Create a new project or select an existing one.','WordWrap','on');
+projectBar=uigridlayout(g,[1 2]);projectBar.ColumnWidth={'1x',140};projectBar.Padding=[0 0 0 0];
+projectLabel=uilabel(projectBar,'Text','Create a new project or select an existing one.','WordWrap','on');
+verifyButton=uibutton(projectBar,'Text','Verify project','Tag','verifyProject','Enable','off','ButtonPushedFcn',@verifyCurrentProject);
 body=uigridlayout(g,[1 2]);body.ColumnWidth={490,'1x'};body.Padding=[0 0 0 0];
 table=uitable(body,'ColumnName',{'Step','Status'},'ColumnWidth',{350,105},'ColumnEditable',false,'Tag','workflowSteps','CellSelectionCallback',@select);
 right=uigridlayout(body,[6 1]);right.RowHeight={34,100,'1x',42,42,36};right.Padding=[10 0 0 0];
@@ -38,15 +41,36 @@ if projectFolder~="",loadProject(projectFolder);end
             string(fullfile(config.Root,'LICENSE'))+newline+"https://www.gnu.org/licenses/gpl-3.0.html";
         uialert(fig,message,'Licence and liability','Icon','info');
     end
+    function verifyCurrentProject(~,~)
+        if isempty(w)||busy,return;end
+        try
+            check=inkprof.verifyProject(w.Root);
+            if check.passed,message="Integrity verified: "+check.checkedFiles+" files match their SHA-256 checksums.";icon='success';
+            else,message=strjoin(check.issues,newline);icon='warning';end
+            uialert(fig,message,'Project integrity','Icon',icon);
+        catch err,uialert(fig,err.message,'Project integrity');end
+    end
     function loadProject(folder)
+        check=inkprof.verifyProject(folder);
+        if ~check.passed,uialert(fig,strjoin(check.issues,newline),'Project integrity check failed');return;end
         w=inkprof.ProjectWorkflow(folder);selected=string(w.State.currentStep);refresh();
     end
     function newProject(~,~)
         if busy,return;end
         paths=inkprof.paths();[n,p]=uiputfile('*','New project name',fullfile(paths.Projects,'New-paper'));
         if isequal(n,0),return;end
-        try,folder=inkprof.createProject(string(fullfile(p,n)),Name=string(n));loadProject(folder);
+        try
+            d=inkprof.projectDetailsDialog(struct('name',string(n)));if isempty(d),return;end
+            folder=inkprof.createProject(string(fullfile(p,inkprof.internal.projectFolderName(d.Name))),Name=d.Name,User=d.User,Printing=d.Printing);loadProject(folder);
         catch err,uialert(fig,err.message,'Project');end
+    end
+    function editDetails(~,~)
+        if isempty(w)||busy,return;end
+        try
+            record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+            d=inkprof.projectDetailsDialog(record);if isempty(d),return;end
+            w.editDetails(d);refresh();
+        catch err,uialert(fig,err.message,'Project details');end
     end
     function openProject(~,~)
         if busy,return;end
@@ -61,7 +85,7 @@ if projectFolder~="",loadProject(projectFolder);end
     function refresh()
         if isempty(w)||busy,return;end
         try
-            w.reload();assessment=w.inspect();data=cell(numel(defs),2);
+            w.reload();detailsButton.Enable='on';verifyButton.Enable='on';assessment=w.inspect();data=cell(numel(defs),2);
             for k=1:numel(defs)
                 id=string(defs(k).id);valid=assessment.(id).valid;ready=assessment.(id).ready;
                 s=string(w.State.steps.(id).status);
@@ -78,7 +102,9 @@ if projectFolder~="",loadProject(projectFolder);end
             if isempty(names),lines(end+1)="No results yet.";end
             for name=names',lines=[lines;name+":";w.resolve(step.outputs.(name));""];end %#ok<AGROW>
             details.Value=cellstr(lines);
-            projectLabel.Text=w.Root;heading.Text="InkProf | Iteration "+w.State.cycle;
+            record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+            projectLabel.Text=string(record.name)+" | "+string(record.printing.printer)+" | "+string(record.printing.paper)+newline+w.Root;
+            heading.Text="InkProf | Iteration "+w.State.cycle;
             status.Text="Last active step: "+string(w.State.currentStep)+" | saved revision "+w.State.revision;
         catch err,status.Text=err.message;runButton.Enable='off';end
     end
@@ -125,9 +151,6 @@ if projectFolder~="",loadProject(projectFolder);end
             if isempty(a),o=[];return;end
             o.Notes=string(a{1});o.Confirmed=strlength(strtrim(o.Notes))>0;
         elseif id=="export"
-            a=inputdlg('User name in report footer','Report details',1,{char(java.lang.System.getProperty('user.name'))});
-            if isempty(a),o=[];return;end
-            o.ReportUser=string(a{1});
             [n,p]=uiputfile({'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Save final ICC profile',fullfile(w.Root,'profile.icc'));
             if isequal(n,0),o=[];return;end
             o.ICCDestination=string(fullfile(p,n));

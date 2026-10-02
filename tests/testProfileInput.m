@@ -4,7 +4,7 @@ end
 function testFreezeAndReject(tc)
 root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
 w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
-project=inkprof.createProject(fullfile(w,'project'));
+project=inkprof.createProject(fullfile(w,'project'),Printing=struct('printer',"Project printer",'paperSurface',"Matte",'ink',"Project ink"));
 target=fullfile(w,'target');inkprof.createTarget(target,PatchCount=40,GraySteps=4,DPI=100);
 session=fullfile(project,'measurements','synthetic');inkprof.prepareChart(fullfile(target,'target.ti2'),session);
 doc=inkprof.importCgats(fullfile(target,'target.ti2'));doc.tables=doc.tables(1);doc.tables.signature="CTI3";
@@ -16,8 +16,15 @@ verifyTrue(tc,isfile(fullfile(folder,'profiling.ti3')));verifyEqual(tc,r.patchCo
 [recipeFile,recipe]=inkprof.createProfileRecipe(folder,DataMode="storedXYZ",ShowDialog=false,Name="Test recipe");
 verifyTrue(tc,isfile(recipeFile));verifyEqual(tc,string(recipe.colorimetry.mode),"storedXYZ");
 verifyFalse(tc,recipe.colorimetry.fwaCompensation);
+verifyEqual(tc,string(recipe.printing.printer),"Project printer");
+verifyEqual(tc,string(recipe.printing.ink),"Project ink");
+verifyTrue(tc,any(string(recipe.engine.plannedArguments)=="-Z"));
 verifyError(tc,@()inkprof.createProfileRecipe(folder,DataMode="spectral",ShowDialog=false),'inkprof:RecipeData');
 readback=jsondecode(fileread(recipeFile));verifyEqual(tc,string(readback.name),"Test recipe");
+% Simulate transfer: the original root disappears; frozen B1/B2 must still run.
+oldProject=project;project=fullfile(w,'moved-project');movefile(oldProject,project);
+folder=replace(folder,oldProject,project);recipeFile=replace(recipeFile,oldProject,project);source=replace(source,oldProject,project);
+check=inkprof.verifyProject(project);verifyTrue(tc,check.passed,strjoin(check.issues,newline));
 if isunix
  fake=fullfile(w,'fake-colprof');fid=fopen(fake,'w');fprintf(fid,'#!/bin/sh\nif [ "$1" = "-?" ]; then echo "Fake colprof test"; exit 1; fi\nexit 7\n');fclose(fid);java.io.File(char(fake)).setExecutable(true);
  [job,status]=inkprof.runProfileJob(recipeFile,ShowDialog=false,ColprofExecutable=fake);

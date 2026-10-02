@@ -140,6 +140,41 @@ HTML-filen och dess underlagsmapp ska hållas tillsammans; PDF kan läsas själv
 SIDHUVUD OCH SIDFOT
 PDF och HTML använder TIFF:ens sidhuvud: InkProf Quality Profiling RGB printer.
 Varje sida har rapportdatum, användare och sidnummer (totalt antal sidor),
-exempelvis 2 (5). Användaren anges vid sparning; inloggat användarnamn föreslås.
+exempelvis 2 (5). Användaren hämtas från Project details.
 Uppgifterna sparas i rapportens JSON. HTML sidindelas automatiskt när den öppnas.
 PDF och HTML kan få olika sidantal eftersom formaten har olika textlayout.
+
+PROJEKTUPPGIFTER
+New project öppnar ett formulär före projektet skapas: Project name, User,
+Printer, Paper name, Paper finish (Glossy/Matte/Unknown/Other), Driver / RIP,
+Print quality, Colour management, Printer settings, Driver media setting,
+Printing application, Ink / ink set och Drying time (hours).
+Project details öppnar samma formulär för ett befintligt projekt.
+Namnbytet ändrar både projektnamnet och mappnamnet. Projekt-ID bevaras.
+Ett redan upptaget mappnamn avvisas utan att något ersätts.
+Cancel lämnar uppgifterna oförändrade. Tidigare uppgifter bevaras i manifestets
+revisionshistorik; ändringen dokumenteras även i resultatloggen.
+En namn- eller användarrättelse gör slutrapporten inaktuell tills den sparas
+igen. Ändrade utskriftsuppgifter gör B1 och efterföljande profilering och
+kontroller inaktuella, eftersom exempelvis Matte påverkar profilbygget. Tidigare
+mätningar och ICC-filer bevaras. Skapa ett nytt projekt för en annan fysisk
+skrivar-/papperskombination; formuläret är avsett för att rätta uppgifter.
+
+Project details är den gemensamma källan för B1, B2, C3 och slutrapporten.
+B2 visar projektets utskriftsuppgifter utan att de kan ändras där.
+Torktid dokumenteras som ett antal timmar; appen intygar inte att arket torkat.
+
+FLYTTA TILL EN ANNAN DATOR
+Avsluta pågående operationer och stäng projektet. Kopiera hela projektmappen,
+inklusive dolda filer och undermappar, till den nya datorn. Välj Open project.
+Appen kontrollerar manifestets SHA-256 för alla registrerade filer innan
+projektet öppnas. Verify project kan upprepa kontrollen utan att ändra något.
+Saknade/ändrade filer eller kvarvarande aktiva låsfiler stoppar öppningen.
+Kontrollen ersätter inte en säkerhetskopia; den jämför med det sparade manifestet.
+Projekt-ID, relativa arbetsflödesreferenser, mätningar, profiler, projektkopior
+av rapporter och historik följer med. Ursprungliga absoluta sökvägar i äldre
+rapporter är historiska uppgifter. Externa exporter behöver kopieras separat
+om de också önskas; deras projektkopior ingår alltid i projektmappen.
+Installera MATLAB, InkProf, Python-beroenden och ArgyllCMS på måldatorn.
+Konfigurera lokala programsökvägar där; kopiera inte .venv eller local-config
+från programmappen. Instrumentstöd på Windows är inte kvalificerat.

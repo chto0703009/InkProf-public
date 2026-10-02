@@ -20,6 +20,7 @@ classdef ProjectWorkflow < handle
                     'workflowRevision',2,'projectId',p.projectId,'iterationId',string(java.util.UUID.randomUUID()),'parentIterationId',"",'revision',0,'currentStep',"definition",'cycle',1, ...
                     'steps',steps,'history',{{}});
                 lock=obj.lock();obj.save();clear lock
+                inkprof.updateProject(obj.Root,Step="workflow-created");
             end
         end
         function reload(obj)
@@ -119,6 +120,52 @@ classdef ProjectWorkflow < handle
             end
             clear lock
         end
+        function record=editDetails(obj,details)
+            % Update shared metadata and rename the project folder without changing evidence.
+            lock=obj.lock();obj.reload();
+            assert(isstruct(details)&&isscalar(details)&&all(isfield(details,{'Name','User','Printing'})), ...
+                'inkprof:ProjectDetails','Project name, user and printing details are required.');
+            assert(strlength(strtrim(string(details.Name)))>0&&strlength(strtrim(string(details.User)))>0, ...
+                'inkprof:ProjectDetails','Enter a project name and user.');
+            before=jsondecode(fileread(fullfile(obj.Root,'inkprof-project.json')));
+            newName=inkprof.internal.projectFolderName(details.Name);oldRoot=obj.Root;
+            newRoot=oldRoot;
+            if newName~=string(before.name),newRoot=fullfile(fileparts(oldRoot),newName);end
+            if newRoot~=oldRoot
+                assert(~isfolder(newRoot)&&~isfile(newRoot),'inkprof:Exists','A file or folder with the new project name already exists.');
+            end
+            printing=before.printing;
+            for field=string(fieldnames(details.Printing))',printing.(field)=details.Printing.(field);end
+            printingChanged=~strcmp(jsonencode(orderfields(printing)),jsonencode(orderfields(before.printing)));
+            sameUser=isfield(before,'user')&&string(before.user)==strtrim(string(details.User));
+            if ~printingChanged&&newName==string(before.name)&&sameUser,record=before;return;end
+            if printingChanged
+                obj.invalidate("input");
+            else
+                obj.invalidate("export");
+            end
+            % Save invalidation first: an interrupted edit must not leave an old report current.
+            obj.save();
+            relocations=before.relocations;
+            if newRoot~=oldRoot
+                manifestLock=fullfile(obj.Root,'.manifest.lock');
+                assert(java.io.File(char(manifestLock)).createNewFile(),'inkprof:ProjectBusy','Project metadata is being updated. Retry when it finishes.');
+                renameCleanup=onCleanup(@()delete(fullfile(obj.Root,'.manifest.lock')));
+                src=java.io.File(char(oldRoot)).toPath();dst=java.io.File(char(newRoot)).toPath();
+                java.nio.file.Files.move(src,dst,javaArray('java.nio.file.CopyOption',0));
+                obj.Root=newRoot;clear renameCleanup
+                relocation=struct('from',oldRoot,'to',newRoot,'utc',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")));
+                if isempty(relocations),relocations=relocation;else,relocations(end+1)=relocation;end
+            end
+            record=inkprof.updateProject(obj.Root,Step="project-details-edited", ...
+                Name=newName,User=details.User,Printing=details.Printing,Relocations=relocations);
+            previous=struct('name',before.name,'user',"",'printing',before.printing);
+            if isfield(before,'user'),previous.user=before.user;end
+            obj.event("project-details","updated",struct('before',previous,'after', ...
+                struct('name',record.name,'user',record.user,'printing',record.printing)));
+            obj.save();clear lock
+            record=inkprof.updateProject(obj.Root,Step="project-details-audited");
+        end
         function file=resolve(obj,relative)
             file=inkprof.internal.absolutePath(fullfile(obj.Root,string(relative)));
             assert(startsWith(file,obj.Root+filesep),'inkprof:WorkflowPath','The file must be inside the selected project.');
@@ -138,7 +185,7 @@ classdef ProjectWorkflow < handle
             file=fullfile(obj.Root,'.workflow.lock');
             assert(java.io.File(char(file)).createNewFile(),'inkprof:WorkflowBusy', ...
                 'The project is in use by another operation. After an interrupted MATLAB session, make sure no operation is running before removing .workflow.lock.');
-            cleanup=onCleanup(@()delete(file));
+            cleanup=onCleanup(@()delete(fullfile(obj.Root,'.workflow.lock')));
         end
         function save(obj)
             obj.State.revision=obj.State.revision+1;

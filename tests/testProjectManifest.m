@@ -40,3 +40,15 @@ verifyEqual(tc,string(a.history(end).step),"chart-prepared");
 verifyTrue(tc,any(string({a.files.path})=="measurements/test/chart.json"));
 verifyTrue(tc,any(arrayfun(@(x)~isempty(x.matches),a.links)));
 end
+function testMetadataAndHistory(tc)
+w=string(tempname);cleanup=onCleanup(@()remove(w));
+p=inkprof.createProject(w,Name="Original",User="Alice",Printing=struct('printer',"Printer A",'paper',"Paper A",'paperSurface',"Glossy",'settings',"High quality"));
+a=jsondecode(fileread(fullfile(p,'inkprof-project.json')));
+verifyEqual(tc,string(a.user),"Alice");verifyEqual(tc,string(a.printing.paperSurface),"Glossy");
+verifyEqual(tc,string(a.printing.driver),"unknown");
+b=inkprof.updateProject(p,Name="Corrected",User="Bob",Printing=struct('paper',"Paper B"));
+verifyEqual(tc,string(b.name),"Corrected");verifyEqual(tc,string(b.projectId),string(a.projectId));
+verifyEqual(tc,string(b.printing.printer),"Printer A");verifyEqual(tc,string(b.printing.paper),"Paper B");
+old=jsondecode(fileread(fullfile(p,'.manifest-history','000001.json')));
+verifyEqual(tc,string(old.name),"Original");verifyEqual(tc,string(old.user),"Alice");
+end

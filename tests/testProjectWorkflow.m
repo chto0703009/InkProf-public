@@ -194,3 +194,50 @@ verifyTrue(tc,contains(fileread(txt),'Rapportunderlag:'));verifyEqual(tc,string(
 delete(icc);verifyTrue(tc,w.valid('export'));
 verifyError(tc,@()inkprof.internal.saveWorkflowDelivery(folder,w.output('profile','profile'),report,Overwrite=true),'inkprof:Delivery');
 end
+function testEditDetailsKeepsEvidenceAndInvalidatesDelivery(tc)
+w=finalReportFixture(tc);w.run('export',struct('ReportUser',"Alice"));
+profile=w.output('profile','profile');hash=inkprof.internal.sha256(profile);
+report=w.output('export','reportPDF');
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+oldRoot=w.Root;[~,stem]=fileparts(oldRoot);newName=stem+" renamed";
+d=struct('Name',newName,'User',"Bob",'Printing',a.printing);
+w.editDetails(d);tc.TestData.project=w.Root;
+profile=replace(profile,oldRoot,w.Root);report=replace(report,oldRoot,w.Root);
+verifyFalse(tc,isfolder(oldRoot));verifyTrue(tc,isfolder(w.Root));
+verifyTrue(tc,w.valid('approve'));verifyFalse(tc,w.valid('export'));
+verifyTrue(tc,isfile(report));verifyEqual(tc,inkprof.internal.sha256(profile),hash);
+fresh=inkprof.ProjectWorkflow(w.Root);
+b=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+verifyEqual(tc,string(b.name),newName);verifyEqual(tc,string(b.user),"Bob");
+verifyEqual(tc,string(a.projectId),string(b.projectId));verifyEqual(tc,string(fresh.State.currentStep),string(w.State.currentStep));
+d.Printing.paper="Corrected paper";d.Printing.paperSurface="Matte";fresh.editDetails(d);
+verifyFalse(tc,fresh.valid('approve'));verifyFalse(tc,fresh.ready('export'));verifyFalse(tc,fresh.valid('input'));verifyTrue(tc,fresh.valid('measurement'));
+verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.txt')),'project-details'));
+verifyTrue(tc,isfile(report));
+end
+function testEditDetailsRespectsWorkflowLock(tc)
+w=tc.TestData.w;file=fullfile(w.Root,'.workflow.lock');fid=fopen(file,'w');fclose(fid);
+verifyError(tc,@()w.editDetails(struct('Name',"Name",'User',"User",'Printing',struct)), 'inkprof:WorkflowBusy');
+end
+function testRenameRejectsOccupiedFolderAndInvalidName(tc)
+w=tc.TestData.w;before=fileread(fullfile(w.Root,'workflow.json'));
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+occupied=string(tempname(fileparts(w.Root)));mkdir(occupied);cleanup=onCleanup(@()rmdir(occupied,'s'));
+[~,name]=fileparts(occupied);d=struct('Name',name,'User',"User",'Printing',a.printing);
+verifyError(tc,@()w.editDetails(d),'inkprof:Exists');
+verifyEqual(tc,fileread(fullfile(w.Root,'workflow.json')),before);
+d.Name="../outside";verifyError(tc,@()w.editDetails(d),'inkprof:ProjectName');
+verifyTrue(tc,isfolder(w.Root));verifyTrue(tc,isfolder(occupied));
+end
+function testPortableProjectAndIntegrity(tc)
+w=finalReportFixture(tc);w.run('export',struct('ReportUser',"Alice"));
+check=inkprof.verifyProject(w.Root);verifyTrue(tc,check.passed,strjoin(check.issues,newline));
+original=w.Root;copied=string(tempname);copyfile(original,copied);rmdir(original,'s');tc.TestData.project=copied;
+fresh=inkprof.ProjectWorkflow(copied);
+check=inkprof.verifyProject(copied);verifyTrue(tc,check.passed,strjoin(check.issues,newline));
+verifyEqual(tc,string(fresh.State.projectId),string(w.State.projectId));verifyTrue(tc,fresh.valid('export'));
+verifyTrue(tc,isfile(fresh.output('export','reportPDF')));verifyTrue(tc,isfile(fresh.output('measurement','measurement')));
+file=fresh.output('profile','profile');fid=fopen(file,'a');fprintf(fid,'tampered');fclose(fid);
+check=inkprof.verifyProject(copied);verifyFalse(tc,check.passed);verifyTrue(tc,any(contains(check.issues,'Changed file:')));
+delete(file);check=inkprof.verifyProject(copied);verifyFalse(tc,check.passed);verifyTrue(tc,any(contains(check.issues,'Missing file:')));
+end

@@ -1,6 +1,7 @@
 function [out,files]=executeWorkflowStep(w,id,o)
 % Operations always receive explicit project-local inputs and destinations.
 out=struct;files=strings(0,1);
+project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
 switch id
  case "definition"
   dest=w.newFolder('targets');mkdir(dest);
@@ -62,11 +63,11 @@ switch id
    'measurementSHA256',inkprof.internal.sha256(source),'notes',note,'utc',utc()));
   out.review=file;files=[file;source];
  case "input"
-  [folder,~]=inkprof.prepareProfileInput(w.output('measurement','measurement'),ProjectFolder=w.Root);
+  [folder,~]=inkprof.prepareProfileInput(w.output('measurement','measurement'),ProjectFolder=w.Root,Name=string(project.name));
   if folder=="",cancel();end
   out.input=fullfile(folder,'profile-input.json');files=allFiles(folder);
  case "recipe"
-  [file,~]=inkprof.createProfileRecipe(fileparts(w.output('input','input')));
+  [file,~]=inkprof.createProfileRecipe(fileparts(w.output('input','input')),Printing=project.printing,ProjectPrinting=true);
   if file=="",cancel();end
   out.recipe=file;files=file;
  case "profile"
@@ -129,7 +130,7 @@ switch id
   end
   copyfile(fullfile(w.Root,'workflow.json'),fullfile(folder,'workflow-snapshot.json'));
   copyfile(fullfile(w.Root,'inkprof-project.json'),fullfile(folder,'project-snapshot.json'));
-  report=inkprof.internal.writeWorkflowFinalReport(w,file,folder,User=get(o,'ReportUser',string(java.lang.System.getProperty('user.name'))));
+  report=inkprof.internal.writeWorkflowFinalReport(w,file,folder,User=get(o,'ReportUser',get(project,'user',string(java.lang.System.getProperty('user.name')))));
   out.profile=file;out.finalReport=report.html;out.reportJSON=report.json;out.reportText=report.text;out.reportPDF=report.pdf;
   if isfield(o,'ICCDestination')||isfield(o,'ReportDestination')
    assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose save locations for both the ICC profile and report.');

@@ -10,6 +10,7 @@ arguments
  options.Smoothing (1,1) double = NaN
  options.Printing (1,1) struct = struct
  options.ShowDialog (1,1) logical = true
+ options.ProjectPrinting (1,1) logical = false
 end
 recipeFile="";recipe=[];
 if inputFolder==""
@@ -28,13 +29,20 @@ verifyInput(inputFolder,input);
 v=inkprof.cgatsData(inkprof.importCgats(fullfile(inputFolder,'profiling.ti3')),RGBScale=100);
 assert(isempty(v.cmyk)&&size(v.rgb,2)==3&&numel(v.ids)==input.patchCount,'inkprof:RecipeInput','Expected locked RGB patch data.');
 printing=input.printing;
+project=inkprof.internal.findProject(inputFolder);
+projectPrinting=options.ProjectPrinting;
+if project~=""
+ manifest=jsondecode(fileread(fullfile(project,'inkprof-project.json')));
+ printing=manifest.printing;projectPrinting=true;
+end
+for key=string(fieldnames(options.Printing))',printing.(key)=options.Printing.(key);end
 for key=["printer","paper","paperSurface","media","quality","driver","printPath","colorManagement"]
  if ~isfield(printing,key),printing.(key)="unknown";end
  if isfield(options.Printing,key),printing.(key)=options.Printing.(key);end
 end
 name=options.Name;if name=="",name=string(input.name);end
 description=options.Description;if description=="",description=name;end
-settings=struct('name',name,'description',description,'dataMode',options.DataMode,'b2aQuality',options.B2AQuality,'printing',printing);
+settings=struct('name',name,'description',description,'dataMode',options.DataMode,'b2aQuality',options.B2AQuality,'printing',printing,'projectPrinting',projectPrinting);
 if options.ShowDialog
  [accepted,settings]=inkprof.internal.profileRecipeDialog(settings,input,~isempty(v.spectra),~isempty(v.xyz));
  if ~accepted,return;end
@@ -67,7 +75,7 @@ recipe=struct('schemaVersion',1,'documentType',"inkprof.profile-recipe", ...
  'name',settings.name,'description',settings.description,'inputFile',"../../profile-input.json", ...
  'inputSHA256',inputHash,'profilingTI3SHA256',input.profilingTI3SHA256, ...
  'patchCount',input.patchCount,'measurementCondition',input.measurementCondition, ...
- 'printing',settings.printing,'printingBasis',"B1 snapshot plus explicit recipe declarations; B1 is unchanged", ...
+ 'printing',settings.printing,'printingBasis',"Project definition at recipe creation, or explicit standalone declarations; B1 is unchanged", ...
  'colorimetry',colorimetry,'engine',struct('name',"ArgyllCMS colprof", ...
  'quality',options.A2BQuality,'smoothing',options.Smoothing,'b2aQuality',settings.b2aQuality,'algorithm',"Lab cLUT",'plannedArguments',args, ...
  'version',"record at build time",'iccVersion',"inspect generated file",'gamutMapping',"engine default; no source gamut supplied"), ...

@@ -9,8 +9,12 @@ keys=["printer","paper","media","quality","driver","printPath","colorManagement"
 labels=["Printer","Paper product","Driver media setting","Print quality","Driver / version","Printing application / path","Print colour management"];
 controls=cell(1,numel(keys));
 for k=1:numel(keys),controls{k}=field(labels(k),string(s.printing.(keys(k))),char(keys(k)));end
-uilabel(g,'Text','Paper surface');surface=uidropdown(g,'Items',{'unknown','Glossy','Matte'},'Value','unknown','Tag','RecipeSurface');
-if any(string(s.printing.paperSurface)==["unknown","Glossy","Matte"]),surface.Value=char(s.printing.paperSurface);end
+uilabel(g,'Text','Paper surface');surface=uidropdown(g,'Items',{'unknown','Glossy','Matte','Other'},'Value','unknown','Tag','RecipeSurface');
+if any(string(s.printing.paperSurface)==["unknown","Glossy","Matte","Other"]),surface.Value=char(s.printing.paperSurface);end
+if isfield(s,'projectPrinting')&&s.projectPrinting
+ for j=1:numel(controls),controls{j}.Editable='off';controls{j}.Tooltip='Managed in Project details';end
+ surface.Enable='off';surface.Tooltip='Managed in Project details';
+end
 uilabel(g,'Text','Colour data');mode=uidropdown(g,'Items',{'Spectra (D50 / 2 degrees)','Stored XYZ'}, ...
  'ItemsData',{'spectral','storedXYZ'},'Value',char(s.dataMode),'Tag','RecipeMode');
 uilabel(g,'Text','Profile calculation');uilabel(g,'Text','Argyll Lab cLUT, A2B medium; FWA compensation OFF','WordWrap','on');

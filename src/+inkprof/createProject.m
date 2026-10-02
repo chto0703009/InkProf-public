@@ -3,6 +3,8 @@ function folder=createProject(folder,options)
 arguments
  folder (1,1) string
  options.Name (1,1) string = ""
+ options.User (1,1) string = ""
+ options.Printing (1,1) struct = struct
 end
 folder=inkprof.internal.absolutePath(folder);
 assert(~isfolder(folder)&&~isfile(folder),'inkprof:Exists','Project already exists.');
@@ -18,5 +20,5 @@ record=struct('schemaVersion',1,'documentType',"inkprof.profiling-project", ...
  'printing',struct('status',"not recorded",'printer',"unknown",'paper',"unknown", ...
  'driver',"unknown",'quality',"unknown",'colorManagement',"unknown"));
 inkprof.internal.writeJson(fullfile(folder,'inkprof-project.json'),record);
-inkprof.updateProject(folder,Step="project-created");
+inkprof.updateProject(folder,Step="project-created",User=options.User,Printing=options.Printing);
 end

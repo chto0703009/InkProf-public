@@ -4,6 +4,8 @@ function record=updateProject(path,options)
 arguments
  path (1,1) string
  options.Step (1,1) string = "manual-refresh"
+ options.Name (1,1) string = ""
+ options.User (1,1) string = ""
  options.Printing (1,1) struct = struct
  options.Relocations = []
 end
@@ -50,7 +52,11 @@ end
 if ~isempty(old),removed=string({old.path});removed=removed(~ismember(removed,string({files.path})));end
 record.revision=record.revision+1;
 record.updatedUTC=string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'"));
-if ~isempty(fieldnames(options.Printing)),record.printing=options.Printing;end
+if strlength(strtrim(options.Name))>0,record.name=strtrim(options.Name);end
+if strlength(strtrim(options.User))>0,record.user=strtrim(options.User);end
+for field=string(fieldnames(options.Printing))'
+ record.printing.(field)=options.Printing.(field);
+end
 if ~isempty(options.Relocations),record.relocations=options.Relocations;end
 entry=struct('revision',record.revision,'utc',record.updatedUTC,'step',options.Step, ...
  'previousManifestSHA256',inkprof.internal.sha256(file),'changedPaths',changed,'removedPaths',removed);
