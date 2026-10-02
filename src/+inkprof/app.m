@@ -154,9 +154,15 @@ end
             if strcmp(choice,'Cancel'),o=[];return;end
             if strcmp(choice,'Select existing'),o.Source=pick('target.ti2','Select TI2 in an existing print package');if o.Source=="",o=[];end,end
         elseif any(id==["measurement","c2measurement","refinemeasurement"])
-            choice=uiconfirm(fig,'Measure with an instrument or select JSON / TI3 / MXF?','Measurement','Options',{'Measure','Select saved file','Cancel'},'CancelOption',3);
+            choice=uiconfirm(fig,'Measure, choose a saved project revision, or import a file?','Measurement','Options',{'Measure','Saved revisions','Import file','Cancel'},'CancelOption',4);
             if strcmp(choice,'Cancel'),o=[];return;end
-            if strcmp(choice,'Select saved file'),o.Source=pick('*.json;*.ti3;*.mxf','Select accepted measurement revision');if o.Source=="",o=[];end,end
+            if strcmp(choice,'Saved revisions')
+                parents=struct('measurement','render','c2measurement','c2','refinemeasurement','refine');
+                o.Source=inkprof.selectMeasurementRevision(fullfile(w.Root,'measurements'),w.output(parents.(id),'target'));
+                if o.Source=="",o=[];end
+            elseif strcmp(choice,'Import file')
+                o.Source=pick('*.json;*.ti3;*.mxf','Import measurement revision');if o.Source=="",o=[];end
+            end
         elseif any(id==["review","approve","refine"])
             if id=="review"
                 m=w.output('measurement','measurement');inkprof.previewMeasurement(fileparts(m),jsondecode(fileread(m)));

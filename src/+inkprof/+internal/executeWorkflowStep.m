@@ -39,7 +39,7 @@ switch id
    dest=w.newFolder('measurements');inkprof.prepareChart(target,dest);
    dialog=inkprof.measureChart(target,SessionFolder=dest,ScanMode="paired",Condition="M0");
    waitfor(dialog.Figure);
-   source=selectMeasurement(dest);
+   source=inkprof.selectMeasurementRevision(dest,target);
   else
    [~,~,ext]=fileparts(source);
    if lower(ext)==".json"
@@ -162,12 +162,6 @@ end
 function files=profileFiles(out)
 % Freeze existing outputs only; later checks create new files in these folders.
 files=[allFiles(fileparts(out.iteration));allFiles(fileparts(out.job))];files=unique(files);
-end
-function file=selectMeasurement(folder)
-% Native file dialogs filter by extension, not filename-prefix patterns.
-[n,p]=uigetfile({'*.json','Measurement revision JSON (*.json)'}, ...
- 'Select a saved, accepted measurement revision (measurement-*.json)',char(folder));
-file="";if ~isequal(n,0),file=string(fullfile(p,n));end
 end
 function files=validateMeasurement(file,target)
 m=jsondecode(fileread(file));

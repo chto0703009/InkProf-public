@@ -192,3 +192,13 @@ Samma händelser finns i workflow.json och result-log.jsonl. Accepterat nytt
 projektnamn gör en tidigare slutrapport inaktuell; spara den på nytt.
 
 Mätcertifikat (2026-10-02): leveranssteget heter nu Save ICC and measurement certificate. Open certificate öppnar dokumentet. Projektuppgifter, återgivningsbegränsningar, beställarens ansvar och en sista sida för datum och underskrift ingår. Se measurement-certificate.md.
+
+VAL AV SPARAD MÄTREVISION
+Efter mätning visas kompletta, kontrollsummeverifierade revisioner för det aktuella
+målet med lokal filsparningstid, patchantal och antal punktkorrigeringar. Den
+senast sparade revisionen är förvald. Use revision väljer den; Cancel lämnar
+steget ofärdigt och behåller mätfilerna. Complete betyder fullständiga patchdata,
+inte godkänd färgnoggrannhet. Granskningen sker i nästa steg.
+För att återuppta efter avbrutet val: Run selected step -> Saved revisions.
+Import file används för externa JSON/TI3/MXF-filer. Inga UUID behöver tolkas
+vid val av projektets sparade revisioner.
