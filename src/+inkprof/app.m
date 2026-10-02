@@ -271,7 +271,9 @@ end
             elseif strcmp(choice,'Import file')
                 o.Source=pick('*.json;*.ti3;*.mxf','Import measurement revision');if o.Source=="",o=[];end
             end
-        elseif any(id==["review","approve","refine"])
+        elseif id=="approve"
+            o=inkprof.internal.approvalDialog(w);
+        elseif any(id==["review","refine"])
             if id=="review"
                 m=w.output('measurement','measurement');inkprof.previewMeasurement(fileparts(m),jsondecode(fileread(m)));
             end
