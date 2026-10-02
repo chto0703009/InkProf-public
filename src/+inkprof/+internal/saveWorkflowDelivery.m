@@ -8,7 +8,7 @@ arguments
 end
 iccDestination=inkprof.internal.absolutePath(iccDestination);
 reportDestination=inkprof.internal.absolutePath(reportDestination);
-[iccParent,~,iccExt]=fileparts(iccDestination);[reportParent,stem,reportExt]=fileparts(reportDestination);
+[iccParent,iccName,iccExt]=fileparts(iccDestination);[reportParent,stem,reportExt]=fileparts(reportDestination);
 assert(any(lower(iccExt)==[".icc",".icm"]),'inkprof:Delivery','Select .icc or .icm for the profile.');
 assert(any(lower(reportExt)==[".html",".pdf",".txt"]),'inkprof:Delivery','Select .html, .pdf or .txt for the measurement certificate.');
 assert(isfolder(iccParent)&&isfolder(reportParent),'inkprof:Delivery','The selected destination folders must exist.');
@@ -39,25 +39,30 @@ try
  for k=1:numel(stages),stages(k)=string(tempname(fileparts(destinations(k))));end
  % Freeze a complete portable report bundle before publishing either file.
  copyfile(folder,assets);
- copyfile(source,stages(1));
+ naming=inkprof.internal.nameICC(source,stages(1),iccName);
+ mkdir(fullfile(assets,'delivered'));naming.file="delivered/"+iccName+iccExt;
+ copyfile(stages(1),fullfile(assets,naming.file));
+ inkprof.internal.writeJson(fullfile(assets,'icc-delivery.json'),naming);
+ config=inkprof.paths();
+ inkprof.runPython(fullfile(config.Root,'analysis','delivery_report.py'),assets,RequiredModules="reportlab",WorkingDirectory=config.Root);
  for k=2:numel(destinations)
   [~,~,ext]=fileparts(destinations(k));
   if lower(ext)==".pdf"
-   copyfile(fullfile(folder,'final-report.pdf'),stages(k));
+   copyfile(fullfile(assets,'final-report.pdf'),stages(k));
   else
    if lower(ext)==".html"
-    text=string(fileread(fullfile(folder,'final-report.html')));
+    text=string(fileread(fullfile(assets,'final-report.html')));
     [~,assetName]=fileparts(assets);
     prefix=string(java.net.URLEncoder.encode(char(assetName),'UTF-8'));prefix=replace(prefix,"+","%20");
     text=regexprep(text,"(href|src)='(?![A-Za-z][A-Za-z0-9+.-]*:|//|#)","$1='"+prefix+"/");
    else
-    text=string(fileread(fullfile(folder,'final-report.txt')))+newline+newline+"Rapportunderlag: "+assets;
+    text=string(fileread(fullfile(assets,'final-report.txt')))+newline+newline+"Rapportunderlag: "+assets;
    end
    fid=fopen(stages(k),'w','n','UTF-8');assert(fid>=0,'inkprof:IO','Cannot save the report.');
    closer=onCleanup(@()fclose(fid));fprintf(fid,'%s\n',text);clear closer
   end
  end
- assert(inkprof.internal.sha256(stages(1))==hash,'inkprof:Integrity','The ICC copy has changed.');
+ assert(inkprof.internal.sha256(stages(1))==string(naming.sha256),'inkprof:Integrity','The ICC copy has changed.');
  for k=1:numel(destinations)
   if isfile(destinations(k)),backups(k)=string(tempname(fileparts(destinations(k))));copyfile(destinations(k),backups(k));end
  end
@@ -65,7 +70,7 @@ try
   if ~options.Overwrite,assert(~isfile(destinations(k)),'inkprof:Exists','The destination file was created while saving.');end
   [ok,msg]=movefile(stages(k),destinations(k),'f');assert(ok,'inkprof:IO','%s',msg);published(k)=true;
  end
- receipt=struct('documentType',"inkprof.delivery",'iccFile',iccDestination,'iccSHA256',hash, ...
+ receipt=struct('documentType',"inkprof.delivery",'iccFile',iccDestination,'iccSHA256',string(naming.sha256),'sourceICCSHA256',hash,'internalName',iccName,'colourTagPayloadsUnchanged',true, ...
   'reportFolder',reportBundle,'reportFile',reportDestination,'reportSHA256',inkprof.internal.sha256(reportDestination),'reportAssets',assets, ...
   'files',destinations,'savedUTC',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")));
 catch err

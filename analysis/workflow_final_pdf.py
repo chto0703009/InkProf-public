@@ -40,7 +40,10 @@ def create(folder):
               p(r.get('certificateScope','')), p('Projekt och utskriftsvillkor','Heading2')]
     for item in r.get('projectDetails',[]):
         story.append(p(item['label']+': '+item['value']))
-    story += [p('Sparad ICC-profil', 'Heading2'), p('profile.icc'), p('SHA-256: ' + r['profile']['sha256']),
+    if r.get('deliveryProfile'):
+        from delivery_report import details
+        story += [p('Levererad ICC-profil', 'Heading2')]+[p(x) for x in details(r['deliveryProfile'])]
+    story += [p('Kontrollerad ICC-kandidat (projektoriginal)' if r.get('deliveryProfile') else 'Sparad ICC-profil', 'Heading2'), p('profile.icc'), p('SHA-256: ' + r['profile']['sha256']),
               p('Slutlig bedömning', 'Heading2'), p(r['approval']['notes'])]
     if r.get('patchOutliers'):
         outliers=r['patchOutliers']

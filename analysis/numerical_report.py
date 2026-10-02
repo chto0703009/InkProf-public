@@ -18,6 +18,10 @@ def create(folder):
         ('Beslut och avsedd användning', [r['decision']['notes']]),
         ('Sparad ICC-profil', [r['profile']['file'], 'SHA-256: '+r['profile']['sha256']]),
         ('Projekt och utskriftsinställningar', [f'{label}: {r["printing"].get(key, "Ej angivet")}' for key, label in [('printer','Skrivare'),('paper','Papper'),('paperSurface','Yta'),('ink','Bläck'),('media','Mediainställning'),('driver','Drivrutin'),('quality','Utskriftskvalitet'),('colorManagement','Färghantering'),('dryingHours','Torktid (timmar)'),('fwaCompensation','Kompensation för optiska vitmedel'),('settings','Övriga inställningar')]])]
+    if r.get('deliveryProfile'):
+        from delivery_report import details
+        sections[2] = ('Kontrollerad ICC-kandidat (projektoriginal)', sections[2][1])
+        sections.insert(3, ('Levererad ICC-profil', details(r['deliveryProfile'])))
     evidence = r.get('decisionEvidence', {})
     fit = evidence.get('trainingFit', {})
     def stats(values):
@@ -78,8 +82,12 @@ def create(folder):
         body = ''.join('<p>'+html.escape(str(line))+'</p>' for line in lines)
         pages.append(f"<article><header>{html.escape(r['pageHeader'])}</header><h1>{html.escape(title)}</h1>{body}"
                      f"<footer>{html.escape(r['reportDate'])} | {html.escape(r['reportUser'])} | {i} ({len(sections)})</footer></article>")
+    delivery_link = ''
+    if r.get('deliveryProfile'):
+        from urllib.parse import quote
+        delivery_link = "<a href='"+quote(r['deliveryProfile']['file'])+"'>Namngiven leveransprofil</a> | "
     links = ''.join(f"<li><a href='{html.escape(s['file'], quote=True)}'>{html.escape(k)}</a></li>" for k, s in r['sources'].items())
-    document = "<!doctype html><html lang='sv'><meta charset='utf-8'><title>InkProf - numerisk profilrapport</title><style>body{font:16px system-ui;background:#eef2f4;color:#19303c}article{background:white;max-width:850px;margin:24px auto;padding:35px;overflow-wrap:anywhere}header,footer{font-size:13px;color:#52656e}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:15px}h1{font-size:24px}@media print{article{break-after:page;margin:0}}</style>"+''.join(pages)+"<nav><a href='final-report.pdf'>PDF</a> | <a href='final-report.json'>JSON</a> | <a href='profile.icc'>ICC</a><ul>"+links+'</ul></nav></html>'
+    document = "<!doctype html><html lang='sv'><meta charset='utf-8'><title>InkProf - numerisk profilrapport</title><style>body{font:16px system-ui;background:#eef2f4;color:#19303c}article{background:white;max-width:850px;margin:24px auto;padding:35px;overflow-wrap:anywhere}header,footer{font-size:13px;color:#52656e}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:15px}h1{font-size:24px}@media print{article{break-after:page;margin:0}}</style>"+''.join(pages)+"<nav>"+delivery_link+"<a href='final-report.pdf'>PDF</a> | <a href='final-report.json'>JSON</a> | <a href='profile.icc'>ICC</a><ul>"+links+'</ul></nav></html>'
     (folder / 'final-report.html').write_text(document, encoding='utf-8')
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle('ReportBody', fontName='Helvetica', fontSize=10, leading=14, spaceAfter=9, wordWrap='CJK'))

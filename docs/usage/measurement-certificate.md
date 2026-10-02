@@ -81,3 +81,22 @@ instrumentutskrift utan att originalmätningen ändras.
 Bundesverband Druck und Medien (bvdm) är Tysklands branschorganisation för tryck och medier och utgivare av *MediaStandard Print*. ISO betyder International Organization for Standardization (Internationella standardiseringsorganisationen). Branschpublikationen sammanfattar standardkrav; den ersätter inte själva ISO-standarden.
 
 Se även [förkortningar och begrepp](abbreviations.md).
+
+
+## Exported ICC filename and display name
+
+External ICC delivery defaults to `<project-name>_<YYMMDD>.icc`. The chosen
+filename, without its extension, is also written into the ICC profile description
+so colour-managed applications can display the same name. Renaming a file later
+in Finder does not update this internal description.
+
+Only the delivery copy is renamed internally. The checked project candidate is
+preserved. All ICC tag payloads except the profile description remain byte-identical;
+the file structure and ICC v4 profile ID are updated as required. This changes the
+file checksum without changing the colour transform tables.
+
+The delivery JSON and external PDF/HTML report identify both the delivered file
+and its source candidate, with separate SHA-256 checksums. The portable report
+bundle includes the named delivery in `underlag/delivered/` and the original
+candidate as `underlag/profile.icc`. Existing exports are not modified retroactively;
+export again to obtain the matching filename and internal display name.
