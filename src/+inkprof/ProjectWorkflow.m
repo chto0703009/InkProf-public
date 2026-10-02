@@ -124,7 +124,15 @@ classdef ProjectWorkflow < handle
             catch err
                 status="failed";if strcmp(err.identifier,'inkprof:Cancelled'),status="pending";end
                 obj.State.steps.(id).status=status;obj.State.steps.(id).message=string(err.message);
-                obj.event(id,status,string(err.message));obj.save();rethrow(err)
+                obj.event(id,status,string(err.message));obj.save();
+                % Record our own state changes even on cancellation/failure. Do not
+                % accept changed measurement/target files by rehashing all inputs.
+                try
+                    inkprof.updateProject(obj.Root,Step="workflow-"+id+"-"+status,WorkflowMetadataOnly=true);
+                catch manifestError
+                    warning('inkprof:ManifestUpdate','Could not record workflow metadata: %s',manifestError.message);
+                end
+                rethrow(err)
             end
             clear lock
         end

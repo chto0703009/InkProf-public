@@ -3,6 +3,7 @@ function record=updateProject(path,options)
 % Unknown physical printing settings remain unknown; never infer them from TIFF.
 arguments
  path (1,1) string
+ options.WorkflowMetadataOnly (1,1) logical = false
  options.Step (1,1) string = "manual-refresh"
  options.Name (1,1) string = ""
  options.User (1,1) string = ""
@@ -21,10 +22,12 @@ assert(record.schemaVersion==1&&string(record.documentType)=="inkprof.profiling-
 listing=dir(fullfile(root,'**','*'));listing=listing(~[listing.isdir]);
 files=struct('path',{},'sha256',{},'bytes',{},'documentType',{});
 links=struct('from',{},'field',{},'sha256',{},'matches',{});
+if options.WorkflowMetadataOnly,files=record.files;end
 for k=1:numel(listing)
  f=fullfile(listing(k).folder,listing(k).name);
  rel=replace(extractAfter(string(f),strlength(root)+1),"\","/");
  if any(rel==["inkprof-project.json",".manifest.lock",".workflow.lock"])||startsWith(rel,".manifest-")||startsWith(rel,".workflow-"),continue;end
+ if options.WorkflowMetadataOnly&&~any(rel==["workflow.json","result-log.jsonl","result-log.txt"]),continue;end
  kind="";
  if endsWith(rel,".json")
   try,v=jsondecode(fileread(f));if isstruct(v)&&isscalar(v)
@@ -39,13 +42,19 @@ for k=1:numel(listing)
    end
   end;catch,end
  end
- files(end+1)=struct('path',rel,'sha256',inkprof.internal.sha256(f),'bytes',listing(k).bytes,'documentType',kind); %#ok<AGROW>
+ index=numel(files)+1;
+ if options.WorkflowMetadataOnly
+  match=find(string({files.path})==rel,1);if ~isempty(match),index=match;end
+ end
+ files(index)=struct('path',rel,'sha256',inkprof.internal.sha256(f),'bytes',listing(k).bytes,'documentType',kind); %#ok<AGROW>
 end
 for k=1:numel(links)
  links(k).matches=string({files(string({files.sha256})==links(k).sha256).path});
 end
-record.links=links;
-record.unresolvedLinkCount=sum(arrayfun(@(x)isempty(x.matches),links));
+if ~options.WorkflowMetadataOnly
+ record.links=links;
+ record.unresolvedLinkCount=sum(arrayfun(@(x)isempty(x.matches),links));
+end
 old=record.files;changed=strings(0,1);removed=strings(0,1);
 for k=1:numel(files)
  match=[];if ~isempty(old),match=find(string({old.path})==files(k).path);end

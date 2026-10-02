@@ -36,9 +36,17 @@ w.run('render',struct('Source',folder));verifyTrue(tc,w.ready('measurement'));
 verifyTrue(tc,isfile(w.output('render','TIFF16_sida_1')));
 wrong=fullfile(w.Root,'sources','wrong.json');inkprof.internal.writeJson(wrong,struct('documentType','inkprof.verification'));
 verifyError(tc,@()w.run('measurement',struct('Source',wrong)),'inkprof:WorkflowMeasurement');
+verifyTrue(tc,inkprof.verifyProject(w.Root).passed);
 verifyEqual(tc,string(w.State.steps.measurement.status),"failed");verifyFalse(tc,w.ready('review'));
 % Replacing the selected definition invalidates its saved target.
 saveDefinition(tc);verifyEqual(tc,string(w.State.steps.render.status),"stale");verifyFalse(tc,w.ready('measurement'));
+end
+function testFailureUpdatesOnlyWorkflowMetadata(tc)
+w=tc.TestData.w;saveDefinition(tc);
+f=w.output('definition','definition');fid=fopen(f,'a');fprintf(fid,'modified');fclose(fid);
+try,w.run('definition',struct('Source',"/missing/file.ti1"));catch,end
+v=inkprof.verifyProject(w.Root);verifyFalse(tc,v.passed);
+verifyFalse(tc,any(contains(v.issues,["workflow.json","result-log"])));
 end
 function testConcurrentLock(tc)
 w=tc.TestData.w;f=fullfile(w.Root,'.workflow.lock');fid=fopen(f,'w');fclose(fid);
@@ -86,6 +94,8 @@ for k=1:numel(p),fprintf(fid,'%s %.12g %.12g %.12g 10 20 30\n',p(k).sampleId,p(k
 fprintf(fid,'END_DATA\n');fclose(fid);
 inkprof.importChartMeasurement(folder,file);f=dir(fullfile(folder,'measurement-*.json'));source=fullfile(f(1).folder,f(1).name);
 w.run('measurement',struct('Source',source));verifyTrue(tc,w.valid('measurement'));verifyTrue(tc,w.ready('review'));
+verifyError(tc,@()w.run('review'),'inkprof:Cancelled');
+verifyTrue(tc,inkprof.verifyProject(w.Root).passed);
 w.run('review',struct('Confirmed',true,'Notes','Synthetic data only'));verifyTrue(tc,w.ready('input'));
 [~,stem]=fileparts(source);fid=fopen(fullfile(folder,string(stem)+".ti3"),'a');fprintf(fid,'# altered');fclose(fid);
 verifyFalse(tc,w.ready('input'));
