@@ -101,7 +101,7 @@ Läsaren stöder första tabellen med SAMPLE_ID och RGB_R/G/B samt valfri SAMPLE
 
 ## Val
 
-Välj **liggande A4** med `Paper="A4-landscape"` (297 × 210 mm), eller **stående A3** med `Paper="A3-portrait"` (297 × 420 mm). Båda använder 297 mm målbredd inklusive marginaler. Stående A3 får högst 280 mm målhöjd; återstående papper lämnas tomt. Formatet ändrar layout och eventuellt sidantal, inte de importerade patchvärdena.
+Aktuella måttgränser och ändringsbara förslag hämtas från projektets JSON. Se [pappersförslag och mätsläde](target-paper-planning.md). Äldre fasta gränser på 320 × 280 mm gäller inte nya paket.
 
 ```matlab
 paths=setupInkProf();
@@ -130,7 +130,7 @@ Ange antingen `Paper` eller egna `PaperSizeMm`, inte båda. Utan formatval anvä
 
 Första stödda geometrin är Argylls **`-ii1`**, i1Pro-familjens rektangulära radlayout. Programmet tillåter ännu inte andra instrumentgeometrier. En befintlig Scramble-flagga i TXF aktiverar inte automatisk omslumpning. Välj `Randomize=true` uttryckligt för en ny slumpad karta.
 
-**Maximalt utskrivet mål inklusive marginaler är 320 mm horisontellt × 280 mm vertikalt.** Pappersvalet bestämmer tillgänglig yta, men målbilden begränsas separat i båda riktningarna och gränserna avrundas nedåt till hela pixlar. Stående A3 (297 × 420 mm papper) ger därför en TIFF på högst cirka 297 × 280 mm. Liggande A4 använder cirka 297 × 210 mm. Vid för liten yta skapas fler sidor, utan att patcharna krymps. Manifestet sparar pappersformat, renderad målstorlek och gränser separat. Verifieringen mäter varje färdig TIFF från pixelmått och fysisk upplösning. Skriv ut i 100 % fysisk storlek; använd inte fit-to-page.
+Aktuella måttgränser och ändringsbara förslag hämtas från projektets JSON. Se [pappersförslag och mätsläde](target-paper-planning.md). Äldre fasta gränser på 320 × 280 mm gäller inte nya paket.
 
 ## Det generella `createTarget`-paketet
 
@@ -181,7 +181,7 @@ Argylls externa verktyg och deras genererade hjälptabeller används; ingen Argy
 
 ## Mätriktning och koordinater från 0.1.1
 
-**Kolumner A, B, C … ligger från vänster till höger. Rader 1, 2, 3 … ligger uppifrån och ned till vänster.** Varje numrerad rad är en horisontell mätstrip. Radnumren fortsätter över sidgränser så att adresserna är unika. Gränsen **320 mm inklusive marginaler mäts längs denna riktning**, dvs. slutbildens bredd. Slutbildens höjd får vara högst **280 mm**. A4-landscape och A3-portrait får därför båda 297 mm breda sidor. Argyll får omvända sidaxlar vid den interna renderingen så att dess lodräta strips får rätt längd före omorienteringen.
+Aktuella måttgränser och ändringsbara förslag hämtas från projektets JSON. Se [pappersförslag och mätsläde](target-paper-planning.md). Äldre fasta gränser på 320 × 280 mm gäller inte nya paket.
 
 Tidigare paket från 0.1.0 hade lodräta strips och måste genereras om för detta flöde; att vrida en skärmförhandsvisning är inte en rättelse av utskriftspaketet. Skriv endast ut target*.tif i paketets rot. Native mellanbilder i argyll/ ska inte skrivas ut.
 

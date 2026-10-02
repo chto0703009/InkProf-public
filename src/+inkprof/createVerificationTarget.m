@@ -10,6 +10,7 @@ arguments
  options.Repeats (1,1) double {mustBeInteger,mustBeNonnegative} = 12
  options.Seed (1,1) double {mustBeInteger,mustBeNonnegative} = 20260928
  options.DPI (1,1) double {mustBeInteger,mustBePositive} = 300
+ options.PlanPaper (1,1) logical = false
  options.Paper (1,1) string = "A4-landscape"
  options.MinTrainingRGBDistance (1,1) double {mustBePositive,mustBeFinite} = 1/255
 end
@@ -54,7 +55,7 @@ info.verification=struct('reference',"../verification.json",'profileSHA256',prof
  'intent',"absolute colorimetric",'bpc',false);
 fprintf('InkProf C2: rendering RGB16 TIFF and matching TI2...\n');
 manifest=inkprof.createTarget(fullfile(folder,'print'),Source=source,TargetInfo=info, ...
- Randomize=true,Seed=options.Seed,DPI=options.DPI,Paper=options.Paper,SpacerMode="bw");
+ PlanPaper=options.PlanPaper,Randomize=true,Seed=options.Seed,DPI=options.DPI,Paper=options.Paper,SpacerMode="bw");
 layout=jsondecode(fileread(fullfile(folder,'print','layout.json')));
 for k=1:numel(reference.patches)
  matches=find(~[layout.patches.isPadding] & string({layout.patches.originalId})==string(reference.patches(k).id));

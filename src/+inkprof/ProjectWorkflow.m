@@ -200,7 +200,14 @@ classdef ProjectWorkflow < handle
             for field=string(fieldnames(details.Printing))',printing.(field)=details.Printing.(field);end
             printingChanged=~strcmp(jsonencode(orderfields(printing)),jsonencode(orderfields(before.printing)));
             sameUser=isfield(before,'user')&&string(before.user)==strtrim(string(details.User));
-            if ~printingChanged&&newName==string(before.name)&&sameUser,record=before;return;end
+            paperLayout=struct;if isfield(details,'PaperLayout'),paperLayout=details.PaperLayout;end
+            if ~printingChanged&&newName==string(before.name)&&sameUser
+                record=before;
+                if ~isempty(fieldnames(paperLayout))
+                    record=inkprof.updateProject(obj.Root,Step="paper-layout-preferences",PaperLayout=paperLayout);
+                end
+                return
+            end
             if printingChanged
                 obj.invalidate("input");
             else
@@ -220,7 +227,7 @@ classdef ProjectWorkflow < handle
                 if isempty(relocations),relocations=relocation;else,relocations(end+1)=relocation;end
             end
             record=inkprof.updateProject(obj.Root,Step="project-details-edited", ...
-                Name=newName,User=details.User,Printing=details.Printing,Relocations=relocations,FolderName=string(java.io.File(char(obj.Root)).getName()));
+                Name=newName,User=details.User,Printing=details.Printing,PaperLayout=paperLayout,Relocations=relocations,FolderName=string(java.io.File(char(obj.Root)).getName()));
             previous=struct('name',before.name,'user',"",'printing',before.printing);
             if isfield(before,'user'),previous.user=before.user;end
             obj.event("project-details","updated",struct('before',previous,'after', ...

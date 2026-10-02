@@ -10,6 +10,13 @@ fig=uifigure('Name','InkProf | Project details','Position',[180 100 680 690], ..
 cleanup=onCleanup(@()delete(fig));
 outer=uigridlayout(fig,[3 1]);outer.RowHeight={'1x',75,36};
 tabs=uitabgroup(outer);general=uitab(tabs,'Title','Project and materials');printingTab=uitab(tabs,'Title','Printing settings');profileTab=uitab(tabs,'Title','Profiling');
+paperTab=uitab(tabs,'Title','Target paper');
+g=uigridlayout(paperTab,[4 2]);g.ColumnWidth={230,'1x'};g.RowHeight={32,32,32,'1x'};
+prefs=inkprof.internal.paperPreferences();if isfield(record,'paperLayout'),prefs=record.paperLayout;end
+uilabel(g,'Text','Maximum measurement sweep (mm)');scanLimit=uieditfield(g,'numeric','Value',prefs.MaxScanMm,'Limits',[65 Inf]);
+uilabel(g,'Text','Maximum target length (mm)');lengthLimit=uieditfield(g,'numeric','Value',prefs.MaxLengthMm,'Limits',[65 Inf]);
+uilabel(g,'Text','Roll width (mm)');rollWidth=uieditfield(g,'numeric','Value',prefs.RollWidthMm,'Limits',[65 Inf]);
+help=uilabel(g,'Text','Editable suggestions compare A5–A3+ sheets, cut pieces and roll feed for the actual patch count. These limits include margins. Changes apply to future targets; existing targets and measurements are preserved.','WordWrap','on');help.Layout.Column=[1 2];
 g=uigridlayout(general,[9 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,40,90,'1x'};g.Padding=[20 16 20 16];
 name=field('Project name','projectName',value(record,'name','New project'));
 user=field('User','projectUser',value(record,'user',string(java.lang.System.getProperty('user.name'))));
@@ -78,6 +85,7 @@ clear cleanup
         updated.quality=string(quality.Value);updated.colorManagement=string(colour.Value);
         updated.settings=strjoin(string(settings.Value),newline);updated.status="user recorded";
         details=struct('Name',strtrim(string(name.Value)),'User',strtrim(string(user.Value)),'Printing',updated);
+        details.PaperLayout=struct('MaxScanMm',scanLimit.Value,'MaxLengthMm',lengthLimit.Value,'RollWidthMm',rollWidth.Value);
         uiresume(fig);
     end
     function cancel(~,~)

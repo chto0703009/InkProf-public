@@ -17,6 +17,7 @@ arguments
  options.MaxJacobianChange (1,1) double {mustBeFinite,mustBePositive} = .5
  options.CreatePrint (1,1) logical = false
  options.DPI (1,1) double {mustBePositive,mustBeInteger} = 300
+ options.PlanPaper (1,1) logical = false
  options.Paper (1,1) string = "A4-landscape"
  options.Seed (1,1) double {mustBeInteger,mustBeNonnegative} = 42
  options.ShowDialog (1,1) logical = true
@@ -81,7 +82,7 @@ end
 clear cl
 if options.CreatePrint&&~isempty(proposal.candidates)
  fprintf('InkProf: rendering device-RGB refinement target with repeat controls...\n');
- proposal.print=inkprof.internal.createRefinementPrint(proposal,job,fullfile(folder,'refinement-print'),options.DPI,options.Paper,options.Seed);
+ proposal.print=inkprof.internal.createRefinementPrint(proposal,job,fullfile(folder,'refinement-print'),options.DPI,options.Paper,options.Seed,options.PlanPaper);
  inkprof.internal.writeJson(fullfile(folder,'proposal.json'),proposal);
 end
 inkprof.internal.recordProjectStep(folder,"C3 residual/Jacobian refinement proposal; no profile approval or measurement merging");

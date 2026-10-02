@@ -78,7 +78,9 @@ end
         if isequal(n,0),return;end
         try
             d=inkprof.projectDetailsDialog(struct('name',string(n)));if isempty(d),return;end
-            folder=inkprof.createProject(string(fullfile(p,inkprof.internal.projectFolderName(d.Name))),Name=d.Name,User=d.User,Printing=d.Printing);loadProject(folder);
+            folder=inkprof.createProject(string(fullfile(p,inkprof.internal.projectFolderName(d.Name))),Name=d.Name,User=d.User,Printing=d.Printing);
+            if isfield(d,'PaperLayout'),inkprof.updateProject(folder,Step="paper-layout-preferences",PaperLayout=d.PaperLayout);end
+            loadProject(folder);
         catch err,uialert(fig,err.message,'Project');end
     end
     function editDetails(~,~)

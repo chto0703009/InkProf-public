@@ -114,9 +114,10 @@ switch id
  case "c2"
   s=w.State.steps.profile.outputs;
   if isfield(s,'verification')
-   reference=w.resolve(s.verification);folder=fileparts(reference);
+   reference=w.resolve(s.verification);
+   folder=inkprof.internal.relayoutVerification(reference,w.newFolder('targets'));reference=fullfile(folder,'verification.json');
   else
-   [folder,~]=inkprof.createVerificationTarget(fileparts(w.output('profile','job')),OutputFolder=w.newFolder('targets'),Name="C2 iteration "+w.State.cycle);
+   [folder,~]=inkprof.createVerificationTarget(fileparts(w.output('profile','job')),OutputFolder=w.newFolder('targets'),Name="C2 iteration "+w.State.cycle,PlanPaper=true);
    reference=fullfile(folder,'verification.json');
   end
   out=inkprof.internal.workflowTiffOutputs(fullfile(folder,'print','target.ti2'));out.reference=reference;files=[reference;packageFiles(fullfile(folder,'print'))];
@@ -154,7 +155,7 @@ switch id
  case "refine"
   assert(get(o,'Confirmed',false),'inkprof:Cancelled','Review measurement errors before adding patches.');
   [~,folder]=inkprof.refineVerification(w.output('c3','report'),Name="Iteration "+(w.State.cycle+1), ...
-   MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true);
+   MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true,PlanPaper=true);
   inkprof.internal.writeJson(fullfile(folder,'workflow-review.json'),struct('notes',get(o,'Notes',""),'utc',utc()));
   out=inkprof.internal.workflowTiffOutputs(fullfile(folder,'refinement-print','print','target.ti2'));out.proposal=fullfile(folder,'proposal.json');
   files=allFiles(folder);assert(isfile(out.target),'inkprof:Workflow','No new printable patches were proposed. Review the feedback.');

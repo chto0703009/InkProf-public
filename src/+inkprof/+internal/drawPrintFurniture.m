@@ -5,7 +5,18 @@ function image=drawPrintFurniture(image,dpi,page,total,timestamp,filePath,summar
 if nargin<7,summary="";end
 if nargin<8,footerInsetMm=12;end
 widthMm=size(image,2)/dpi*25.4;heightMm=size(image,1)/dpi*25.4;
-image=textAt(image,"InkProf Quality Profiling RGB printer",[widthMm/2 9],dpi,20,"center");
+image=textAt(image,"InkProf Quality Profiling RGB printer",[widthMm/2 9],dpi,20,"center",widthMm-16);
+if widthMm<240
+    if strlength(string(summary))>0
+        image=textAt(image,string(summary),[widthMm/2 heightMm-19],dpi,7,"center",widthMm-16);
+    end
+    [lines,points,lineMm]=footerLines(string(filePath),widthMm-16,dpi,4,12);
+    for k=1:numel(lines)
+        image=textAt(image,lines(k),[widthMm/2 heightMm-11+(k-(numel(lines)+1)/2)*lineMm],dpi,points,"center",widthMm-16);
+    end
+    image=textAt(image,timestamp,[8 heightMm-3],dpi,7,"left");
+    image=textAt(image,string(page)+" ("+total+")",[widthMm-8 heightMm-3],dpi,7,"right");
+else
 if strlength(string(summary))>0
     image=textAt(image,string(summary),[widthMm/2 heightMm-footerInsetMm-5.3],dpi,7,"center",widthMm-16);
 end
@@ -18,6 +29,7 @@ for k=1:numel(lines)
     image=textAt(image,lines(k),[widthMm/2 y],dpi,points,"center",widthMm-110);
 end
 image=textAt(image,string(page)+" ("+total+")",[widthMm-8 heightMm-footerInsetMm],dpi,9,"right");
+end
 end
 
 function image=textAt(image,text,position,dpi,points,alignment,maxWidthMm)
@@ -46,8 +58,9 @@ for c=1:3
 end
 end
 
-function [lines,points,lineMm]=footerLines(path,maxWidthMm,dpi)
-% Wrap the complete path without ellipses; at most two lines in the footer.
+function [lines,points,lineMm]=footerLines(path,maxWidthMm,dpi,maxLines,maxHeight)
+% Wrap the complete path without ellipses in the reserved footer.
+if nargin<4,maxLines=2;maxHeight=6.5;end
 probe=java.awt.image.BufferedImage(1,1,java.awt.image.BufferedImage.TYPE_INT_RGB);
 g=probe.createGraphics();cleanup=onCleanup(@()g.dispose());
 for points=8:-0.5:6
@@ -67,7 +80,7 @@ for points=8:-0.5:6
         lines(end+1)=string(remaining(1:count));remaining=remaining(count+1:end);
     end
     lineMm=double(metrics.getHeight())/dpi*25.4;
-    if numel(lines)<=2 && numel(lines)*lineMm<=6.5,return;end
+    if numel(lines)<=maxLines && numel(lines)*lineMm<=maxHeight,return;end
 end
 error('inkprof:Label','Full TIFF path does not fit the footer; choose a shorter output path.');
 end

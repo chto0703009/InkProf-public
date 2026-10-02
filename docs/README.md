@@ -22,3 +22,5 @@ Detailed usage and research notes are mostly in Swedish. Historical notes may li
 - [Instrument startup and reconnection](usage/instrument-startup.md)
 
 - [Compare successive profiles and inspect lightness slices](usage/profile-comparison.md)
+
+- [Editable paper suggestions and measurement-sled settings](usage/target-paper-planning.md)

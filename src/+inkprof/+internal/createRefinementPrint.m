@@ -1,4 +1,5 @@
-function info=createRefinementPrint(proposal,job,folder,dpi,paper,seed)
+function info=createRefinementPrint(proposal,job,folder,dpi,paper,seed,planPaper)
+if nargin<7,planPaper=false;end
 % Freeze roles before measurement and add old-RGB duplicates for drift review.
 mkdir(folder);v=inkprof.cgatsData(inkprof.importCgats(fullfile(job,'engine.ti3')),RGBScale=100);
 n=numel(proposal.candidates);rgb=reshape([proposal.candidates.rgbPercent],3,[])';roles=repmat("fit",n,1);
@@ -22,7 +23,7 @@ generation=struct('method',"Adaptive refinement - device RGB - no profile", ...
  'settings',struct('proposalIterationId',proposal.iterationId,'newRGB',n,'fitCount',sum(roles=="fit"), ...
  'developmentCount',sum(roles=="adaptive_holdout"),'controlOccurrences',sum(roles=="control"),'roleFile',"../placement-plan.json"));
 metadata=inkprof.internal.targetInfo(target.rgbPercent/100,definition,generation);
-manifest=inkprof.createTarget(fullfile(folder,'print'),Source=definition,TargetInfo=metadata,Paper=paper,DPI=dpi,SpacerMode="bw",Randomize=true,Seed=seed);
+manifest=inkprof.createTarget(fullfile(folder,'print'),Source=definition,TargetInfo=metadata,PlanPaper=planPaper,Paper=paper,DPI=dpi,SpacerMode="bw",Randomize=true,Seed=seed);
 layout=jsondecode(fileread(fullfile(folder,'print','layout.json')));patches=cell(numel(ids),1);
 for k=1:numel(ids)
  matches=find(~[layout.patches.isPadding]&string({layout.patches.originalId})==ids(k));assert(numel(matches)==1,'inkprof:Identity','Refinement placement mismatch.');

@@ -66,9 +66,9 @@ Den äldre beskurna 263 × 195 mm-bilden behåller 3,5 mm sidfotsavstånd inom b
 
 - Utskriftsfilen är **RGB TIFF16**, 16 bitar per kanal, utan inbäddad ICC-profil. CMYK-target avvisas som fel färgformat.
 - Normal upplösning är 300 ppi. Upplösning och fysiska mått ska anges korrekt i TIFF-filen.
-- Målets totala bildyta, inklusive marginaler, får vara högst **320 mm bredd** horisontellt. Längden vertikalt anges av användaren och har inte längre en fast gräns på 280 mm.
+- Målets totala bildyta, inklusive marginaler, begränsas av projektets **Target paper**-inställningar i JSON. Startvärdet 320 × 370 mm gäller Christers mätsläde och kan ändras; se [pappersförslag](target-paper-planning.md).
 - Liggande A4 är **297 × 210 mm**. Måtten avrundas till hela pixlar vid vald upplösning. Den återanvändbara sidmallen är **263 × 195 mm** och ska inte beskrivas som en fullstor A4-bild.
-- Stående A3 kan använda hela den valda längden 420 mm. För TIFF16-dialogen är A4 liggande (297 × 210 mm) standard. Bredder över 320 mm avvisas.
+- Stående A3 kräver att projektets längdgräns tillåter 420 mm. Med mindre mätsläde väljs ett delat ark eller annat förslag. TIFF16-dialogens manuella startformat är liggande A4 (297 × 210 mm).
 - Skriv ut i **100 % faktisk storlek**, utan anpassning till sida och utan färgomvandling i utskriftsflödet. En profilfri fil i sig garanterar inte att utskriftsprogrammet undviker färgomvandling.
 - Förhandsvisningsbilder är endast för skärmvisning; skriv ut TIFF16-filen.
 

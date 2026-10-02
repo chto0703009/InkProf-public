@@ -45,7 +45,12 @@ for name=reshape(names,1,[])
     image=tif.read();clear c
     assert(isa(image,'uint16'),'inkprof:TIFF','Expected uint16 pixels.');
     sizeMm=[size(image,2),size(image,1)]./dpi*25.4;
-    assert(sizeMm(1)<=320+1e-6,'inkprof:TargetSize','TIFF including margins exceeds 320 mm width: %s',name);
+    if isfield(target.printSettings,'maximumWidthMm')
+        assert(sizeMm(1)<=target.printSettings.maximumWidthMm+1e-6,'inkprof:TargetSize','TIFF exceeds recorded sweep limit: %s',name);
+    end
+    if isfield(target.printSettings,'maximumLengthMm')
+        assert(sizeMm(2)<=target.printSettings.maximumLengthMm+1e-6,'inkprof:TargetSize','TIFF exceeds recorded length limit: %s',name);
+    end
     if hasManifest
         if isfield(manifest,'renderPaperSizeMm'),expectedMm=double(manifest.renderPaperSizeMm(:)');else,expectedMm=double(manifest.options.PaperSizeMm(:)');end
         expected=expectedMm.*dpi/25.4;

@@ -17,10 +17,10 @@ if options.OutputFolder~="",input.Editable='off';end
 uibutton(g,'Text','Browse…','ButtonPushedFcn',@browse);
 uilabel(g,'Text','Page size');
 paper=uidropdown(g,'Items',{'A4 landscape','A4 portrait','A3 portrait','Custom'},'Value','A4 landscape','Tag','renderPaper','ValueChangedFcn',@paperChanged);
-uilabel(g,'Text','Width ≤ 320 mm');
+uibutton(g,'Text','Paper suggestions…','ButtonPushedFcn',@suggestPaper);
 uilabel(g,'Text','Width / length (mm)');
 sizes=uigridlayout(g,[1 2]);sizes.Padding=[0 0 0 0];
-width=uieditfield(sizes,'numeric','Value',297,'Limits',[61 320],'Tag','renderWidth','ValueChangedFcn',@customSize);
+width=uieditfield(sizes,'numeric','Value',297,'Limits',[61 Inf],'Tag','renderWidth','ValueChangedFcn',@customSize);
 height=uieditfield(sizes,'numeric','Value',210,'Limits',[61 Inf],'Tag','renderHeight','ValueChangedFcn',@customSize);
 uilabel(g,'Text','Length is user-selected');
 uilabel(g,'Text','Resolution (ppi / dpi)');
@@ -44,7 +44,18 @@ status=uilabel(g,'Text','Choose a definition, then click Calculate / preview to 
     'WordWrap','on','Tag','renderStatus');status.Layout.Column=[1 3];
 cancel=uibutton(g,'Text','Cancel','Tag','renderCancel','ButtonPushedFcn',@closeWindow);cancel.Layout.Column=3;
 if strlength(source)>0,sourceChanged([],[]);end
+prefs=inkprof.internal.paperPreferences(inkprof.internal.findProject(string(input.Value)));
+layoutChoice=struct('preferences',prefs);
 fig.Visible='on';drawnow;focus(fig);
+    function suggestPaper(~,~)
+        try
+            target=inkprof.importTarget(string(input.Value),RGBScale=scale.Value);
+            project=inkprof.internal.findProject(string(input.Value));
+            choice=inkprof.internal.paperLayoutDialog(numel(target.ids),project,string(input.Value),scale.Value);
+            if isempty(choice),return;end
+            layoutChoice=choice;width.Value=choice.paperSizeMm(1);height.Value=choice.paperSizeMm(2);paper.Value='Custom';changed([],[]);
+        catch err,uialert(fig,err.message,'Paper suggestions');end
+    end
     function changed(~,~)
         fig.UserData.pageCount=[];
         pageCount.Text='Pages: not calculated — click Calculate / preview';
@@ -85,7 +96,7 @@ fig.Visible='on';drawnow;focus(fig);
         try
             assert(isfile(input.Value),'inkprof:Input','Select an existing RGB patch definition first.');
             m=inkprof.createTarget(temporary,Source=string(input.Value),RGBScale=scale.Value, ...
-                PaperSizeMm=[width.Value height.Value],DPI=dpi.Value,SpacerMode="colored",Randomize=shuffle.Value,Seed=seed.Value,Continue=@keepGoing);
+                PaperLayout=layoutChoice,PaperSizeMm=[width.Value height.Value],DPI=dpi.Value,SpacerMode="colored",Randomize=shuffle.Value,Seed=seed.Value,Continue=@keepGoing);
             previews=inkprof.internal.previewFiles(m);
             images=cell(1,numel(previews));
             for k=1:numel(previews),images{k}=imread(fullfile(temporary,previews(k)));end
@@ -122,7 +133,7 @@ fig.Visible='on';drawnow;focus(fig);
             controls=findall(fig,'-property','Enable');set(controls,'Enable','off');cancel.Enable='on';
             fig.UserData.busy=true;status.Text='Generating TIFF16 pages, matching TI2 and JSON; checking patch pixels…';drawnow;
             m=inkprof.createTarget(destination,Source=string(input.Value),RGBScale=scale.Value, ...
-                PaperSizeMm=[width.Value height.Value],DPI=dpi.Value,SpacerMode="colored",Randomize=shuffle.Value,Seed=seed.Value,Continue=@keepGoing);
+                PaperLayout=layoutChoice,PaperSizeMm=[width.Value height.Value],DPI=dpi.Value,SpacerMode="colored",Randomize=shuffle.Value,Seed=seed.Value,Continue=@keepGoing);
             resultWindow=inkprof.showPrintResult(destination);
             delete(fig);focus(resultWindow);return;
         catch err

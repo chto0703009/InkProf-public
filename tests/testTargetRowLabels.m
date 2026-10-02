@@ -4,7 +4,7 @@ end
 function testBothMargins(tc)
 root=string(tempname);mkdir(root);cleanup=onCleanup(@()rmdir(root,'s')); %#ok<NASGU>
 for paper=["A4-landscape","A3-portrait"]
- out=fullfile(root,paper);inkprof.createTarget(out,Paper=paper,PatchCount=40,GraySteps=3,DPI=100);
+ out=fullfile(root,paper);inkprof.createTarget(out,Paper=paper,PatchCount=40,GraySteps=3,DPI=100,PaperLayout=struct('preferences',struct('MaxScanMm',320,'MaxLengthMm',500,'RollWidthMm',329)));
  r=inkprof.verifyPackage(out);verifyTrue(tc,r.horizontalRowsVerified);
  pages=dir(fullfile(out,'target*.tif'));pixels=imread(fullfile(pages(1).folder,pages(1).name));
  yy=ceil(25*100/25.4):size(pixels,1)-ceil(25*100/25.4);

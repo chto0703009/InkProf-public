@@ -9,6 +9,7 @@ arguments
  options.User (1,1) string = ""
  options.FolderName (1,1) string = ""
  options.FolderDecision (1,1) struct = struct
+ options.PaperLayout (1,1) struct = struct
  options.Printing (1,1) struct = struct
  options.Relocations = []
 end
@@ -68,6 +69,7 @@ if strlength(strtrim(options.User))>0,record.user=strtrim(options.User);end
 for field=string(fieldnames(options.Printing))'
  record.printing.(field)=options.Printing.(field);
 end
+if ~isempty(fieldnames(options.PaperLayout)),record.paperLayout=options.PaperLayout;end
 if options.FolderName~="",record.folderName=options.FolderName;end
 if ~isempty(fieldnames(options.FolderDecision))
  if ~isfield(record,'folderNameHistory')||isempty(record.folderNameHistory)

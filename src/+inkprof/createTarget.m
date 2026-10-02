@@ -5,6 +5,8 @@ function manifest=createTarget(outputFolder, options)
 % Existing output folders are never overwritten. Imported TXF gets a NEW layout.
 arguments
     outputFolder (1,1) string
+    options.PlanPaper (1,1) logical = false
+    options.PaperLayout (1,1) struct = struct
     options.Continue (1,1) function_handle = @()true
     options.TargetInfo (1,1) struct = struct
     options.Source (1,1) string = ""
@@ -51,14 +53,23 @@ end
 assert(numel(options.PaperSizeMm)==2,'inkprof:Paper','PaperSizeMm must contain [width height].');
 assert(options.Seed<=2147483647,'inkprof:Seed','Seed must fit signed 32-bit integer.');
 assert(options.DPI>=72 && options.DPI<=1200,'inkprof:DPI','Supported resolution: 72–1200 dpi.');
-assert(options.PaperSizeMm(1)<=320,'inkprof:Paper','Page width including margins must not exceed 320 mm.');
-targetLimitMm=[320 options.PaperSizeMm(2)];
+prefs=inkprof.internal.paperPreferences(inkprof.internal.findProject(outputFolder));
+if ~isempty(fieldnames(options.PaperLayout)),prefs=options.PaperLayout.preferences;end
+targetLimitMm=[prefs.MaxScanMm prefs.MaxLengthMm];
 assert(all(min(options.PaperSizeMm,targetLimitMm)>2*options.MarginMm+40),'inkprof:Paper','Insufficient printable area.');
 outputFolder=inkprof.internal.absolutePath(outputFolder);
 assert(~isfolder(outputFolder)&&~isfile(outputFolder),'inkprof:Exists','Output already exists: %s',outputFolder);
 if options.Source~=""
     target=inkprof.importTarget(options.Source,RGBScale=options.RGBScale);
 end
+if options.PlanPaper
+    count=options.PatchCount;if options.Source~="",count=numel(target.ids);end
+    choice=inkprof.internal.paperLayoutDialog(count,inkprof.internal.findProject(outputFolder),options.Source,options.RGBScale);
+    assert(~isempty(choice),'inkprof:Cancelled','Paper selection cancelled.');
+    options.PaperLayout=choice;options.PaperSizeMm=choice.paperSizeMm;
+    targetLimitMm=[choice.preferences.MaxScanMm choice.preferences.MaxLengthMm];
+end
+assert(all(options.PaperSizeMm<=targetLimitMm),'inkprof:Paper','Target exceeds the measurement limits in project Target paper settings.');
 checkpoint(options.Continue);
 bin=inkprof.internal.argyllBin(options.ArgyllBin);
 parent=string(fileparts(outputFolder));if ~isfolder(parent),mkdir(parent);end
@@ -126,12 +137,18 @@ if isfile(fullfile(stage,'helper.ti1')),delete(fullfile(stage,'helper.ti1'));end
 target.printSettings=struct('packageName',string(packageName),'outputFolder',outputFolder, ...
     'inputFile',originalPath,'dpi',options.DPI,'paperSizeMm',options.PaperSizeMm, ...
     'footerCenterInsetMm',12,'footerReservedMm',22, ...
-    'maximumWidthMm',320,'lengthPolicy',"user-selected",'marginMm',options.MarginMm, ...
+    'maximumWidthMm',targetLimitMm(1),'maximumLengthMm',targetLimitMm(2),'lengthPolicy',"project JSON limits",'marginMm',options.MarginMm, ...
     'spacerMode',options.SpacerMode,'randomize',options.Randomize,'seed',options.Seed, ...
     'tiffBitsPerChannel',16,'embeddedICCProfile',false);
+if ~isempty(fieldnames(options.PaperLayout))
+    options.PaperLayout.sourcePatchCount=numel(target.ids);
+    options.PaperLayout.paperSizeMm=options.PaperSizeMm;
+    if isfield(options.PaperLayout,'proposal'),options.PaperLayout.edited=~isequal(options.PaperSizeMm,options.PaperLayout.proposal.sizeMm);end
+    inkprof.internal.writeJson(fullfile(stage,'paper-layout.json'),options.PaperLayout);
+end
 inkprof.internal.writeJson(fullfile(stage,'target.json'),target);
 % The target canvas includes margins and is capped independently of paper.
-% Floor to whole pixels; width must not exceed 320 mm. Height is user-selected.
+% Floor to whole pixels within the measurement limits recorded in JSON.
 renderPaper=min(options.PaperSizeMm,floor(targetLimitMm*options.DPI/25.4)*25.4/options.DPI-1e-7);
 % Reduce native row capacity by the extra footer reservation (22 vs 12 mm).
 % Final TIFF retains the requested paper size; patch pixels are not scaled.
@@ -164,6 +181,13 @@ inkprof.internal.writeJson(fullfile(stage,'layout.json'),struct('schemaVersion',
     'targetInfo',target.targetInfo,'instrument',"Argyll i1 (i1Pro family)",'readingDirection',"left to right; numbered rows top to bottom; lettered columns left to right",'patches',layout));
 report=inkprof.verifyPackage(stage);
 target.printSettings.pageCount=numel(report.pages);
+if ~isempty(fieldnames(options.PaperLayout))
+    options.PaperLayout.actualPages=numel(report.pages);
+    options.PaperLayout.sourcePatchCount=numel(target.ids);
+    options.PaperLayout.paperSizeMm=options.PaperSizeMm;
+    if isfield(options.PaperLayout,'proposal'),options.PaperLayout.edited=~isequal(options.PaperSizeMm,options.PaperLayout.proposal.sizeMm);end
+    inkprof.internal.writeJson(fullfile(stage,'paper-layout.json'),options.PaperLayout);
+end
 inkprof.internal.writeJson(fullfile(stage,'target.json'),target);
 inkprof.internal.writeJson(fullfile(stage,'verification.json'),report);
 % Lightweight RGB preview per page; print only target*.tif, never preview PNGs.
@@ -175,7 +199,7 @@ fid=fopen(fullfile(stage,'PRINTING.txt'),'w');assert(fid>=0,'inkprof:IO','Cannot
 fprintf(fid,['Print target*.tif at 100%% physical size, without fit-to-page or automatic colour conversion.\n' ...
     'Requested print paper: %.3f x %.3f mm. Resolution: %d dpi. Device RGB, 16 bits/channel.\n' ...
     'Record printer, paper, driver/RIP, media mode and quality settings before printing.\n' ...
-    'Rows 1, 2, 3 run from top to bottom; columns A, B, C from left to right. Scan each row from left to right. Target canvas including margins: maximum 320 mm horizontal; vertical length is user-selected. Keep physical size; do not fit to paper.\n' ...
+    'Rows 1, 2, 3 run from top to bottom; columns A, B, C from left to right. Scan each row from left to right. Target canvas including margins: limits are recorded in target.json and manifest.json. Keep physical size; do not fit to paper.\n' ...
     'Only root target*.tif are for printing; argyll/ contains native intermediate files.\n' ...
     'Use the matching target.ti2 for later Argyll chartread measurement (i1 instrument layout).\n' ...
     'This is a NEW layout; do not measure it with the original TXF.\n' ...
@@ -188,7 +212,7 @@ manifest=struct('schemaVersion',1,'documentType',"inkprof.print-package",'inkpro
     'createdUTC',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")), ...
     'matlabVersion',string(versionMATLAB()),'options',savedOptions,'argyllVersions',versions, ...
     'printSettings',target.printSettings,'targetInfo',target.targetInfo,'originalSourcePath',originalPath,'sourcePatches',numel(target.ids), ...
-    'pageCount',numel(report.pages),'renderPaperSizeMm',renderPaper,'maxTotalWidthMm',320,'maxTargetSizeMm',targetLimitMm, ...
+    'pageCount',numel(report.pages),'renderPaperSizeMm',renderPaper,'maxTotalWidthMm',targetLimitMm(1),'maxTargetSizeMm',targetLimitMm, ...
     'layoutPolicy',"horizontal rows; native Argyll grid transposed without resampling",'rowDirection',"left-to-right",'nativePaperSizeMm',nativePaper,'randomization',struct('enabled',options.Randomize,'seed',options.Seed, ...
     'algorithm',"Argyll printtarg; actual mapping in target.ti2 and layout.json"), ...
     'compatibility',struct('argyllFilesGenerated',true,'pixelChecksPassed',true, ...
@@ -206,6 +230,10 @@ assert(~isfolder(outputFolder)&&~isfile(outputFolder),'inkprof:Exists','Output a
 checkpoint(options.Continue);
 [ok,message]=movefile(stage,outputFolder);assert(ok,'inkprof:IO','Cannot publish package: %s',message);
 clear cleanup
+if ~isempty(fieldnames(options.PaperLayout))
+    project=inkprof.internal.findProject(outputFolder);
+    if project~="",inkprof.updateProject(project,Step="paper-layout-selected",PaperLayout=options.PaperLayout.preferences);end
+end
 inkprof.internal.recordProjectStep(outputFolder,"print-package-saved");
 end
 function removeStage(path)
