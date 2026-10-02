@@ -30,7 +30,9 @@ scale.Tooltip='Input number range, not colour space or TIFF bit depth. Keep auto
 help=uilabel(g,'Text','RGB input range: leave Automatic for known formats. Other files may use 0–1, 0–100 or 0–255; choose their documented range. Output is always 16-bit RGB.', 'WordWrap','on');help.Layout.Column=[1 3];
 uilabel(g,'Text','Patch order');
 shuffle=uicheckbox(g,'Text','Randomize positions','Value',false,'Tag','renderShuffle','ValueChangedFcn',@changed);
-seed=uieditfield(g,'numeric','Value',42,'Limits',[0 2147483647],'RoundFractionalValues','on','Tag','renderSeed','Tooltip','Randomization seed','ValueChangedFcn',@changed);
+seedGroup=uigridlayout(g,[1 2]);seedGroup.Padding=[0 0 0 0];seedGroup.ColumnWidth={75,'1x'};seedGroup.ColumnSpacing=5;
+uilabel(seedGroup,'Text','Shuffle seed','FontSize',11);
+seed=uieditfield(seedGroup,'numeric','Value',42,'Limits',[0 2147483647],'RoundFractionalValues','on','Tag','renderSeed','Tooltip','Used only with Randomize positions. The same seed reproduces the same patch order for the same target.','ValueChangedFcn',@changed);
 uilabel(g,'Text','Output package name');
 name=uieditfield(g,'text','Value','RGB-target','Tag','renderName','ValueChangedFcn',@changed);
 button=uibutton(g,'Text','Generate and save…','Tag','renderSave','ButtonPushedFcn',@generate);
