@@ -10,7 +10,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak, KeepTogether
 
 
 def create(folder):
@@ -33,11 +33,14 @@ def create(folder):
         text = str(text).replace('Δ', 'Delta ').replace('–', '-').replace('—', '-')
         return Paragraph(escape(text).replace('\n', '<br/>'), styles[style])
 
-    story += [p('InkProf - slutrapport', 'Title'), p(r['project']['name'], 'Heading2'),
+    story += [p('InkProf - mätcertifikat', 'Title'), p(r['project']['name'], 'Heading2'),
               p(f"Iteration {r['iteration']} | {r['createdUTC']}"),
-              p('Sparad ICC-profil', 'Heading2'), p('profile.icc'), p('SHA-256: ' + r['profile']['sha256']),
-              p('Slutlig bedömning', 'Heading2'), p(r['approval']['notes']),
-              p('Mätresultat - ΔE00', 'Heading2')]
+              p('Certifikat-ID: '+r.get('certificateId','Ej angivet')),
+              p(r.get('certificateScope','')), p('Projekt och utskriftsvillkor','Heading2')]
+    for item in r.get('projectDetails',[]):
+        story.append(p(item['label']+': '+item['value']))
+    story += [p('Sparad ICC-profil', 'Heading2'), p('profile.icc'), p('SHA-256: ' + r['profile']['sha256']),
+              p('Slutlig bedömning', 'Heading2'), p(r['approval']['notes'])]
     rows = [[p(x) for x in ['Grupp', 'Antal', 'Medel', 'Median', 'P95', 'Max']]]
     c3 = r['results']['c3_report']
     groups = [('C3: unika kontrollpatchar', c3.get('summary'))]
@@ -57,7 +60,13 @@ def create(folder):
     table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e7eff2')),
                               ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                               ('LINEBELOW', (0, 0), (-1, -1), .3, colors.lightgrey)]))
-    story += [table, Spacer(1, 5*mm), p('Träningsfel är inte oberoende verifiering. Utskriften görs separat av användaren. Utskriftskedjan är inte verifierad av appen.')]
+    story += [KeepTogether([p('Mätresultat - ΔE00', 'Heading2'),table]), Spacer(1, 5*mm), p('Träningsfel är inte oberoende verifiering. Utskriften görs separat av användaren. Utskriftskedjan är inte verifierad av appen.')]
+    if r.get('reproductionLimits'):
+        story += [p('Fysisk återgivningsförmåga och resultatets gränser','Heading2'),p(r['reproductionLimits'])]
+    if r.get('reproductionLiability'):
+        story += [p('Ansvar för utrustningens och materialens begränsningar','Heading2'),p(r['reproductionLiability'])]
+    if r.get('clientPrintResponsibility'):
+        story += [p('Beställarens utskrifter och uppgifter','Heading2'),p(r['clientPrintResponsibility'])]
     if r.get('warrantyNotice'):
         story += [p('Garanti och ansvar', 'Heading2'), p(r['warrantyNotice'])]
     if (folder / 'profile-lab-3d.png').is_file():
@@ -66,11 +75,20 @@ def create(folder):
                   Image(str(folder / 'profile-lab-3d.png'), width=170*mm, height=121*mm, kind='proportional')]
     story += [PageBreak(), p('Fullständig redovisning och historik', 'Heading2')]
     # Flowing paragraphs paginate long notes, file paths and histories safely.
-    for line in (folder / 'final-report.txt').read_text(encoding='utf-8').splitlines():
+    for line in (folder / 'final-report.txt').read_text(encoding='utf-8').rsplit('\nUNDERSKRIFT\n',1)[0].splitlines():
         if line.strip():
             story.append(p(line, 'DetailReport'))
         else:
             story.append(Spacer(1, 2*mm))
+
+    if r.get('signature'):
+        story += [PageBreak(), p('Underskrift av mätcertifikat','Title'),
+                  p('Projekt: '+r['project']['name']),
+                  p('Certifikat-ID: '+r['certificateId']),p('Dokumentdatum: '+r['reportDate']),
+                  p('ICC SHA-256: '+r['profile']['sha256']),
+                  Spacer(1,80*mm),p(r['signature']['statement']),Spacer(1,12*mm)]
+        for label in ('Ort och datum','Underskrift','Namnförtydligande','Organisation / roll'):
+            story += [p(label+': __________________________________________________'),Spacer(1,12*mm)]
 
     class NumberedCanvas(Canvas):
         def __init__(self, *args, **kwargs):
@@ -109,7 +127,7 @@ def create(folder):
 
     SimpleDocTemplate(str(folder / 'final-report.pdf'), pagesize=(210*mm, 297*mm),
                       leftMargin=18*mm, rightMargin=18*mm, topMargin=28*mm, bottomMargin=26*mm,
-                      title='InkProf - slutrapport', author=r.get('reportUser', 'InkProf')).build(story, canvasmaker=NumberedCanvas)
+                      title='InkProf - mätcertifikat', author=r.get('reportUser', 'InkProf')).build(story, canvasmaker=NumberedCanvas)
 
 
 if __name__ == '__main__':

@@ -10,7 +10,7 @@ iccDestination=inkprof.internal.absolutePath(iccDestination);
 reportDestination=inkprof.internal.absolutePath(reportDestination);
 [iccParent,~,iccExt]=fileparts(iccDestination);[reportParent,stem,reportExt]=fileparts(reportDestination);
 assert(any(lower(iccExt)==[".icc",".icm"]),'inkprof:Delivery','Select .icc or .icm for the profile.');
-assert(any(lower(reportExt)==[".html",".pdf",".txt"]),'inkprof:Delivery','Select .html, .pdf or .txt for the final report.');
+assert(any(lower(reportExt)==[".html",".pdf",".txt"]),'inkprof:Delivery','Select .html, .pdf or .txt for the measurement certificate.');
 assert(isfolder(iccParent)&&isfolder(reportParent),'inkprof:Delivery','The selected destination folders must exist.');
 folder=inkprof.internal.absolutePath(folder);
 assert(reportParent~=folder&&~startsWith(reportParent,folder+filesep),'inkprof:Delivery','Choose a report location outside the project internal export package.');

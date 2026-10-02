@@ -190,3 +190,5 @@ folderNameHistory i inkprof-project.json dokumenterar upptäckt namn, tidigare
 namn, sökväg, val, tidpunkt, användare och resultat. Även avbrott och fel sparas.
 Samma händelser finns i workflow.json och result-log.jsonl. Accepterat nytt
 projektnamn gör en tidigare slutrapport inaktuell; spara den på nytt.
+
+Mätcertifikat (2026-10-02): leveranssteget heter nu Save ICC and measurement certificate. Open certificate öppnar dokumentet. Projektuppgifter, återgivningsbegränsningar, beställarens ansvar och en sista sida för datum och underskrift ingår. Se measurement-certificate.md.

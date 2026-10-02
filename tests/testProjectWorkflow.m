@@ -122,7 +122,7 @@ verifyEqual(tc,u.currentStep,'c2measurement');verifyEqual(tc,u.steps.c2print,s.s
 verifyEqual(tc,u.steps.export.status,"stale");verifyEqual(tc,u.steps.export.outputs.profile,"old.icc");
 end
 function testFinalReportSavedWithICC(tc)
-w=finalReportFixture(tc);w.run('export',struct('ReportUser',"Christer Törnkvist"));
+w=finalReportFixture(tc);inkprof.updateProject(w.Root,Printing=struct('printer',"Certificate printer <demo>"));w.run('export',struct('ReportUser',"Christer Törnkvist"));
 verifyTrue(tc,w.valid('export'));
 for key=["profile","finalReport","reportJSON","reportText","reportPDF"],verifyTrue(tc,isfile(w.output('export',key)));end
 r=jsondecode(fileread(w.output('export','reportJSON')));
@@ -130,7 +130,15 @@ verifyEqual(tc,string(r.profile.sha256),inkprof.internal.sha256(w.output('export
 verifyEqual(tc,string(r.iterationId),string(w.State.iterationId));verifyEqual(tc,r.iteration,1);
 verifyEqual(tc,string(r.reportUser),"Christer Törnkvist");verifyEqual(tc,string(r.pageHeader),"InkProf Quality Profiling RGB printer");
 verifyEqual(tc,r.results.c3_report.summary.mean,1.25);verifyFalse(tc,r.printing.verifiedByApp);
+verifyEqual(tc,string(r.documentTitle),"InkProf - mätcertifikat");verifyNotEmpty(tc,r.certificateId);
+verifyTrue(tc,contains(r.reproductionLiability,'enbart beror'));verifyTrue(tc,contains(r.reproductionLiability,'tvingande lag'));
+verifyTrue(tc,contains(r.clientPrintResponsibility,'Om beställaren'));verifyTrue(tc,contains(r.clientPrintResponsibility,'tvingande lag'));
+verifyEqual(tc,string(r.signature.status),"unsigned");verifyTrue(tc,contains(r.reproductionLimits,'skrivare, papper och bläck'));
+verifyEqual(tc,string(r.projectDetails(string({r.projectDetails.label})=="Skrivare").value),"Certificate printer <demo>");
+verifyTrue(tc,contains(fileread(w.output('export','reportText')),'Ort och datum:'));
+
 h=fileread(w.output('export','finalReport'));verifyTrue(tc,contains(h,'1.250'));
+verifyTrue(tc,contains(h,'Underskrift av mätcertifikat'));verifyTrue(tc,contains(h,'Certificate printer &lt;demo&gt;'));
 verifyTrue(tc,contains(h,"class='lab-canvas'"));verifyTrue(tc,contains(h,'requestAnimationFrame'));
 plot=regexp(h,"<script type='application/json' class='lab-data'>(.*?)</script>",'tokens','once');
 points=jsondecode(plot{1});verifyEqual(tc,size(points.lab),[12 3]);verifyEqual(tc,size(points.rgb),[12 3]);

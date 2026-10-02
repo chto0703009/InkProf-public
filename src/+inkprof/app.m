@@ -16,7 +16,7 @@ detailsButton=uibutton(bar,'Text','Project details','Tag','editProjectDetails','
 uibutton(bar,'Text','Refresh','ButtonPushedFcn',@(~,~)refresh());
 uibutton(bar,'Text','Open results log','Tag','openResultLog','ButtonPushedFcn',@openLog);
 uibutton(bar,'Text','Iteration history','Tag','iterationHistory','ButtonPushedFcn',@history);
-reportButton=uibutton(bar,'Text','Open final report','Tag','openFinalReport','Enable','off','ButtonPushedFcn',@openReport);
+reportButton=uibutton(bar,'Text','Open certificate','Tag','openFinalReport','Enable','off','ButtonPushedFcn',@openReport);
 labButton=uibutton(bar,'Text','View 3D','Tag','showProfile3D','Enable','off','ButtonPushedFcn',@show3D);
 projectBar=uigridlayout(g,[1 2]);projectBar.ColumnWidth={'1x',140};projectBar.Padding=[0 0 0 0];
 projectLabel=uilabel(projectBar,'Text','Create a new project or select an existing one.','WordWrap','on');
@@ -168,8 +168,8 @@ end
             [n,p]=uiputfile({'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Save final ICC profile',fullfile(w.Root,'profile.icc'));
             if isequal(n,0),o=[];return;end
             o.ICCDestination=string(fullfile(p,n));
-            [n,p]=uiputfile({'*.pdf','Final report (*.pdf)';'*.html','Final report (*.html)';'*.txt','Final report as text (*.txt)'}, ...
-                'Save PDF and HTML with the same name',fullfile(p,'final-report.pdf'));
+            [n,p]=uiputfile({'*.pdf','Measurement certificate (*.pdf)';'*.html','Measurement certificate (*.html)';'*.txt','Measurement certificate as text (*.txt)'}, ...
+                'Save PDF and HTML with the same name',fullfile(p,'measurement-certificate.pdf'));
             if isequal(n,0),o=[];return;end
             o.ReportDestination=string(fullfile(p,n));o.Overwrite=true;
         elseif id=="profile"
@@ -200,7 +200,7 @@ end
     function openReport(~,~)
         if isempty(w),return;end
         w.reload();[valid,reason]=w.valid('export');
-        if ~valid,uialert(fig,char(reason),'Final report is out of date');return;end
+        if ~valid,uialert(fig,char(reason),'Measurement certificate is out of date');return;end
         web(char(w.output('export','finalReport')),'-browser');
     end
     function show3D(~,~)
@@ -241,7 +241,7 @@ switch id
  case "render",s="Save TIFF16 in the project. Print the files separately, then return to the app for measurement.";
  case "c2",s="Save C2 as TIFF16. The ICC profile has already been applied once. Print separately without further colour conversion, then measure in the app.";
  case {"measurement","c2measurement","refinemeasurement"},s="When your separately printed sheet is ready, start instrument measurement here. The app uses the saved target TI2 and saves measurement results in the project.";
- case "export",s="Choose separate filenames and save locations for the ICC profile and final report. The project keeps its own copies. The HTML report assets folder is saved alongside the report.";
+ case "export",s="Choose separate filenames and save locations for the ICC profile and measurement certificate. The project keeps its own copies. The HTML report assets folder is saved alongside the report.";
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
  case "approve",s="Record the intended use, quality requirements and accepted limitations. This is the user's decision after physical C2/C3 verification, not ISO certification.";
  case "refine",s="Review measurement errors and repeat variation first. Document why additional patches are needed.";
