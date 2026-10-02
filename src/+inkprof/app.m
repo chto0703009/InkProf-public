@@ -303,7 +303,9 @@ end
                 'Options',{'Also save copies elsewhere','Save in project only','Cancel'},'DefaultOption',1,'CancelOption',3);
             if strcmp(choice,'Cancel'),o=[];return;end
             if strcmp(choice,'Save in project only'),return;end
-            [n,p]=uiputfile({'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Save an additional ICC copy - project copy is retained',fullfile(w.Root,'profile.icc'));
+            record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+            iccName=inkprof.internal.iccDeliveryName(string(record.name));
+            [n,p]=uiputfile({'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Save an additional ICC copy - project copy is retained',fullfile(w.Root,iccName));
             if isequal(n,0),o=[];return;end
             o.ICCDestination=string(fullfile(p,n));
             reportName='measurement-certificate.pdf';if id=="numericalExport",reportName='numerical-report.pdf';end

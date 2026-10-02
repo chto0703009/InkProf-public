@@ -8,7 +8,12 @@ end
 receipt=[];source=inkprof.internal.absolutePath(source);interactive=destination=="";
 if interactive
  [~,stem,ext]=fileparts(source);
- [n,p]=uiputfile({'*.icc;*.icm','ICC profiles'},'Save ICC copy as',char(stem+ext));
+ suggested=stem+ext;project=inkprof.internal.findProject(source);
+ if project~=""
+  record=jsondecode(fileread(fullfile(project,'inkprof-project.json')));
+  suggested=inkprof.internal.iccDeliveryName(string(record.name));
+ end
+ [n,p]=uiputfile({'*.icc;*.icm','ICC profiles'},'Save ICC copy as',char(suggested));
  if isequal(n,0),destination="";return;end
  destination=fullfile(p,n);
 end
