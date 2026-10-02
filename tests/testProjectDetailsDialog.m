@@ -6,6 +6,7 @@ record=struct('name',"Old name",'user',"Old user",'printing',struct('printer',"O
 t=timer('ExecutionMode','fixedSpacing','Period',0.2,'TimerFcn',@saveDialog);
 cleanup=onCleanup(@()stopTimer(t));start(t);
 d=inkprof.projectDetailsDialog(record);
+verifyEmpty(tc,findall(groot,'Tag','projectDetailsDialog'),'Save must close the modal dialog.');
 verifyEqual(tc,d.Name,"Renamed project");verifyEqual(tc,d.User,"New user");
 verifyEqual(tc,d.Printing.printer,"New printer");verifyEqual(tc,d.Printing.paper,"Photo paper");
 verifyEqual(tc,d.Printing.paperSurface,"Matte");verifyEqual(tc,d.Printing.customSetting,42);
@@ -15,6 +16,7 @@ function testCancelLegacyRecord(tc)
 t=timer('ExecutionMode','fixedSpacing','Period',0.2,'TimerFcn',@cancelDialog);
 cleanup=onCleanup(@()stopTimer(t));start(t);
 d=inkprof.projectDetailsDialog(struct('name',"Legacy project"));verifyEmpty(tc,d);
+verifyEmpty(tc,findall(groot,'Tag','projectDetailsDialog'),'Cancel must close the modal dialog.');
 end
 function saveDialog(t,~)
 f=findall(groot,'Tag','projectDetailsDialog');if isempty(f),return;end

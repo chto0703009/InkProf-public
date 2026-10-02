@@ -38,6 +38,9 @@ buttons=uigridlayout(outer,[1 2]);buttons.Padding=[0 0 0 0];
 uibutton(buttons,'Text','Cancel','Tag','cancelProjectDetails','ButtonPushedFcn',@cancel);
 uibutton(buttons,'Text','Save','Tag','saveProjectDetails','ButtonPushedFcn',@save);
 uiwait(fig);
+% Nested callbacks retain this workspace; release cleanup explicitly so the
+% modal window closes before returning the saved details to the app.
+clear cleanup
     function control=field(label,tag,initial)
         uilabel(g,'Text',label);
         control=uieditfield(g,'text','Value',char(initial),'Tag',tag);
