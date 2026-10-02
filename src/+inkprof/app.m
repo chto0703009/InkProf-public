@@ -281,12 +281,13 @@ end
             end
             a=inputdlg(char(instruction(id)),'Record assessment',[4 65],{''});
             if isempty(a),o=[];return;end
-            o.Notes=string(a{1});o.Confirmed=strlength(strtrim(o.Notes))>0;
+            o.Notes=inkprof.internal.dialogText(a{1});o.Confirmed=strlength(strtrim(o.Notes))>0;
         elseif any(id==["export","numericalExport"])
             if id=="numericalExport"
                 a=inputdlg({'Why are you ending this iteration without a separate verification print? State intended use.'},'Save numerical report',[4 70],{''});
-                if isempty(a)||strlength(strtrim(string(a{1})))==0,o=[];return;end
-                o.Notes=string(a{1});
+                if isempty(a),o=[];return;end
+                o.Notes=inkprof.internal.dialogText(a{1});
+                if strlength(strtrim(o.Notes))==0,o=[];return;end
                 answer=uiconfirm(fig,'Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.','Confirm report scope', ...
                     'Options',{'Save with this statement','Cancel'},'DefaultOption',2,'CancelOption',2);
                 if strcmp(answer,'Cancel'),o=[];return;end
