@@ -3,6 +3,19 @@ function [out,files]=executeWorkflowStep(w,id,o)
 out=struct;files=strings(0,1);
 project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
 switch id
+ case "compare"
+  previous=inkprof.internal.comparisonParent(w.State);
+  assert(~isempty(previous),'inkprof:Workflow','A previous iteration is required.');
+  old=w.resolve(previous.outputs.profile);
+  registered=reshape(previous.artifacts,1,[]);
+  match=find(string({registered.path})==string(previous.outputs.profile),1);
+  assert(~isempty(match)&&inkprof.internal.sha256(old)==string(registered(match).sha256),'inkprof:Integrity','Previous profile is missing or changed.');
+  dest=w.newFolder('comparisons');paths=inkprof.paths();bin=inkprof.internal.argyllBin("");
+  inkprof.runPython(fullfile(paths.Root,'analysis','compare_profiles.py'), ...
+   [old,w.output('profile','profile'),fullfile(bin,'xicclu'),dest,"--iteration",string(w.State.cycle)], ...
+   RequiredModules=["numpy","colour","reportlab"],TimeoutSeconds=240);
+  out.comparison=fullfile(dest,'comparison.json');out.report=fullfile(dest,'comparison.html');out.pdf=fullfile(dest,'comparison.pdf');files=allFiles(dest);
+  web(char(out.report),'-browser');
  case "definition"
   dest=w.newFolder('targets');mkdir(dest);
   source=get(o,'Source',"");

@@ -63,7 +63,7 @@ verifyError(tc,@()w.run('definition'),'inkprof:WorkflowBusy');delete(f);
 end
 function testUIResume(tc)
 w=tc.TestData.w;saveDefinition(tc);f=inkprof.app(w.Root);cleanup=onCleanup(@()delete(f));drawnow;
-t=findobj(f,'Tag','workflowSteps');verifySize(tc,t.Data,[17 2]);
+t=findobj(f,'Tag','workflowSteps');verifySize(tc,t.Data,[18 2]);
 verifyEqual(tc,t.Data{1,2},'Complete');verifyEqual(tc,t.Data{2,2},'Ready');verifyEqual(tc,t.Data{8,2},'Locked');
 verifyNotEmpty(tc,findobj(f,'Tag','closeWorkflowApp'));
 verifyNotEmpty(tc,findobj(f,'Tag','openResultLog'));verifyNotEmpty(tc,findobj(f,'Tag','iterationHistory'));verifyNotEmpty(tc,findobj(f,'Tag','openFinalReport'));
@@ -315,4 +315,17 @@ w=finalReportFixture(tc);w.setFWA(false,"automatic-profiling");
 a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));verifyFalse(tc,a.printing.fwaCompensation);
 verifyTrue(tc,w.valid('profile'));verifyTrue(tc,w.valid('input'));
 verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.jsonl')),'previouslyRecorded'));
+end
+
+function testComparisonAvailabilityAndMigration(tc)
+w=tc.TestData.w;verifyFalse(tc,w.ready('compare'));a=w.inspect();verifyFalse(tc,a.compare.ready);
+s=w.State;s.steps=rmfield(s.steps,'compare');s=inkprof.internal.upgradeWorkflowState(s);verifyTrue(tc,isfield(s.steps,'compare'));
+for id=["definition","render","measurement","review","input","profile"]
+ s.steps.(id).status="completed";
+end
+s.cycle=2;s.history={struct('step','cycle','status','archived','cycle',1,'details',struct('profile',s.steps.profile))};
+inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
+verifyTrue(tc,w.ready('compare'));a=w.inspect();verifyTrue(tc,a.compare.ready);
+s.steps.profile.status="stale";inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
+verifyFalse(tc,w.ready('compare'));a=w.inspect();verifyFalse(tc,a.compare.ready);
 end

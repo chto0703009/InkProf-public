@@ -32,6 +32,9 @@ classdef ProjectWorkflow < handle
             defs=inkprof.internal.workflowSteps();index=find(string({defs.id})==string(id));
             assert(isscalar(index),'inkprof:Workflow','Unknown step.');
             ok=true;reason="Ready";
+            if id=="compare"&&isempty(inkprof.internal.comparisonParent(obj.State))
+                ok=false;reason="Available after an ICC profile has been built in iteration 2 or later.";return
+            end
             for dep=string(defs(index).requires)
                 [valid,why]=obj.valid(dep);
                 if ~valid,ok=false;reason="Requires "+dep+": "+why;return;end
@@ -56,6 +59,9 @@ classdef ProjectWorkflow < handle
                 a=struct('valid',false,'ready',true,'reason',"Ready");
                 for dep=string(d.requires)
                     if ~assessment.(dep).valid,a.ready=false;a.reason="Requires "+dep;break;end
+                end
+                if string(d.id)=="compare"&&isempty(inkprof.internal.comparisonParent(obj.State))
+                    a.ready=false;a.reason="Available after an ICC profile has been built in iteration 2 or later.";
                 end
                 s=obj.State.steps.(d.id);
                 if a.ready&&string(s.status)=="completed"

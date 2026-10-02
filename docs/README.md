@@ -20,3 +20,5 @@ Detailed usage and research notes are mostly in Swedish. Historical notes may li
 - [Abbreviations and terminology (Swedish)](usage/abbreviations.md)
 
 - [Instrument startup and reconnection](usage/instrument-startup.md)
+
+- [Compare successive profiles and inspect lightness slices](usage/profile-comparison.md)

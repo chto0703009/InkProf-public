@@ -1,5 +1,8 @@
 function state=upgradeWorkflowState(state)
 % Preserve old print confirmations as historical data, not prerequisites.
+if ~isfield(state.steps,'compare')
+ state.steps.compare=struct('status',"pending",'outputs',struct,'artifacts',struct([]),'message',"");
+end
 if isfield(state,'workflowRevision')&&state.workflowRevision>=2,return;end
 map=struct('print','measurement','c2print','c2measurement','refineprint','refinemeasurement');
 if isfield(map,state.currentStep),state.currentStep=map.(state.currentStep);end
