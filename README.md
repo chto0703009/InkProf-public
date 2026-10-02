@@ -14,7 +14,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 
 - Tested on macOS with MATLAB R2025b (base MATLAB; no mandatory add-on toolboxes).
 - Python 3.11-3.13 for analysis and reports; tested with 3.13.
-- ArgyllCMS 3.5.0 was used in development. Configure its `bin` directory explicitly if it is not on PATH.
+- ArgyllCMS 3.5.0 was used in development. InkProf discovers Homebrew installations on Apple Silicon and Intel, including when MATLAB is launched without Homebrew on PATH. An explicit local override remains available; `setupInkProf(ArgyllBin="auto")` resets it. Automatic discovery is not saved as a fixed machine path.
 - Instrument measurement uses a POSIX bridge. Windows instrument operation has not been qualified.
 - The project app uses English labels, dialogs and workflow guidance. Swedish and English PDF documentation is included.
 

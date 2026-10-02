@@ -12,7 +12,7 @@ end
 root=string(fileparts(mfilename('fullpath')));
 addpath(fullfile(root,'src'));
 paths=inkprof.paths();
-paths.ArgyllBin=inkprof.internal.argyllBin(options.ArgyllBin);
+[paths.ArgyllBin,paths.ArgyllSource]=inkprof.internal.argyllBin(options.ArgyllBin);
 if options.VerifyTools
     suffix="";if ispc,suffix=".exe";end
     temp=string(tempname);mkdir(temp);cleanup=onCleanup(@()rmdir(temp,'s'));
@@ -33,7 +33,7 @@ if options.SaveLocalConfig
     directory=fileparts(paths.LocalConfig);if ~isfolder(directory),mkdir(directory);end
     config=struct('schemaVersion',1);
     if isfile(paths.LocalConfig),config=jsondecode(fileread(paths.LocalConfig));end
-    config.argyllBin=paths.ArgyllBin;
+    config=inkprof.internal.argyllLocalConfig(config,options.ArgyllBin,paths.ArgyllSource,paths.ArgyllConfigLegacy);
     % An auto-discovered .venv is never saved as an absolute machine path.
     if paths.PythonConfigured~="",config.pythonExecutable=paths.PythonConfigured;end
     inkprof.internal.writeJson(paths.LocalConfig,config);
