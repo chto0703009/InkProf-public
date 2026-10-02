@@ -62,6 +62,26 @@ def create(folder):
                               ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                               ('LINEBELOW', (0, 0), (-1, -1), .3, colors.lightgrey)]))
     story += [KeepTogether([p('Mätresultat - ΔE00', 'Heading2'),table]), Spacer(1, 5*mm), p('Träningsfel är inte oberoende verifiering. Utskriften görs separat av användaren. Utskriftskedjan är inte verifierad av appen.')]
+    if r.get('patchOutliers'):
+        outliers=r['patchOutliers']
+        story += [p(outliers['title'],'Heading2'),p(outliers['basis']),p(outliers['message']),p(outliers['colourNote'])]
+        cards=[]
+        patches=outliers['patches']
+        if isinstance(patches,dict):patches=[patches]
+        for patch in patches:
+            swatch=Table([['']],colWidths=[8*mm],rowHeights=[8*mm])
+            swatch.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.HexColor(patch['hex'])),('BOX',(0,0),(-1,-1),.3,colors.grey)]))
+            marker='*' if patch['clipped'] else ''
+            label=f"ID {patch['sampleId']} | sida {patch['page']} / {patch['coordinate']}\n{patch['role']} | ΔE00 {patch['deltaE00']:.4f}\n{patch['hex']}{marker}"
+            card=Table([[swatch,p(label,'DetailReport')]],colWidths=[11*mm,43*mm])
+            card.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),2),('RIGHTPADDING',(0,0),(-1,-1),2)]))
+            cards.append(card)
+        if cards:
+            rows=[cards[i:i+3]+['']*(3-len(cards[i:i+3])) for i in range(0,len(cards),3)]
+            grid=Table(rows,colWidths=[57*mm]*3,hAlign='LEFT')
+            grid.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('GRID',(0,0),(-1,-1),.3,colors.lightgrey),('LEFTPADDING',(0,0),(-1,-1),1),('RIGHTPADDING',(0,0),(-1,-1),1)]))
+            story += [grid,Spacer(1,3*mm)]
+        story += [p('Källa: MediaStandard Print 2018, tabell 30 (ISO 12647-7:2016).')]
     if r.get('fwa'):
         story += [KeepTogether([p('FWA/OBA - val och resultat','Heading2'),p(r['fwa']['summaryText'])])]
     if r.get('reproductionLimits'):

@@ -79,6 +79,7 @@ if isfield(w.State.steps.c2.outputs,'reference')
  r.visualization=struct('file',"profile-lab-3d.png",'kind',"Predicted C2 patch Lab D50; not measured or full gamut", ...
   'reference',"verification.json",'referenceSHA256',inkprof.internal.sha256(reference));
 end
+r.patchOutliers=inkprof.internal.certificatePatchOutliers(jsondecode(fileread(w.output('c3','report'))));
 r.fwa=inkprof.internal.fwaReportSummary(r.results.checks_fit,r.results.c3_report,project.printing,digest);
 inkprof.internal.writeJson(paths.json,r);
 lines=["INKPROF – MÄTCERTIFIKAT";"Projekt: "+string(project.name);"Projekt-ID: "+string(project.projectId);"Datum: "+r.reportDate;"Användare: "+r.reportUser; ...
@@ -105,6 +106,10 @@ if isfield(c3,'repeatedPrintedPatches')&&isfield(c3.repeatedPrintedPatches,'summ
 end
 if isfield(fit,'summary'),addStats("Träningsdata (inte oberoende kontroll)",fit.summary);end
 for k=1:size(rows,1),lines(end+1)=strjoin(string(rows(k,:))," | ");end
+lines=[lines;"";upper(r.patchOutliers.title);r.patchOutliers.basis;r.patchOutliers.message;r.patchOutliers.colourNote];
+for patch=reshape(r.patchOutliers.patches,1,[])
+ lines(end+1)=sprintf('Sida %d / %s | ID %s | %s | sRGB %s | ΔE00 %.4f | över gräns %.4f',patch.page,patch.coordinate,patch.sampleId,patch.role,patch.hex,patch.deltaE00,patch.excess);
+end
 profileColorimetry=struct;if isfield(fit,'colorimetry'),profileColorimetry=fit.colorimetry;end
 lines=[lines;"";"UTSKRIFT OCH MÄTNING"; ...
  "Appen sparar TIFF16. Användaren skriver ut separat; appen genomför instrumentmätningen."; ...
@@ -148,7 +153,18 @@ html="<!doctype html><html lang='sv'><meta charset='utf-8'><meta name='viewport'
 for k=1:size(rows,1)
  html=html+"<tr>";for j=1:6,html=html+"<td>"+esc(string(rows{k,j}))+"</td>";end;html=html+"</tr>";
 end
-html=html+"</table><p>Träningsfel är inte oberoende verifiering. Utskrift sker separat; appen intygar inte utskriftskedjan.</p>"+ ...
+html=html+"</table><h2>"+esc(r.patchOutliers.title)+"</h2><p>"+esc(r.patchOutliers.basis)+"</p><p>"+esc(r.patchOutliers.message)+"</p><p>"+esc(r.patchOutliers.colourNote)+"</p>";
+for k=1:3:r.patchOutliers.count
+ html=html+"<div class='patch-row' style='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:8px;font-size:9pt'>";
+ for j=k:min(k+2,r.patchOutliers.count)
+  patch=r.patchOutliers.patches(j);mark="";if patch.clipped,mark="*";end
+  html=html+"<div style='border:1px solid #ccd8de;padding:6px;overflow-wrap:anywhere'><span style='display:inline-block;width:22px;height:22px;border:1px solid #777;background:"+patch.hex+";print-color-adjust:exact;-webkit-print-color-adjust:exact'></span> "+esc(patch.hex+mark)+ ...
+   "<br><strong>"+esc("ID "+patch.sampleId)+"</strong> · "+esc("sida "+patch.page+" / "+patch.coordinate)+ ...
+   "<br>"+esc(patch.role)+" · ΔE00 <strong>"+compose('%.4f',patch.deltaE00)+"</strong></div>";
+ end
+ html=html+"</div>";
+end
+html=html+"<p>Källa: <a href='"+esc(r.patchOutliers.source)+"'>MediaStandard Print 2018, tabell 30</a>.</p><p>Träningsfel är inte oberoende verifiering. Utskrift sker separat; appen intygar inte utskriftskedjan.</p>"+ ...
  "<h2>FWA/OBA - val och resultat</h2><p>"+replace(esc(r.fwa.summaryText),newline,"<br>")+"</p>"+ ...
  "<h2>Fysisk återgivningsförmåga och resultatets gränser</h2><p>"+esc(r.reproductionLimits)+"</p>"+ ...
  "<h2>Ansvar för utrustningens och materialens begränsningar</h2><p>"+esc(r.reproductionLiability)+"</p>"+ ...

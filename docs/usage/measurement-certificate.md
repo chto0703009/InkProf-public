@@ -51,3 +51,13 @@ Underskriften bekräftar att undertecknaren har granskat dokumentets förutsätt
 5. Lämna över ICC-filen tillsammans med mätcertifikatet. HTML-versionens tillhörande resursmapp måste följa med om HTML lämnas över.
 
 Äldre exporter skrivs inte om automatiskt. Kör leveranssteget igen för ett nytt certifikat. Interna `final-report.*`-filnamn och JSON-typen `inkprof.final-report` behålls för kompatibilitet med befintliga projekt. Det synliga dokumentnamnet är **Mätcertifikat**. Appens föreslagna externa filnamn är `measurement-certificate.pdf`.
+
+## Kompakt lista över patchavvikelser
+
+PDF och HTML visar tre kolumner med färgprov, referens-ID, sida/koordinat, patchtyp och uppmätt ΔE00 mot önskat D50-Lab. Alla unika kontrollpatchar med ΔE00 > 5 tas med och sorteras med störst fel först. Urvalet görs före avrundning; inga poster begränsas till en topp-lista. Färg-, grå- och challenge-patchar ingår. Upprepningar och pappersvit FWA-referens utesluts. Listan sidbryts vid behov. Om inga överskridanden finns anges det uttryckligen; saknat patchunderlag anges som ej bedömbart.
+
+Gränsen är en **ISO-relaterad jämförelsereferens**, inte en generell klassning som ”utanför ISO”. MediaStandard Print 2018, tabell 30, återger ISO 12647-7:2016 med max ΔE00 5 för samtliga fält i Fogra MediaWedge. Andra kriterier och särskilda patchgrupper har andra gränser och färgskillnadsmått. InkProfs eget RGB-kontrollmål är inte denna kontrollkil, och listan bedömer inte fullständig ISO-överensstämmelse. InkProfs grådiagnostik med ΔE00 2 är inte ISO:s gråbalansmått och används inte som urvalsgräns i denna lista.
+
+sRGB-provet beräknas från uppmätt Lab D50 via Bradford-anpassning till D65 och sRGB-kodning. Färger utanför sRGB klipps och märks med *. Hexvärdet sparas och visas som text även om dokumentet skrivs ut utan färg. ΔE00-värdet kommer från C3-mätjämförelsen och beräknas inte från skärmens sRGB-färg. JSON lagrar urvalsgräns, källa, antal bedömda patchar, fel, överskridande och färgdata för varje post.
+
+Källa: [bvdm, MediaStandard Print 2018, tabell 30, tryckt sida 50](https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf), kontrollerad 2026-10-02.
