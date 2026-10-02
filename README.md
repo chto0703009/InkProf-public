@@ -1,14 +1,20 @@
 # InkProf v0.9
 
-**Platform testing:** InkProf has been tested on macOS only. Windows and Linux have not been tested. See [tested platforms and limitations](docs/usage/tested-platforms.md).
-
 **InkProf - When colours have to be right**
 
 [Swedish description / Svenska](README.sv.md)
 
+For photographers, the carefully crafted image should reach paper with its intended colours, tones and expression. A smooth workflow builds confidence and satisfaction for photographers, printing businesses and clients. Calibration and verification can reduce reprints, save time, paper and ink, and improve consistency.
+
+InkProf brings measurement, profiling and print verification together. Open source reveals the methods; saved measurements, settings and decisions make results traceable. This helps you find errors and explain results to clients. Transparency builds understanding of the workflow and helps you handle challenging colours, right up to the limits of your chosen printer, paper and ink.
+
+Documented comparisons with standards-based limits support quality assessment without certifying full compliance. Verification results help establish what the chosen combination can achieve: a profile cannot reproduce colours, black density or contrast beyond the capabilities of the printer, paper and ink.
+
 InkProf is an open-source MATLAB application for RGB printer profiling: colour targets, spectral measurements, ICC generation, independent print verification and traceable refinement. Each project has its own folder, a persistent JSON workflow, prerequisites and a readable results log. You can close the app while prints dry and resume the same project later.
 
 The app saves TIFF16 targets for separate printing. Measurement is started in the app using a compatible spectrometer. ICC candidates are built with ArgyllCMS, checked numerically and assessed against a separately printed and measured verification target. After user approval, save the ICC file and PDF/HTML reports to locations of your choice. A rotatable CIELAB view shows the profile's predicted verification colours.
+
+**Platform testing:** InkProf has been tested on macOS only. Windows and Linux have not been tested. See [tested platforms and limitations](docs/usage/tested-platforms.md).
 
 ## Install and start
 

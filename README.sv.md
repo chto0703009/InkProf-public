@@ -4,7 +4,11 @@
 
 **InkProf – När färgerna måste bli rätt**
 
-InkProf hjälper dig att skapa och kontrollera färgprofiler för kombinationen skrivare, papper och bläck. En tydlig arbetsgång samlar målbild, mätningar, profilering och oberoende utskriftskontroll i ett projekt. Syftet är att göra arbetet spårbart och lättare att upprepa när färgerna måste bli rätt.
+För fotografen är målet att den omsorgsfullt framtagna bilden också ska komma till sin rätt på papper, med avsedda färger, toner och uttryck. Ett smidigt flöde från bild till utskrift ger trygghet och nöjdare fotografer, utskriftsföretag och kunder. Kalibrering och verifiering kan minska behovet av att göra nya utskrifter, spara arbetstid, papper och bläck och ge jämnare kvalitet.
+
+InkProf samlar mätning, profilering och utskriftskontroll. Öppen källkod ger insyn i metoderna; sparade mätdata, inställningar och beslut gör resultatet spårbart. Det hjälper dig att hitta fel och förklara resultatet för kunden. Transparensen skapar förståelse för flödet och hjälper dig att hantera svåra färger, ända till gränsen för vad vald skrivare, papper och bläck kan återge.
+
+Dokumenterade jämförelser med standarders gränser ger stöd för kvalitetsbedömningen, utan att intyga full standardöverensstämmelse. Kontrollresultaten visar vad den valda kombinationen klarar: en profil kan inte återge färger, svärta eller kontrast utanför skrivarens, papperets och bläckets förmåga.
 
 InkProf är en app i MATLAB med öppen källkod. Varje projekt har en egen mapp, en sparad arbetsgång i JSON (JavaScript Object Notation, ett format för strukturerade data) och en läsbar resultatlogg. Appen stoppar steg vars förutsättningar inte är uppfyllda. Du kan stänga appen medan utskrifter torkar och senare öppna samma projekt.
 
