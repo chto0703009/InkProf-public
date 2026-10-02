@@ -87,11 +87,29 @@ for wave=380:10:730,t.fields(end+1)="SPEC_"+wave;t.data(:,end+1)={"50"};end
 inkprof.importChartMeasurement(session,f);files=dir(fullfile(session,'measurement-*.json'));source=fullfile(files(1).folder,files(1).name);
 [folder,~]=inkprof.prepareProfileInput(source,ShowDialog=false);
 [oldFile,old]=inkprof.createProfileRecipe(folder,ShowDialog=false);digest=inkprof.internal.sha256(source);
-inkprof.updateProject(project,Printing=struct('fwaCompensation',true));
-[newFile,new]=inkprof.createProfileRecipe(folder,ShowDialog=false);
+[newFile,new]=inkprof.createProfileRecipe(folder,Printing=struct('fwaCompensation',true),ShowDialog=false);
+manifest=jsondecode(fileread(fullfile(project,'inkprof-project.json')));verifyTrue(tc,manifest.printing.fwaCompensation);
 verifyFalse(tc,old.colorimetry.fwaCompensation);verifyTrue(tc,new.colorimetry.fwaCompensation);
 verifyNotEqual(tc,oldFile,newFile);verifyTrue(tc,isfile(oldFile));
 verifyEqual(tc,string(new.colorimetry.fwaIlluminant),"D50");verifyTrue(tc,any(new.engine.plannedArguments=="-f"));
 verifyEqual(tc,inkprof.internal.sha256(source),digest);
 verifyError(tc,@()inkprof.createProfileRecipe(folder,DataMode="storedXYZ",ShowDialog=false),'inkprof:FWA');
+% Save the later choice through the actual B2 UI while run() owns the lock.
+workflow=inkprof.ProjectWorkflow(project);state=workflow.State;
+for key=string(fieldnames(state.steps))',state.steps.(key).status="completed";end
+state.steps.input.outputs.input=workflow.relative(fullfile(folder,'profile-input.json'));
+inkprof.internal.writeJson(fullfile(project,'workflow.json'),state);workflow.reload();
+t=timer('ExecutionMode','fixedSpacing','Period',.5,'TimerFcn',@saveRecipeWithoutFWA);
+timerCleanup=onCleanup(@()deleteTimer(t));start(t);workflow.run("recipe");deleteTimer(t);
+manifest=jsondecode(fileread(fullfile(project,'inkprof-project.json')));verifyFalse(tc,manifest.printing.fwaCompensation);
+verifyTrue(tc,workflow.valid('input'));verifyTrue(tc,workflow.valid('recipe'));verifyFalse(tc,workflow.valid('profile'));
+saved=jsondecode(fileread(workflow.output('recipe','recipe')));verifyFalse(tc,saved.colorimetry.fwaCompensation);
+verifyFalse(tc,isfile(fullfile(project,'.workflow.lock')));
+
+end
+
+function saveRecipeWithoutFWA(t,~)
+b=findall(groot,'Tag','SaveProfileRecipe');c=findall(groot,'Tag','RecipeFWA');
+if isempty(b)||isempty(c),return;end
+stop(t);c.Value=false;cb=b.ButtonPushedFcn;cb(b,[]);
 end

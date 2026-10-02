@@ -67,7 +67,7 @@ switch id
   if folder=="",cancel();end
   out.input=fullfile(folder,'profile-input.json');files=allFiles(folder);
  case "recipe"
-  [file,~]=inkprof.createProfileRecipe(fileparts(w.output('input','input')),Printing=project.printing,ProjectPrinting=true);
+  [file,~]=inkprof.createProfileRecipe(fileparts(w.output('input','input')),Printing=project.printing,ProjectPrinting=true,SyncProjectFWA=false);
   if file=="",cancel();end
   out.recipe=file;files=file;
  case "profile"

@@ -178,6 +178,13 @@ end
             if strcmp(choice,'Cancel'),o=[];return;end
             o.Mode="automatic";if strcmp(choice,'Manual B3'),o.Mode="manual";end
             if o.Mode=="automatic"
+                record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+                enabled=isfield(record.printing,'fwaCompensation')&&isequal(record.printing.fwaCompensation,true);
+                default=2;if enabled,default=1;end
+                choice=uiconfirm(fig,'Use FWA/OBA compensation to D50? The saved choice updates Project details. Requires native M0 spectra, a known instrument and measured paper white.','FWA / OBA', ...
+                    'Options',{'Enable FWA','Disable FWA','Cancel'},'DefaultOption',default,'CancelOption',3);
+                if strcmp(choice,'Cancel'),o=[];return;end
+                o.FWACompensation=strcmp(choice,'Enable FWA');
                 choice=uiconfirm(fig,'Is there a separate RoleFile defining training, development and verification patches?','Patch roles', ...
                     'Options',{'Select RoleFile','No separate role file','Cancel'},'CancelOption',3);
                 if strcmp(choice,'Cancel'),o=[];return;end

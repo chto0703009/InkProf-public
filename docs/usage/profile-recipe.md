@@ -40,3 +40,5 @@ Installerad colprof 3.5.0 provades separat med rättade 575-data och explicit sp
 Argyll beskriver `-i`/`-o` för spektralintegration och `-f` för FWA. Se [officiell colprof-dokumentation](https://www.argyllcms.com/doc/colprof.html). Lagrade XYZ-vägens filförberedelse och fullständiga profilbyggen verifieras i B3/B4.
 
 B2A-valet sparas som `engine.b2aQuality` och explicit `-bh`/`-bm` i motorargumenten. Äldre recept utan fältet körs med sina ursprungliga argument och ändras inte automatiskt. Ett nytt recept och jobb krävs för tätare B2A. Tätare tabell minskar approximationsfel men garanterar inte en entydig invers eller fysisk utskriftskvalitet.
+
+FWA/OBA kan väljas direkt i receptdialogen. När ett ändrat val sparas uppdateras även projektdefinitionen och beroende resultat blir inaktuella. Råmätningen och låst B1 bevaras. Se [FWA/OBA och senare val](optical-brighteners.md).

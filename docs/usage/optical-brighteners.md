@@ -71,3 +71,13 @@ Vi har ännu inte visat att optiska vitmedel orsakar de aktuella lokala felen i 
 Källorna granskades 2026-09-29. Webbdokumentationens funktioner måste kontrolleras mot installerad Argyll-version innan de införs i kod.
 
 Argyll colprof/profcheck-kedjan med `-f D50` testades 2026-10-02 med ArgyllCMS 3.5.0 och syntetiska spektraldata. Det verifierar programflödet, inte fysisk utskriftsnoggrannhet.
+
+## Senare val och rapportering (2026-10-02)
+
+FWA behöver inte väljas när projektet skapas. Valet kan också göras i **B2 → FWA / OBA** eller i FWA-frågan när **Automatic** profilering startas. När valet sparas uppdateras projektdefinitionens `printing.fwaCompensation`. En ändring loggas i `workflow.json` och resultatloggen med tidigare och nytt val samt var valet gjordes. Avbryts valdialogen sparas inget nytt FWA-val.
+
+Vid ett senare FWA-val behålls råmätningen och låst B1-underlag. Tidigare recept, profiler och efterföljande godkännanden blir inaktuella men deras filer finns kvar. Ett B2-recept som precis sparas med det nya valet blir aktuellt när steget slutförts. Automatisk profilering använder det nya valet för samtliga kandidater. Direkt ändring av övriga projektuppgifter följer projektets vanliga regler för ombyggnad.
+
+Mätcertifikatet har avsnittet **FWA/OBA - val och resultat**. Det visar om kompensation faktiskt användes i den levererade profilen, sparat projektval, simulerad belysning samt ΔE00-medel, P95, maximum och antal patchar för träningsanpassning och kontrollutskrift. Uppgiften om faktisk användning kommer från profilens sparade beräkningsunderlag, inte enbart från kryssrutan. Äldre underlag utan dokumenterat FWA-läge anges som **Ej dokumenterat**. Olika FWA-lägen i profil- och kontrollunderlaget stoppar exporten.
+
+Resultaten är profilens resultat med vald inställning. En förbättring eller försämring orsakad av FWA beräknas inte automatiskt genom att jämföra godtyckliga tidigare iterationer. Certifikatet anger att effekten jämfört med en motsvarande profil utan FWA är **Ej utvärderad** när en kontrollerad jämförelse inte redovisas. Det undviker att exempelvis nya mätningar eller ändrad profilutjämning felaktigt tillskrivs FWA.

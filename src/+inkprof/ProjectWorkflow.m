@@ -85,11 +85,19 @@ classdef ProjectWorkflow < handle
                 assert(~isfield(obj.State,'activeContinuation'),'inkprof:WorkflowBlocked','A continued iteration uses the combined inputs through automatic continuation.');
                 [ok,reason]=obj.valid('recipe');assert(ok,'inkprof:WorkflowBlocked','B2 is required: %s',reason);
             end
+            if id=="profile"&&isfield(options,'FWACompensation')
+                assert(~isfield(options,'Mode')||string(options.Mode)~="manual",'inkprof:FWA','Change FWA in B2 before a manual build.');
+                assert(islogical(options.FWACompensation)&&isscalar(options.FWACompensation),'inkprof:FWA','FWA selection must be logical.');
+                obj.applyFWA(options.FWACompensation,"automatic-profiling");
+            end
             % Invalidate descendants before starting, including cancelled reruns.
             obj.invalidate(id);obj.State.currentStep=id;
             obj.State.steps.(id).status="running";obj.State.steps.(id).message="Running";obj.event(id,"started",options);obj.save();
             try
                 [outputs,files]=inkprof.internal.executeWorkflowStep(obj,id,options);
+                if id=="recipe"&&isfield(outputs,'recipe')
+                    recipe=jsondecode(fileread(outputs.recipe));obj.applyFWA(logical(recipe.colorimetry.fwaCompensation),"profiling-recipe");
+                end
                 assert(~isempty(files),'inkprof:Cancelled','Cancelled without saved results.');
                 artifacts=struct('path',{},'sha256',{});
                 for f=reshape(string(files),1,[])
@@ -119,6 +127,14 @@ classdef ProjectWorkflow < handle
                 obj.event(id,status,string(err.message));obj.save();rethrow(err)
             end
             clear lock
+        end
+        function setFWA(obj,enabled,source)
+            arguments
+                obj
+                enabled (1,1) logical
+                source (1,1) string = "later-selection"
+            end
+            lock=obj.lock();obj.reload();obj.applyFWA(enabled,source);clear lock
         end
         function record=editDetails(obj,details)
             % Update shared metadata and rename the project folder without changing evidence.
@@ -228,6 +244,18 @@ classdef ProjectWorkflow < handle
         end
     end
     methods (Access=private)
+        function applyFWA(obj,enabled,source)
+            record=jsondecode(fileread(fullfile(obj.Root,'inkprof-project.json')));
+            previous=isfield(record.printing,'fwaCompensation')&&isequal(record.printing.fwaCompensation,true);
+            recorded=isfield(record.printing,'fwaCompensation');
+            if recorded&&previous==enabled,return;end
+            % Raw measurements and B1 remain valid; B2/profile and approvals do not.
+            if previous~=enabled,obj.invalidate("recipe");end
+            obj.save();
+            inkprof.updateProject(obj.Root,Step="fwa-selection",Printing=struct('fwaCompensation',enabled));
+            obj.event("fwa-selection","updated",struct('before',previous,'after',enabled,'previouslyRecorded',recorded,'source',source));obj.save();
+            inkprof.internal.recordProjectStep(obj.Root,"fwa-selection-audited");
+        end
         function file=stateFile(obj),file=fullfile(obj.Root,'workflow.json');end
         function cleanup=lock(obj)
             file=fullfile(obj.Root,'.workflow.lock');

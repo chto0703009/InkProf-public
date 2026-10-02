@@ -17,8 +17,9 @@ if isfield(s,'projectPrinting')&&s.projectPrinting
 end
 uilabel(g,'Text','Colour data');mode=uidropdown(g,'Items',{'Spectra (D50 / 2 degrees)','Stored XYZ'}, ...
  'ItemsData',{'spectral','storedXYZ'},'Value',char(s.dataMode),'Tag','RecipeMode');
-fwaText="OFF";if isfield(s.printing,'fwaCompensation')&&isequal(s.printing.fwaCompensation,true),fwaText="ON (simulated D50)";end
-uilabel(g,'Text','Profile calculation');uilabel(g,'Text',"Argyll Lab cLUT; FWA/OBA "+fwaText+". Set in Project details.",'WordWrap','on');
+uilabel(g,'Text','FWA / OBA');
+fwa=uicheckbox(g,'Text','Compensate to D50 (also updates Project details)', ...
+ 'Value',isfield(s.printing,'fwaCompensation')&&isequal(s.printing.fwaCompensation,true),'Tag','RecipeFWA');
 if ~isfield(s,'b2aQuality'),s.b2aQuality="high";end
 uilabel(g,'Text','Inverse table (B2A)');b2a=uidropdown(g,'Items',{'High (denser)','Medium (baseline)'}, ...
  'ItemsData',{'high','medium'},'Value',char(s.b2aQuality),'Tag','RecipeB2AQuality');
@@ -38,6 +39,10 @@ closeFigure(f);
   if (strcmp(mode.Value,'spectral')&&~hasSpectra)||(strcmp(mode.Value,'storedXYZ')&&~hasXYZ)
    uialert(f,'The selected data type is unavailable in this measurement.','Recipe');return
   end
+  if fwa.Value && (~hasSpectra||~strcmp(mode.Value,'spectral'))
+   uialert(f,'FWA/OBA requires spectral data. Select Spectra or disable compensation.','FWA / OBA');return
+  end
+  s.printing.fwaCompensation=logical(fwa.Value);
   s.b2aQuality=string(b2a.Value);
   s.name=string(name.Value);s.description=string(description.Value);s.dataMode=string(mode.Value);
   for j=1:numel(keys)

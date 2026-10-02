@@ -8,6 +8,10 @@ Certifikatet innehåller projektets namn och ID, projektansvarig, dokumentets an
 
 Den levererade profilens SHA-256 identifierar exakt vilken ICC-fil resultatet gäller. Träningsfel och resultat från kontrollutskriften redovisas separat. Mätvillkor, eventuell FWA/OBA-kompensation, källunderlag, bedömning och historik följer med. Certifikatet redovisar underlaget; det innebär inte ackreditering, kalibreringscertifiering av instrumentet eller automatisk ISO-överensstämmelse.
 
+## FWA/OBA - val och resultat
+
+Certifikatet redovisar faktisk användning av FWA, projektets val, simulerad belysning och profilens tränings- och kontrollresultat (antal patchar, ΔE00-medel, P95 och maximum). Saknad dokumentation markeras som okänd. Resultat för en kompenserad profil är inte i sig bevis för förbättring genom FWA; en kontrollerad jämförelse utan kompensation redovisas inte automatiskt. Se [FWA/OBA](optical-brighteners.md).
+
 ## Fysisk återgivningsförmåga och resultatets gränser
 
 Resultatet med en ICC-profil är beroende av vad kombinationen **skrivare, papper och bläck** fysiskt kan återge. Papperets vithet, yta och optiska vitmedel, bläckets egenskaper samt skrivarens och drivrutinens inställningar begränsar färgomfång, svärta, kontrast och tonåtergivning.

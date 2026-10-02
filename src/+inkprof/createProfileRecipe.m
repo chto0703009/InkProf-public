@@ -11,6 +11,7 @@ arguments
  options.Printing (1,1) struct = struct
  options.ShowDialog (1,1) logical = true
  options.ProjectPrinting (1,1) logical = false
+ options.SyncProjectFWA (1,1) logical = true
 end
 recipeFile="";recipe=[];
 if inputFolder==""
@@ -96,6 +97,19 @@ recipe=struct('schemaVersion',1,'documentType',"inkprof.profile-recipe", ...
  'quality',options.A2BQuality,'smoothing',options.Smoothing,'b2aQuality',settings.b2aQuality,'algorithm',"Lab cLUT",'plannedArguments',args, ...
  'version',"record at build time",'iccVersion',"inspect generated file",'gamutMapping',"engine default; no source gamut supplied"), ...
  'status',"recipe-saved-not-built");
+% Synchronize only after validating the saved choice. Workflow B2 synchronizes
+% through its owning controller, which already holds the workflow lock.
+if project~=""&&options.SyncProjectFWA
+ current=jsondecode(fileread(fullfile(project,'inkprof-project.json')));
+ previous=isfield(current.printing,'fwaCompensation')&&isequal(current.printing.fwaCompensation,true);
+ if previous~=fwa
+  if isfile(fullfile(project,'workflow.json'))
+   workflow=inkprof.ProjectWorkflow(project);workflow.setFWA(fwa,"profiling-recipe");
+  else
+   inkprof.updateProject(project,Step="fwa-selection-at-recipe",Printing=struct('fwaCompensation',fwa));
+  end
+ end
+end
 base=fullfile(inputFolder,'recipes');if ~isfolder(base),mkdir(base);end
 stage=string(tempname(base));mkdir(stage);cleanup=onCleanup(@()removeStage(stage));
 inkprof.internal.writeJson(fullfile(stage,'recipe.json'),recipe);

@@ -24,6 +24,7 @@ def create(folder):
         s.fontName = 'Report'
     styles.add(ParagraphStyle('BodyReport', fontName='Report', fontSize=9, leading=13, spaceAfter=7, wordWrap='CJK'))
     styles.add(ParagraphStyle('DetailReport', fontName='Report', fontSize=8, leading=11, spaceAfter=5, wordWrap='CJK'))
+    styles.add(ParagraphStyle('DetailHeading', fontName='ReportBold', fontSize=8, leading=11, spaceAfter=5, keepWithNext=True))
     styles.add(ParagraphStyle('FooterUser', fontName='Report', fontSize=8, leading=10, alignment=1))
     styles['Title'].fontName = styles['Heading2'].fontName = 'ReportBold'
     styles['Title'].textColor = colors.HexColor('#19303c')
@@ -61,12 +62,14 @@ def create(folder):
                               ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                               ('LINEBELOW', (0, 0), (-1, -1), .3, colors.lightgrey)]))
     story += [KeepTogether([p('Mätresultat - ΔE00', 'Heading2'),table]), Spacer(1, 5*mm), p('Träningsfel är inte oberoende verifiering. Utskriften görs separat av användaren. Utskriftskedjan är inte verifierad av appen.')]
+    if r.get('fwa'):
+        story += [KeepTogether([p('FWA/OBA - val och resultat','Heading2'),p(r['fwa']['summaryText'])])]
     if r.get('reproductionLimits'):
-        story += [p('Fysisk återgivningsförmåga och resultatets gränser','Heading2'),p(r['reproductionLimits'])]
+        story += [KeepTogether([p('Fysisk återgivningsförmåga och resultatets gränser','Heading2'),p(r['reproductionLimits'])])]
     if r.get('reproductionLiability'):
-        story += [p('Ansvar för utrustningens och materialens begränsningar','Heading2'),p(r['reproductionLiability'])]
+        story += [KeepTogether([p('Ansvar för utrustningens och materialens begränsningar','Heading2'),p(r['reproductionLiability'])])]
     if r.get('clientPrintResponsibility'):
-        story += [p('Beställarens utskrifter och uppgifter','Heading2'),p(r['clientPrintResponsibility'])]
+        story += [KeepTogether([p('Beställarens utskrifter och uppgifter','Heading2'),p(r['clientPrintResponsibility'])])]
     if r.get('warrantyNotice'):
         story += [p('Garanti och ansvar', 'Heading2'), p(r['warrantyNotice'])]
     if (folder / 'profile-lab-3d.png').is_file():
@@ -77,7 +80,7 @@ def create(folder):
     # Flowing paragraphs paginate long notes, file paths and histories safely.
     for line in (folder / 'final-report.txt').read_text(encoding='utf-8').rsplit('\nUNDERSKRIFT\n',1)[0].splitlines():
         if line.strip():
-            story.append(p(line, 'DetailReport'))
+            story.append(p(line, 'DetailHeading' if line.isupper() and len(line)<120 else 'DetailReport'))
         else:
             story.append(Spacer(1, 2*mm))
 

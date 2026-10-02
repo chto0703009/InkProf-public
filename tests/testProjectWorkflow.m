@@ -130,6 +130,7 @@ verifyEqual(tc,string(r.profile.sha256),inkprof.internal.sha256(w.output('export
 verifyEqual(tc,string(r.iterationId),string(w.State.iterationId));verifyEqual(tc,r.iteration,1);
 verifyEqual(tc,string(r.reportUser),"Christer Törnkvist");verifyEqual(tc,string(r.pageHeader),"InkProf Quality Profiling RGB printer");
 verifyEqual(tc,r.results.c3_report.summary.mean,1.25);verifyFalse(tc,r.printing.verifiedByApp);
+verifyTrue(tc,isfield(r,'fwa'));verifyTrue(tc,contains(r.fwa.summaryText,'FWA-effekt'));
 verifyEqual(tc,string(r.documentTitle),"InkProf - mätcertifikat");verifyNotEmpty(tc,r.certificateId);
 verifyTrue(tc,contains(r.reproductionLiability,'enbart beror'));verifyTrue(tc,contains(r.reproductionLiability,'tvingande lag'));
 verifyTrue(tc,contains(r.clientPrintResponsibility,'Om beställaren'));verifyTrue(tc,contains(r.clientPrintResponsibility,'tvingande lag'));
@@ -262,4 +263,34 @@ verifyTrue(tc,fresh.valid('measurement'));verifyFalse(tc,fresh.valid('profile'))
 verifyEqual(tc,inkprof.internal.sha256(profile),digest);
 a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));verifyTrue(tc,a.printing.fwaCompensation);
 verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.jsonl')),'fwaCompensation'));
+end
+
+function testLaterFWAChoiceUpdatesProjectAndKeepsInput(tc)
+w=finalReportFixture(tc);profile=w.output('profile','profile');digest=inkprof.internal.sha256(profile);
+w.setFWA(true,"profiling-recipe");fresh=inkprof.ProjectWorkflow(w.Root);
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));verifyTrue(tc,a.printing.fwaCompensation);
+verifyTrue(tc,fresh.valid('input'));verifyTrue(tc,fresh.valid('measurement'));
+verifyFalse(tc,fresh.valid('recipe'));verifyFalse(tc,fresh.valid('profile'));verifyFalse(tc,fresh.ready('export'));
+verifyEqual(tc,inkprof.internal.sha256(profile),digest);
+verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.jsonl')),'fwa-selection'));
+fresh.setFWA(false);a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));verifyFalse(tc,a.printing.fwaCompensation);
+end
+function testFWACertificateUsesBuiltProfileEvidence(tc)
+s=struct('count',12,'mean',1.2,'p95',2,'max',3);
+fit=struct('summary',s,'colorimetry',struct('fwaCompensation',true,'fwaIlluminant',"D50"));
+c3=fit;r=inkprof.internal.fwaReportSummary(fit,c3,struct('fwaCompensation',false),"hash");
+verifyTrue(tc,r.applied);verifyFalse(tc,r.projectChoice);verifyEqual(tc,r.trainingResult.mean,1.2);
+verifyTrue(tc,contains(r.summaryText,'Ja -'));verifyTrue(tc,contains(r.summaryText,'1.200'));
+verifyTrue(tc,contains(r.effectComparedWithUncompensated,'Ej utvärderad'));
+fit.colorimetry.fwaCompensation=false;
+verifyError(tc,@()inkprof.internal.fwaReportSummary(fit,c3,struct,"hash"),'inkprof:FinalReport');
+c3=fit;r=inkprof.internal.fwaReportSummary(fit,c3,struct,"hash");verifyFalse(tc,r.applied);verifyTrue(tc,contains(r.summaryText,'Nej -'));
+r=inkprof.internal.fwaReportSummary(struct,struct,struct('fwaCompensation',true),"hash");verifyEmpty(tc,r.applied);verifyEqual(tc,r.status,"Ej dokumenterat");
+end
+
+function testExplicitFWAOffIsRecordedWithoutInvalidation(tc)
+w=finalReportFixture(tc);w.setFWA(false,"automatic-profiling");
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));verifyFalse(tc,a.printing.fwaCompensation);
+verifyTrue(tc,w.valid('profile'));verifyTrue(tc,w.valid('input'));
+verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.jsonl')),'previouslyRecorded'));
 end
