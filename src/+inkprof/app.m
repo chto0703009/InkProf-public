@@ -115,17 +115,39 @@ end
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
             hint.Value=cellstr([reason;instruction(selected)]);
             printButton.Enable=matlab.lang.OnOffSwitchState(assessment.(selected).valid&&any(startsWith(string(fieldnames(w.State.steps.(selected).outputs)),"TIFF16_")));
-            step=w.State.steps.(selected);lines=["Iteration "+w.State.cycle;"Status: "+string(data{index,2});"";string(step.message);"";"Saved results:"];
+            step=w.State.steps.(selected);lines=["Iteration "+w.State.cycle;"Status: "+string(data{index,2});""];
             names=string(fieldnames(step.outputs));
+            resultStep=selected;
             if isempty(names)
-                lines(end+1)="This selected step has not produced results yet.";
-                previous=string(w.State.currentStep);
-                if previous~=selected&&isfield(w.State.steps,previous)&&assessment.(previous).valid
-                    saved=inkprof.internal.savedTargetSummary(w,previous);
-                    if ~isempty(saved),lines=[lines;"";"Already saved in this project:";saved];end
+                complete=string({defs.id});
+                complete=complete(arrayfun(@(id)assessment.(id).valid,complete));
+                if isempty(complete)
+                    lines=[lines;"Ready to begin. Completed work and saved files will appear here."];
+                else
+                    lines=[lines;"Completed work in this iteration:"];
+                    for id=complete
+                        label=string(defs(find(string({defs.id})==id,1)).label);
+                        lines(end+1)="✓ "+label;
+                    end
+                    previous=string(w.State.currentStep);
+                    if previous~=selected&&isfield(w.State.steps,previous)&&assessment.(previous).valid
+                        resultStep=previous;
+                        step=w.State.steps.(previous);names=string(fieldnames(step.outputs));
+                        label=string(defs(find(string({defs.id})==previous,1)).label);
+                        lines=[lines;"";"Last completed step: "+label];
+                    end
                 end
-            elseif assessment.(selected).valid
-                lines=[lines;inkprof.internal.savedTargetSummary(w,selected);""];
+                if assessment.(selected).ready
+                    lines=[lines;"";"Next: "+string(defs(index).label);"Use Run selected step to continue."];
+                else
+                    lines=[lines;"";"Selected step: "+string(defs(index).label);string(assessment.(selected).reason)];
+                end
+                if ~isempty(names),lines=[lines;"";"Results saved from the completed step:"];end
+            else
+                lines=[lines;string(step.message);"";"Saved results for this step:"];
+            end
+            if assessment.(resultStep).valid
+                lines=[lines;inkprof.internal.savedTargetSummary(w,resultStep);""];
             end
             for name=names',lines=[lines;name+":";w.resolve(step.outputs.(name));""];end %#ok<AGROW>
             details.Value=cellstr(lines);
