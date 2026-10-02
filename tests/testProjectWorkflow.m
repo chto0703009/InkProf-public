@@ -159,7 +159,10 @@ verifyEqual(tc,string(r.projectDetails(string({r.projectDetails.label})=="Skriva
 verifyTrue(tc,contains(fileread(w.output('export','reportText')),'Ort och datum:'));
 
 h=fileread(w.output('export','finalReport'));verifyTrue(tc,contains(h,'Mätresultat – färgprov och ΔE00'));verifyFalse(tc,contains(h,'<th>Grupp</th>'));verifyTrue(tc,contains(h,'1.250'));
-verifyTrue(tc,contains(h,'Underskrift av mätcertifikat'));verifyTrue(tc,contains(h,'Certificate printer &lt;demo&gt;'));
+verifyTrue(tc,contains(h,'Underskrift av mätcertifikat'));
+verifyGreaterThan(tc,strfind(h,'Bilaga A – Juridiska villkor'),strfind(h,'Underskrift av mätcertifikat'));
+verifyEqual(tc,numel(strfind(h,'Ansvar för utrustningens och materialens begränsningar')),1);
+txt=fileread(w.output('export','reportText'));verifyGreaterThan(tc,strfind(txt,'BILAGA A – JURIDISKA VILLKOR'),strfind(txt,'UNDERSKRIFT'));verifyTrue(tc,contains(h,'Certificate printer &lt;demo&gt;'));
 verifyTrue(tc,contains(h,"class='lab-canvas'"));verifyTrue(tc,contains(h,'requestAnimationFrame'));
 plot=regexp(h,"<script type='application/json' class='lab-data'>(.*?)</script>",'tokens','once');
 points=jsondecode(plot{1});verifyEqual(tc,size(points.lab),[12 3]);verifyEqual(tc,size(points.rgb),[12 3]);
@@ -344,6 +347,8 @@ verifyFalse(tc,r.verification.separatePrintVerified);verifyFalse(tc,r.verificati
 verifyEqual(tc,string(r.scopeStatement),"Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.");
 verifyFalse(tc,isfield(r.sources,'c3'));verifyFalse(tc,isfield(r,'approval'));
 verifyTrue(tc,isfile(w.output('numericalExport','reportPDF')));
+h=fileread(w.output('numericalExport','finalReport'));verifyGreaterThan(tc,strfind(h,'Bilaga A - Juridiska villkor'),strfind(h,'<h1>Underskrift</h1>'));
+verifyTrue(tc,isfield(r,'legalAppendix'));
 verifyTrue(tc,contains(fileread(w.output('numericalExport','finalReport')),'inte verifierad genom separat utskrift'));
 f=inkprof.app(w.Root);verifyEqual(tc,string(findobj(f,'Tag','openFinalReport').Enable),"on");delete(f);
 file=w.output('checks','c1');fid=fopen(file,'a');fprintf(fid,' ');fclose(fid);

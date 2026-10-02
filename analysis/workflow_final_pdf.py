@@ -66,12 +66,6 @@ def create(folder):
         story += [KeepTogether([p('FWA/OBA - val och resultat','Heading2'),p(r['fwa']['summaryText'])])]
     if r.get('reproductionLimits'):
         story += [KeepTogether([p('Fysisk återgivningsförmåga och resultatets gränser','Heading2'),p(r['reproductionLimits'])])]
-    if r.get('reproductionLiability'):
-        story += [KeepTogether([p('Ansvar för utrustningens och materialens begränsningar','Heading2'),p(r['reproductionLiability'])])]
-    if r.get('clientPrintResponsibility'):
-        story += [KeepTogether([p('Beställarens utskrifter och uppgifter','Heading2'),p(r['clientPrintResponsibility'])])]
-    if r.get('warrantyNotice'):
-        story += [p('Garanti och ansvar', 'Heading2'), p(r['warrantyNotice'])]
     if (folder / 'profile-lab-3d.png').is_file():
         story += [PageBreak(), p('Profilens beräknade kontrollfärger i 3D', 'Heading2'),
                   p('Kontrollmålets patchar i CIELAB D50. Detta är profilens beräknade värden, inte mätningar eller hela skrivarens färgomfång.'),
@@ -99,6 +93,13 @@ def create(folder):
                   Spacer(1,80*mm),p(r['signature']['statement']),Spacer(1,12*mm)]
         for label in ('Ort och datum','Underskrift','Namnförtydligande','Organisation / roll'):
             story += [p(label+': __________________________________________________'),Spacer(1,12*mm)]
+
+    story += [PageBreak(), p('Bilaga A - Juridiska villkor', 'Title')]
+    for key, title in [('reproductionLiability', 'Ansvar för utrustningens och materialens begränsningar'),
+                       ('clientPrintResponsibility', 'Beställarens utskrifter och uppgifter'),
+                       ('warrantyNotice', 'Garanti och ansvar')]:
+        if r.get(key):
+            story += [p(title, 'Heading2'), p(r[key])]
 
     class NumberedCanvas(Canvas):
         def __init__(self, *args, **kwargs):

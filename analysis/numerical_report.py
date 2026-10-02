@@ -63,6 +63,13 @@ def create(folder):
         'Ort och datum: ____________________________________',
         'Underskrift: ______________________________________',
         'Namnförtydligande: _________________________________']))
+    legal = r.get('legalAppendix', {})
+    if legal:
+        sections.append(('Bilaga A - Juridiska villkor', [
+            title+': '+legal[key] for key, title in [
+                ('reproductionLiability', 'Ansvar för utrustningens och materialens begränsningar'),
+                ('clientPrintResponsibility', 'Beställarens utskrifter och uppgifter'),
+                ('warrantyNotice', 'Garanti och ansvar')] if legal.get(key)]))
     text = '\n\n'.join(title+'\n'+'\n'.join(lines) for title, lines in sections)
     (folder / 'final-report.txt').write_text(text, encoding='utf-8')
     # Each HTML section is a page with an explicit footer, also when printed.
@@ -78,7 +85,7 @@ def create(folder):
     styles.add(ParagraphStyle('ReportBody', fontName='Helvetica', fontSize=10, leading=14, spaceAfter=9, wordWrap='CJK'))
     story = []
     for title, lines in sections:
-        if title == 'Projekt och utskriftsinställningar':
+        if title in ('Projekt och utskriftsinställningar', 'Bilaga A - Juridiska villkor'):
             story.append(PageBreak())
         story.append(Paragraph(html.escape(title), styles['Heading2']))
         for line in lines:

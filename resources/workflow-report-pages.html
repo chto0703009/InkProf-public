@@ -22,7 +22,11 @@ body{max-width:none;margin:0;padding:0;background:#e9edef}
  const originals=Array.from(document.body.children).filter(n=>!['STYLE','SCRIPT'].includes(n.tagName));
  const units=[];
  for(const node of originals){
-  if(node.tagName==='PRE'){
+  if(node.classList.contains('legal-appendix')){
+   const children=Array.from(node.children).map(n=>n.cloneNode(true));
+   if(children.length)children[0].dataset.newPage='true';
+   units.push(...children);
+  }else if(node.tagName==='PRE'){
    for(const line of node.textContent.split('\n')){const p=document.createElement('p');p.className='detail';p.textContent=line||'\u00a0';units.push(p);}
   }else if(node.tagName==='UL'){
    for(const li of node.children){const ul=document.createElement('ul');ul.append(li.cloneNode(true));units.push(ul);}
@@ -43,6 +47,7 @@ body{max-width:none;margin:0;padding:0;background:#e9edef}
  const over=()=>content.scrollHeight>content.clientHeight+1;
  page();
  for(const unit of units){
+  if(unit.dataset.newPage==='true'&&content.children.length)page();
   content.append(unit);
   if(over()&&content.children.length>1){
    unit.remove();const last=content.lastElementChild;let heading=null;
