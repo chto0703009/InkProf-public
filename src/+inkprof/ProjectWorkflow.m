@@ -211,7 +211,7 @@ classdef ProjectWorkflow < handle
             if printingChanged
                 obj.invalidate("input");
             else
-                obj.invalidate("export");
+                obj.invalidate("export");obj.invalidate("numericalExport");
             end
             % Save invalidation first: an interrupted edit must not leave an old report current.
             obj.save();
@@ -254,7 +254,7 @@ classdef ProjectWorkflow < handle
                 if action=="accept"
                     newName=inkprof.internal.projectFolderName(mismatch.actualName);
                     assert(newName==mismatch.actualName,'inkprof:ProjectName','Remove leading or trailing spaces from the folder name before accepting it.');
-                    obj.invalidate("export");obj.save();
+                    obj.invalidate("export");obj.invalidate("numericalExport");obj.save();
                     record=inkprof.updateProject(obj.Root,Step="external-folder-name-accepted",Name=newName,FolderName=newName);
                     decision.resultingProjectName=newName;
                 elseif action=="restore"

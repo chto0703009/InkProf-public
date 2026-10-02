@@ -63,7 +63,7 @@ verifyError(tc,@()w.run('definition'),'inkprof:WorkflowBusy');delete(f);
 end
 function testUIResume(tc)
 w=tc.TestData.w;saveDefinition(tc);f=inkprof.app(w.Root);cleanup=onCleanup(@()delete(f));drawnow;
-t=findobj(f,'Tag','workflowSteps');verifySize(tc,t.Data,[18 2]);
+t=findobj(f,'Tag','workflowSteps');verifySize(tc,t.Data,[19 2]);
 verifyEqual(tc,t.Data{1,2},'Complete');verifyEqual(tc,t.Data{2,2},'Ready');verifyEqual(tc,t.Data{8,2},'Locked');
 verifyNotEmpty(tc,findobj(f,'Tag','closeWorkflowApp'));
 verifyNotEmpty(tc,findobj(f,'Tag','openResultLog'));verifyNotEmpty(tc,findobj(f,'Tag','iterationHistory'));verifyNotEmpty(tc,findobj(f,'Tag','openFinalReport'));
@@ -328,4 +328,31 @@ inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
 verifyTrue(tc,w.ready('compare'));a=w.inspect();verifyTrue(tc,a.compare.ready);
 s.steps.profile.status="stale";inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
 verifyFalse(tc,w.ready('compare'));a=w.inspect();verifyFalse(tc,a.compare.ready);
+end
+
+function testNumericalExportWithoutPrintVerification(tc)
+w=finalReportFixture(tc);s=w.State;
+for key=["c2","c2measurement","c3","feedback","approve","export"],s.steps.(key).status="stale";end
+s.steps.numericalExport.status="pending";
+inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
+verifyTrue(tc,w.ready('numericalExport'));verifyFalse(tc,w.ready('export'));
+verifyError(tc,@()w.run('numericalExport',struct('Confirmed',false,'Notes',"test")),'inkprof:Cancelled');
+w.run('numericalExport',struct('Confirmed',true,'Notes',"Satisfied with iteration; no separate verification print."));
+verifyTrue(tc,w.valid('numericalExport'));verifyFalse(tc,w.valid('approve'));
+r=jsondecode(fileread(w.output('numericalExport','reportJSON')));
+verifyFalse(tc,r.verification.separatePrintVerified);verifyFalse(tc,r.verification.isoCertification);
+verifyEqual(tc,string(r.scopeStatement),"Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.");
+verifyFalse(tc,isfield(r.sources,'c3'));verifyFalse(tc,isfield(r,'approval'));
+verifyTrue(tc,isfile(w.output('numericalExport','reportPDF')));
+verifyTrue(tc,contains(fileread(w.output('numericalExport','finalReport')),'inte verifierad genom separat utskrift'));
+f=inkprof.app(w.Root);verifyEqual(tc,string(findobj(f,'Tag','openFinalReport').Enable),"on");delete(f);
+file=w.output('checks','c1');fid=fopen(file,'a');fprintf(fid,' ');fclose(fid);
+% Fixture checks have no artifact list; register one to verify dependency invalidation.
+s=w.State;s.steps.checks.artifacts=struct('path',w.relative(file),'sha256',"wrong");
+inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
+verifyFalse(tc,w.valid('numericalExport'));
+end
+function testLegacyAddsNumericalExport(tc)
+s=tc.TestData.w.State;s.steps=rmfield(s.steps,'numericalExport');
+u=inkprof.internal.upgradeWorkflowState(s);verifyEqual(tc,string(u.steps.numericalExport.status),"pending");
 end

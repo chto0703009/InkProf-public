@@ -3,6 +3,19 @@ function [out,files]=executeWorkflowStep(w,id,o)
 out=struct;files=strings(0,1);
 project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
 switch id
+ case "numericalExport"
+  assert(get(o,'Confirmed',false)&&strlength(strtrim(string(get(o,'Notes',""))))>0, ...
+   'inkprof:Cancelled','Record your decision and confirm the absence of separate print verification.');
+  folder=w.newFolder('exports');mkdir(folder);
+  [file,~]=inkprof.saveICC(w.output('profile','profile'),fullfile(folder,'profile.icc'));
+  report=inkprof.internal.writeNumericalReport(w,file,folder,string(o.Notes));
+  out=struct('profile',file,'finalReport',report.html,'reportJSON',report.json,'reportText',report.text,'reportPDF',report.pdf);
+  if isfield(o,'ICCDestination')||isfield(o,'ReportDestination')
+   assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose both delivery destinations.');
+   receipt=inkprof.internal.saveWorkflowDelivery(folder,string(o.ICCDestination),string(o.ReportDestination),Overwrite=get(o,'Overwrite',false));
+   out.delivery=fullfile(folder,'delivery.json');inkprof.internal.writeJson(out.delivery,receipt);
+  end
+  files=allFiles(folder);
  case "compare"
   previous=inkprof.internal.comparisonParent(w.State);
   assert(~isempty(previous),'inkprof:Workflow','A previous iteration is required.');

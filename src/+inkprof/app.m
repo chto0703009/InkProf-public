@@ -16,7 +16,7 @@ detailsButton=uibutton(bar,'Text','Project details','Tag','editProjectDetails','
 uibutton(bar,'Text','Refresh','ButtonPushedFcn',@(~,~)refresh());
 uibutton(bar,'Text','Open results log','Tag','openResultLog','ButtonPushedFcn',@openLog);
 uibutton(bar,'Text','Iteration history','Tag','iterationHistory','ButtonPushedFcn',@history);
-reportButton=uibutton(bar,'Text','Open certificate','Tag','openFinalReport','Enable','off','ButtonPushedFcn',@openReport);
+reportButton=uibutton(bar,'Text','Open report','Tag','openFinalReport','Enable','off','ButtonPushedFcn',@openReport);
 labButton=uibutton(bar,'Text','View 3D','Tag','showProfile3D','Enable','off','ButtonPushedFcn',@show3D);
 projectBar=uigridlayout(g,[1 2]);projectBar.ColumnWidth={'1x',140};projectBar.Padding=[0 0 0 0];
 projectLabel=uilabel(projectBar,'Text','Create a new project or select an existing one.','WordWrap','on');
@@ -111,7 +111,7 @@ end
                 if valid,s="Complete";elseif s=="completed",s="Out of date";elseif s=="running",s="Interrupted / running";elseif s=="failed",s="Failed";elseif ready,s="Ready";else,s="Locked";end
                 data(k,:)={defs(k).label,char(s)};
             end
-            reportButton.Enable=matlab.lang.OnOffSwitchState(assessment.export.valid&&isfield(w.State.steps.export.outputs,'finalReport'));
+            reportButton.Enable=matlab.lang.OnOffSwitchState((assessment.export.valid&&isfield(w.State.steps.export.outputs,'finalReport'))||(assessment.numericalExport.valid&&isfield(w.State.steps.numericalExport.outputs,'finalReport')));
             labButton.Enable=matlab.lang.OnOffSwitchState(assessment.c2.valid);
             table.Data=data;index=find(string({defs.id})==selected);titleLabel.Text=defs(index).label;
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
@@ -282,19 +282,32 @@ end
             a=inputdlg(char(instruction(id)),'Record assessment',[4 65],{''});
             if isempty(a),o=[];return;end
             o.Notes=string(a{1});o.Confirmed=strlength(strtrim(o.Notes))>0;
-        elseif id=="export"
+        elseif any(id==["export","numericalExport"])
+            if id=="numericalExport"
+                a=inputdlg({'Why are you ending this iteration without a separate verification print? State intended use.'},'Save numerical report',[4 70],{''});
+                if isempty(a)||strlength(strtrim(string(a{1})))==0,o=[];return;end
+                o.Notes=string(a{1});
+                answer=uiconfirm(fig,'Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.','Confirm report scope', ...
+                    'Options',{'Save with this statement','Cancel'},'DefaultOption',2,'CancelOption',2);
+                if strcmp(answer,'Cancel'),o=[];return;end
+                o.Confirmed=true;
+            end
             message="The ICC profile already exists in this project:"+newline+w.output('profile','profile')+newline+newline+ ...
                 "This step saves an approved delivery copy and creates the measurement certificate (PDF and HTML) inside the project."+newline+newline+ ...
                 "You can also save copies elsewhere. The certificate and all supporting files are collected in one report folder. Move or share that entire folder. The project keeps its own copies.";
-            choice=uiconfirm(fig,message,'Save approved profile and certificate', ...
+            if id=="numericalExport"
+                message="Save the current ICC and a numerical report (PDF and HTML). This does not approve print accuracy. Project copies are retained; external copies include all supporting files.";
+            end
+            choice=uiconfirm(fig,message,'Save profile and report', ...
                 'Options',{'Also save copies elsewhere','Save in project only','Cancel'},'DefaultOption',1,'CancelOption',3);
             if strcmp(choice,'Cancel'),o=[];return;end
             if strcmp(choice,'Save in project only'),return;end
             [n,p]=uiputfile({'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Save an additional ICC copy - project copy is retained',fullfile(w.Root,'profile.icc'));
             if isequal(n,0),o=[];return;end
             o.ICCDestination=string(fullfile(p,n));
-            [n,p]=uiputfile({'*.pdf','Measurement certificate (*.pdf)';'*.html','Measurement certificate (*.html)';'*.txt','Measurement certificate as text (*.txt)'}, ...
-                'Name the certificate bundle (PDF, HTML and supporting files)',fullfile(p,'measurement-certificate.pdf'));
+            reportName='measurement-certificate.pdf';if id=="numericalExport",reportName='numerical-report.pdf';end
+            [n,p]=uiputfile({'*.pdf','Report (*.pdf)';'*.html','Report (*.html)';'*.txt','Report as text (*.txt)'}, ...
+                'Name the report bundle (PDF, HTML and supporting files)',fullfile(p,reportName));
             if isequal(n,0),o=[];return;end
             o.ReportDestination=string(fullfile(p,n));o.Overwrite=true;
         elseif id=="profile"
@@ -331,9 +344,11 @@ end
     end
     function openReport(~,~)
         if isempty(w),return;end
-        w.reload();[valid,reason]=w.valid('export');
-        if ~valid,uialert(fig,char(reason),'Measurement certificate is out of date');return;end
-        web(char(w.output('export','finalReport')),'-browser');
+        w.reload();id="export";
+        if w.valid('numericalExport')&&(selected=="numericalExport"||~w.valid('export')),id="numericalExport";end
+        [valid,reason]=w.valid(id);
+        if ~valid,uialert(fig,char(reason),'Report is out of date');return;end
+        web(char(w.output(id,'finalReport')),'-browser');
     end
     function show3D(~,~)
         if isempty(w),return;end
@@ -397,6 +412,7 @@ switch id
  case "render",s="Save TIFF16 in the project. Print the files separately, then return to the app for measurement.";
  case "c2",s="Save C2 as TIFF16. The ICC profile has already been applied once. Print separately without further colour conversion, then measure in the app.";
  case {"measurement","c2measurement","refinemeasurement"},s="When your separately printed sheet is ready, start instrument measurement here. The app uses the saved target TI2 and saves measurement results in the project.";
+ case "numericalExport",s="Optional after step 8: save the current ICC and a numerical report without a new verification print. Your decision and the absence of separate print verification are recorded. This does not mark steps 9–14 complete.";
  case "export",s="The ICC profile already exists in the project. This step saves the approved profile and creates its measurement certificate in the project. Optionally save additional copies elsewhere. The exported certificate and all supporting files are saved together in one report folder.";
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
  case "compare",s="Compare this ICC with the previous iteration on common RGB and Lab samples. Profile differences do not prove improved print accuracy; fresh independent print verification is still required.";

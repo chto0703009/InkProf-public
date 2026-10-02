@@ -20,3 +20,15 @@ The first comparison becomes available before the new control print has been mea
 Different measurement meshes are expected when refinement adds colours. The comparison resamples the ICC transforms on common coordinates; it does not require equal patch counts or equate original patch positions. The comparison alone cannot establish which mesh produced more accurate physical output. Retained copies of both ICCs and their SHA-256 hashes identify exactly what was compared.
 
 [Paper suggestions](target-paper-planning.md) adapt the next target's physical layout to its patch count. Changing the page layout does not change the shared sampling coordinates used for ICC comparison.
+
+## End with a numerical report, without a new verification print
+
+After the current iteration's Fit, Grid and C1 checks (row 8), the optional row **Save ICC + report without print verification** becomes available. Run comparison (row 18) first if you want it included as decision support. Enter your intended use and reason for ending the iteration, confirm the scope, and choose project-only storage or additional external copies.
+
+The PDF, HTML and JSON explicitly state:
+
+> Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.
+
+The report includes current numerical evidence and, when available, the preceding iteration's hash-verified training-fit statistics and the current profile comparison. Mean, 95th percentile and maximum fitting error are shown side by side, with the change. The number of training patches is included because the two fitting errors may be calculated on different meshes. Differences between the ICC transforms on common RGB/Lab coordinates are separately labelled. These figures support the user's stated decision; they do not establish improved print accuracy.
+
+This branch preserves the current ICC, saves the decision and scope in JSON and the results log, and generates a portable report bundle. It does not mark print verification or print approval complete, and it does not reuse a previous iteration's C3 measurement as evidence for the new ICC. The normal measurement-certificate route remains available through rows 9–14. Rebuilding the profile or its checks invalidates the numerical report in the workflow; previously saved copies remain historical records.
