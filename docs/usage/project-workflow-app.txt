@@ -231,3 +231,11 @@ Markera ett färdigt TIFF-steg och använd Copy TIFF16 for printing för att
 kopiera igen senare. Destination och kontrollsummor dokumenteras i projektets
 print-delivery.json, workflow.json och resultatlogg. C2-instruktionen förklarar
 att profilen redan applicerats och att svartpunktskompensation (BPC) är av.
+
+STÄNGA APPEN
+Close app längst ned till höger och fönstrets stängknapp använder samma kontroll.
+Pågående operationer måste först slutföras eller avbrytas i sin egen dialog.
+När appen är ledig verifieras projektets sparade filer. Bekräftelsen visar
+sparplats och senaste spartid (UTC) innan appen stängs. Integritetsfel visas
+som varning och repareras inte automatiskt. Keep open är förvalt. Close app
+avslutar InkProf-fönstret, inte MATLAB. Öppna samma projekt för att fortsätta.

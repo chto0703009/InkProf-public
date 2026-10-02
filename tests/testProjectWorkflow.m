@@ -63,6 +63,7 @@ function testUIResume(tc)
 w=tc.TestData.w;saveDefinition(tc);f=inkprof.app(w.Root);cleanup=onCleanup(@()delete(f));drawnow;
 t=findobj(f,'Tag','workflowSteps');verifySize(tc,t.Data,[17 2]);
 verifyEqual(tc,t.Data{1,2},'Complete');verifyEqual(tc,t.Data{2,2},'Ready');verifyEqual(tc,t.Data{8,2},'Locked');
+verifyNotEmpty(tc,findobj(f,'Tag','closeWorkflowApp'));
 verifyNotEmpty(tc,findobj(f,'Tag','openResultLog'));verifyNotEmpty(tc,findobj(f,'Tag','iterationHistory'));verifyNotEmpty(tc,findobj(f,'Tag','openFinalReport'));
 end
 function saveDefinition(tc)

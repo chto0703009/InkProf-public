@@ -33,7 +33,9 @@ printButton=uibutton(right,'Text','Copy TIFF16 for printing…','Tag','copyPrint
 legal=uigridlayout(right,[1 2]);legal.Padding=[0 0 0 0];legal.ColumnWidth={'1x',170};
 uilabel(legal,'Text','Results and progress are saved in the project.','WordWrap','on');
 uibutton(legal,'Text','Licence and liability','Tag','licenseNotice','ButtonPushedFcn',@showLicense);
-status=uilabel(g,'Text','Ready','WordWrap','on','Tag','workflowStatus');
+footer=uigridlayout(g,[1 2]);footer.Padding=[0 0 0 0];footer.ColumnWidth={'1x',120};
+status=uilabel(footer,'Text','Ready','WordWrap','on','Tag','workflowStatus');
+uibutton(footer,'Text','Close app','Tag','closeWorkflowApp','ButtonPushedFcn',@closeApp);
 if projectFolder~=""
     try,loadProject(projectFolder);catch err,uialert(fig,err.message,'Open project');end
 end
@@ -318,7 +320,31 @@ end
         if ok,open(w.output(selected,names{ix}));end
     end
     function closeApp(~,~)
-        if busy,uialert(fig,'Complete or cancel the current dialog before closing the app.','Operation in progress');else,delete(fig);end
+        if busy
+            uialert(fig,'An operation is still running. Wait for it to finish, or cancel it in its own dialog. Then close the app.','Operation in progress');return
+        end
+        if isempty(w),delete(fig);return;end
+        try
+            check=inkprof.verifyProject(w.Root);
+            if check.passed
+                record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+                message="Project data and workflow are saved on disk."+newline+ ...
+                    "Integrity verified: "+check.checkedFiles+" files."+newline+ ...
+                    "Last saved (UTC): "+string(record.updatedUTC)+newline+newline+ ...
+                    "Project folder:"+newline+w.Root+newline+newline+ ...
+                    "You can reopen this project and continue later. Close app does not quit MATLAB.";
+                title='Project saved — safe to close';icon='success';
+            else
+                message="Saved project integrity could not be confirmed:"+newline+strjoin(check.issues,newline)+newline+newline+ ...
+                    "Closing will not repair or remove any files. Keep the app open to investigate, or close anyway.";
+                title='Check project before closing';icon='warning';
+            end
+            choice=uiconfirm(fig,message,title,'Options',{'Keep open','Close app'}, ...
+                'DefaultOption',1,'CancelOption',1,'Icon',icon);
+            if strcmp(choice,'Close app'),delete(fig);end
+        catch err
+            uialert(fig,"Could not confirm saved project state: "+string(err.message),'Close app');
+        end
     end
 end
 function s=instruction(id)
