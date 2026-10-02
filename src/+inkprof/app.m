@@ -124,16 +124,67 @@ end
     end
     function run(~,~)
         if isempty(w)||busy,return;end
+        progress=[];watch=[];started=[];finished=false;message="";
+        active=selected;
         try
             o=optionsFor(selected);if isempty(o),return;end
-            busy=true;runButton.Enable='off';status.Text="Running: "+selected+". Complete or close the open dialog.";drawnow;
-            w.run(selected,o);
-            status.Text='Results saved. Project copies and selected save locations are listed in the results log.';
+            busy=true;runButton.Enable='off';started=datetime('now');
+            index=find(string({defs.id})==active);
+            data=table.Data;data{index,2}='Running';table.Data=data;
+            titleLabel.Text="Running — "+string(defs(index).label);
+            hint.Value={'Work is in progress. No need to click Run again.'; ...
+                'If an input or measurement window opens, complete it there.'};
+            details.Value={'Running. Results will appear when this step finishes.'};
+            status.Text="Running: "+string(defs(index).label);drawnow;
+            if active=="profile"&&(~isfield(o,'Mode')||string(o.Mode)~="manual")
+                progress=uiprogressdlg(fig,'Title','Building ICC profile','Message', ...
+                    'Preparing measurements. This can take several minutes.', ...
+                    'Indeterminate','on','Cancelable','off');
+                watch=timer('ExecutionMode','fixedSpacing','Period',1,'BusyMode','drop','TimerFcn',@updateProgress);
+                start(watch);
+            end
+            w.run(active,o);finished=true;
+            message="Complete: "+string(defs(index).label)+". Results saved.";
         catch err
-            status.Text=err.message;
+            message=string(err.message);
+            stopProgress();
             if ~strcmp(err.identifier,'inkprof:Cancelled'),uialert(fig,err.message,'InkProf');end
         end
-        busy=false;refresh();
+        stopProgress();busy=false;
+        if finished&&active~="export"
+            w.reload();assessment=w.inspect();
+            for next=index+1:numel(defs)
+                id=string(defs(next).id);
+                if assessment.(id).ready&&~assessment.(id).valid
+                    selected=id;table.Selection=[next 1];
+                    message=message+" Next: "+string(defs(next).label);break
+                end
+            end
+        end
+        refresh();status.Text=message;
+        function updateProgress(~,~)
+            if ~isvalid(fig),return;end
+            elapsed=seconds(datetime('now')-started);
+            text="Building ICC profile — elapsed "+floor(elapsed/60)+" min "+mod(floor(elapsed),60)+" sec";
+            logs=dir(fullfile(w.Root,'profiles','iterations','*','progress.log'));
+            if ~isempty(logs)
+                [~,last]=max([logs.datenum]);entry=logs(last);
+                if entry.datenum>=datenum(started)
+                    try
+                        lines=splitlines(strtrim(string(fileread(fullfile(entry.folder,entry.name)))));
+                        text=text+newline+lines(end);
+                    catch
+                        % The writer may be replacing the progress file.
+                    end
+                end
+            end
+            if ~isempty(progress)&&isvalid(progress),progress.Message=char(text);end
+            details.Value=cellstr(splitlines(text));status.Text="Running: ICC profiling. Please wait.";
+        end
+        function stopProgress()
+            if ~isempty(watch)&&isvalid(watch),stop(watch);delete(watch);end
+            if ~isempty(progress)&&isvalid(progress),close(progress);end
+        end
     end
     function o=optionsFor(id)
         o=struct;

@@ -158,6 +158,7 @@ try
  else
   event("refinement","skipped","No development controls. Training residuals alone will not justify adaptive patch placement.");
  end
+ event("verification","started","Saving verification target as TIFF16. No printing is performed.");
  checkCancel();[verification,reference]=inkprof.createVerificationTarget(jobs(selected),Name=options.Name+" verification", ...
   OutputFolder=fullfile(iterationFolder,'verification'),DPI=options.DPI,Paper=options.Paper,Seed=options.Seed);
  result.verification=struct('folder',relative(verification),'ti2',relative(fullfile(verification,'print','target.ti2')), ...

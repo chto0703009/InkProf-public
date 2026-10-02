@@ -214,3 +214,10 @@ Utskriftsuppgifter redigeras under Project and materials / Printing settings.
 FWA kan fortfarande ändras sent i receptdialogen och synkroniseras till projektet.
 Ändringar av profileringsuppgifter gör B1 och efterföljande steg inaktuella;
 mätningar och tidigare resultat bevaras.
+
+TYDLIG KÖRSTATUS
+När ett steg startar ändras radens status direkt till Running. Automatisk
+ICC-profilering visar en förloppsruta med förfluten tid och senaste loggfas,
+inklusive när kontrollmålets TIFF16 sparas. Ingen uppskattad procent visas.
+Efter avslutat steg uppdateras status automatiskt och nästa tillgängliga steg
+markeras. Slutförd export väljer inte automatiskt alternativet för förfining.
