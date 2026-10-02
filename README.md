@@ -8,7 +8,7 @@
 
 InkProf is an open-source MATLAB application for RGB printer profiling: colour targets, spectral measurements, ICC generation, independent print verification and traceable refinement. Each project has its own folder, a persistent JSON workflow, prerequisites and a readable results log. You can close the app while prints dry and resume the same project later.
 
-The app saves TIFF16 targets for separate printing. Measurement is started in the app using a compatible spectrophotometer. ICC candidates are built with ArgyllCMS, checked numerically and assessed against a separately printed and measured verification target. After user approval, save the ICC file and PDF/HTML reports to locations of your choice. A rotatable CIELAB view shows the profile's predicted verification colours.
+The app saves TIFF16 targets for separate printing. Measurement is started in the app using a compatible spectrometer. ICC candidates are built with ArgyllCMS, checked numerically and assessed against a separately printed and measured verification target. After user approval, save the ICC file and PDF/HTML reports to locations of your choice. A rotatable CIELAB view shows the profile's predicted verification colours.
 
 ## Install and start
 
