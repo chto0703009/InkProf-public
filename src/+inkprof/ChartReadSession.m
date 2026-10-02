@@ -78,6 +78,9 @@ classdef ChartReadSession < handle
         function delete(obj)
             % Closing the controller pipe makes the bridge terminate its child.
             if ~isempty(obj.Writer),try,obj.Writer.close();catch,end,end
+            % Let the bridge reap chartread and release the instrument before reopening.
+            started=tic;
+            while obj.isRunning()&&toc(started)<4,pause(.05);end
         end
     end
 end

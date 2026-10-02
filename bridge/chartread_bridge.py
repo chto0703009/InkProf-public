@@ -128,67 +128,93 @@ def main():
         metadata = dict(arguments=args, started=time.time(), version=version.stdout+version.stderr,
                         resume=opt.resume, ti2SHA256=actual, physicalMeasurementVerified=False)
         (folder / f'run-{token}.json').write_text(json.dumps(metadata, indent=2))
-        master, slave = pty.openpty()
-        proc = None
-        decoder = codecs.getincrementaldecoder('utf-8')('replace')
-        try:
-            proc = subprocess.Popen(args, cwd=folder, stdin=slave, stdout=slave, stderr=slave,
-                                    start_new_session=True, close_fds=True)
-            os.close(slave)
-            slave = None
-            emit('started', pid=proc.pid, arguments=args)
-            sel = selectors.DefaultSelector()
-            sel.register(master, selectors.EVENT_READ, 'output')
-            sel.register(sys.stdin, selectors.EVENT_READ, 'input')
-            pending = b''
-            with (folder / f'transcript-{token}.txt').open('wb') as log:
-                active = True
-                while active:
-                    for key, _ in sel.select(timeout=.1):
-                        if key.data == 'output':
-                            try:
-                                data = os.read(master, 65536)
-                            except OSError:
-                                data = b''
-                            if not data:
-                                active = False
-                                break
-                            log.write(data)
-                            log.flush()
-                            emit('output', text=decoder.decode(data))
-                        else:
-                            data = os.read(sys.stdin.fileno(), 65536)
-                            if not data:
-                                raise RuntimeError('Controller disconnected; stopping child')
-                            pending += data
-                            while b'\n' in pending:
-                                line, pending = pending.split(b'\n', 1)
-                                msg = json.loads(line)
-                                if msg.get('command') == 'stop':
-                                    raise RuntimeError('Stopped by controller; unsaved readings may be lost')
-                                if msg.get('command') != 'key' or not isinstance(msg.get('text'), str) or len(msg['text']) != 1:
-                                    emit('error', message='Expected one key character')
-                                    continue
-                                os.write(master, msg['text'].encode('utf-8'))
-                tail = decoder.decode(b'', final=True)
-                if tail:
-                    emit('output', text=tail)
-            code = proc.wait(timeout=5)
-            metadata.update(exitCode=code, ended=time.time(), ti3Exists=result.exists())
-            (folder / f'run-{token}.json').write_text(json.dumps(metadata, indent=2))
-            emit('exited', exitCode=code, ti3Exists=result.exists(), validated=False)
-            return 0 if code == 0 else 1
-        finally:
-            if proc is not None and proc.poll() is None:
-                os.killpg(proc.pid, signal.SIGTERM)
-                try:
-                    proc.wait(timeout=3)
-                except subprocess.TimeoutExpired:
-                    os.killpg(proc.pid, signal.SIGKILL)
-                    proc.wait()
-            os.close(master)
-            if slave is not None:
+        for attempt in range(1, 4):
+            attempt_token = token if attempt == 1 else f'{token}-attempt-{attempt}'
+            metadata.update(attempt=attempt, started=time.time())
+            for key in ('exitCode', 'ended', 'ti3Exists'):
+                metadata.pop(key, None)
+            (folder / f'run-{attempt_token}.json').write_text(json.dumps(metadata, indent=2))
+            output = ''
+            sent_key = False
+            master, slave = pty.openpty()
+            proc = None
+            sel = None
+            decoder = codecs.getincrementaldecoder('utf-8')('replace')
+            try:
+                proc = subprocess.Popen(args, cwd=folder, stdin=slave, stdout=slave, stderr=slave,
+                                        start_new_session=True, close_fds=True)
                 os.close(slave)
+                slave = None
+                emit('started', pid=proc.pid, arguments=args)
+                sel = selectors.DefaultSelector()
+                sel.register(master, selectors.EVENT_READ, 'output')
+                sel.register(sys.stdin, selectors.EVENT_READ, 'input')
+                pending = b''
+                with (folder / f'transcript-{attempt_token}.txt').open('wb') as log:
+                    active = True
+                    while active:
+                        for key, _ in sel.select(timeout=.1):
+                            if key.data == 'output':
+                                try:
+                                    data = os.read(master, 65536)
+                                except OSError:
+                                    data = b''
+                                if not data:
+                                    active = False
+                                    break
+                                log.write(data)
+                                log.flush()
+                                text = decoder.decode(data)
+                                output += text
+                                emit('output', text=text)
+                            else:
+                                data = os.read(sys.stdin.fileno(), 65536)
+                                if not data:
+                                    raise RuntimeError('Controller disconnected; stopping child')
+                                pending += data
+                                while b'\n' in pending:
+                                    line, pending = pending.split(b'\n', 1)
+                                    msg = json.loads(line)
+                                    if msg.get('command') == 'stop':
+                                        raise RuntimeError('Stopped by controller; unsaved readings may be lost')
+                                    if msg.get('command') != 'key' or not isinstance(msg.get('text'), str) or len(msg['text']) != 1:
+                                        emit('error', message='Expected one key character')
+                                        continue
+                                    sent_key = True
+                                    os.write(master, msg['text'].encode('utf-8'))
+                    tail = decoder.decode(b'', final=True)
+                    if tail:
+                        emit('output', text=tail)
+                code = proc.wait(timeout=5)
+                metadata.update(exitCode=code, ended=time.time(), ti3Exists=result.exists())
+                (folder / f'run-{attempt_token}.json').write_text(json.dumps(metadata, indent=2))
+                # Retry only the observed startup communications failure, never a
+                # calibration/scan error, a user interaction or an existing result.
+                retry = (code != 0 and attempt < 3 and not sent_key and not result.exists()
+                         and 'Initialising instrument failed' in output
+                         and 'Communications failure' in output
+                         and 'Place the instrument' not in output
+                         and 'Ready to read' not in output)
+                if retry:
+                    emit('output', text=f'\nInstrument connection failed before calibration. Reconnecting ({attempt + 1}/3); please wait.\n')
+                    time.sleep(2)
+                    continue
+                emit('exited', exitCode=code, ti3Exists=result.exists(), validated=False)
+                return 0 if code == 0 else 1
+            finally:
+                if proc is not None and proc.poll() is None:
+                    os.killpg(proc.pid, signal.SIGTERM)
+                    try:
+                        proc.wait(timeout=3)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(proc.pid, signal.SIGKILL)
+                        proc.wait()
+                if sel is not None:
+                    sel.close()
+                os.close(master)
+                if slave is not None:
+                    os.close(slave)
+
 
 
 if __name__ == '__main__':

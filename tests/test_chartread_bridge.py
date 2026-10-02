@@ -33,6 +33,38 @@ class BridgeTests(unittest.TestCase):
         c = chart(); c['patches'][0]['rgbPercent'] = [0, 0, 0, 0]
         with self.assertRaises(ValueError): chart_to_ti2(c)
 
+    def test_startup_reconnection_is_bounded_and_not_used_after_calibration(self):
+        for failures, prefix, expected in [(2, '', 3), (9, '', 3),
+                                           (9, 'Place the instrument on its reflective white reference', 1)]:
+            with self.subTest(failures=failures, prefix=prefix), tempfile.TemporaryDirectory() as directory:
+                folder = Path(directory)
+                (folder/'chart.json').write_text(json.dumps(chart()))
+                fake = folder/'fake-chartread'
+                fake.write_text('#!'+sys.executable+'\nimport sys\nfrom pathlib import Path\n'
+                    'if "-?" in sys.argv: sys.exit(0)\n'
+                    'p=Path("attempts"); n=int(p.read_text())+1 if p.exists() else 1; p.write_text(str(n))\n'
+                    f'if n <= {failures}:\n'
+                    f' print({prefix!r}, flush=True)\n'
+                    ' print("Initialising instrument failed with message Communications failure", flush=True)\n'
+                    ' sys.exit(1)\n'
+                    'Path("chart.ti3").write_text("synthetic test only")\n')
+                fake.chmod(0o755)
+                proc = subprocess.Popen([sys.executable, str(ROOT/'bridge/chartread_bridge.py'),
+                                         str(folder), str(fake)], stdin=subprocess.PIPE,
+                                        stdout=subprocess.PIPE, text=True)
+                try:
+                    # Keep controller input open without sending calibration/measurement keys.
+                    events = [json.loads(line) for line in proc.stdout]
+                    code = proc.wait(timeout=10)
+                    self.assertEqual(int((folder/'attempts').read_text()), expected)
+                    self.assertEqual(code, 0 if failures == 2 else 1)
+                    self.assertEqual(len(list(folder.glob('transcript-*.txt'))), expected)
+                    self.assertEqual(len(list(folder.glob('run-*.json'))), expected)
+                    self.assertEqual(events[-1]['event'], 'exited')
+                finally:
+                    if proc.poll() is None: proc.kill(); proc.wait()
+                    proc.stdin.close(); proc.stdout.close()
+
     def test_interaction_and_resume_guard(self):
         with tempfile.TemporaryDirectory(prefix='InkProf bridge ') as directory:
             folder = Path(directory)

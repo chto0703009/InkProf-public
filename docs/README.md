@@ -18,3 +18,5 @@ Detailed usage and research notes are mostly in Swedish. Historical notes may li
 - [Tested platforms](usage/tested-platforms.md)
 
 - [Abbreviations and terminology (Swedish)](usage/abbreviations.md)
+
+- [Instrument startup and reconnection](usage/instrument-startup.md)
