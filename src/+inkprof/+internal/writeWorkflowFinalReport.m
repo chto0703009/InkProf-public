@@ -58,6 +58,18 @@ for k=1:size(pairs,1)
  for field=keep,if isfield(data,field),reduced.(field)=data.(field);end,end
  r.results.(id)=reduced;
 end
+% Keep profiling and verification instruments distinct, including legacy measurements.
+r.instruments=struct;
+for stage=["measurement","c2measurement"]
+ source=w.output(stage,'measurement');measurement=jsondecode(fileread(source));condition=struct;
+ if isfield(measurement,'measurementCondition'),condition=measurement.measurementCondition;end
+ identity=inkprof.internal.instrumentIdentity(fileparts(source),condition);
+ identity.measurementSHA256=inkprof.internal.sha256(source);
+ r.instruments.(stage)=identity;
+ if stage=="measurement",label="Profileringsmätning";else,label="Kontrollmätning";end
+ addDetail(label+" – instrument",identity.model);
+ addDetail(label+" – serienummer",identity.serialNumber);
+end
 if isfield(w.State.steps.profile.outputs,'iteration')
  src=w.output('profile','iteration');copyfile(src,fullfile(folder,'iteration.json'));
  r.sources.iteration=struct('file',"iteration.json",'projectPath',w.relative(src),'sha256',inkprof.internal.sha256(src));

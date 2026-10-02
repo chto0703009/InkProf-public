@@ -63,3 +63,17 @@ Gränsen är en **ISO-relaterad jämförelsereferens**, inte en generell klassni
 sRGB-provet beräknas från uppmätt Lab D50 via Bradford-anpassning till D65 och sRGB-kodning. Färger utanför sRGB klipps och märks med *. Hexvärdet sparas och visas som text även om dokumentet skrivs ut utan färg. ΔE00-värdet kommer från C3-mätjämförelsen och beräknas inte från skärmens sRGB-färg. JSON lagrar urvalsgräns, källa, antal bedömda patchar, fel, överskridande och färgdata för varje post.
 
 Källa: [bvdm, MediaStandard Print 2018, tabell 30, tryckt sida 50](https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf), kontrollerad 2026-10-02.
+
+## Instrumentidentitet
+
+Vid mätimport sparas instrumentbeteckning och serienummer i mätningens JSON
+(`instrument.model`, `instrument.serialNumber`). Källan dokumenteras; serienummer
+från instrumentets utskrift används endast när utskriften är kopplad till
+mätningen via SHA-256. Saknade uppgifter anges som okända och motstridiga
+serienummer stoppas. Instrumentidentitet är inte ett intyg om kalibrering.
+
+Mätcertifikatets JSON innehåller `instruments.measurement` och
+`instruments.c2measurement`, med respektive mätnings kontrollsumma. Beteckning
+och serienummer visas separat för profilering och kontroll i PDF, HTML och
+text. Äldre mätningar kan använda sin sparade, kontrollsummeverifierade
+instrumentutskrift utan att originalmätningen ändras.

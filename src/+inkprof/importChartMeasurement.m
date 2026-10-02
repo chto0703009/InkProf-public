@@ -41,6 +41,7 @@ if ~isempty(fieldnames(options.PairedReadings))
     result.pairedReadings=options.PairedReadings;
     result.measurementCondition=options.PairedReadings.rawMeasurement.measurementCondition;
 end
+result.instrument=inkprof.internal.instrumentIdentity(sessionFolder,result.measurementCondition);
 result.rowDirectionCheck=inkprof.internal.checkRowDirection(sessionFolder,result);
 % Keep immutable snapshots, including the full original TI3 and its metadata.
 name="measurement-"+string(datetime('now','Format','yyyyMMdd-HHmmssSSS'));

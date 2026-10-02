@@ -19,6 +19,15 @@ for k=1:numel(metadata)
     if tokens(1)=="INKPROF_MEASUREMENT_CONDITION",explicit=tokens(2);end
     if tokens(1)=="INKPROF_INSTRUMENT_SERIAL",serial=tokens(2);end
 end
+logs=dir(fullfile(folder,'transcript-*.txt'));
+if numel(logs)==1
+ path=fullfile(folder,logs(1).name);text=fileread(path);
+ token=regexp(text,'Serial Number:\s*([^\s]+)','tokens','once');
+ if ~isempty(token)
+  assert(serial==""||serial==string(token{1}),'inkprof:Instrument','Conflicting instrument serial numbers.');
+  serial=string(token{1});condition.transcriptSHA256=inkprof.internal.sha256(path);
+ end
+end
 condition.instrument=instrument;condition.instrumentFilter=filter;
 if filter=="UVCUT"
     condition.reported="M2";condition.interpreted="M2";condition.basis="TI3 INSTRUMENT_FILTER UVCUT";
