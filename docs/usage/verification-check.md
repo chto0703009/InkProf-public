@@ -39,7 +39,7 @@ nåbara unika färger. Raderna sorteras med störst ΔE00 först.
   utan `placement.sampleId` kräver samma ID i referens och mätfil.
 - SHA256 kontrolleras för ICC, TI2, chart.json och TI3-revision. Ändras en
   indatafil under analysen avbryts rapporteringen.
-- Argyll profcheck integrerar spektrala data med D50/1931_2, utan FWA.
+- Argyll profcheck integrerar spektrala data med D50/1931_2, med samma valbara FWA/D50-kompensation som profilreceptet.
   Uppmätt Lab hämtas med sex decimaler. Samma Argyll-metod används i profilens
   träningskontroll; den separata generella spektralintegratorn används inte här.
 - Primärt ΔE00 jämför **önskat absolut D50-Lab** mot uppmätt Lab. Skillnad mot

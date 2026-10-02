@@ -1,6 +1,6 @@
 # Optiska vitmedel: OBA, FWA och OBC
 
-Dokumenterat 2026-09-29. Detta beskriver nuvarande funktion och ett föreslaget separat undersökningssteg. Ingen kompensation eller nytt mätläge har aktiverats.
+Uppdaterat 2026-10-02. InkProf erbjuder nu valbar D50-kompensation i projektdefinitionen. Direktmätningens instrumentläge ändras inte.
 
 ## Begrepp och fysisk betydelse
 
@@ -21,27 +21,39 @@ X-Rites i1Pro 2 stöder M0/M1/M2 i ett kompatibelt X-Rite-arbetsflöde. Det inne
 
 M1 är ett mätvillkor, inte en synonym för OBC. Att välja D50 vid integrering av ett M0-spektrum gör inte mätningen till en fysisk M1-mätning.
 
-## InkProf i nuvarande implementation
+## Använd FWA/OBA i InkProf
 
-- Direktmätningen med i1Pro 2 använder M0 eller ospecificerat instrumentstandardläge. M1/M2 är inte tillgängliga direkta val i detta flöde.
-- Spektral profilering beräknar XYZ/Lab för D50 och CIE 1931 2-gradersobservatören.
-- Profileringsreceptet och C2-underlaget anger `fwaCompensation=false`.
-- Ingen särskild fluorescenskompensation utförs i det aktuella profilerings- och verifieringsflödet. Mätdata innehåller fortfarande den fluorescens som instrumentets faktiska belysning framkallade.
-- Begärt, rapporterat och tolkat mätvillkor samt proveniens ska bevaras. Importerade data får inte ometiketteras från M0 till M1 på grund av en efterföljande D50-beräkning.
+Öppna **Project details → Project and materials** och välj **Compensate optical brighteners (D50)**. Valet är av som standard och kan ändras även efter mätning, profilering eller export. Det sparas centralt som `printing.fwaCompensation` i projektets JSON.
 
-Kodunderlag: `src/+inkprof/measureChart.m`, `src/+inkprof/createProfileRecipe.m` och `analysis/verification_target.py`.
+Efter en ändring markeras B1 och efterföljande steg som inaktuella. Använd samma bevarade profileringsmätning, kör B1/B2 och profileringen igen och gör nya kontroller och ett nytt godkännande. Originalmätningar, tidigare recept, ICC-filer och rapporter behålls; ändringen med före/efter-värden dokumenteras i workflow.json och resultatloggen. En redan exporterad ICC-fil ändras inte.
+
+InkProf använder Argyll `-f D50` tillsammans med `-i D50 -o 1931_2`. Samma kompensation följer med till träningskontroll, adaptiv utvärdering och C3. Recept, kommandologgar och slutrapporter dokumenterar beräkningsvillkoren. Tidiga analyser av råmätningen förblir okompenserade och ändrar inte de sparade spektrala originalvärdena.
+
+Den här implementationen kräver:
+
+- Spektrala originaldata i känt M0-läge, med instrumentidentitet i TI3.
+- Ingen UV-filtrering och ingen tidigare FWA-kompensation.
+- Ett uppmätt pappersvitt (RGB 100/100/100) i respektive dataunderlag. Vid urval av träningspatchar måste det finnas kvar.
+
+XYZ-only, okänt mätläge, M1, M2 och redan kompenserade mätningar stoppas för detta kompensationsval. M1-data kan fortfarande användas utan denna M0-kompensation. Den simulerade D50-responsen är **inte en fysisk eller certifierad M1-mätning**. Importerade data ometiketteras aldrig.
+
+C2 lägger till en pappersvit referenspatch när FWA är på. Den används för kompensationsmodellen och utesluts från oberoende felstatistik och förbättringsprioritering. Ett äldre kontrollmål utan pappersvitt behöver ersättas med ett nytt mål och mätas igen. Anpassningsmätningar utan pappersvitt kan inte användas för FWA-utvärdering.
+
+## English quick guide
+
+Open **Project details → Project and materials → Compensate optical brighteners (D50)**. You may change this after profiling. Rebuild B1 and subsequent profiling/validation stages from the preserved measurement. Existing profiles and reports remain on disk; the JSON history records the change. Native M0 spectra, a known non-UV-filtered instrument and a measured paper-white patch are required. Compensation simulates D50; it does not certify an M1 measurement. The same FWA settings are used for profile building and evaluation.
 
 ## Vad Argyll kan göra
 
 Argylls `colprof -f` aktiverar modellbaserad FWA-kompensation. Enligt dokumentationen behövs spektrala data och mätning utan UV-filter. Metoden uppskattar hur spektrala mätvärden skulle förändras vid en annan excitation av vitmedlen.
 
-Argyll skiljer mellan kompensation för ett betraktningsljus och simulering av instrumentets mätbelysning. Dokumentationen beskriver bland annat kombinationen `-f -i D50` och simulering via `-f M1` eller `-f M2`. Detta är dokumenterade Argyll-möjligheter, inte aktiverade InkProf-inställningar. En simulerad M1/M2-respons får inte presenteras som direkt uppmätt M1/M2.
+Argyll skiljer mellan kompensation för ett betraktningsljus och simulering av instrumentets mätbelysning. Dokumentationen beskriver bland annat kombinationen `-f -i D50` och simulering via `-f M1` eller `-f M2`. InkProf exponerar D50-kompensation; övriga simulerade ljus är inte valbara i appen. En simulerad M1/M2-respons får inte presenteras som direkt uppmätt M1/M2.
 
 För ett verkligt betraktningsljus är dess spektralfördelning, inklusive UV, relevant. Samma färgtemperatur eller vitpunkt garanterar inte samma fluorescens. Argyll beskriver `illumread` som ett sätt att indirekt uppskatta UV-innehållet. Kompensation bör därför införas som ett separat, verifierbart recept, inte som en dold standardinställning.
 
 ## Rekommenderat fortsatt arbete
 
-1. Behåll den pågående kandidatjämförelsen konsekvent i M0, utan FWA-kompensation. Ändra inte detta mellan kandidaterna.
+1. Använd konsekventa kompensationsvillkor inom en kandidatjämförelse. En ändring kräver ombyggnad och nya kontroller.
 2. Undersök **otryckt pappersvitt** och några ljusa gråpatchar med M1 och M2 i ett arbetsflöde som faktiskt stöder villkoren. Samma papper, underlag, instrument, geometri och torkförhållanden ska användas. Skillnaderna ger diagnostisk information om vitmedlens betydelse, inte en universell korrigeringsfaktor.
 3. Dokumentera avsett betraktningsljus. Ett påstått D50-ljus behöver även bedömas med avseende på spektralfördelning och UV.
 4. Skapa vid behov ett separat profilrecept för kompensation. Bevara råspektra, ursprungligt mätvillkor, instrumentuppgifter, kompensationsmetod, parametrar och motorversion tillsammans med den härledda informationen.
@@ -57,3 +69,5 @@ Vi har ännu inte visat att optiska vitmedel orsakar de aktuella lokala felen i 
 - [ArgyllCMS: Fluorescent Whitener Additive Compensation](https://www.argyllcms.com/doc/FWA.html)
 
 Källorna granskades 2026-09-29. Webbdokumentationens funktioner måste kontrolleras mot installerad Argyll-version innan de införs i kod.
+
+Argyll colprof/profcheck-kedjan med `-f D50` testades 2026-10-02 med ArgyllCMS 3.5.0 och syntetiska spektraldata. Det verifierar programflödet, inte fysisk utskriftsnoggrannhet.

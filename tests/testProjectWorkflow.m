@@ -131,6 +131,9 @@ verifyEqual(tc,string(r.iterationId),string(w.State.iterationId));verifyEqual(tc
 verifyEqual(tc,string(r.reportUser),"Christer Törnkvist");verifyEqual(tc,string(r.pageHeader),"InkProf Quality Profiling RGB printer");
 verifyEqual(tc,r.results.c3_report.summary.mean,1.25);verifyFalse(tc,r.printing.verifiedByApp);
 h=fileread(w.output('export','finalReport'));verifyTrue(tc,contains(h,'1.250'));
+verifyTrue(tc,contains(h,"class='lab-canvas'"));verifyTrue(tc,contains(h,'requestAnimationFrame'));
+plot=regexp(h,"<script type='application/json' class='lab-data'>(.*?)</script>",'tokens','once');
+points=jsondecode(plot{1});verifyEqual(tc,size(points.lab),[12 3]);verifyEqual(tc,size(points.rgb),[12 3]);
 verifyTrue(tc,contains(h,'report-page'));verifyTrue(tc,contains(h,'Christer Törnkvist'));verifyTrue(tc,contains(h,'&lt;test&gt;'));verifyFalse(tc,contains(h,'Synthetic <test>'));
 verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.txt')),'finalReport'));
 f=inkprof.app(w.Root);verifyEqual(tc,string(findobj(f,'Tag','openFinalReport').Enable),"on");delete(f);
@@ -240,4 +243,15 @@ verifyTrue(tc,isfile(fresh.output('export','reportPDF')));verifyTrue(tc,isfile(f
 file=fresh.output('profile','profile');fid=fopen(file,'a');fprintf(fid,'tampered');fclose(fid);
 check=inkprof.verifyProject(copied);verifyFalse(tc,check.passed);verifyTrue(tc,any(contains(check.issues,'Changed file:')));
 delete(file);check=inkprof.verifyProject(copied);verifyFalse(tc,check.passed);verifyTrue(tc,any(contains(check.issues,'Missing file:')));
+end
+
+function testFWAEditAfterProfilePreservesEvidence(tc)
+w=finalReportFixture(tc);profile=w.output('profile','profile');digest=inkprof.internal.sha256(profile);
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+w.editDetails(struct('Name',a.name,'User',"Tester",'Printing',struct('fwaCompensation',true)));
+fresh=inkprof.ProjectWorkflow(w.Root);
+verifyTrue(tc,fresh.valid('measurement'));verifyFalse(tc,fresh.valid('profile'));verifyFalse(tc,fresh.ready('export'));
+verifyEqual(tc,inkprof.internal.sha256(profile),digest);
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));verifyTrue(tc,a.printing.fwaCompensation);
+verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.jsonl')),'fwaCompensation'));
 end

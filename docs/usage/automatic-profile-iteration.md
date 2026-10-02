@@ -5,7 +5,7 @@ Argyll-profilering, modelljämförelse, numerisk kontroll och utskrivbara TIFF16
 MATLAB Base styr flödet; Python och Argyll gör färgberäkningarna. Ingen koppling
 till Camera-41 eller SpectraLab krävs.
 
-Denna version använder spektrala mätdata och D50/2° utan FWA.
+Denna version använder spektrala mätdata och D50/2° med samma valbara FWA/D50-kompensation som projektets profilrecept.
 Rutinen tar **mätdata**, inte enbart patchdefinitioner. JSON, TI3 och MXF stöds
 via befintlig import. TI3 behöver matchande TI2 (`TargetFile`); en positionerad
 MXF använder sin egen layout. Ett mål utan mätningar kan inte ge en ICC.

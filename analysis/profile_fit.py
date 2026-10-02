@@ -7,6 +7,7 @@ import re
 import subprocess
 import numpy as np
 import colour
+from fwa import arguments as fwa_arguments
 
 NUMBER=r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?'
 LINE=re.compile(r'^\[('+NUMBER+r')\]\s+(.*?)\s+@\s+(.*?):\s+(.*?)\s+->\s+(.*?)\s+should be\s+(.*?)\s*$')
@@ -56,6 +57,7 @@ def run(job, expected_file, executable, output):
     args=['-v2','-k','-I','a']
     if recipe['colorimetry']['mode']=='spectral':args+=['-i','D50','-o','1931_2']
     elif recipe['colorimetry']['mode']!='storedXYZ':raise ValueError('Unsupported recipe data mode.')
+    args += fwa_arguments(recipe['colorimetry'], recipe.get('measurementCondition', {}), ti3)
     version=subprocess.run([str(executable),'-?'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=15)
     completed=subprocess.run([str(executable),*args,str(ti3),str(profile)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=120)
     text=completed.stdout.decode(errors='replace');(output/'profcheck.log').write_text(text)

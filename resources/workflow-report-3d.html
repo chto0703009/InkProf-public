@@ -1,0 +1,69 @@
+<style>
+.lab-view .lab-still{width:100%;aspect-ratio:11/7.8;object-fit:contain}
+.lab-canvas{display:none;width:100%;height:auto;aspect-ratio:11/7.8;background:white}
+.lab-animated .lab-canvas{display:block}.lab-animated .lab-still{display:none}
+@media print{.lab-animated .lab-canvas{display:none}.lab-animated .lab-still{display:block}}
+</style>
+<script>
+(()=>{
+ function start(){
+  document.querySelectorAll('.lab-view').forEach(view=>{
+   const canvas=view.querySelector('canvas'),ctx=canvas.getContext('2d');
+   if(!ctx)return;
+   let data;try{data=JSON.parse(view.querySelector('.lab-data').textContent);}catch{return;}
+   const rows=a=>typeof a[0]==='number'?[a]:a;
+   const labs=rows(data.lab),colours=rows(data.rgb);
+   if(!labs.length||labs.length!==colours.length||labs.some(p=>p.length!==3||!p.every(Number.isFinite)))return;
+   const points=labs.map((p,i)=>({p:[p[1],p[2],p[0]],colour:`rgb(${colours[i].map(v=>Math.round(255*Math.max(0,Math.min(1,v)))).join(',')})`}));
+   const lo=[-10,-10,0],hi=[10,10,100];
+   points.forEach(({p})=>p.forEach((v,k)=>{lo[k]=Math.min(lo[k],v);hi[k]=Math.max(hi[k],v);}));
+   const centre=lo.map((v,k)=>(v+hi[k])/2);
+   const radius=Math.hypot(...hi.map((v,k)=>(v-lo[k])/2));
+   const width=880,height=624,scale=215/Math.max(1,radius),tilt=25*Math.PI/180;
+   canvas.width=width*2;canvas.height=height*2;
+   function draw(angle){
+    ctx.setTransform(2,0,0,2,0,0);ctx.clearRect(0,0,width,height);
+    const c=Math.cos(angle),s=Math.sin(angle);
+    function project(p){
+     const a=p[0]-centre[0],b=p[1]-centre[1],z=p[2]-centre[2];
+     const depth=a*s+b*c;
+     return [width/2+scale*(a*c-b*s),height/2+scale*(depth*Math.sin(tilt)-z*Math.cos(tilt)),depth*Math.cos(tilt)+z*Math.sin(tilt)];
+    }
+    function line(a,b,colour){
+     a=project(a);b=project(b);ctx.strokeStyle=colour;ctx.lineWidth=1;
+     ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+    }
+    for(let i=0;i<=4;i++){
+     const a=lo[0]+(hi[0]-lo[0])*i/4,b=lo[1]+(hi[1]-lo[1])*i/4;
+     line([a,lo[1],lo[2]],[a,hi[1],lo[2]],'#e1e7eb');
+     line([lo[0],b,lo[2]],[hi[0],b,lo[2]],'#e1e7eb');
+    }
+    const labels=['a*','b*','L*'];ctx.font='15px sans-serif';ctx.fillStyle='#19303c';
+    for(let k=0;k<3;k++){
+     const end=lo.slice();end[k]=hi[k];line(lo,end,'#758a97');
+     const v=project(end);ctx.fillText(labels[k],v[0]+8,v[1]-8);
+    }
+    points.map(q=>({...q,screen:project(q.p)})).sort((a,b)=>b.screen[2]-a.screen[2]).forEach(q=>{
+     ctx.beginPath();ctx.arc(q.screen[0],q.screen[1],4.5,0,2*Math.PI);
+     ctx.fillStyle=q.colour;ctx.fill();ctx.strokeStyle='#354550';ctx.lineWidth=.6;ctx.stroke();
+    });
+    ctx.fillStyle='#52656e';ctx.font='14px sans-serif';ctx.textAlign='center';
+    ctx.fillText(`${points.length} predicted control colours · CIELAB D50`,width/2,34);
+    ctx.fillText('sRGB preview colours · Not measured data or the full printer gamut',width/2,height-22);
+    ctx.textAlign='left';
+   }
+   let angle=40*Math.PI/180,last=0;
+   draw(angle);view.classList.add('lab-animated');
+   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+   function frame(now){
+    if(!document.hidden&&!reduced.matches&&last&&now-last>=33){angle+=(now-last)*2*Math.PI/30000;draw(angle);last=now;}
+    if(!last||document.hidden||reduced.matches)last=now;
+    requestAnimationFrame(frame);
+   }
+   requestAnimationFrame(frame);
+  });
+ }
+ if(document.documentElement.dataset.reportPages)start();
+ else document.addEventListener('inkprof-report-ready',start,{once:true});
+})();
+</script>

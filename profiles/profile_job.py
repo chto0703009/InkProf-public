@@ -10,6 +10,9 @@ import shutil
 import subprocess
 import time
 from read_icc import inspect_file
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "analysis"))
+from fwa import arguments as fwa_arguments
 
 
 def sha(path):
@@ -57,7 +60,7 @@ def run(folder):
                 raise ValueError(f'Job input hash mismatch: {name}')
         recipe = json.loads((folder/'recipe.json').read_text())
         mode = recipe['colorimetry']['mode']
-        if recipe['colorimetry']['fwaCompensation'] or mode not in ('spectral', 'storedXYZ'):
+        if mode not in ('spectral', 'storedXYZ'):
             raise ValueError('Unsupported recipe colourimetry.')
         if recipe['engine']['quality'] not in ('medium', 'high') or recipe['engine']['algorithm'] != 'Lab cLUT':
             raise ValueError('Unsupported recipe algorithm/quality.')
@@ -66,6 +69,7 @@ def run(folder):
             if recipe['colorimetry']['illuminant'] != 'D50' or recipe['colorimetry']['observer'] != '1931_2':
                 raise ValueError('Unsupported spectral integration settings.')
             args += ['-i', 'D50', '-o', '1931_2']
+        args += fwa_arguments(recipe['colorimetry'], recipe.get('measurementCondition', {}), folder/'engine.ti3')
         smoothing = recipe['engine'].get('smoothing')
         if smoothing is not None:
             if isinstance(smoothing, bool) or not isinstance(smoothing, (int,float)) or not math.isfinite(smoothing) or smoothing <= 0:

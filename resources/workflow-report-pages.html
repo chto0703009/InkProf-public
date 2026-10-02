@@ -62,5 +62,6 @@ body{max-width:none;margin:0;padding:0;background:#e9edef}
  }
  pages.forEach((p,i)=>p.querySelector('.number').textContent=`${i+1} (${pages.length})`);
  document.documentElement.dataset.reportPages=pages.length;
+ document.dispatchEvent(new Event('inkprof-report-ready'));
 })();
 </script>

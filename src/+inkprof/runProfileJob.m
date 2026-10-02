@@ -39,7 +39,7 @@ assert(doc.tables.signature=="CTI3"&&isempty(v.cmyk)&&size(v.rgb,2)==3&&numel(v.
 mode=string(recipe.colorimetry.mode);
 if mode=="spectral"
  assert(~isempty(v.spectra),'inkprof:Recipe','Spectral data is required.');
- preparation="Unchanged spectral TI3; explicit -i D50 -o 1931_2; no FWA.";
+ preparation=string(recipe.colorimetry.inputPreparation);
  copyfile(fullfile(work,'source.ti3'),fullfile(work,'engine.ti3'));
 elseif mode=="storedXYZ"
  assert(~isempty(v.xyz),'inkprof:Recipe','Stored XYZ is required.');

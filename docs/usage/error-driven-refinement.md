@@ -46,7 +46,7 @@ Detta är en dokumenterad heuristik, inte en förutsägelse av förbättring. Ka
 
 ## Giltighet och kvarstående begränsningar
 
-Första versionen stöder endast spektral D50/2°-framåtjämförelse utan FWA, samma kända M-villkor och kända device-RGB. Profil, recept, tränings-TI3 och mät-TI3 kontrolleras med hash. Invers-/gamutfel från önskat Lab får inte användas som framåtmodellfel här.
+Första versionen stöder endast spektral D50/2°-framåtjämförelse med samma valbara FWA/D50-kompensation som profilreceptet, samma kända M-villkor och kända device-RGB. Profil, recept, tränings-TI3 och mät-TI3 kontrolleras med hash. Invers-/gamutfel från önskat Lab får inte användas som framåtmodellfel här.
 
 Vald mätning deklareras uttryckligen som `adaptive_validation` i API-kontraktet. Ett låst slutmål får inte skickas till funktionen. Rollen kan inte avgöras automatiskt från en äldre mätfil; anroparen ansvarar för detta. Kontroll av skrivare, papper, drivrutinsinställningar, kalibreringsstandard och drift kräver fortfarande granskning. Samma M-villkor räcker inte för att bevisa identiska mätkedjor. Ingen automatisk sammanslagning görs.
 

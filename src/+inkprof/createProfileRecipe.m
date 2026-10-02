@@ -49,6 +49,17 @@ if options.ShowDialog
 end
 assert(strlength(strtrim(settings.name))>0&&strlength(strtrim(settings.description))>0, ...
  'inkprof:RecipeName','Profile name and description are required.');
+fwa=isfield(settings.printing,'fwaCompensation')&&isequal(settings.printing.fwaCompensation,true);
+if fwa
+ assert(settings.dataMode=="spectral",'inkprof:FWA','FWA/OBA requires spectra, not stored XYZ.');
+ c=input.measurementCondition;
+ assert(isfield(c,'interpreted')&&string(c.interpreted)=="M0"&& ...
+  isfield(c,'instrument')&&strlength(string(c.instrument))>0&& ...
+  (~isfield(c,'instrumentFilter')||string(c.instrumentFilter)~="UVCUT")&& ...
+  (~isfield(c,'fwaApplied')||~c.fwaApplied), ...
+  'inkprof:FWA','FWA/OBA requires native M0 spectra with a known, non-UV-filtered instrument; unknown, M1, M2 or already compensated data cannot be used.');
+ assert(any(all(abs(v.rgb-100)<1e-4,2)),'inkprof:FWA','FWA/OBA requires a measured paper-white patch (RGB 100/100/100) in the profiling input.');
+end
 if settings.dataMode=="spectral"
  assert(~isempty(v.spectra),'inkprof:RecipeData','This input has no spectral data. Select stored XYZ explicitly.');
  colorimetry=struct('mode',"spectral",'illuminant',"D50",'observer',"1931_2", ...
@@ -60,6 +71,11 @@ else
  'observer',"as stored; not independently established by B2",'fwaCompensation',false, ...
  'engine',"ArgyllCMS colprof",'inputPreparation',"remove spectral and Lab columns and spectral metadata from build copy; preserve stored XYZ unchanged");
  args=["-qm","-al"];
+end
+if fwa
+ colorimetry.fwaCompensation=true;colorimetry.fwaIlluminant="D50";
+ colorimetry.inputPreparation="Native M0 spectra retained; Argyll FWA/OBA compensation to simulated D50; not a measured M1 condition";
+ args=[args,"-f","D50"];
 end
 assert(isnan(options.Smoothing)||(isfinite(options.Smoothing)&&options.Smoothing>0), ...
  'inkprof:RecipeSmoothing','Smoothing must be positive, or NaN for the engine default.');

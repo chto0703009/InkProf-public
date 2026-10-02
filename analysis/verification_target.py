@@ -25,6 +25,8 @@ def generate(job,exe,request,out):
     if out.exists(): raise ValueError('Output already exists.')
     status=json.loads((job/'status.json').read_text());recipe=json.loads((job/'recipe.json').read_text())
     if status['status']!='succeeded' or sha(profile)!=status['profileSHA256']: raise ValueError('Profile integrity failure.')
+    if sha(job/'recipe.json')!=status['recipeSHA256']:
+        raise ValueError('Profile recipe integrity failure.')
     require_profile(profile.read_bytes())
     counts=[request[k] for k in ('colourPatches','grayPatches','challengePatches','repeats')]
     if any(type(x)!=int or x<0 for x in counts) or not 8<=sum(counts)<=2000 or counts[0]<1 or counts[1]<2 or counts[3]>sum(counts[:3]):
@@ -64,6 +66,13 @@ def generate(job,exe,request,out):
             predictedLabD50Absolute=predicted[j].tolist(),numericalInverseResidualDE00=float(reach[i]),
             gamutAssessment='model-reachable' if reach[i]<=.5 else 'outside-or-inversion-unresolved',
             minTrainingRGBDistance=float(np.min(np.max(abs(train-output_rgb[j]),axis=1)))))
+    if recipe['colorimetry'].get('fwaCompensation'):
+        white=lookup(exe,profile,np.ones((1,3)),intent='a')[0]
+        patches.append(dict(id=str(len(patches)+1),role='paperwhite',repeatOf=None,
+            referenceLabD50Absolute=white.tolist(),deviceRGB16=[65535]*3,deviceRGB=[1.0]*3,
+            predictedLabD50Absolute=white.tolist(),numericalInverseResidualDE00=0,
+            gamutAssessment='paper-white-reference-not-independent',minTrainingRGBDistance=0))
+        output_rgb=np.vstack((output_rgb,np.ones((1,3))));predicted=np.vstack((predicted,white))
     if sha(profile)!=status['profileSHA256']:raise ValueError('Profile changed during generation.')
     out.mkdir(parents=True);shutil.copy2(profile,out/'printer.icc');cmm=LittleCMS();cmm.save_lab_profile(out/'source-Lab-D50.icc')
     xyz=100*colour.Lab_to_XYZ(predicted,illuminant=colour.CCS_ILLUMINANTS['CIE 1931 2 Degree Standard Observer']['D50'])
@@ -75,10 +84,11 @@ def generate(job,exe,request,out):
         printerProfile=dict(file='printer.icc',sha256=sha(profile)),intent='absolute colorimetric',bpc=False,profileApplications=1,
         pipeline='Desired absolute D50 Lab -> xicclu -fb -ia -pl -> device RGB -> 16-bit quantization -> layout only -> print with ALL further colour conversion OFF',
         trainingTI3SHA256=sha(job/'engine.ti3'),generation={k:v for k,v in request.items() if k!='trainingRGB'},printing=recipe['printing'],
-        measurementCondition=recipe.get('measurementCondition'),illuminant='D50',observer='1931_2',fwaCompensation=False,
+        measurementCondition=recipe.get('measurementCondition'),illuminant='D50',observer='1931_2',
+        fwaCompensation=recipe['colorimetry'].get('fwaCompensation',False),fwaIlluminant=recipe['colorimetry'].get('fwaIlluminant'),
         criteria=dict(status='awaiting user acceptance before ranking profiles',deltaE00Limit=None,grayBalanceLimit=None),
         classification='Model reachability diagnostic only: numerical inverse residual <=0.5 dE00. Failure does not prove outside gamut. Challenge residual >3. Not a print acceptance threshold.',
-        independence='New device RGB separated from training; model-informed gamut screening is disclosed. Independent measured validation remains to be performed.',
+        independence='New device RGB separated from training; model-informed gamut screening is disclosed. Independent measured validation remains to be performed. Any paperwhite patch is a model reference, excluded from independent scores.',
         referencePolicy='Compare measured absolute D50 Lab against referenceLabD50Absolute; predictedLabD50Absolute is diagnostic only. Stratify gamutAssessment and role; do not score padding or contrast bars.',
         definitions=dict(file='verification.ti1',sha256=sha(out/'verification.ti1')),patches=patches)
     (out/'verification.json').write_text(json.dumps(record,indent=2,allow_nan=False));return record

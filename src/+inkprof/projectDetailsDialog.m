@@ -10,7 +10,7 @@ fig=uifigure('Name','InkProf | Project details','Position',[180 100 680 690], ..
 cleanup=onCleanup(@()delete(fig));
 outer=uigridlayout(fig,[3 1]);outer.RowHeight={'1x',75,36};
 tabs=uitabgroup(outer);general=uitab(tabs,'Title','Project and materials');printingTab=uitab(tabs,'Title','Printing settings');
-g=uigridlayout(general,[7 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,'1x'};g.Padding=[20 16 20 16];
+g=uigridlayout(general,[9 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,40,90,'1x'};g.Padding=[20 16 20 16];
 name=field('Project name','projectName',value(record,'name','New project'));
 user=field('User','projectUser',value(record,'user',string(java.lang.System.getProperty('user.name'))));
 printer=field('Printer','projectPrinter',value(printing,'printer','unknown'));
@@ -20,6 +20,10 @@ items=["unknown","Glossy","Matte","Other"];
 finish=value(printing,'paperSurface',value(printing,'finish','unknown'));if ~any(items==finish),items(end+1)=finish;end
 surface=uidropdown(g,'Items',cellstr(items),'Value',char(finish),'Tag','projectFinish');
 ink=field('Ink / ink set','projectInk',value(printing,'ink','unknown'));
+uilabel(g,'Text','FWA / OBA');
+fwa=uicheckbox(g,'Text','Compensate optical brighteners (D50)', ...
+ 'Value',isfield(printing,'fwaCompensation')&&isequal(printing.fwaCompensation,true),'Tag','projectFWA');
+help=uilabel(g,'Text','Can be changed after measurement or profiling. Requires native M0 spectra, a known instrument and a paper-white patch. Simulates D50 illumination; does not turn the measurement into a certified M1 measurement. Rebuild the profile and repeat validation after changing this option.','WordWrap','on');help.Layout.Column=[1 2];
 g=uigridlayout(printingTab,[8 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,100,'1x'};g.Padding=[20 16 20 16];
 media=field('Driver media setting','projectMedia',value(printing,'media','unknown'));
 printPath=field('Printing application','projectPrintPath',value(printing,'printPath','unknown'));
@@ -46,6 +50,7 @@ uiwait(fig);
         updated=printing;
         updated.printer=string(printer.Value);updated.paper=string(paper.Value);
         updated.paperSurface=string(surface.Value);
+        updated.fwaCompensation=logical(fwa.Value);
         if isfield(updated,'finish'),updated=rmfield(updated,'finish');end
         updated.ink=string(ink.Value);updated.media=string(media.Value);updated.printPath=string(printPath.Value);
         hours=strtrim(string(drying.Value));

@@ -14,7 +14,7 @@ Dialogen visar namn, beskrivning, skrivare, pappersprodukt, Glossy/Matte/unknown
 
 Beräkningsvalen är:
 
-- **Spectra (D50 / 2 degrees)**: planerad Argyll-integration med `-i D50 -o 1931_2`, utan `-f` (FWA-kompensation). Detta är förvalet och kräver spektra.
+- **Spectra (D50 / 2 degrees)**: planerad Argyll-integration med `-i D50 -o 1931_2`, med valbar `-f D50` från projektdefinitionen. Detta är förvalet och kräver spektra.
 - **Stored XYZ**: lagrade XYZ bevaras. Byggsteget måste skapa en separat indatafil utan spektral-/Lab-kolumner och spektralmetadata för att förhindra att motorn väljer annan kolorimetri. B2 påstår inte att lagrad XYZ har verifierad D50/2°-proveniens.
 
 M0/M1/M2 beskriver mätvillkor, inte belysningen för spektralintegrationen. Utskriftskvalitet hålls skild från profilberäkningens kvalitet, med A2B medium och Lab cLUT. Dialogens **Inverse table (B2A)** väljer **High (denser)** eller **Medium (baseline)**. High är förval för nya recept; `B2AQuality="medium"` väljer jämförelsealternativet. Detta ändrar inte mätdata eller framåtmodellens kvalitetsval. Profilversion väljs inte i detta steg; den ska läsas från motorns faktiska resultat. Glossy/Matte är en deklarerad pappersyta, inte ett pappersnamn. Unknown kvarstår i receptet även om motorn har egna standardattribut.

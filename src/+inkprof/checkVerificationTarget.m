@@ -45,7 +45,7 @@ fill();f.Visible='on';drawnow;focus(f);
  function fill()
   p=report.patches;[~,order]=sort([p.deltaE00],'descend');p=p(order);roles=string({p.role});
   switch drop.Value
-   case 'Unique patches',p=p(roles~="repeat");
+   case 'Unique patches',p=p(~ismember(roles,["repeat","paperwhite"]));
    case 'Model-reachable unique',p=p(roles~="repeat" & string({p.gamutAssessment})=="model-reachable");
    case {'Gray','Colour','Challenge','Repeat'},p=p(roles==lower(string(drop.Value)));
   end

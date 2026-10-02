@@ -71,3 +71,27 @@ verifyTrue(tc,isfile(fullfile(folder,'original.mxf')));
 f=fopen(fullfile(session,'original.mxf'),'a');fprintf(f,' ');fclose(f);
 verifyError(tc,@()inkprof.prepareProfileInput(source,ShowDialog=false),'inkprof:Integrity');
 end
+
+function testFWARecipeFromExistingMeasurement(tc)
+root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
+w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
+project=inkprof.createProject(fullfile(w,'project'));
+target=fullfile(w,'target');inkprof.createTarget(target,PatchCount=40,GraySteps=4,DPI=100);
+session=fullfile(project,'measurements','synthetic');inkprof.prepareChart(fullfile(target,'target.ti2'),session);
+doc=inkprof.importCgats(fullfile(target,'target.ti2'));doc.tables=doc.tables(1);doc.tables.signature="CTI3";
+t=doc.tables;t.metadata{end+1}=["TARGET_INSTRUMENT","X-Rite i1 Pro 2"];
+t.metadata{end+1}=["INKPROF_MEASUREMENT_CONDITION","M0"];
+t.metadata{end+1}=["SPECTRAL_BANDS","36"];t.metadata{end+1}=["SPECTRAL_START_NM","380"];t.metadata{end+1}=["SPECTRAL_END_NM","730"];
+for wave=380:10:730,t.fields(end+1)="SPEC_"+wave;t.data(:,end+1)={"50"};end
+ doc.tables=t;f=fullfile(w,'synthetic.ti3');inkprof.exportCgats(f,doc);
+inkprof.importChartMeasurement(session,f);files=dir(fullfile(session,'measurement-*.json'));source=fullfile(files(1).folder,files(1).name);
+[folder,~]=inkprof.prepareProfileInput(source,ShowDialog=false);
+[oldFile,old]=inkprof.createProfileRecipe(folder,ShowDialog=false);digest=inkprof.internal.sha256(source);
+inkprof.updateProject(project,Printing=struct('fwaCompensation',true));
+[newFile,new]=inkprof.createProfileRecipe(folder,ShowDialog=false);
+verifyFalse(tc,old.colorimetry.fwaCompensation);verifyTrue(tc,new.colorimetry.fwaCompensation);
+verifyNotEqual(tc,oldFile,newFile);verifyTrue(tc,isfile(oldFile));
+verifyEqual(tc,string(new.colorimetry.fwaIlluminant),"D50");verifyTrue(tc,any(new.engine.plannedArguments=="-f"));
+verifyEqual(tc,inkprof.internal.sha256(source),digest);
+verifyError(tc,@()inkprof.createProfileRecipe(folder,DataMode="storedXYZ",ShowDialog=false),'inkprof:FWA');
+end

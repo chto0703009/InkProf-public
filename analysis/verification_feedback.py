@@ -37,7 +37,7 @@ def analyse(report, parameters=None):
         mismatch = float(colour.delta_E(v[1], v[2], method='CIE 2000'))
         if not np.isclose(actual, p['deltaE00'], atol=1e-5) or not np.isclose(mismatch, p['predictedDeltaE00'], atol=1e-5):
             raise ValueError('Stored errors disagree with Lab values')
-        if p['role'] not in ('gray','colour','challenge','repeat'):
+        if p['role'] not in ('gray','colour','challenge','repeat','paperwhite'):
             raise ValueError('Unknown patch role')
         limit = cfg['GrayLimit'] if p['role'] == 'gray' else cfg['PatchLimit']
         classification = ('model-or-print-chain-mismatch' if mismatch > cfg['ModelTolerance'] else
@@ -51,7 +51,7 @@ def analyse(report, parameters=None):
                          modelMismatch=mismatch, classification=classification,
                          exceedsPatchLimit=actual > limit, priority=priority,
                          desiredLab=v[0].tolist(), predictedLab=v[1].tolist(), measuredLab=v[2].tolist()))
-    unique = [p for p in rows if p['role'] != 'repeat']
+    unique = [p for p in rows if p['role'] not in ('repeat','paperwhite')]
     if not unique:
         raise ValueError('No unique patches')
     groups = {}

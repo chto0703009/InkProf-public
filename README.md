@@ -92,3 +92,9 @@ InkProf tillhandahålls i befintligt skick utan garantier. Användaren ansvarar 
  Report reproducible issues through [GitHub Issues](https://github.com/chto0703009/InkProf-public/issues), removing private measurements and personal data first.
 
 Maintainer: Christer Törnkvist - christer@borgasundsfotografiska.se
+
+## FWA/OBA compensation and rotating HTML reports
+
+**Project details → Project and materials → Compensate optical brighteners (D50)** enables optional Argyll FWA compensation. It can be changed after profiling: original measurements and previous profiles remain, while profiling and validation must be repeated. Native M0 spectra, a known non-UV-filtered instrument and measured paper white are required. The option, processing settings and edits are recorded in JSON and reports. See [FWA/OBA guide](docs/usage/optical-brighteners.md).
+
+The HTML final report automatically rotates the predicted CIELAB control colours offline. These points are not measured data or the full printer gamut. PDF and printing retain a still image; reduced-motion browser preferences are respected.

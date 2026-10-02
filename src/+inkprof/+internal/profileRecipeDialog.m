@@ -17,7 +17,8 @@ if isfield(s,'projectPrinting')&&s.projectPrinting
 end
 uilabel(g,'Text','Colour data');mode=uidropdown(g,'Items',{'Spectra (D50 / 2 degrees)','Stored XYZ'}, ...
  'ItemsData',{'spectral','storedXYZ'},'Value',char(s.dataMode),'Tag','RecipeMode');
-uilabel(g,'Text','Profile calculation');uilabel(g,'Text','Argyll Lab cLUT, A2B medium; FWA compensation OFF','WordWrap','on');
+fwaText="OFF";if isfield(s.printing,'fwaCompensation')&&isequal(s.printing.fwaCompensation,true),fwaText="ON (simulated D50)";end
+uilabel(g,'Text','Profile calculation');uilabel(g,'Text',"Argyll Lab cLUT; FWA/OBA "+fwaText+". Set in Project details.",'WordWrap','on');
 if ~isfield(s,'b2aQuality'),s.b2aQuality="high";end
 uilabel(g,'Text','Inverse table (B2A)');b2a=uidropdown(g,'Items',{'High (denser)','Medium (baseline)'}, ...
  'ItemsData',{'high','medium'},'Value',char(s.b2aQuality),'Tag','RecipeB2AQuality');

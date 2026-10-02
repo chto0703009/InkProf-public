@@ -152,14 +152,15 @@ def run(request_file, output):
     if not m.get('complete') or sha(ti3)!=m.get('sourceTI3SHA256'):
         raise ValueError('Measurement incomplete or TI3 hash mismatch.')
     color=recipe['colorimetry']
-    if color['mode']!='spectral' or color.get('fwaCompensation') or color['illuminant']!='D50' or color['observer']!='1931_2':
-        raise ValueError('Initial implementation requires spectral D50/2 without FWA.')
+    if color['mode']!='spectral' or color['illuminant']!='D50' or color['observer']!='1931_2':
+        raise ValueError('Refinement requires spectral D50/2.')
     cond=m.get('measurementCondition',{}).get('interpreted','unknown')
     if cond=='unknown' or cond!=recipe['measurementCondition']['interpreted']:
         raise ValueError('Unknown or incompatible measurement condition.')
     if len(m['data'].get('wavelengthNm',[])) < 2:
         raise ValueError('Spectral measurements required.')
-    args=[req['profcheck'],'-v2','-k','-I','a','-i','D50','-o','1931_2',str(ti3),str(profile)]
+    from fwa import arguments as fwa_arguments
+    args=[req['profcheck'],'-v2','-k','-I','a','-i','D50','-o','1931_2',*fwa_arguments(color,m.get('measurementCondition',{}),ti3),str(ti3),str(profile)]
     result=subprocess.run(args,capture_output=True,text=True,timeout=120,check=True)
     patches=parse_log(result.stdout,m['data'])
     selected=req.get('developmentSampleIds', [])
@@ -182,7 +183,7 @@ def run(request_file, output):
         iteration=req['iteration'], iterationId=str(uuid.uuid4()), parentIterationId=req.get('parentIterationId',''), measurementRole='adaptive_validation',measurementCondition=m['measurementCondition'],
         printComparability='User must review print recipe and drift before measuring or merging.',
         provenance=[dict(file=p.name,sha256=sha(p)) for p in [profile,mf,ti3,job/'engine.ti3']],
-        colorimetry=dict(intent='absolute',illuminant='D50',observer='1931_2',fwa=False,engine='Argyll profcheck'),
+        colorimetry=dict(intent='absolute',illuminant='D50',observer='1931_2',fwa=color.get('fwaCompensation',False),fwaIlluminant=color.get('fwaIlluminant'),engine='Argyll profcheck'),
         arguments=args)
     output=Path(output);output.mkdir(exist_ok=False)
     (output/'proposal.json').write_text(json.dumps(record,indent=2,allow_nan=False)+'\n')

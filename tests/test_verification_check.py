@@ -23,6 +23,16 @@ def fixture():
 
 
 class C3Tests(unittest.TestCase):
+    def test_paperwhite_excluded_from_independent_score(self):
+        ref,m,readings=fixture()
+        p=copy.deepcopy(ref['patches'][0]);p.update(id='3',role='paperwhite',repeatOf=None)
+        p['placement']=dict(page=1,coordinate='A3',location='3A');ref['patches'].append(p)
+        for key,value in [('ids','3'),('locations','3A'),('rgbPercent',[50]*3),('spectra',[20,30])]:m['data'][key].append(value)
+        readings.append(dict(sampleId='3',measuredLab=[90,0,0]))
+        result=analyse(ref,m,readings)
+        self.assertEqual(result['summary']['count'],1)
+        self.assertEqual(result['summary']['mean'],0)
+
     def test_rendered_ids_are_mapped_without_changing_reference_or_repeat_ids(self):
         ref,m,readings=fixture()
         ref['patches'][0]['placement']['sampleId']='2'

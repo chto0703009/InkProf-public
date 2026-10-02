@@ -59,7 +59,7 @@ def validate(reference, measurement):
         lab = np.asarray(p['referenceLabD50Absolute'], dtype=float)
         if lab.shape != (3,) or not np.isfinite(lab).all():
             raise ValueError('Invalid desired Lab.')
-        if p['role'] not in ('colour', 'gray', 'challenge', 'repeat'):
+        if p['role'] not in ('colour', 'gray', 'challenge', 'repeat', 'paperwhite'):
             raise ValueError('Unsupported target role.')
         if p['role'] == 'repeat':
             original = by_id.get(str(p['repeatOf']))
@@ -88,11 +88,11 @@ def analyse(reference, measurement, readings):
                             predictedDeltaE00=float(colour.delta_E(predicted, lab, method='CIE 2000')),
                             deltaL=float(lab[0]-desired[0]), deltaA=float(lab[1]-desired[1]), deltaB=float(lab[2]-desired[2]),
                             measuredChroma=float(np.hypot(lab[1],lab[2]))))
-    unique = [p for p in patches if p['role'] != 'repeat']
+    unique = [p for p in patches if p['role'] not in ('repeat','paperwhite')]
     groups = {name: stats([p for p in patches if p['role'] == name]) for name in ('gray','colour','challenge','repeat')}
     groups['uniqueAll'] = stats(unique)
     groups['uniqueModelReachable'] = stats([p for p in unique if p['gamutAssessment'] == 'model-reachable'])
-    groups['allIncludingRepeats'] = stats(patches)
+    groups['allIncludingRepeats'] = stats([p for p in patches if p['role']!='paperwhite'])
     for name, selector in [('dark',lambda p:p['desiredLab'][0]<25),('highChroma',lambda p:np.hypot(*p['desiredLab'][1:])>=40)]:
         groups[name] = stats([p for p in unique if selector(p)])
     gray = [p for p in patches if p['role']=='gray']
@@ -127,6 +127,8 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
     artifacts += [(reference_file,sha(reference_file)),(measurement_file,sha(measurement_file))]
     output=Path(output);output.mkdir(parents=True,exist_ok=False)
     args=['-v2','-k','-I','a','-i','D50','-o','1931_2']
+    from fwa import arguments as fwa_arguments
+    args += fwa_arguments(reference,measurement.get('measurementCondition',{}),ti3)
     version=subprocess.run([str(executable),'-?'],capture_output=True,timeout=15)
     completed=subprocess.run([str(executable),*args,str(ti3),str(profile)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=120)
     log=completed.stdout.decode(errors='replace');(output/'profcheck.log').write_text(log)
@@ -140,13 +142,14 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
                   purpose='Diagnostic independent-print comparison; no automatic profile acceptance',
                   decisionReasons=['Print colour-management chain has not been verified.','Acceptance criteria have not been approved.'],
                   primaryMetric='CIEDE2000 against desired absolute D50 Lab; unique patches in main summary',
-                  colorimetry=dict(method='Argyll profcheck spectral integration',illuminant='D50',observer='1931_2',fwaCompensation=False,labPrecision='six decimal places',measurementCondition=measurement.get('measurementCondition',{})),
+                  colorimetry=dict(method='Argyll profcheck spectral integration',illuminant='D50',observer='1931_2',fwaCompensation=reference.get('fwaCompensation',False),fwaIlluminant=reference.get('fwaIlluminant'),labPrecision='six decimal places',measurementCondition=measurement.get('measurementCondition',{})),
                   reportedPrintSettings=print_settings or {},printChainVerified=False,criteria=reference.get('criteria',{}),
                   limitations=['Model-reachable is a numerical classification, not proof of physical gamut.',
                                'Targets were screened using this profile, although separate from training patches.',
                                'Challenge patches are included in uniqueAll but reported separately.',
                                'Paired sweep differences measure repeatability, not accuracy.',
                                'Repeated printed patches combine positional print variation and measurement variation.',
+                               'Any paperwhite patch is a compensation reference, excluded from independent scores.',
                                'Forward/reverse direction is operator-controlled; software does not independently verify it.'],
                   sources=[dict(path=str(p),sha256=h) for p,h in artifacts],
                   tool=dict(executable=str(executable),arguments=args,versionOutput=(version.stdout+version.stderr).decode(errors='replace'),colourVersion=colour.__version__))

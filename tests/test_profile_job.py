@@ -36,6 +36,21 @@ class JobTests(unittest.TestCase):
     def test_success(self):
         with tempfile.TemporaryDirectory() as d:
             p=self.prepare(d);r=self.execute(p);self.assertEqual(r['status'],'succeeded');self.assertTrue((p/r['profileFile']).exists())
+    def test_fwa_worker_arguments_and_rejection(self):
+        from test_fwa import TI3, COND
+        for condition in ('M0','M2'):
+            with tempfile.TemporaryDirectory() as d:
+                p=self.prepare(d);recipe=json.loads((p/'recipe.json').read_text())
+                recipe['colorimetry'].update(fwaCompensation=True,fwaIlluminant='D50')
+                recipe['measurementCondition']=COND|dict(interpreted=condition)
+                recipe['engine']['plannedArguments'][6:6]=['-f','D50']
+                (p/'recipe.json').write_text(json.dumps(recipe));(p/'engine.ti3').write_text(TI3)
+                req=json.loads((p/'request.json').read_text())
+                req['files']={n:hashlib.sha256((p/n).read_bytes()).hexdigest() for n in req['files']}
+                (p/'request.json').write_text(json.dumps(req));result=self.execute(p)
+                self.assertEqual(result['status'],'succeeded' if condition=='M0' else 'failed')
+                if condition=='M0':self.assertIn('-f',result['arguments'])
+
     def test_b2a_quality(self):
         for quality,flag in [('high','-bh'),('medium','-bm'),('invalid',None)]:
             with self.subTest(quality=quality), tempfile.TemporaryDirectory() as d:

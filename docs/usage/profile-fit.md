@@ -8,7 +8,7 @@ Implementerad 2026-09-27. Detta är första delen av C1, inte hela dess framåt-
 
 Välj vid behov jobbmapp med `inkprof.checkProfileFit()` utan argument. Fönstret visar patcharna sorterade efter fallande ΔE00, koordinat, sample-ID, RGB, beräknat Lab och referens-Lab. Dropdown väljer alla patchar eller lika RGB (grå), mörka, högkromatiska respektive RGB-kubens rand. Grupperna överlappar; definitionerna sparas i rapporten. Lika RGB innebär inte att uppmätt Lab är neutralt.
 
-Kontrollen använder jobbets verkliga `engine.ti3` och ICC-resultat, med hashkontroll mot jobbstatus. `profcheck -v2 -k -I a` ger absolut kolorimetrisk jämförelse. Spektralrecept använder dessutom `-i D50 -o 1931_2` utan FWA. XYZ-recept använder den redan förberedda filen utan spektraldata. Referens-Lab följer därför vald beräkningsväg; den ersätts inte tyst med InkProfs egna spektralintegrationsvärden.
+Kontrollen använder jobbets verkliga `engine.ti3` och ICC-resultat, med hashkontroll mot jobbstatus. `profcheck -v2 -k -I a` ger absolut kolorimetrisk jämförelse. Spektralrecept använder dessutom `-i D50 -o 1931_2` med samma valbara FWA/D50-kompensation som profilreceptet. XYZ-recept använder den redan förberedda filen utan spektraldata. Referens-Lab följer därför vald beräkningsväg; den ersätts inte tyst med InkProfs egna spektralintegrationsvärden.
 
 Varje utskriven rad verifieras mot förväntat sample-ID, mätposition och RGB i TI3. Saknade, dubbla eller obekanta patchar avvisas. Colour räknar oberoende om CIEDE2000 från loggens Lab-värden, med tolerans för deras sex decimaler. En ändrad/okänd loggsyntax avvisas, inte gissas.
 

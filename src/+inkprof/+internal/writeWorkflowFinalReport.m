@@ -53,7 +53,8 @@ if isfield(w.State.steps.c2.outputs,'reference')
  assert(string(ref.printerProfile.sha256)==digest,'inkprof:FinalReport','3D-underlaget hör till en annan ICC.');
  f=inkprof.showVerificationLab(reference,Visible=false);
  cleanFigure=onCleanup(@()delete(f));
- exportgraphics(f,fullfile(folder,'profile-lab-3d.png'),'Resolution',160);clear cleanFigure
+ exportgraphics(f,fullfile(folder,'profile-lab-3d.png'),'Resolution',160);
+ animationData=struct('lab',f.UserData.lab,'rgb',f.UserData.previewRGB);clear cleanFigure
  copyfile(reference,fullfile(folder,'verification.json'));
  r.visualization=struct('file',"profile-lab-3d.png",'kind',"Predicted C2 patch Lab D50; not measured or full gamut", ...
   'reference',"verification.json",'referenceSHA256',inkprof.internal.sha256(reference));
@@ -77,10 +78,12 @@ if isfield(c3,'repeatedPrintedPatches')&&isfield(c3.repeatedPrintedPatches,'summ
 end
 if isfield(fit,'summary'),addStats("Träningsdata (inte oberoende kontroll)",fit.summary);end
 for k=1:size(rows,1),lines(end+1)=strjoin(string(rows(k,:))," | ");end
+profileColorimetry=struct;if isfield(fit,'colorimetry'),profileColorimetry=fit.colorimetry;end
 lines=[lines;"";"UTSKRIFT OCH MÄTNING"; ...
  "Appen sparar TIFF16. Användaren skriver ut separat; appen genomför instrumentmätningen."; ...
  "Utskriftskedjan har inte verifierats av appen. Ej dokumenterade villkor förblir okända."; ...
  "Projektets rapporterade utskriftsvillkor: "+string(jsonencode(project.printing)); ...
+ "FWA/OBA och beräkningsvillkor för profilen: "+string(jsonencode(profileColorimetry)); ...
  "Profileringsmätning: "+string(jsonencode(r.results.measurement_measurement)); ...
  "Kontrollmätning: "+string(jsonencode(r.results.c2measurement_measurement)); ...
  "";"NUMERISKA KONTROLLER OCH ÅTERKOPPLING"; ...
@@ -116,7 +119,9 @@ for key=string(fieldnames(r.sources))'
 end
 html=html+"<li><a href='final-report.pdf'>Slutrapport som PDF</a></li></ul>";
 if isfield(r,'visualization')
- html=html+"<section><h2>Profilens beräknade kontrollfärger i 3D</h2><p>Kontrollpatchar i Lab D50; inte mätningar eller hela skrivarens färgomfång.</p><img src='profile-lab-3d.png' alt='Profilens beräknade kontrollpatchar i Lab 3D' style='width:100%;height:auto'></section>";
+ plotData=replace(string(jsonencode(animationData)),"<",string(char(92))+"u003c");
+ html=html+"<section class='lab-view'><h2>Profilens beräknade kontrollfärger i 3D</h2><p>Automatiskt roterande kontrollpatchar i Lab D50; inte mätningar eller hela skrivarens färgomfång.</p>"+ ...
+ "<script type='application/json' class='lab-data'>"+plotData+"</script><canvas class='lab-canvas' role='img' aria-label='Automatically rotating predicted control colours in CIELAB D50'></canvas><img class='lab-still'  src='profile-lab-3d.png' alt='Profilens beräknade kontrollpatchar i Lab 3D' style='width:100%;height:auto'></section>";
 end
 html=html+"<h2>Fullständig redovisning och historik</h2><pre>"+esc(strjoin(lines,newline))+"</pre></html>";
 config=inkprof.paths();
@@ -124,7 +129,8 @@ furniture=struct('header',r.pageHeader,'date',r.reportDate,'user',r.reportUser);
 pages=string(fileread(fullfile(config.Root,'resources','workflow-report-pages.html')));
 metadata=string(jsonencode(furniture));metadata=replace(metadata,"<",string(char(92))+"u003c");
 pages=replace(pages,"__REPORT_FURNITURE__",metadata);
-html=replace(html,"</html>",pages+"</html>");
+animation=string(fileread(fullfile(config.Root,'resources','workflow-report-3d.html')));
+html=replace(html,"</html>",pages+animation+"</html>");
 writeText(paths.html,html);
 inkprof.runPython(fullfile(config.Root,'analysis','workflow_final_pdf.py'),string(folder),RequiredModules="reportlab",WorkingDirectory=config.Root);
     function addStats(label,s)
