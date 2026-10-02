@@ -9,7 +9,7 @@ exercise(tc,'CancelProfileRecipe',false);
 end
 function exercise(tc,button,expected)
 root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
-s=struct('name',"Test",'description',"Description",'dataMode',"spectral",'projectPrinting',true,'printing',struct);
+s=struct('name',"Test",'description',"Description",'dataMode',"spectral",'b2aQuality',"medium",'projectPrinting',true,'printing',struct);
 for key=["printer","paper","media","quality","driver","printPath","colorManagement"],s.printing.(key)="unknown";end
 s.printing.paperSurface="Glossy";input=struct('patchCount',575,'measurementCondition',struct('interpreted',"M0"));
 t=timer('ExecutionMode','fixedSpacing','Period',.5,'TimerFcn',@clickButton);c=onCleanup(@()clean(t));start(t);
@@ -21,7 +21,9 @@ verifyEmpty(tc,findall(groot,'Tag','InkProfProfileRecipe'));clean(t);
   b=findall(f,'Tag',button);if isempty(b),return;end
   verifyEqual(tc,string(findall(f,'Tag','printer').Editable),"off");
   verifyEqual(tc,string(findall(f,'Tag','RecipeSurface').Enable),"off");
-  q=findall(f,'Tag','RecipeB2AQuality');q.Value='medium';
+  q=findall(f,'Tag','RecipeB2AQuality');verifyEqual(tc,string(q.Enable),"off");
+  verifyEqual(tc,string(findall(f,'Tag','RecipeName').Editable),"off");
+  verifyEqual(tc,string(findall(f,'Tag','RecipeMode').Enable),"off");
   stop(t);cb=b.ButtonPushedFcn;cb(b,[]);
  end
 end

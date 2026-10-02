@@ -202,3 +202,15 @@ inte godkänd färgnoggrannhet. Granskningen sker i nästa steg.
 För att återuppta efter avbrutet val: Run selected step -> Saved revisions.
 Import file används för externa JSON/TI3/MXF-filer. Inga UUID behöver tolkas
 vid val av projektets sparade revisioner.
+
+GEMENSAMMA PROFILERINGSUPPGIFTER
+Project details > Profiling samlar Profile name, Description, Colour data och
+Inverse table (B2A). Dessa sparas i projektets printing-objekt som profileName,
+profileDescription, profileDataMode och profileB2AQuality. B2 hämtar dem från
+projektet; fälten är skrivskyddade i receptdialogen. Äldre projekt använder
+projektnamnet, Spectra och High tills egna värden sparas. Uttryckliga API-val
+kan fortfarande styra automatiska kandidater och fristående recept.
+Utskriftsuppgifter redigeras under Project and materials / Printing settings.
+FWA kan fortfarande ändras sent i receptdialogen och synkroniseras till projektet.
+Ändringar av profileringsuppgifter gör B1 och efterföljande steg inaktuella;
+mätningar och tidigare resultat bevaras.

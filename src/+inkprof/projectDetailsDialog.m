@@ -9,7 +9,7 @@ fig=uifigure('Name','InkProf | Project details','Position',[180 100 680 690], ..
  'WindowStyle','modal','Tag','projectDetailsDialog','CloseRequestFcn',@cancel);
 cleanup=onCleanup(@()delete(fig));
 outer=uigridlayout(fig,[3 1]);outer.RowHeight={'1x',75,36};
-tabs=uitabgroup(outer);general=uitab(tabs,'Title','Project and materials');printingTab=uitab(tabs,'Title','Printing settings');
+tabs=uitabgroup(outer);general=uitab(tabs,'Title','Project and materials');printingTab=uitab(tabs,'Title','Printing settings');profileTab=uitab(tabs,'Title','Profiling');
 g=uigridlayout(general,[9 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,40,90,'1x'};g.Padding=[20 16 20 16];
 name=field('Project name','projectName',value(record,'name','New project'));
 user=field('User','projectUser',value(record,'user',string(java.lang.System.getProperty('user.name'))));
@@ -33,6 +33,12 @@ colour=field('Colour management','projectColourManagement',value(printing,'color
 drying=field('Drying time (hours)','projectDryingHours',value(printing,'dryingHours','unknown'));
 uilabel(g,'Text','Printer settings','WordWrap','on');
 settings=uitextarea(g,'Value',splitlines(value(printing,'settings','')),'Tag','projectSettings');
+g=uigridlayout(profileTab,[6 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,100,'1x'};g.Padding=[20 16 20 16];
+profileName=field('Profile name','projectProfileName',value(printing,'profileName',value(record,'name','New project')));
+profileDescription=field('Description','projectProfileDescription',value(printing,'profileDescription',value(record,'name','New project')));
+uilabel(g,'Text','Colour data');profileMode=uidropdown(g,'Items',{'Spectra (D50 / 2 degrees)','Stored XYZ'},'ItemsData',{'spectral','storedXYZ'},'Value',char(value(printing,'profileDataMode','spectral')),'Tag','projectProfileDataMode');
+uilabel(g,'Text','Inverse table (B2A)');profileQuality=uidropdown(g,'Items',{'High (denser)','Medium (baseline)'},'ItemsData',{'high','medium'},'Value',char(value(printing,'profileB2AQuality','high')),'Tag','projectProfileB2AQuality');
+profileHelp=uilabel(g,'Text','Profiling recipe reads these settings from Project details. Spectra requires spectral measurements. Stored XYZ preserves the measured XYZ values. FWA requires Spectra. Changes require rebuilding the profiling stages.','WordWrap','on');profileHelp.Layout.Column=[1 2];
 note=uilabel(outer,'Text','Renaming also changes the project folder name. Corrected printing details require rebuilding the profiling stages. Existing measurements are preserved. For a different printing setup, create a new project.','WordWrap','on');
 buttons=uigridlayout(outer,[1 2]);buttons.Padding=[0 0 0 0];
 uibutton(buttons,'Text','Cancel','Tag','cancelProjectDetails','ButtonPushedFcn',@cancel);
@@ -50,7 +56,15 @@ clear cleanup
             uialert(fig,'Enter a project name and user.','Project details');return
         end
         try,inkprof.internal.projectFolderName(string(name.Value));catch err,uialert(fig,err.message,'Project name');return;end
+        if strlength(strtrim(string(profileName.Value)))==0||strlength(strtrim(string(profileDescription.Value)))==0
+            uialert(fig,'Enter a profile name and description on the Profiling tab.','Project details');return
+        end
+        if fwa.Value&&strcmp(profileMode.Value,'storedXYZ')
+            uialert(fig,'FWA requires Spectra on the Profiling tab.','Project details');return
+        end
         updated=printing;
+        updated.profileName=strtrim(string(profileName.Value));updated.profileDescription=strtrim(string(profileDescription.Value));
+        updated.profileDataMode=string(profileMode.Value);updated.profileB2AQuality=string(profileQuality.Value);
         updated.printer=string(printer.Value);updated.paper=string(paper.Value);
         updated.paperSurface=string(surface.Value);
         updated.fwaCompensation=logical(fwa.Value);

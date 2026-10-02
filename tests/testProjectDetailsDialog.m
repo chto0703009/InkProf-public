@@ -9,6 +9,8 @@ d=inkprof.projectDetailsDialog(record);
 verifyEmpty(tc,findall(groot,'Tag','projectDetailsDialog'),'Save must close the modal dialog.');
 verifyEqual(tc,d.Name,"Renamed project");verifyEqual(tc,d.User,"New user");
 verifyEqual(tc,d.Printing.printer,"New printer");verifyEqual(tc,d.Printing.paper,"Photo paper");
+verifyEqual(tc,d.Printing.profileName,"ICC name");verifyEqual(tc,d.Printing.profileDescription,"ICC description");
+verifyEqual(tc,d.Printing.profileDataMode,"storedXYZ");verifyEqual(tc,d.Printing.profileB2AQuality,"medium");
 verifyEqual(tc,d.Printing.paperSurface,"Matte");verifyEqual(tc,d.Printing.customSetting,42);
 verifyEqual(tc,d.Printing.settings,"Quality: high"+newline+"No colour correction");
 end
@@ -27,6 +29,10 @@ control=findobj(f,'Tag','projectUser');control.Value='New user';
 control=findobj(f,'Tag','projectPrinter');control.Value='New printer';
 control=findobj(f,'Tag','projectPaper');control.Value='Photo paper';
 control=findobj(f,'Tag','projectFinish');control.Value='Matte';
+control=findobj(f,'Tag','projectProfileName');control.Value='ICC name';
+control=findobj(f,'Tag','projectProfileDescription');control.Value='ICC description';
+control=findobj(f,'Tag','projectProfileDataMode');control.Value='storedXYZ';
+control=findobj(f,'Tag','projectProfileB2AQuality');control.Value='medium';
 control=findobj(f,'Tag','projectSettings');control.Value={'Quality: high';'No colour correction'};
 b.ButtonPushedFcn(b,[]);
 end

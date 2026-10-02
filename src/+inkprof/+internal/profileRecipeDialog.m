@@ -23,6 +23,10 @@ fwa=uicheckbox(g,'Text','Compensate to D50 (also updates Project details)', ...
 if ~isfield(s,'b2aQuality'),s.b2aQuality="high";end
 uilabel(g,'Text','Inverse table (B2A)');b2a=uidropdown(g,'Items',{'High (denser)','Medium (baseline)'}, ...
  'ItemsData',{'high','medium'},'Value',char(s.b2aQuality),'Tag','RecipeB2AQuality');
+if isfield(s,'projectPrinting')&&s.projectPrinting
+ name.Editable='off';description.Editable='off';mode.Enable='off';b2a.Enable='off';
+ for control={name,description,mode,b2a},control{1}.Tooltip='Managed in Project details > Profiling';end
+end
 info=uitextarea(g,'Editable','off','Value',splitlines(sprintf('Locked patches: %d | Spectra: %d | XYZ: %d\nM0/M1/M2 is the measurement condition, not the integration illuminant.\nStored XYZ is used unchanged; its reference must be reviewed before building.\nUnknown printing settings remain unknown. No ICC is generated here.',input.patchCount,hasSpectra,hasXYZ)));info.Layout.Column=[1 2];
 condition=uitextarea(g,'Editable','off','Value',splitlines(string(jsonencode(input.measurementCondition,PrettyPrint=true))));condition.Layout.Column=[1 2];
 uibutton(g,'Text','Save recipe','Tag','SaveProfileRecipe','ButtonPushedFcn',@saveRecipe);

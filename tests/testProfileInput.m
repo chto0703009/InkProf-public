@@ -4,7 +4,7 @@ end
 function testFreezeAndReject(tc)
 root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
 w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
-project=inkprof.createProject(fullfile(w,'project'),Printing=struct('printer',"Project printer",'paperSurface',"Matte",'ink',"Project ink"));
+project=inkprof.createProject(fullfile(w,'project'),Printing=struct('printer',"Project printer",'paperSurface',"Matte",'ink',"Project ink",'profileName',"Project ICC",'profileDescription',"Project description",'profileDataMode',"storedXYZ",'profileB2AQuality',"medium"));
 target=fullfile(w,'target');inkprof.createTarget(target,PatchCount=40,GraySteps=4,DPI=100);
 session=fullfile(project,'measurements','synthetic');inkprof.prepareChart(fullfile(target,'target.ti2'),session);
 doc=inkprof.importCgats(fullfile(target,'target.ti2'));doc.tables=doc.tables(1);doc.tables.signature="CTI3";
@@ -13,6 +13,9 @@ inkprof.importChartMeasurement(session,f);
 files=dir(fullfile(session,'measurement-*.json'));source=fullfile(files(1).folder,files(1).name);
 [folder,r]=inkprof.prepareProfileInput(source,ShowDialog=false);
 verifyTrue(tc,isfile(fullfile(folder,'profiling.ti3')));verifyEqual(tc,r.patchCount,40);
+[~,inherited]=inkprof.createProfileRecipe(folder,ShowDialog=false);
+verifyEqual(tc,inherited.name,"Project ICC");verifyEqual(tc,inherited.description,"Project description");
+verifyEqual(tc,inherited.colorimetry.mode,"storedXYZ");verifyEqual(tc,inherited.engine.b2aQuality,"medium");
 [recipeFile,recipe]=inkprof.createProfileRecipe(folder,DataMode="storedXYZ",ShowDialog=false,Name="Test recipe");
 verifyTrue(tc,isfile(recipeFile));verifyEqual(tc,string(recipe.colorimetry.mode),"storedXYZ");
 verifyFalse(tc,recipe.colorimetry.fwaCompensation);

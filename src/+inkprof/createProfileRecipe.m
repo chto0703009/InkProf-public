@@ -4,8 +4,8 @@ arguments
  inputFolder (1,1) string = ""
  options.Name (1,1) string = ""
  options.Description (1,1) string = ""
- options.DataMode (1,1) string {mustBeMember(options.DataMode,["spectral","storedXYZ"])} = "spectral"
- options.B2AQuality (1,1) string {mustBeMember(options.B2AQuality,["medium","high"])} = "high"
+ options.DataMode (1,1) string {mustBeMember(options.DataMode,["","spectral","storedXYZ"])} = ""
+ options.B2AQuality (1,1) string {mustBeMember(options.B2AQuality,["","medium","high"])} = ""
  options.A2BQuality (1,1) string {mustBeMember(options.A2BQuality,["medium","high"])} = "medium"
  options.Smoothing (1,1) double = NaN
  options.Printing (1,1) struct = struct
@@ -41,8 +41,15 @@ for key=["printer","paper","paperSurface","media","quality","driver","printPath"
  if ~isfield(printing,key),printing.(key)="unknown";end
  if isfield(options.Printing,key),printing.(key)=options.Printing.(key);end
 end
-name=options.Name;if name=="",name=string(input.name);end
-description=options.Description;if description=="",description=name;end
+name=options.Name;if name==""
+ if project~="",name=string(manifest.name);else,name=string(input.name);end
+ name=projectValue(printing,'profileName',name);
+end
+description=options.Description;if description=="",description=projectValue(printing,'profileDescription',name);end
+if options.DataMode=="",options.DataMode=projectValue(printing,'profileDataMode',"spectral");end
+if options.B2AQuality=="",options.B2AQuality=projectValue(printing,'profileB2AQuality',"high");end
+assert(any(options.DataMode==["spectral","storedXYZ"]),'inkprof:RecipeData','Invalid project colour data setting.');
+assert(any(options.B2AQuality==["medium","high"]),'inkprof:RecipeData','Invalid project B2A quality setting.');
 settings=struct('name',name,'description',description,'dataMode',options.DataMode,'b2aQuality',options.B2AQuality,'printing',printing,'projectPrinting',projectPrinting);
 if options.ShowDialog
  [accepted,settings]=inkprof.internal.profileRecipeDialog(settings,input,~isempty(v.spectra),~isempty(v.xyz));
@@ -129,4 +136,8 @@ end
 end
 function removeStage(p)
 if isfolder(p),rmdir(p,'s');end
+end
+
+function v=projectValue(printing,key,fallback)
+v=fallback;if isfield(printing,key)&&strlength(strtrim(string(printing.(key))))>0,v=string(printing.(key));end
 end
