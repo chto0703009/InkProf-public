@@ -57,8 +57,14 @@ for k=1:numel(pages)
     for j=1:numel(keys)
         item=rows.(keys{j});
         % Labels align near the row top, outside the central scan band.
+        leftLabel=max(2,min(8,lo(2)+offset(1)-12));
+        labelY=item.y-item.height/2+0.8+offset(2);
         output=inkprof.internal.drawBitmapText(output,item.label, ...
-            [max(2,min(8,lo(2)+offset(1)-12)),item.y-item.height/2+0.8+offset(2)],outDpi(1),2.0,"left",uint16(32768));
+            [leftLabel,labelY],outDpi(1),2.0,"left",uint16(32768));
+        % Mirror the label in the opposite margin for reverse scans. The same
+        % row ID and height are used; all patch and spacer pixels stay intact.
+        output=inkprof.internal.drawBitmapText(output,item.label, ...
+            [paperMm(1)-leftLabel,labelY],outDpi(1),2.0,"right",uint16(32768));
     end
     % Column letters share their X positions across the rows. Use any row.
     first=rows.(keys{1}).label;
