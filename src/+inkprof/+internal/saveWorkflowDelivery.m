@@ -15,6 +15,12 @@ assert(isfolder(iccParent)&&isfolder(reportParent),'inkprof:Delivery','The selec
 folder=inkprof.internal.absolutePath(folder);
 assert(reportParent~=folder&&~startsWith(reportParent,folder+filesep),'inkprof:Delivery','Choose a report location outside the project internal export package.');
 root=inkprof.internal.findProject(folder);
+% Give each delivery one portable folder; never overwrite an older bundle.
+reportBundle=fullfile(reportParent,stem+"-report");suffix=1;
+while isfolder(reportBundle)||isfile(reportBundle)
+ suffix=suffix+1;reportBundle=fullfile(reportParent,stem+"-report-"+suffix);
+end
+reportParent=reportBundle;reportDestination=fullfile(reportParent,stem+reportExt);
 destinations=[iccDestination,reportDestination];
 if lower(reportExt)==".pdf",destinations(3)=fullfile(reportParent,stem+".html");end
 if lower(reportExt)==".html",destinations(3)=fullfile(reportParent,stem+".pdf");end
@@ -24,11 +30,13 @@ for file=destinations
  assert(~isfile(file)||~startsWith(file,root+filesep),'inkprof:Delivery','Existing project files cannot be replaced. Choose a new name.');
 end
 source=fullfile(folder,'profile.icc');hash=inkprof.internal.sha256(source);
-assets=fullfile(reportParent,stem+"-underlag-"+string(java.util.UUID.randomUUID()));
-stages=strings(size(destinations));for k=1:numel(stages),stages(k)=string(tempname(fileparts(destinations(k))));end
+assets=fullfile(reportParent,"underlag");
+stages=strings(size(destinations));
 backups=strings(size(destinations));published=false(size(destinations));
 cleanup=onCleanup(@()removeTemps(stages,backups));
 try
+ mkdir(reportBundle);
+ for k=1:numel(stages),stages(k)=string(tempname(fileparts(destinations(k))));end
  % Freeze a complete portable report bundle before publishing either file.
  copyfile(folder,assets);
  copyfile(source,stages(1));
@@ -41,7 +49,7 @@ try
     text=string(fileread(fullfile(folder,'final-report.html')));
     [~,assetName]=fileparts(assets);
     prefix=string(java.net.URLEncoder.encode(char(assetName),'UTF-8'));prefix=replace(prefix,"+","%20");
-    text=replace(text,["href='","src='"],["href='"+prefix+"/","src='"+prefix+"/"]);
+    text=regexprep(text,"(href|src)='(?![A-Za-z][A-Za-z0-9+.-]*:|//|#)","$1='"+prefix+"/");
    else
     text=string(fileread(fullfile(folder,'final-report.txt')))+newline+newline+"Rapportunderlag: "+assets;
    end
@@ -58,7 +66,7 @@ try
   [ok,msg]=movefile(stages(k),destinations(k),'f');assert(ok,'inkprof:IO','%s',msg);published(k)=true;
  end
  receipt=struct('documentType',"inkprof.delivery",'iccFile',iccDestination,'iccSHA256',hash, ...
-  'reportFile',reportDestination,'reportSHA256',inkprof.internal.sha256(reportDestination),'reportAssets',assets, ...
+  'reportFolder',reportBundle,'reportFile',reportDestination,'reportSHA256',inkprof.internal.sha256(reportDestination),'reportAssets',assets, ...
   'files',destinations,'savedUTC',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")));
 catch err
  for k=1:numel(destinations)
@@ -66,7 +74,7 @@ catch err
    if backups(k)~="",copyfile(backups(k),destinations(k),'f');else,delete(destinations(k));end
   end
  end
- if isfolder(assets),rmdir(assets,'s');end
+ if isfolder(reportBundle),rmdir(reportBundle,'s');end
  removeTemps(stages,backups);rethrow(err)
 end
 removeTemps(stages,backups);

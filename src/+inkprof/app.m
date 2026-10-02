@@ -283,7 +283,7 @@ end
         elseif id=="export"
             message="The ICC profile already exists in this project:"+newline+w.output('profile','profile')+newline+newline+ ...
                 "This step saves an approved delivery copy and creates the measurement certificate (PDF and HTML) inside the project."+newline+newline+ ...
-                "You can also save additional copies to locations of your choice. The project keeps its own copies in either case.";
+                "You can also save copies elsewhere. The certificate and all supporting files are collected in one report folder. Move or share that entire folder. The project keeps its own copies.";
             choice=uiconfirm(fig,message,'Save approved profile and certificate', ...
                 'Options',{'Also save copies elsewhere','Save in project only','Cancel'},'DefaultOption',1,'CancelOption',3);
             if strcmp(choice,'Cancel'),o=[];return;end
@@ -292,7 +292,7 @@ end
             if isequal(n,0),o=[];return;end
             o.ICCDestination=string(fullfile(p,n));
             [n,p]=uiputfile({'*.pdf','Measurement certificate (*.pdf)';'*.html','Measurement certificate (*.html)';'*.txt','Measurement certificate as text (*.txt)'}, ...
-                'Save additional certificate copies (PDF and HTML)',fullfile(p,'measurement-certificate.pdf'));
+                'Name the certificate bundle (PDF, HTML and supporting files)',fullfile(p,'measurement-certificate.pdf'));
             if isequal(n,0),o=[];return;end
             o.ReportDestination=string(fullfile(p,n));o.Overwrite=true;
         elseif id=="profile"
@@ -395,7 +395,7 @@ switch id
  case "render",s="Save TIFF16 in the project. Print the files separately, then return to the app for measurement.";
  case "c2",s="Save C2 as TIFF16. The ICC profile has already been applied once. Print separately without further colour conversion, then measure in the app.";
  case {"measurement","c2measurement","refinemeasurement"},s="When your separately printed sheet is ready, start instrument measurement here. The app uses the saved target TI2 and saves measurement results in the project.";
- case "export",s="The ICC profile already exists in the project. This step saves the approved profile and creates its measurement certificate in the project. Optionally save additional copies elsewhere. The HTML assets folder accompanies an exported report.";
+ case "export",s="The ICC profile already exists in the project. This step saves the approved profile and creates its measurement certificate in the project. Optionally save additional copies elsewhere. The exported certificate and all supporting files are saved together in one report folder.";
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
  case "approve",s="Record the intended use, quality requirements and accepted limitations. This is the user's decision after physical C2/C3 verification, not ISO certification.";
  case "refine",s="Review measurement errors and repeat variation first. Document why additional patches are needed.";

@@ -209,11 +209,13 @@ w=finalReportFixture(tc);external=string(tempname);mkdir(external);cleanup=onCle
 mkdir(fullfile(external,'ICC'));mkdir(fullfile(external,'Rapporter'));
 icc=fullfile(external,'ICC','Mitt papper.icc');report=fullfile(external,'Rapporter','Min slutrapport.html');
 w.run('export',struct('ICCDestination',icc,'ReportDestination',report));
-verifyTrue(tc,w.valid('export'));verifyTrue(tc,isfile(icc));verifyTrue(tc,isfile(report));verifyTrue(tc,isfile(fullfile(external,'Rapporter','Min slutrapport.pdf')));
+verifyTrue(tc,w.valid('export'));verifyTrue(tc,isfile(icc));verifyFalse(tc,isfile(report));
 verifyEqual(tc,inkprof.internal.sha256(icc),inkprof.internal.sha256(w.output('export','profile')));
 r=jsondecode(fileread(w.output('export','delivery')));verifyEqual(tc,string(r.iccFile),inkprof.internal.absolutePath(icc));
-verifyEqual(tc,string(r.reportFile),inkprof.internal.absolutePath(report));verifyTrue(tc,isfile(fullfile(r.reportAssets,'final-report.json')));
-html=string(fileread(report));verifyTrue(tc,contains(html,'Min%20slutrapport-underlag-'));verifyFalse(tc,contains(html,"href='profile.icc'"));verifyTrue(tc,contains(html,"src='Min%20slutrapport-underlag-"));
+verifyEqual(tc,string(r.reportFolder),inkprof.internal.absolutePath(fullfile(external,'Rapporter','Min slutrapport-report')));
+verifyTrue(tc,isfile(fullfile(r.reportFolder,'Min slutrapport.pdf')));
+report=string(r.reportFile);verifyTrue(tc,isfile(report));verifyTrue(tc,isfile(fullfile(r.reportAssets,'final-report.json')));
+html=string(fileread(report));verifyTrue(tc,contains(html,"href='underlag/"));verifyFalse(tc,contains(html,"href='profile.icc'"));verifyTrue(tc,contains(html,"src='underlag/"));
 folder=fileparts(w.output('export','profile'));
 verifyError(tc,@()inkprof.internal.saveWorkflowDelivery(folder,icc,report),'inkprof:Exists');
 original=inkprof.internal.sha256(icc);
@@ -221,7 +223,7 @@ verifyError(tc,@()inkprof.internal.saveWorkflowDelivery(folder,icc,fullfile(exte
 verifyEqual(tc,inkprof.internal.sha256(icc),original);
 % A user-selected text report is independently readable; project guards do not depend on external files.
 txt=fullfile(external,'Rapporter','rapport.txt');
-r=inkprof.internal.saveWorkflowDelivery(folder,icc,txt,Overwrite=true);verifyTrue(tc,isfile(txt));
+r=inkprof.internal.saveWorkflowDelivery(folder,icc,txt,Overwrite=true);txt=string(r.reportFile);verifyTrue(tc,isfile(txt));
 verifyTrue(tc,contains(fileread(txt),'Rapportunderlag:'));verifyEqual(tc,string(r.iccSHA256),original);
 delete(icc);verifyTrue(tc,w.valid('export'));
 verifyError(tc,@()inkprof.internal.saveWorkflowDelivery(folder,w.output('profile','profile'),report,Overwrite=true),'inkprof:Delivery');
