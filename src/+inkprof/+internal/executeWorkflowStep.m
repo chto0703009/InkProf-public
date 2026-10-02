@@ -164,7 +164,9 @@ function files=profileFiles(out)
 files=[allFiles(fileparts(out.iteration));allFiles(fileparts(out.job))];files=unique(files);
 end
 function file=selectMeasurement(folder)
-[n,p]=uigetfile('measurement-*.json','Select a saved, accepted measurement revision',char(folder));
+% Native file dialogs filter by extension, not filename-prefix patterns.
+[n,p]=uigetfile({'*.json','Measurement revision JSON (*.json)'}, ...
+ 'Select a saved, accepted measurement revision (measurement-*.json)',char(folder));
 file="";if ~isequal(n,0),file=string(fullfile(p,n));end
 end
 function files=validateMeasurement(file,target)
