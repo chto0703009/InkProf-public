@@ -31,12 +31,12 @@ reportFile=fullfile(folder,'verification-check.json');
 inkprof.internal.recordProjectStep(folder,"C3 diagnostic print comparison; print chain unverified; no profile approval");
 s=report.summary;
 fprintf('InkProf C3: %d unique patches; mean dE00 %.4f, p95 %.4f, max %.4f.\n',s.count,s.mean,s.p95,s.max);
-fprintf('Insufficient evidence for profile approval: verify print chain and acceptance criteria.\nReport: %s\n',reportFile);
+fprintf('Measurement analysed. Review results, print settings and acceptance criteria before approving the profile in the workflow.\nReport: %s\n',reportFile);
 if ~options.ShowDialog,return;end
 f=uifigure('Name','InkProf - C3 print verification','Position',[90 90 1200 750],'WindowStyle','alwaysontop','Visible','off');
 g=uigridlayout(f,[6 1]);g.RowHeight={70,40,35,'1x',50,35};
-uilabel(g,'Text',sprintf('Diagnostic only: %d unique patches | mean %.3f | median %.3f | p95 %.3f | max %.3f dE00\nMeasured spectra versus desired absolute D50 Lab.',s.count,s.mean,s.median,s.p95,s.max),'WordWrap','on');
-uilabel(g,'Text','Print colour management and acceptance criteria are unverified. Profile is NOT approved.','FontColor',[.75 .2 .05],'WordWrap','on');
+uilabel(g,'Text',sprintf('Measurement analysis: %d unique patches | mean %.3f | median %.3f | p95 %.3f | max %.3f dE00\nMeasured spectra versus desired absolute D50 Lab.',s.count,s.mean,s.median,s.p95,s.max),'WordWrap','on');
+uilabel(g,'Text','Measurement analysed. Review the results and confirm the print settings before approving the profile in the workflow.','FontColor',[.1 .22 .3],'WordWrap','on');
 drop=uidropdown(g,'Items',{'All patches','Unique patches','Gray','Colour','Challenge','Repeat','Model-reachable unique'},'ValueChangedFcn',@(~,~)fill());
 table=uitable(g,'ColumnName',{'Page','Coordinate','ID','Role','Measured vs desired (dE00)','Model vs measurement (dE00)','Desired Lab','Measured Lab'}, ...
  'ColumnWidth',{50,90,50,90,185,200,200,200},'RowName',{});
