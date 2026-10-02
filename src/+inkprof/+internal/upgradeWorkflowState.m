@@ -5,7 +5,7 @@ map=struct('print','measurement','c2print','c2measurement','refineprint','refine
 if isfield(map,state.currentStep),state.currentStep=map.(state.currentStep);end
 if string(state.steps.export.status)=="completed"&&~isfield(state.steps.export.outputs,'finalReport')
  state.steps.export.status="stale";
- state.steps.export.message="Tidigare ICC bevarad. Kör Spara ICC och slutrapport för att skapa den nya slutrapporten.";
+ state.steps.export.message="Previous ICC preserved. Run Save ICC and final report to create the new final report.";
 end
 state.workflowRevision=2;
 end

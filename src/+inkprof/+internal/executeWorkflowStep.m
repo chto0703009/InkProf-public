@@ -27,7 +27,7 @@ switch id
    end
    targetRecord=jsondecode(fileread(fullfile(dest,'target.json')));
    assert(string(targetRecord.sourceSHA256)==inkprof.internal.sha256(w.output('definition','definition')), ...
-    'inkprof:WorkflowMeasurement','Utskriftsmålet hör inte till vald RGB-definition.');
+    'inkprof:WorkflowMeasurement','The print target does not belong to the selected RGB definition.');
   end
   if ~isfile(fullfile(dest,'manifest.json')),cancel();end
   inkprof.verifyPackage(dest);out=inkprof.internal.workflowTiffOutputs(fullfile(dest,'target.ti2'));files=packageFiles(dest);
@@ -55,8 +55,8 @@ switch id
   files=validateMeasurement(source,target);out.measurement=source;
  case "review"
   source=w.output('measurement','measurement');
-  assert(get(o,'Confirmed',false),'inkprof:Cancelled','Mätgranskningen är inte bekräftad.');
-  note=get(o,'Notes',"");assert(strlength(strtrim(note))>0,'inkprof:Workflow','Ange bedömning av mätning och ommätningar.');
+  assert(get(o,'Confirmed',false),'inkprof:Cancelled','Measurement review has not been confirmed.');
+  note=get(o,'Notes',"");assert(strlength(strtrim(note))>0,'inkprof:Workflow','Enter your assessment of measurements and remeasurements.');
   file=fullfile(w.newFolder('reports'),'measurement-review.json');mkdir(fileparts(file));
   inkprof.internal.writeJson(file,struct('documentType',"inkprof.measurement-review",'measurement',w.relative(source), ...
    'measurementSHA256',inkprof.internal.sha256(source),'notes',note,'utc',utc()));
@@ -77,7 +77,7 @@ switch id
   end
   if get(o,'Mode',"automatic")=="manual"
    [folder,status]=inkprof.runProfileJob(w.output('recipe','recipe'));
-   assert(~isempty(status)&&string(status.status)=="succeeded",'inkprof:Workflow','Profiljobbet slutfördes inte.');
+   assert(~isempty(status)&&string(status.status)=="succeeded",'inkprof:Workflow','The profiling job did not complete.');
    out.job=fullfile(folder,'status.json');out.profile=fullfile(folder,'result','profile.icc');
    files=[allFiles(folder);w.output('recipe','recipe')];
   else
@@ -95,7 +95,7 @@ switch id
  case "checks"
   job=fileparts(w.output('profile','job'));
   [~,a]=inkprof.checkProfileFit(job);[~,b]=inkprof.checkProfileGrid(job);[c1,c]=inkprof.checkProfileC1(job);
-  assert(c1.allNegativeControlsDetected&&isempty(c1.grossFailureAlerts),'inkprof:WorkflowNumerical','C1 rapporterar allvarliga problem. Granska rapporterna innan C2.');
+  assert(c1.allNegativeControlsDetected&&isempty(c1.grossFailureAlerts),'inkprof:WorkflowNumerical','C1 reports serious problems. Review the reports before C2.');
   out.fit=a;out.grid=b;out.c1=c;files=[a;b;c];
  case "c2"
   s=w.State.steps.profile.outputs;
@@ -114,8 +114,8 @@ switch id
   [~,file]=inkprof.analyseVerification(w.output('c3','report'));
   out.feedback=file;files=file;
  case "approve"
-  assert(get(o,'Confirmed',false),'inkprof:Cancelled','Slutligt godkännande saknas.');
-  note=get(o,'Notes',"");assert(strlength(strtrim(note))>0,'inkprof:Workflow','Ange avsedd användning och accepterade begränsningar.');
+  assert(get(o,'Confirmed',false),'inkprof:Cancelled','Final approval is missing.');
+  note=get(o,'Notes',"");assert(strlength(strtrim(note))>0,'inkprof:Workflow','Enter the intended use and accepted limitations.');
   file=fullfile(w.newFolder('reports'),'approval.json');mkdir(fileparts(file));
   inkprof.internal.writeJson(file,struct('documentType',"inkprof.user-approval",'cycle',w.State.cycle,'utc',utc(), ...
    'profileSHA256',inkprof.internal.sha256(w.output('profile','profile')),'report',w.relative(w.output('c3','report')), ...
@@ -132,28 +132,28 @@ switch id
   report=inkprof.internal.writeWorkflowFinalReport(w,file,folder,User=get(o,'ReportUser',string(java.lang.System.getProperty('user.name'))));
   out.profile=file;out.finalReport=report.html;out.reportJSON=report.json;out.reportText=report.text;out.reportPDF=report.pdf;
   if isfield(o,'ICCDestination')||isfield(o,'ReportDestination')
-   assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Välj sparplats för både ICC och rapport.');
+   assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose save locations for both the ICC profile and report.');
    receipt=inkprof.internal.saveWorkflowDelivery(folder,string(o.ICCDestination),string(o.ReportDestination),Overwrite=get(o,'Overwrite',false));
    out.delivery=fullfile(folder,'delivery.json');inkprof.internal.writeJson(out.delivery,receipt);
   end
   files=allFiles(folder);
  case "refine"
-  assert(get(o,'Confirmed',false),'inkprof:Cancelled','Granska mätfel före nya patchar.');
+  assert(get(o,'Confirmed',false),'inkprof:Cancelled','Review measurement errors before adding patches.');
   [~,folder]=inkprof.refineVerification(w.output('c3','report'),Name="Iteration "+(w.State.cycle+1), ...
    MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true);
   inkprof.internal.writeJson(fullfile(folder,'workflow-review.json'),struct('notes',get(o,'Notes',""),'utc',utc()));
   out=inkprof.internal.workflowTiffOutputs(fullfile(folder,'refinement-print','print','target.ti2'));out.proposal=fullfile(folder,'proposal.json');
-  files=allFiles(folder);assert(isfile(out.target),'inkprof:Workflow','Inga nya utskrivbara patchar föreslogs. Granska återkopplingen.');
+  files=allFiles(folder);assert(isfile(out.target),'inkprof:Workflow','No new printable patches were proposed. Review the feedback.');
  case "continue"
   [out,files]=continueProfile(w,fileparts(w.output('refine','proposal')),w.output('refinemeasurement','measurement'),o,w.State.cycle+1);
  otherwise
-  error('inkprof:Workflow','Okänd operation.');
+  error('inkprof:Workflow','Unknown operation.');
 end
 end
 function v=get(s,k,fallback)
 if isfield(s,k),v=s.(k);else,v=fallback;end
 end
-function cancel(),error('inkprof:Cancelled','Avbrutet. Inget steg har markerats klart.');end
+function cancel(),error('inkprof:Cancelled','Cancelled. No step has been marked complete.');end
 function value=utc(),value=string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'"));end
 function paths=allFiles(folder)
 f=dir(fullfile(folder,'**','*'));f=f(~[f.isdir]);paths=string(fullfile({f.folder},{f.name}))';
@@ -163,17 +163,17 @@ function files=profileFiles(out)
 files=[allFiles(fileparts(out.iteration));allFiles(fileparts(out.job))];files=unique(files);
 end
 function file=selectMeasurement(folder)
-[n,p]=uigetfile('measurement-*.json','Välj sparad, accepterad mätrevision',char(folder));
+[n,p]=uigetfile('measurement-*.json','Select a saved, accepted measurement revision',char(folder));
 file="";if ~isequal(n,0),file=string(fullfile(p,n));end
 end
 function files=validateMeasurement(file,target)
 m=jsondecode(fileread(file));
-assert(isfield(m,'documentType')&&string(m.documentType)=="inkprof.chart-measurement"&&m.complete,'inkprof:WorkflowMeasurement','Välj en komplett measurement-*.json.');
+assert(isfield(m,'documentType')&&string(m.documentType)=="inkprof.chart-measurement"&&m.complete,'inkprof:WorkflowMeasurement','Select a complete measurement-*.json file.');
 [parent,stem]=fileparts(file);chartFile=fullfile(parent,'chart.json');ti3=fullfile(parent,stem+".ti3");
-assert(isfile(chartFile)&&isfile(ti3),'inkprof:WorkflowMeasurement','Mätrevisionens chart.json och TI3 saknas.');
-assert(inkprof.internal.sha256(chartFile)==string(m.chartJSONSHA256)&&inkprof.internal.sha256(ti3)==string(m.sourceTI3SHA256),'inkprof:Integrity','Mätunderlagets kontrollsummor stämmer inte.');
+assert(isfile(chartFile)&&isfile(ti3),'inkprof:WorkflowMeasurement','The measurement revision chart.json and TI3 are missing.');
+assert(inkprof.internal.sha256(chartFile)==string(m.chartJSONSHA256)&&inkprof.internal.sha256(ti3)==string(m.sourceTI3SHA256),'inkprof:Integrity','Measurement input checksums do not match.');
 chart=jsondecode(fileread(chartFile));
-assert(string(chart.sourceSHA256)==inkprof.internal.sha256(target),'inkprof:WorkflowMeasurement','Mätningen hör inte till det valda utskriftsmålet.');
+assert(string(chart.sourceSHA256)==inkprof.internal.sha256(target),'inkprof:WorkflowMeasurement','The measurement does not belong to the selected print target.');
 files=[string(file);chartFile;ti3];
 end
 

@@ -1,3 +1,8 @@
+APPENS SPRÅK
+Från uppdateringen 2026-10-02 är appens menyer, dialoger och arbetssteg på engelska.
+Denna svenska guide använder delvis äldre svenska knappnamn.
+New project = Nytt projekt; Open project = Öppna projekt; Run selected step = Utför valt steg.
+
 INKPROF – PROJEKTAPP, ITERATIONER OCH RESULTATLOGG
 
 Befintligt kodprojekt: /Users/christer/Desktop/InkProf

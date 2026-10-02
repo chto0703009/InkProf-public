@@ -9,19 +9,19 @@ end
 iccDestination=inkprof.internal.absolutePath(iccDestination);
 reportDestination=inkprof.internal.absolutePath(reportDestination);
 [iccParent,~,iccExt]=fileparts(iccDestination);[reportParent,stem,reportExt]=fileparts(reportDestination);
-assert(any(lower(iccExt)==[".icc",".icm"]),'inkprof:Delivery','Välj .icc eller .icm för profilen.');
-assert(any(lower(reportExt)==[".html",".pdf",".txt"]),'inkprof:Delivery','Välj .html, .pdf eller .txt för slutrapporten.');
-assert(isfolder(iccParent)&&isfolder(reportParent),'inkprof:Delivery','Valda målmappar måste finnas.');
+assert(any(lower(iccExt)==[".icc",".icm"]),'inkprof:Delivery','Select .icc or .icm for the profile.');
+assert(any(lower(reportExt)==[".html",".pdf",".txt"]),'inkprof:Delivery','Select .html, .pdf or .txt for the final report.');
+assert(isfolder(iccParent)&&isfolder(reportParent),'inkprof:Delivery','The selected destination folders must exist.');
 folder=inkprof.internal.absolutePath(folder);
-assert(reportParent~=folder&&~startsWith(reportParent,folder+filesep),'inkprof:Delivery','Välj rapportplats utanför projektets interna exportpaket.');
+assert(reportParent~=folder&&~startsWith(reportParent,folder+filesep),'inkprof:Delivery','Choose a report location outside the project internal export package.');
 root=inkprof.internal.findProject(folder);
 destinations=[iccDestination,reportDestination];
 if lower(reportExt)==".pdf",destinations(3)=fullfile(reportParent,stem+".html");end
 if lower(reportExt)==".html",destinations(3)=fullfile(reportParent,stem+".pdf");end
 for file=destinations
- assert(~isfolder(file),'inkprof:Delivery','Målet är en mapp.');
- assert(~isfile(file)||options.Overwrite,'inkprof:Exists','Filen finns redan: %s',file);
- assert(~isfile(file)||~startsWith(file,root+filesep),'inkprof:Delivery','Befintliga projektfiler får inte ersättas. Välj ett nytt namn.');
+ assert(~isfolder(file),'inkprof:Delivery','The destination is a folder.');
+ assert(~isfile(file)||options.Overwrite,'inkprof:Exists','File already exists: %s',file);
+ assert(~isfile(file)||~startsWith(file,root+filesep),'inkprof:Delivery','Existing project files cannot be replaced. Choose a new name.');
 end
 source=fullfile(folder,'profile.icc');hash=inkprof.internal.sha256(source);
 assets=fullfile(reportParent,stem+"-underlag-"+string(java.util.UUID.randomUUID()));
@@ -45,16 +45,16 @@ try
    else
     text=string(fileread(fullfile(folder,'final-report.txt')))+newline+newline+"Rapportunderlag: "+assets;
    end
-   fid=fopen(stages(k),'w','n','UTF-8');assert(fid>=0,'inkprof:IO','Kan inte spara rapporten.');
+   fid=fopen(stages(k),'w','n','UTF-8');assert(fid>=0,'inkprof:IO','Cannot save the report.');
    closer=onCleanup(@()fclose(fid));fprintf(fid,'%s\n',text);clear closer
   end
  end
- assert(inkprof.internal.sha256(stages(1))==hash,'inkprof:Integrity','ICC-kopian ändrades.');
+ assert(inkprof.internal.sha256(stages(1))==hash,'inkprof:Integrity','The ICC copy has changed.');
  for k=1:numel(destinations)
   if isfile(destinations(k)),backups(k)=string(tempname(fileparts(destinations(k))));copyfile(destinations(k),backups(k));end
  end
  for k=1:numel(destinations)
-  if ~options.Overwrite,assert(~isfile(destinations(k)),'inkprof:Exists','Målfilen skapades under sparningen.');end
+  if ~options.Overwrite,assert(~isfile(destinations(k)),'inkprof:Exists','The destination file was created while saving.');end
   [ok,msg]=movefile(stages(k),destinations(k),'f');assert(ok,'inkprof:IO','%s',msg);published(k)=true;
  end
  receipt=struct('documentType',"inkprof.delivery",'iccFile',iccDestination,'iccSHA256',hash, ...

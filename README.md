@@ -16,7 +16,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 - Python 3.11-3.13 for analysis and reports; tested with 3.13.
 - ArgyllCMS 3.5.0 was used in development. Configure its `bin` directory explicitly if it is not on PATH.
 - Instrument measurement uses a POSIX bridge. Windows instrument operation has not been qualified.
-- The current project app uses Swedish labels. English PDF documentation is included.
+- The project app uses English labels, dialogs and workflow guidance. Swedish and English PDF documentation is included.
 
 Download the v0.9 source archive or clone this repository:
 
@@ -35,7 +35,7 @@ paths = setupInkProf(CheckPython=true);
 startInkProfApp();
 ```
 
-Choose **Nytt projekt** (new project) or **Öppna projekt** (open project). Create your own RGB target or import a definition you are entitled to use. Print the saved TIFF16 separately and use its matching target data for measurement. The app does not print, install profiles automatically or certify ISO conformity.
+Choose **New project** or **Open project**. Create your own RGB target or import a definition you are entitled to use. Print the saved TIFF16 separately and use its matching target data for measurement. The app does not print, install profiles automatically or certify ISO conformity.
 
 ## Documentation
 

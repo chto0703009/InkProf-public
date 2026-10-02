@@ -7,12 +7,12 @@ classdef ProjectWorkflow < handle
     methods
         function obj=ProjectWorkflow(root)
             obj.Root=inkprof.internal.absolutePath(root);
-            assert(isfile(fullfile(obj.Root,'inkprof-project.json')),'inkprof:Project','Välj en projektmapp med inkprof-project.json.');
+            assert(isfile(fullfile(obj.Root,'inkprof-project.json')),'inkprof:Project','Select a project folder containing inkprof-project.json.');
             p=jsondecode(fileread(fullfile(obj.Root,'inkprof-project.json')));
-            assert(string(p.documentType)=="inkprof.profiling-project",'inkprof:Project','Fel projekttyp.');
+            assert(string(p.documentType)=="inkprof.profiling-project",'inkprof:Project','Incorrect project type.');
             if isfile(obj.stateFile())
                 obj.reload();
-                assert(string(obj.State.projectId)==string(p.projectId),'inkprof:Workflow','Arbetsgången tillhör ett annat projekt.');
+                assert(string(obj.State.projectId)==string(p.projectId),'inkprof:Workflow','The workflow belongs to another project.');
             else
                 defs=inkprof.internal.workflowSteps();steps=struct;
                 for d=defs',steps.(d.id)=struct('status',"pending",'outputs',struct,'artifacts',struct([]),'message',"");end
@@ -24,16 +24,16 @@ classdef ProjectWorkflow < handle
         end
         function reload(obj)
             obj.State=jsondecode(fileread(obj.stateFile()));
-            assert(obj.State.schemaVersion==1&&string(obj.State.documentType)=="inkprof.workflow",'inkprof:Workflow','Okänd workflow-version.');
+            assert(obj.State.schemaVersion==1&&string(obj.State.documentType)=="inkprof.workflow",'inkprof:Workflow','Unknown workflow version.');
             obj.State=inkprof.internal.upgradeWorkflowState(obj.State);
         end
         function [ok,reason]=ready(obj,id)
             defs=inkprof.internal.workflowSteps();index=find(string({defs.id})==string(id));
-            assert(isscalar(index),'inkprof:Workflow','Okänt steg.');
-            ok=true;reason="Redo";
+            assert(isscalar(index),'inkprof:Workflow','Unknown step.');
+            ok=true;reason="Ready";
             for dep=string(defs(index).requires)
                 [valid,why]=obj.valid(dep);
-                if ~valid,ok=false;reason="Kräver "+dep+": "+why;return;end
+                if ~valid,ok=false;reason="Requires "+dep+": "+why;return;end
             end
         end
         function [ok,reason]=valid(obj,id)
@@ -43,18 +43,18 @@ classdef ProjectWorkflow < handle
             for a=reshape(s.artifacts,1,[])
                 file=obj.resolve(a.path);
                 if ~isfile(file)||inkprof.internal.sha256(file)~=string(a.sha256)
-                    ok=false;reason="Underlag saknas eller har ändrats: "+string(a.path);return
+                    ok=false;reason="Input is missing or has changed: "+string(a.path);return
                 end
             end
-            reason="Klart";
+            reason="Complete";
         end
         function assessment=inspect(obj)
             % One pass for UI: hash each artifact once per refresh.
             defs=inkprof.internal.workflowSteps();assessment=struct;
             for d=defs'
-                a=struct('valid',false,'ready',true,'reason',"Redo");
+                a=struct('valid',false,'ready',true,'reason',"Ready");
                 for dep=string(d.requires)
-                    if ~assessment.(dep).valid,a.ready=false;a.reason="Kräver "+dep;break;end
+                    if ~assessment.(dep).valid,a.ready=false;a.reason="Requires "+dep;break;end
                 end
                 s=obj.State.steps.(d.id);
                 if a.ready&&string(s.status)=="completed"
@@ -62,7 +62,7 @@ classdef ProjectWorkflow < handle
                     for f=reshape(s.artifacts,1,[])
                         path=obj.resolve(f.path);
                         if ~isfile(path)||inkprof.internal.sha256(path)~=string(f.sha256)
-                            a.valid=false;a.reason="Underlag saknas eller har ändrats: "+string(f.path);break;
+                            a.valid=false;a.reason="Input is missing or has changed: "+string(f.path);break;
                         end
                     end
                 end
@@ -81,23 +81,23 @@ classdef ProjectWorkflow < handle
             lock=obj.lock();obj.reload();
             [ok,reason]=obj.ready(id);assert(ok,'inkprof:WorkflowBlocked','%s',reason);
             if id=="profile"&&isfield(options,'Mode')&&string(options.Mode)=="manual"
-                assert(~isfield(obj.State,'activeContinuation'),'inkprof:WorkflowBlocked','En fortsatt iteration använder det kombinerade underlaget via automatisk fortsättning.');
-                [ok,reason]=obj.valid('recipe');assert(ok,'inkprof:WorkflowBlocked','B2 krävs: %s',reason);
+                assert(~isfield(obj.State,'activeContinuation'),'inkprof:WorkflowBlocked','A continued iteration uses the combined inputs through automatic continuation.');
+                [ok,reason]=obj.valid('recipe');assert(ok,'inkprof:WorkflowBlocked','B2 is required: %s',reason);
             end
             % Invalidate descendants before starting, including cancelled reruns.
             obj.invalidate(id);obj.State.currentStep=id;
-            obj.State.steps.(id).status="running";obj.State.steps.(id).message="Pågår";obj.event(id,"started",options);obj.save();
+            obj.State.steps.(id).status="running";obj.State.steps.(id).message="Running";obj.event(id,"started",options);obj.save();
             try
                 [outputs,files]=inkprof.internal.executeWorkflowStep(obj,id,options);
-                assert(~isempty(files),'inkprof:Cancelled','Avbrutet utan sparat resultat.');
+                assert(~isempty(files),'inkprof:Cancelled','Cancelled without saved results.');
                 artifacts=struct('path',{},'sha256',{});
                 for f=reshape(string(files),1,[])
-                    rel=obj.relative(f);assert(isfile(f),'inkprof:Workflow','Resultat saknas: %s',f);
+                    rel=obj.relative(f);assert(isfile(f),'inkprof:Workflow','Missing result: %s',f);
                     artifacts(end+1)=struct('path',rel,'sha256',inkprof.internal.sha256(f)); %#ok<AGROW>
                 end
                 names=fieldnames(outputs);
                 for k=1:numel(names),outputs.(names{k})=obj.relative(outputs.(names{k}));end
-                obj.State.steps.(id)=struct('status',"completed",'outputs',outputs,'artifacts',artifacts,'message',"Klart");
+                obj.State.steps.(id)=struct('status',"completed",'outputs',outputs,'artifacts',artifacts,'message',"Complete");
                 details=struct('result',obj.State.steps.(id),'summary',struct);
                 for name=string(fieldnames(outputs))'
                     file=obj.resolve(outputs.(name));
@@ -121,11 +121,11 @@ classdef ProjectWorkflow < handle
         end
         function file=resolve(obj,relative)
             file=inkprof.internal.absolutePath(fullfile(obj.Root,string(relative)));
-            assert(startsWith(file,obj.Root+filesep),'inkprof:WorkflowPath','Filen måste ligga i valt projekt.');
+            assert(startsWith(file,obj.Root+filesep),'inkprof:WorkflowPath','The file must be inside the selected project.');
         end
         function rel=relative(obj,file)
             file=inkprof.internal.absolutePath(file);
-            assert(startsWith(file,obj.Root+filesep),'inkprof:WorkflowPath','Filen måste ligga i valt projekt: %s',file);
+            assert(startsWith(file,obj.Root+filesep),'inkprof:WorkflowPath','The file must be inside the selected project: %s',file);
             rel=replace(extractAfter(file,strlength(obj.Root)+1),"\","/");
         end
         function folder=newFolder(obj,parent)
@@ -137,7 +137,7 @@ classdef ProjectWorkflow < handle
         function cleanup=lock(obj)
             file=fullfile(obj.Root,'.workflow.lock');
             assert(java.io.File(char(file)).createNewFile(),'inkprof:WorkflowBusy', ...
-                'Projektet används av en annan operation. Vid avbruten MATLAB-session: kontrollera att ingen körning pågår innan .workflow.lock tas bort.');
+                'The project is in use by another operation. After an interrupted MATLAB session, make sure no operation is running before removing .workflow.lock.');
             cleanup=onCleanup(@()delete(file));
         end
         function save(obj)
@@ -178,7 +178,7 @@ classdef ProjectWorkflow < handle
             % Append-only human and machine logs; state history is authoritative.
             for format=["txt","jsonl"]
                 file=fullfile(obj.Root,"result-log."+format);
-                fid=fopen(file,'a','n','UTF-8');assert(fid>=0,'inkprof:IO','Kan inte öppna resultatloggen.');
+                fid=fopen(file,'a','n','UTF-8');assert(fid>=0,'inkprof:IO','Cannot open the results log.');
                 cleanup=onCleanup(@()fclose(fid));
                 if format=="jsonl",fprintf(fid,'%s\n',jsonencode(e));
                 else,fprintf(fid,'[%s] Iteration %d | %s | %s\n%s\n\n',e.utc,e.cycle,id,status,jsonencode(details,PrettyPrint=true));end

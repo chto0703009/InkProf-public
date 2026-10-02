@@ -10,6 +10,6 @@ for id=affected,state.steps.(id).status="stale";end
 state.parentIterationId=state.iterationId;
 state.iterationId=string(java.util.UUID.randomUUID());
 state.cycle=state.cycle+1;
-state.steps.profile=struct('status',"completed",'outputs',outputs,'artifacts',artifacts,'message',"Ny kandidat; nytt C1/C2/C3 krävs");
+state.steps.profile=struct('status',"completed",'outputs',outputs,'artifacts',artifacts,'message',"New candidate; new C1/C2/C3 required");
 state.currentStep="checks";
 end
