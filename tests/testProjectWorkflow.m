@@ -138,7 +138,7 @@ verifyEqual(tc,string(r.signature.status),"unsigned");verifyTrue(tc,contains(r.r
 verifyEqual(tc,string(r.projectDetails(string({r.projectDetails.label})=="Skrivare").value),"Certificate printer <demo>");
 verifyTrue(tc,contains(fileread(w.output('export','reportText')),'Ort och datum:'));
 
-h=fileread(w.output('export','finalReport'));verifyTrue(tc,contains(h,'1.250'));
+h=fileread(w.output('export','finalReport'));verifyTrue(tc,contains(h,'Mätresultat – färgprov och ΔE00'));verifyFalse(tc,contains(h,'<th>Grupp</th>'));verifyTrue(tc,contains(h,'1.250'));
 verifyTrue(tc,contains(h,'Underskrift av mätcertifikat'));verifyTrue(tc,contains(h,'Certificate printer &lt;demo&gt;'));
 verifyTrue(tc,contains(h,"class='lab-canvas'"));verifyTrue(tc,contains(h,'requestAnimationFrame'));
 plot=regexp(h,"<script type='application/json' class='lab-data'>(.*?)</script>",'tokens','once');

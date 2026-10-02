@@ -92,21 +92,8 @@ lines=["INKPROF – MÄTCERTIFIKAT";"Projekt: "+string(project.name);"Projekt-ID
  "";"BESTÄLLARENS UTSKRIFTER OCH UPPGIFTER";r.clientPrintResponsibility; ...
  "";"GARANTI OCH ANSVAR";r.warrantyNotice;"";"SPARAD ICC";"Fil: profile.icc";"SHA-256: "+digest;"Byte-identisk med vald kandidat."; ...
  "";"SLUTLIG BEDÖMNING";string(approval.notes);""; ...
- "MÄTRESULTAT – ΔE00";"Grupp | Antal | Medel | Median | P95 | Maximum"];
-rows=cell(0,6);
-c3=r.results.c3_report;fit=r.results.checks_fit;
-if isfield(c3,'summary'),addStats("C3: unika kontrollpatchar",c3.summary);end
-if isfield(c3,'groups')
- for pair={'gray','C3: gråskala';'colour','C3: färgprov';'challenge','C3: challenge'}'
-  if isfield(c3.groups,pair{1}),addStats(string(pair{2}),c3.groups.(pair{1}));end
- end
-end
-if isfield(c3,'repeatedPrintedPatches')&&isfield(c3.repeatedPrintedPatches,'summary')
- addStats("Separata upprepade utskriftsfält",c3.repeatedPrintedPatches.summary);
-end
-if isfield(fit,'summary'),addStats("Träningsdata (inte oberoende kontroll)",fit.summary);end
-for k=1:size(rows,1),lines(end+1)=strjoin(string(rows(k,:))," | ");end
-lines=[lines;"";upper(r.patchOutliers.title);r.patchOutliers.basis;r.patchOutliers.message;r.patchOutliers.colourNote];
+ "MÄTRESULTAT – FÄRGPROV OCH ΔE00";r.patchOutliers.basis;r.patchOutliers.message;r.patchOutliers.colourNote];
+fit=r.results.checks_fit;
 for patch=reshape(r.patchOutliers.patches,1,[])
  lines(end+1)=sprintf('Sida %d / %s | ID %s | %s | sRGB %s | ΔE00 %.4f | över gräns %.4f',patch.page,patch.coordinate,patch.sampleId,patch.role,patch.hex,patch.deltaE00,patch.excess);
 end
@@ -148,17 +135,13 @@ html="<!doctype html><html lang='sv'><meta charset='utf-8'><meta name='viewport'
  "<h1>InkProf – mätcertifikat</h1><p>"+esc(string(project.name))+" · Iteration "+w.State.cycle+" · "+esc(r.createdUTC)+"</p>"+ ...
  "<p>Certifikat-ID: "+esc(r.certificateId)+"</p><p>"+esc(r.certificateScope)+"</p>"+projectHTML+ ...
  "<h2>Sparad ICC-profil</h2><p><a href='profile.icc'>profile.icc</a></p><p>SHA-256: <code>"+digest+"</code></p>"+ ...
- "<h2>Slutlig bedömning</h2><p>"+esc(string(approval.notes))+"</p><h2>Mätresultat – ΔE00</h2>"+ ...
- "<table><tr><th>Grupp</th><th>Antal</th><th>Medel</th><th>Median</th><th>P95</th><th>Maximum</th></tr>";
-for k=1:size(rows,1)
- html=html+"<tr>";for j=1:6,html=html+"<td>"+esc(string(rows{k,j}))+"</td>";end;html=html+"</tr>";
-end
-html=html+"</table><h2>"+esc(r.patchOutliers.title)+"</h2><p>"+esc(r.patchOutliers.basis)+"</p><p>"+esc(r.patchOutliers.message)+"</p><p>"+esc(r.patchOutliers.colourNote)+"</p>";
+ "<h2>Slutlig bedömning</h2><p>"+esc(string(approval.notes))+"</p><h2>Mätresultat – färgprov och ΔE00</h2>"+ ...
+ "<p>"+esc(r.patchOutliers.basis)+"</p><p>"+esc(r.patchOutliers.message)+"</p><p>"+esc(r.patchOutliers.colourNote)+"</p>";
 for k=1:3:r.patchOutliers.count
  html=html+"<div class='patch-row' style='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:8px;font-size:9pt'>";
  for j=k:min(k+2,r.patchOutliers.count)
   patch=r.patchOutliers.patches(j);mark="";if patch.clipped,mark="*";end
-  html=html+"<div style='border:1px solid #ccd8de;padding:6px;overflow-wrap:anywhere'><span style='display:inline-block;width:22px;height:22px;border:1px solid #777;background:"+patch.hex+";print-color-adjust:exact;-webkit-print-color-adjust:exact'></span> "+esc(patch.hex+mark)+ ...
+  html=html+"<div style='border:1px solid #ccd8de;padding:6px;overflow-wrap:anywhere'><span style='display:inline-block;width:100%;height:40px;border:1px solid #777;background:"+patch.hex+";print-color-adjust:exact;-webkit-print-color-adjust:exact'></span> "+esc(patch.hex+mark)+ ...
    "<br><strong>"+esc("ID "+patch.sampleId)+"</strong> · "+esc("sida "+patch.page+" / "+patch.coordinate)+ ...
    "<br>"+esc(patch.role)+" · ΔE00 <strong>"+compose('%.4f',patch.deltaE00)+"</strong></div>";
  end
@@ -181,7 +164,11 @@ if isfield(r,'visualization')
  "<script type='application/json' class='lab-data'>"+plotData+"</script><canvas class='lab-canvas' role='img' aria-label='Automatically rotating predicted control colours in CIELAB D50'></canvas><img class='lab-still'  src='profile-lab-3d.png' alt='Profilens beräknade kontrollpatchar i Lab 3D' style='width:100%;height:auto'></section>";
 end
 signatureStart=find(lines=="UNDERSKRIFT",1,'last');
-html=html+"<h2>Fullständig redovisning och historik</h2><pre>"+esc(strjoin(lines(1:signatureStart-1),newline))+"</pre>"+ ...
+% The visual results already appear above; keep their text equivalent in TXT only.
+resultStart=find(lines=="MÄTRESULTAT – FÄRGPROV OCH ΔE00",1);
+resultEnd=find(lines=="UTSKRIFT OCH MÄTNING",1);
+appendixLines=[lines(1:resultStart-1);lines(resultEnd:signatureStart-1)];
+html=html+"<h2>Fullständig redovisning och historik</h2><pre>"+esc(strjoin(appendixLines,newline))+"</pre>"+ ...
  "<section class='certificate-signature' style='height:225mm;display:flex;flex-direction:column;break-inside:avoid'><h2>Underskrift av mätcertifikat</h2>"+ ...
  "<p>Projekt: "+esc(string(project.name))+"</p><p>Certifikat-ID: "+esc(r.certificateId)+"</p><p>Dokumentdatum: "+esc(r.reportDate)+"</p>"+ ...
  "<p>ICC SHA-256: "+digest+"</p><div style='margin-top:auto'><p>"+esc(r.signature.statement)+"</p>"+ ...
@@ -202,17 +189,7 @@ inkprof.runPython(fullfile(config.Root,'analysis','workflow_final_pdf.py'),strin
         value=strtrim(string(value));if isempty(value)||strlength(value)==0||value=="unknown",value="Ej angivet";end
         r.projectDetails(end+1)=struct('label',string(label),'value',value);
     end
-    function addStats(label,s)
-        row=cell(1,6);row{1}=char(label);fields=["count","mean","median","p95","max"];
-        for n=1:5
-            value="Ej redovisat";
-            if isfield(s,fields(n))&&isscalar(s.(fields(n)))&&isfinite(s.(fields(n)))
-                if n==1,value=string(s.(fields(n)));else,value=compose('%.3f',s.(fields(n)));end
-            end
-            row{n+1}=char(value);
-        end
-        rows(end+1,:)=row;
-    end
+
 end
 function text=esc(text)
 text=replace(string(text),["&","<",">",string(char(34)),"'"],["&amp;","&lt;","&gt;","&quot;","&#39;"]);

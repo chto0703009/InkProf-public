@@ -42,38 +42,18 @@ def create(folder):
         story.append(p(item['label']+': '+item['value']))
     story += [p('Sparad ICC-profil', 'Heading2'), p('profile.icc'), p('SHA-256: ' + r['profile']['sha256']),
               p('Slutlig bedömning', 'Heading2'), p(r['approval']['notes'])]
-    rows = [[p(x) for x in ['Grupp', 'Antal', 'Medel', 'Median', 'P95', 'Max']]]
-    c3 = r['results']['c3_report']
-    groups = [('C3: unika kontrollpatchar', c3.get('summary'))]
-    groups += [(label, c3.get('groups', {}).get(key)) for key, label in
-               [('gray', 'C3: gråskala'), ('colour', 'C3: färgprov'), ('challenge', 'C3: challenge')]]
-    groups += [('Upprepade utskriftsfält', c3.get('repeatedPrintedPatches', {}).get('summary')),
-               ('Träningsdata (inte oberoende)', r['results']['checks_fit'].get('summary'))]
-    for label, stats in groups:
-        if not stats:
-            continue
-        values = [label]
-        for key in ['count', 'mean', 'median', 'p95', 'max']:
-            v = stats.get(key)
-            values.append('-' if v is None else str(v) if key == 'count' else f'{v:.3f}')
-        rows.append([p(x) for x in values])
-    table = Table(rows, colWidths=[65*mm, 18*mm, 22*mm, 22*mm, 22*mm, 22*mm], repeatRows=1)
-    table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#e7eff2')),
-                              ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                              ('LINEBELOW', (0, 0), (-1, -1), .3, colors.lightgrey)]))
-    story += [KeepTogether([p('Mätresultat - ΔE00', 'Heading2'),table]), Spacer(1, 5*mm), p('Träningsfel är inte oberoende verifiering. Utskriften görs separat av användaren. Utskriftskedjan är inte verifierad av appen.')]
     if r.get('patchOutliers'):
         outliers=r['patchOutliers']
-        story += [p(outliers['title'],'Heading2'),p(outliers['basis']),p(outliers['message']),p(outliers['colourNote'])]
+        story += [PageBreak(),p('Mätresultat - färgprov och ΔE00','Heading2'),p(outliers['basis']),p(outliers['message']),p(outliers['colourNote'])]
         cards=[]
         patches=outliers['patches']
         if isinstance(patches,dict):patches=[patches]
         for patch in patches:
-            swatch=Table([['']],colWidths=[8*mm],rowHeights=[8*mm])
+            swatch=Table([['']],colWidths=[49*mm],rowHeights=[13*mm])
             swatch.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.HexColor(patch['hex'])),('BOX',(0,0),(-1,-1),.3,colors.grey)]))
             marker='*' if patch['clipped'] else ''
             label=f"ID {patch['sampleId']} | sida {patch['page']} / {patch['coordinate']}\n{patch['role']} | ΔE00 {patch['deltaE00']:.4f}\n{patch['hex']}{marker}"
-            card=Table([[swatch,p(label,'DetailReport')]],colWidths=[11*mm,43*mm])
+            card=Table([[swatch],[p(label,'DetailReport')]],colWidths=[54*mm])
             card.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),2),('RIGHTPADDING',(0,0),(-1,-1),2)]))
             cards.append(card)
         if cards:
@@ -98,7 +78,14 @@ def create(folder):
                   Image(str(folder / 'profile-lab-3d.png'), width=170*mm, height=121*mm, kind='proportional')]
     story += [PageBreak(), p('Fullständig redovisning och historik', 'Heading2')]
     # Flowing paragraphs paginate long notes, file paths and histories safely.
+    in_results = False
     for line in (folder / 'final-report.txt').read_text(encoding='utf-8').rsplit('\nUNDERSKRIFT\n',1)[0].splitlines():
+        if line == 'MÄTRESULTAT – FÄRGPROV OCH ΔE00':
+            in_results = True
+        elif line == 'UTSKRIFT OCH MÄTNING':
+            in_results = False
+        if in_results:
+            continue
         if line.strip():
             story.append(p(line, 'DetailHeading' if line.isupper() and len(line)<120 else 'DetailReport'))
         else:

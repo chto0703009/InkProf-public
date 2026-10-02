@@ -54,6 +54,8 @@ Underskriften bekräftar att undertecknaren har granskat dokumentets förutsätt
 
 ## Kompakt lista över patchavvikelser
 
+Mätresultat och patchavvikelser samlas i ett färgfokuserat avsnitt utan separat statistiktabell. Den visuella bilagan upprepar inte patchlistan; fullständiga numeriska resultat finns kvar i JSON och textunderlaget.
+
 PDF och HTML visar tre kolumner med färgprov, referens-ID, sida/koordinat, patchtyp och uppmätt ΔE00 mot önskat D50-Lab. Alla unika kontrollpatchar med ΔE00 > 5 tas med och sorteras med störst fel först. Urvalet görs före avrundning; inga poster begränsas till en topp-lista. Färg-, grå- och challenge-patchar ingår. Upprepningar och pappersvit FWA-referens utesluts. Listan sidbryts vid behov. Om inga överskridanden finns anges det uttryckligen; saknat patchunderlag anges som ej bedömbart.
 
 Gränsen är en **ISO-relaterad jämförelsereferens**, inte en generell klassning som ”utanför ISO”. MediaStandard Print 2018, tabell 30, återger ISO 12647-7:2016 med max ΔE00 5 för samtliga fält i Fogra MediaWedge. Andra kriterier och särskilda patchgrupper har andra gränser och färgskillnadsmått. InkProfs eget RGB-kontrollmål är inte denna kontrollkil, och listan bedömer inte fullständig ISO-överensstämmelse. InkProfs grådiagnostik med ΔE00 2 är inte ISO:s gråbalansmått och används inte som urvalsgräns i denna lista.
