@@ -10,6 +10,7 @@ and its following prompt, quit spotread and publish a candidate for review.
 """
 import argparse,codecs,json,math,os,re,selectors,signal,subprocess,sys,time
 from pathlib import Path
+from pty_transport import read_ready
 NUMBER=r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?'
 
 def emit(event,**data):print(json.dumps(dict(event=event,**data)),flush=True)
@@ -55,8 +56,8 @@ def main():
                 if time.monotonic()>deadline:raise RuntimeError('Spot measurement timed out.')
                 for key,_ in sel.select(.1):
                     if key.data=='output':
-                        try:data=os.read(master,65536)
-                        except OSError:data=b''
+                        data=read_ready(master,pty_output=True)
+                        if data is None:continue
                         if not data:alive=False;break
                         log.write(data);log.flush();text=decoder.decode(data);full+=text;buffer+=text;emit('output',text=text)
                         new=prompt_state(buffer)
@@ -68,7 +69,8 @@ def main():
                             quit_confirmed=True;buffer='';os.write(master,b'q');deadline=time.monotonic()+10
                         elif new!=state and not quitting:state=new;emit('state',kind=state)
                     else:
-                        data=os.read(sys.stdin.fileno(),65536)
+                        data=read_ready(sys.stdin.fileno())
+                        if data is None:continue
                         if not data:raise RuntimeError('Controller disconnected.')
                         pending+=data
                         while b'\n' in pending:

@@ -5,6 +5,7 @@
 import importlib.util,json,os,subprocess,sys,tempfile,time,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/"bridge"))
 spec=importlib.util.spec_from_file_location('spot',ROOT/'bridge/spotread_bridge.py');spot=importlib.util.module_from_spec(spec);spec.loader.exec_module(spot)
 class SpotTest(unittest.TestCase):
  def test_parser(self):

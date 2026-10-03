@@ -5,7 +5,7 @@
 - Complete 19-row project workflow with persistent JSON state, prerequisite checks, measurement revisions, result logs and iteration history.
 - Central editable project/material/print settings, portable folders, renaming checks, dye/pigment ink type, printer coating and drying time.
 - TIFF16-only print delivery, editable cut-sheet/roll suggestions, JSON sled limits, row labels on both sides and compact-page footer spacing.
-- Instrument identity capture, startup/reconnect feedback and clearer patch remeasurement review.
+- Instrument identity capture, startup/reconnect feedback and clearer patch remeasurement review. Temporary PTY/controller read unavailability now waits for the next event instead of aborting measurement; unexpected chartread failures are recorded in the session JSON.
 - ICC recipe/build/checks, physical C2/C3 verification, image-guided refinement and C2 training data in subsequent iterations.
 - Matte shadow strategy: editable sampling emphasis, numerical grid emphasis and up to 48 additional dark fitting patches per iteration.
 - Common-sample ICC comparisons, default 2D L*=50, 3D points and a separate ICC gamut surface.

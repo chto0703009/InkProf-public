@@ -18,6 +18,7 @@ import signal
 import subprocess
 import sys
 import time
+from pty_transport import read_ready
 
 
 def emit(kind, **data):
@@ -159,10 +160,9 @@ def main():
                     while active:
                         for key, _ in sel.select(timeout=.1):
                             if key.data == 'output':
-                                try:
-                                    data = os.read(master, 65536)
-                                except OSError:
-                                    data = b''
+                                data = read_ready(master, pty_output=True)
+                                if data is None:
+                                    continue
                                 if not data:
                                     active = False
                                     break
@@ -172,7 +172,9 @@ def main():
                                 output += text
                                 emit('output', text=text)
                             else:
-                                data = os.read(sys.stdin.fileno(), 65536)
+                                data = read_ready(sys.stdin.fileno())
+                                if data is None:
+                                    continue
                                 if not data:
                                     raise RuntimeError('Controller disconnected; stopping child')
                                 pending += data
@@ -205,6 +207,12 @@ def main():
                     continue
                 emit('exited', exitCode=code, ti3Exists=result.exists(), validated=False)
                 return 0 if code == 0 else 1
+            except Exception as error:
+                metadata.update(ended=time.time(), ti3Exists=result.exists(),
+                                errorType=type(error).__name__, error=str(error),
+                                errorNumber=getattr(error, 'errno', None))
+                (folder / f'run-{attempt_token}.json').write_text(json.dumps(metadata, indent=2))
+                raise
             finally:
                 if proc is not None and proc.poll() is None:
                     os.killpg(proc.pid, signal.SIGTERM)

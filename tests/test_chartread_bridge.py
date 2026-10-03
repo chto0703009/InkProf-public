@@ -70,6 +70,12 @@ class BridgeTests(unittest.TestCase):
                     proc.stdin.close(); proc.stdout.close()
 
     def test_interaction_and_resume_guard(self):
+        self.check_interaction(False)
+
+    def test_interaction_survives_temporary_input_and_output_unavailability(self):
+        self.check_interaction(True)
+
+    def check_interaction(self, transient):
         with tempfile.TemporaryDirectory(prefix='InkProf bridge ') as directory:
             folder = Path(directory)
             (folder/'chart.json').write_text(json.dumps(chart()))
@@ -78,7 +84,27 @@ class BridgeTests(unittest.TestCase):
                             'if "-?" in sys.argv: print("Fake chartread test version");sys.exit(1)\n'
                             'print("TEST prompt",flush=True)\ninput()\nPath("chart.ti3").write_text("synthetic test only")\n')
             fake.chmod(0o755)
-            proc = subprocess.Popen([sys.executable, str(ROOT/'bridge/chartread_bridge.py'), str(folder), str(fake), '--scan-tolerance', '1', '--direction', 'forward'],
+            script = ROOT/'bridge/chartread_bridge.py'
+            if transient:
+                wrapper = folder/'inject.py'
+                wrapper.write_text(
+                    'import sys, runpy, errno\n'
+                    f'sys.path.insert(0, {str(ROOT/"bridge")!r})\n'
+                    'import pty_transport\n'
+                    'original=pty_transport.read_ready; seen=set()\n'
+                    'def injected(fd, *, pty_output=False):\n'
+                    ' if fd not in seen:\n'
+                    '  seen.add(fd); real=pty_transport.os.read\n'
+                    '  def unavailable(*args): raise BlockingIOError(errno.EAGAIN, "temporary")\n'
+                    '  pty_transport.os.read=unavailable\n'
+                    '  try: return original(fd, pty_output=pty_output)\n'
+                    '  finally: pty_transport.os.read=real\n'
+                    ' return original(fd, pty_output=pty_output)\n'
+                    'pty_transport.read_ready=injected\n'
+                    f'runpy.run_path({str(script)!r}, run_name="__main__")\n'
+                    'assert len(seen)==2\n')
+                script = wrapper
+            proc = subprocess.Popen([sys.executable, str(script), str(folder), str(fake), '--scan-tolerance', '1', '--direction', 'forward'],
                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
             try:
                 events=[]
