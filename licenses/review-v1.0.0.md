@@ -16,7 +16,7 @@ InkProf: GPL-3.0-or-later. ArgyllCMS 3.5.0: external AGPLv3 programs, not bundle
 
 ## Limits and release follow-up
 
-No declaration of universal legal clearance is made. Old private history is not part of the public source release. The public tree formerly contained a stripped vendor-derived PXF scaffold; the replacement removes that material from future source archives, but does not rewrite Git history. Do not infer redistribution permission for unrelated reference files. External i1Profiler receiver testing must be repeated for the new minimal PXF scaffold. Windows/Linux, all instrument modes and fresh dependency installation remain outside the demonstrated test scope.
+No declaration of universal legal clearance is made. Old private history is not part of the public source release. The public tree formerly contained a stripped vendor-derived PXF scaffold; the replacement removes that material from future source archives, but does not rewrite Git history. Do not infer redistribution permission for unrelated reference files. The new minimal PXF scaffold passed a user-confirmed i1Profiler patch-set import/display test on 2026-10-03 (round8 export). Layout, receiver re-export and physical measurement remain unverified; this compatibility test does not settle rights questions. Windows/Linux, all instrument modes and fresh dependency installation remain outside the demonstrated test scope.
 
 ## Verification
 

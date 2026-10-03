@@ -17,7 +17,10 @@ PUBLIC SOURCE TESTS
   this is not a fresh package-index installation test.
 - Python compilation of source/build scripts passed.
 - PXF definition export/import round-trip tests passed for the new minimal
-  scaffold. External i1Profiler receiver compatibility is NOT newly tested.
+  scaffold. On 2026-10-03 Christer Törnkvist also accepted a manual i1Profiler
+  import test using the current scaffold with RGBEncoding="round8": test name,
+  patch count and colour swatches appeared as expected. Exact receiver version
+  and patch count were not reported. Scope: patch-set import and display only.
 
 LICENSING / SOURCE BOUNDARY
 - 279 public first-party MATLAB/Python/JavaScript source files have copyright,
@@ -55,8 +58,9 @@ REMAINING QUALIFICATION
   (48 additional dark fitting patches, combined with C2); no new physical
   print/measurement validation was performed in this documentation task.
 - ISSUE-001 (inverse sensitivity to measurement noise) remains open.
-- The replacement PXF scaffold needs external receiver testing before any
-  new i1Profiler-compatibility claim. See docs/releases/v1.0.0.md.
+- PXF import/display is user-verified for the tested round8 export. Receiver
+  re-export, identical print layout and physical measurement remain unverified.
+  See docs/usage/i1profiler-txf-export.md for scope and dated evidence.
 
 REPRODUCE
 python -m unittest discover -s tests -p 'test_*.py'

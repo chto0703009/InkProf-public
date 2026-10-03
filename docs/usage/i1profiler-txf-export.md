@@ -2,6 +2,14 @@
 
 > v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
+## Verifierad PXF-import i i1Profiler – 2026-10-03
+
+Christer Törnkvist har genomfört och godkänt ett manuellt mottagarprov med en ny PXF-testfil exporterad från InkProf med den nuvarande, minimala XML-mallen och `RGBEncoding="round8"`. I i1Profiler visades testnamnet, patchantalet och färgrutorna som förväntat. Användarens återkoppling var: ”Allt såg ut som frväntat. Accept”. **PXF-importen är verifierad för detta prov.**
+
+Detta är ett användarbekräftat import- och visningsprov, utöver InkProfs automatiska återinläsningstester. Exakt i1Profiler-version och patchantal angavs inte i återkopplingen; versionen från äldre prov ska inte antas gälla detta prov. Återexport från i1Profiler, oförändrad fysisk utskriftslayout och instrumentmätning ingick inte i godkännandet. `round8` tillåter avrundning till 8-bitars RGB; testfilen kvalificerar inte ett redan utskrivet RGB16-target som mätunderlag.
+
+Nedan följer äldre TXF- och layoutprov med sina ursprungliga avgränsningar.
+
 Status 2026-09-25: exportkod finns, och `createTiff16` kan lägga en experimentell `*-candidate.txf` bredvid den ensidiga 575-TIFF:en när RGB-värdena är exakt representerbara. **Samma utskrift är ännu inte kvalificerad för mätning i mottagarprogrammet.** Använd inte kandidatfilen som färdigt mätunderlag förrän dess importerade rutnät och ett praktiskt mätprov har verifierats.
 
 Decimal-CGATS kan innehålla RGB16-värden som den testade heltals-TXF-varianten inte kan representera exakt. Då skapas ingen TXF-kandidat; paketets manifest förklarar precisionhindret. Ingen tyst avrundning görs.

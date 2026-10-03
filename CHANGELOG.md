@@ -12,7 +12,7 @@
 - Common-sample ICC comparisons, default 2D L*=50, 3D points and a separate ICC gamut surface.
 - Measurement certificates for print-reviewed or explicitly numerical-only scope; signature, references/explanations in Appendix A and legal terms in Appendix B; portable HTML folders.
 - Updated Swedish/English presentations and workflow PDFs, Swedish handbook, installation and current usage index.
-- Licensing review: source notices, full dependency notices, preserved provenance, redistributable font and PDF notices. Minimal independently authored PXF scaffold replaces older vendor settings; external receiver compatibility requires retesting.
+- Licensing review: source notices, full dependency notices, preserved provenance, redistributable font and PDF notices. Minimal independently authored PXF scaffold replaces older vendor settings; PXF patch-set import/display with the replacement was verified and accepted by the user in i1Profiler on 2026-10-03 (round8 export; layout and measurement excluded).
 
 This is preparation, not a published stable v1.0.0. See VALIDATION.txt and docs/releases/v1.0.0.md. No new physical accuracy claim follows from automated tests.
 
