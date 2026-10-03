@@ -96,7 +96,7 @@ def create(folder, language="sv"):
         if isinstance(historical_patches, dict):
             historical_patches = [historical_patches]
         if historical_patches:
-            sections.append(('Tidigare mätresultat - färgprov och Delta E00',
+            sections.append(('Sista mätresultat - färgprov och Delta E00',
                 ['Gäller iteration '+str(historical['iteration'])+'. Dessa avvikelser är inte uppmätta för aktuell profil.',
                  outliers.get('basis',''), outliers.get('colourNote',''),
                  'Källa: Bundesverband Druck und Medien (bvdm), Tysklands tryck- och medieförbund: MediaStandard Print 2018, tabell 30 (ISO 12647-7:2016).']))
@@ -128,7 +128,7 @@ def create(folder, language="sv"):
         body = ''.join('<p>'+html.escape(str(line))+'</p>' for line in lines)
         if title == figure_title:
             body += interactive(figure_groups, language)
-        if title == 'Tidigare mätresultat - färgprov och Delta E00':
+        if title == 'Sista mätresultat - färgprov och Delta E00':
             body += '<div class="patches">'+''.join(
                 '<div class="patch"><div style="height:45px;background:'+html.escape(p['hex'],quote=True)+'"></div><p>'+html.escape(
                     'ID '+str(p['sampleId'])+' | '+str(p['coordinate'])+' | Delta E00 '+format(p['deltaE00'],'.4f')+' | '+p['hex'])+'</p></div>'
@@ -156,7 +156,7 @@ def create(folder, language="sv"):
     story = []
     for title, lines in sections:
         section_start = len(story)
-        if title in (figure_title, 'Tidigare mätresultat - färgprov och Delta E00', 'Underskrift', 'Bilaga A - Juridiska villkor'):
+        if title in (figure_title, 'Sista mätresultat - färgprov och Delta E00', 'Underskrift', 'Bilaga A - Juridiska villkor'):
             story.append(PageBreak())
         story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - mätcertifikat', 'Underskrift', 'Bilaga A - Juridiska villkor') else styles['Heading2']))
         for line in lines:
@@ -168,7 +168,7 @@ def create(folder, language="sv"):
             story.append(pdf_drawing(figure_groups, language))
         if title in ('Sparad ICC-profil', 'Levererad ICC-profil', 'Kontrollerad ICC-kandidat (projektoriginal)'):
             story[section_start:] = [KeepTogether(story[section_start:])]
-        if title == 'Tidigare mätresultat - färgprov och Delta E00':
+        if title == 'Sista mätresultat - färgprov och Delta E00':
             cards=[]
             for patch in historical_patches:
                 swatch=Table([['']],colWidths=[49*mm],rowHeights=[13*mm])
