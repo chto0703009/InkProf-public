@@ -97,3 +97,11 @@ Standarden används av `inkprof.createTarget` och `inkprof.createTiff16`. Gemens
 Se [generera mål](target-generation.md) och [mäta mål](chart-measurement.md) för arbetsflöden.
 
 Detaljerad struktur och provenance: [targetInfo i JSON och TIFF](target-metadata.md).
+
+## Printer-applied coating
+
+Record clear coating applied by the printer in **Project details > Printing settings**. **Printer coating** is `unknown`, `off`, `on` or `automatic`; **Coating settings** records the product and driver mode, coverage or amount (for example Chroma Optimizer or Gloss Optimizer). These describe the printer's treatment, separately from the paper's Glossy/Matte finish.
+
+The source of truth is `printing.printerCoating` and `printing.coatingSettings` in `inkprof-project.json`. New projects default to unknown; older projects without these fields do not imply that coating was disabled. The profiling recipe reads these fields from the project and does not provide a second editable copy. Both certificate export paths include the recorded settings.
+
+Record the setting actually used for the measured print targets. A correction to project printing details invalidates dependent profiling results through the existing workflow rules. Changing the physical coating setup calls for a new project and targets printed and measured with that setup. Recording coating does not apply a numerical correction to existing measurements or control the printer. Previously exported certificates are not rewritten automatically.

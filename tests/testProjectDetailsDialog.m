@@ -11,6 +11,7 @@ verifyEqual(tc,d.Name,"Renamed project");verifyEqual(tc,d.User,"New user");
 verifyEqual(tc,d.Printing.printer,"New printer");verifyEqual(tc,d.Printing.paper,"Photo paper");
 verifyEqual(tc,d.Printing.profileName,"ICC name");verifyEqual(tc,d.Printing.profileDescription,"ICC description");
 verifyEqual(tc,d.Printing.profileDataMode,"storedXYZ");verifyEqual(tc,d.Printing.profileB2AQuality,"medium");
+verifyEqual(tc,d.Printing.printerCoating,"on");verifyEqual(tc,d.Printing.coatingSettings,"Chroma Optimizer | Auto");
 verifyEqual(tc,d.Printing.paperSurface,"Matte");verifyEqual(tc,d.Printing.customSetting,42);
 verifyEqual(tc,d.Printing.settings,"Quality: high"+newline+"No colour correction");
 end
@@ -28,6 +29,8 @@ control=findobj(f,'Tag','projectName');control.Value='Renamed project';
 control=findobj(f,'Tag','projectUser');control.Value='New user';
 control=findobj(f,'Tag','projectPrinter');control.Value='New printer';
 control=findobj(f,'Tag','projectPaper');control.Value='Photo paper';
+control=findobj(f,'Tag','projectPrinterCoating');control.Value='on';
+control=findobj(f,'Tag','projectCoatingSettings');control.Value='Chroma Optimizer | Auto';
 control=findobj(f,'Tag','projectFinish');control.Value='Matte';
 control=findobj(f,'Tag','projectProfileName');control.Value='ICC name';
 control=findobj(f,'Tag','projectProfileDescription');control.Value='ICC description';

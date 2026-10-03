@@ -2,12 +2,13 @@ function [accepted,s]=profileRecipeDialog(s,input,hasSpectra,hasXYZ)
 accepted=false;dismissed=false;
 f=uifigure('Name','InkProf - Profiling recipe','Tag','InkProfProfileRecipe','Visible','off', ...
  'WindowStyle','alwaysontop','Position',[180 60 860 812]);
-cleanup=onCleanup(@()closeFigure(f));g=uigridlayout(f,[17 2]);g.ColumnWidth={200,'1x'};
-g.RowHeight=[repmat({32},1,14),{90,'1x',36}];
+cleanup=onCleanup(@()closeFigure(f));g=uigridlayout(f,[19 2]);g.ColumnWidth={200,'1x'};g.RowSpacing=6;
+g.RowHeight=[repmat({32},1,16),{90,'1x',36}];
 name=field('Profile name',s.name,'RecipeName');description=field('Description',s.description,'RecipeDescription');
-keys=["printer","paper","media","quality","driver","printPath","colorManagement","dryingHours"];
-labels=["Printer","Paper product","Driver media setting","Print quality","Driver / version","Printing application / path","Print colour management","Drying time (hours)"];
+keys=["printer","paper","media","quality","driver","printPath","colorManagement","dryingHours","printerCoating","coatingSettings"];
+labels=["Printer","Paper product","Driver media setting","Print quality","Driver / version","Printing application / path","Print colour management","Drying time (hours)","Printer coating","Coating settings"];
 if ~isfield(s.printing,'dryingHours'),s.printing.dryingHours="unknown";end
+for key=["printerCoating","coatingSettings"],if ~isfield(s.printing,key),s.printing.(key)="unknown";end;end
 controls=cell(1,numel(keys));
 for k=1:numel(keys),controls{k}=field(labels(k),string(s.printing.(keys(k))),char(keys(k)));end
 uilabel(g,'Text','Paper surface');surface=uidropdown(g,'Items',{'unknown','Glossy','Matte','Other'},'Value','unknown','Tag','RecipeSurface');

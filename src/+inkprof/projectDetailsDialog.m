@@ -31,13 +31,21 @@ uilabel(g,'Text','FWA / OBA');
 fwa=uicheckbox(g,'Text','Compensate optical brighteners (D50)', ...
  'Value',isfield(printing,'fwaCompensation')&&isequal(printing.fwaCompensation,true),'Tag','projectFWA');
 help=uilabel(g,'Text','Can be changed after measurement or profiling. Requires native M0 spectra, a known instrument and a paper-white patch. Simulates D50 illumination; does not turn the measurement into a certified M1 measurement. Rebuild the profile and repeat validation after changing this option.','WordWrap','on');help.Layout.Column=[1 2];
-g=uigridlayout(printingTab,[8 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,100,'1x'};g.Padding=[20 16 20 16];
+g=uigridlayout(printingTab,[10 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,32,32,80,'1x'};g.Padding=[20 16 20 16];
 media=field('Driver media setting','projectMedia',value(printing,'media','unknown'));
 printPath=field('Printing application','projectPrintPath',value(printing,'printPath','unknown'));
 driver=field('Driver / RIP','projectDriver',value(printing,'driver','unknown'));
 quality=field('Print quality','projectQuality',value(printing,'quality','unknown'));
 colour=field('Colour management','projectColourManagement',value(printing,'colorManagement','unknown'));
 drying=field('Drying time (hours)','projectDryingHours',value(printing,'dryingHours','unknown'));
+uilabel(g,'Text','Printer coating');
+coatingValue=value(printing,'printerCoating','unknown');
+coatingItems=["unknown","off","on","automatic"];if ~any(coatingItems==coatingValue),coatingItems(end+1)=coatingValue;end
+coating=uidropdown(g,'Items',cellstr(coatingItems),'Value',char(coatingValue),'Tag','projectPrinterCoating');
+coating.Tooltip='Clear coating applied by the printer, such as Chroma Optimizer or Gloss Optimizer. Separate from the paper finish. Match the setting used for the measured targets.';
+coatingDetails=field('Coating settings','projectCoatingSettings',value(printing,'coatingSettings','unknown'));
+coatingDetails.Tooltip='Coating product, mode, coverage or amount. Record the actual driver setting, including Auto if used.';
+
 uilabel(g,'Text','Printer settings','WordWrap','on');
 settings=uitextarea(g,'Value',splitlines(value(printing,'settings','')),'Tag','projectSettings');
 g=uigridlayout(profileTab,[6 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,100,'1x'};g.Padding=[20 16 20 16];
@@ -81,6 +89,8 @@ clear cleanup
         if hours~="unknown"&&(isnan(str2double(hours))||~isfinite(str2double(hours))||str2double(hours)<0)
             uialert(fig,'Enter a nonnegative drying time in hours, or unknown.','Project details');return
         end
+        updated.printerCoating=string(coating.Value);updated.coatingSettings=strtrim(string(coatingDetails.Value));
+        if updated.coatingSettings=="",updated.coatingSettings="unknown";end
         updated.dryingHours=hours;updated.driver=string(driver.Value);
         updated.quality=string(quality.Value);updated.colorManagement=string(colour.Value);
         updated.settings=strjoin(string(settings.Value),newline);updated.status="user recorded";

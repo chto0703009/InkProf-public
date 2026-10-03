@@ -28,7 +28,7 @@ def create(folder, language="sv"):
         'Aktuell profil: numeriskt kontrollerad. Tidigare utskriftsmätningar redovisas separat som historiskt underlag.']),
         ('Beslut och avsedd användning', [r['decision']['notes']]),
         ('Sparad ICC-profil', [r['profile']['file'], 'SHA-256: '+r['profile']['sha256']]),
-        ('Projekt och utskriftsinställningar', [f'{label}: {r["printing"].get(key, "Ej angivet")}' for key, label in [('printer','Skrivare'),('paper','Papper'),('paperSurface','Yta'),('ink','Bläck'),('media','Mediainställning'),('driver','Drivrutin'),('quality','Utskriftskvalitet'),('printPath','Utskriftsprogram'),('colorManagement','Färghantering'),('dryingHours','Torktid (timmar)'),('fwaCompensation','Kompensation för optiska vitmedel'),('settings','Övriga inställningar')]])]
+        ('Projekt och utskriftsinställningar', [f'{label}: {r["printing"].get(key, "Ej angivet")}' for key, label in [('printer','Skrivare'),('paper','Papper'),('paperSurface','Yta'),('ink','Bläck'),('printerCoating','Coating från skrivaren'),('coatingSettings','Coating – produkt och inställningar'),('media','Mediainställning'),('driver','Drivrutin'),('quality','Utskriftskvalitet'),('printPath','Utskriftsprogram'),('colorManagement','Färghantering'),('dryingHours','Torktid (timmar)'),('fwaCompensation','Kompensation för optiska vitmedel'),('settings','Övriga inställningar')]])]
     sections[3][1].insert(0, 'Projekt-ID: '+str(r['project']['id']))
     sections[3][1].insert(1, 'Ansvarig användare: '+r['reportUser'])
     if r.get('deliveryProfile'):
