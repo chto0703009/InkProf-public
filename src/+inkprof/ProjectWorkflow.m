@@ -23,6 +23,9 @@ classdef ProjectWorkflow < handle
                 obj.State=struct('schemaVersion',1,'documentType',"inkprof.workflow", ...
                     'workflowRevision',2,'projectId',p.projectId,'iterationId',string(java.util.UUID.randomUUID()),'parentIterationId',"",'revision',0,'currentStep',"definition",'cycle',1, ...
                     'steps',steps,'history',{{}});
+                obj.State.mode="profiling";
+                if isfield(p,'workflowMode'),obj.State.mode=string(p.workflowMode);end
+                if obj.State.mode=="verification",obj.State.currentStep="profile";end
                 lock=obj.lock();obj.save();clear lock
                 inkprof.updateProject(obj.Root,Step="workflow-created");
             end
@@ -32,10 +35,17 @@ classdef ProjectWorkflow < handle
             assert(obj.State.schemaVersion==1&&string(obj.State.documentType)=="inkprof.workflow",'inkprof:Workflow','Unknown workflow version.');
             obj.State=inkprof.internal.upgradeWorkflowState(obj.State);
         end
+        function mode=mode(obj)
+            mode="profiling";if isfield(obj.State,'mode'),mode=string(obj.State.mode);end
+        end
+        function defs=definitions(obj)
+            defs=inkprof.internal.workflowSteps(obj.mode());
+        end
         function [ok,reason]=ready(obj,id)
-            defs=inkprof.internal.workflowSteps();index=find(string({defs.id})==string(id));
+            defs=obj.definitions();index=find(string({defs.id})==string(id));
             assert(isscalar(index),'inkprof:Workflow','Unknown step.');
             ok=true;reason="Ready";
+            if ~defs(index).enabled,ok=false;reason="Not part of this project mode.";return;end
             if id=="compare"&&isempty(inkprof.internal.comparisonParent(obj.State))
                 ok=false;reason="Available after an ICC profile has been built in iteration 2 or later.";return
             end
@@ -61,9 +71,10 @@ classdef ProjectWorkflow < handle
         end
         function assessment=inspect(obj)
             % One pass for UI: hash each artifact once per refresh.
-            defs=inkprof.internal.workflowSteps();assessment=struct;
+            defs=obj.definitions();assessment=struct;
             for d=defs'
                 a=struct('valid',false,'ready',true,'reason',"Ready");
+                if ~d.enabled,a.ready=false;a.reason="Not part of this project mode.";assessment.(d.id)=a;continue;end
                 for dep=string(d.requires)
                     if ~assessment.(dep).valid,a.ready=false;a.reason="Requires "+dep;break;end
                 end
@@ -240,7 +251,7 @@ classdef ProjectWorkflow < handle
                 return
             end
             if printingChanged
-                obj.invalidate("input");
+                if obj.mode()=="verification",obj.invalidate("c2");else,obj.invalidate("input");end
             else
                 obj.invalidate("export");obj.invalidate("numericalExport");
             end
@@ -358,7 +369,7 @@ classdef ProjectWorkflow < handle
             if any(id==["definition","render","measurement","review","input"])&&isfield(obj.State,'activeContinuation')
                 obj.State=rmfield(obj.State,'activeContinuation');
             end
-            defs=inkprof.internal.workflowSteps();affected=string(id);changed=true;
+            defs=obj.definitions();affected=string(id);changed=true;
             % Automatic profile does not require B2, but changing B2 invalidates it.
             if id=="recipe",affected=[affected,"profile"];end
             if any(id==["c2","c2measurement","c3","feedback"])&& ...

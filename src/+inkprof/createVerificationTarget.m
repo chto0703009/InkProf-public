@@ -6,6 +6,7 @@ function [folder,reference]=createVerificationTarget(jobFolder,options)
 %CREATEVERIFICATIONTARGET C2: absolute D50 Lab -> profiled RGB16 print package.
 arguments
  jobFolder (1,1) string = ""
+ options.ExternalProfile (1,1) logical = false
  options.Name (1,1) string = "C2-absolute-verification"
  options.OutputFolder (1,1) string = ""
  options.ColourPatches (1,1) double {mustBeInteger,mustBePositive} = 80
@@ -24,6 +25,12 @@ if jobFolder==""
 end
 jobFolder=inkprof.internal.absolutePath(jobFolder);
 project=inkprof.internal.findProject(jobFolder);assert(project~="",'inkprof:Project','Select a job in an InkProf project.');
+if options.ExternalProfile
+ profileFile=fullfile(jobFolder,'profile.icc');sourceRecord=jsondecode(fileread(fullfile(jobFolder,'source.json')));
+ profileHash=inkprof.internal.sha256(profileFile);
+ assert(profileHash==string(sourceRecord.profileSHA256),'inkprof:Integrity','Imported profile changed.');
+ v=struct('rgb',zeros(0,3));
+else
 status=jsondecode(fileread(fullfile(jobFolder,'status.json')));
 assert(string(status.status)=="succeeded",'inkprof:Verification','Select a successful profile job.');
 profileFile=fullfile(jobFolder,'result','profile.icc');profileHash=inkprof.internal.sha256(profileFile);
@@ -32,6 +39,7 @@ source=fullfile(jobFolder,'engine.ti3');
 assert(inkprof.internal.sha256(source)==string(status.engineTI3SHA256),'inkprof:Integrity','Training TI3 changed.');
 v=inkprof.cgatsData(inkprof.importCgats(source),RGBScale=100);
 assert(isempty(v.cmyk)&&size(v.rgb,2)==3,'inkprof:ColorFormat','RGB measurements required.');
+end
 folder=options.OutputFolder;
 if folder==""
  slug=regexprep(options.Name,'[^a-zA-Z0-9_-]','-');if slug=="",slug="verification";end
@@ -44,6 +52,10 @@ w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
 request=struct('name',options.Name,'colourPatches',options.ColourPatches,'grayPatches',options.GrayPatches, ...
  'challengePatches',options.ChallengePatches,'repeats',options.Repeats,'seed',options.Seed, ...
  'minTrainingRGBDistance',options.MinTrainingRGBDistance,'trainingRGB',v.rgb/100);
+if options.ExternalProfile
+ projectRecord=jsondecode(fileread(fullfile(project,'inkprof-project.json')));
+ request.externalProfile=true;request.printing=projectRecord.printing;
+end
 inkprof.internal.writeJson(fullfile(w,'request.json'),request);
 fprintf('InkProf C2: selecting new reference colours and applying the profile once (absolute, no BPC)...\n');
 inkprof.runPython(fullfile(paths.Root,'analysis','verification_target.py'), ...

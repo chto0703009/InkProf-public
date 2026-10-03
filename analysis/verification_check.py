@@ -170,6 +170,10 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
                                'Forward/reverse direction is operator-controlled; software does not independently verify it.'],
                   sources=[dict(path=str(p),sha256=h) for p,h in artifacts],
                   tool=dict(executable=str(executable),arguments=args,versionOutput=(version.stdout+version.stderr).decode(errors='replace'),colourVersion=colour.__version__))
+    if reference.get('externalProfile'):
+        result['purpose']='New-print verification of an imported ICC; training independence unknown; no automatic acceptance'
+        result['limitations'][1]='Original training data unavailable; independence from training cannot be established. The control print is new and model-informed gamut screening is disclosed.'
+        result['trainingIndependence']='unknown'
     (output/'verification-check.json').write_text(json.dumps(result,indent=2,allow_nan=False))
     lines=['# C3 – verifieringsutskrift','', '**Status: otillräckligt underlag för profilgodkännande.** Utskriftens färghantering och acceptansgränser är ännu inte verifierade.','',
            'Primär jämförelse: önskat absolut D50-Lab mot spektralt uppmätt D50/2° Lab. Profilens förutsägelse används endast som separat diagnostik.', '',

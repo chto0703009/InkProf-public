@@ -63,3 +63,5 @@ After row 17, run row 8. Then either perform current-iteration C2/C3 and approve
 ## Code, licensing and maintenance
 
 InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only preparation build: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.0.0.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits.
+
+Existing ICC profiles can be tested in the separate **Verify existing ICC** project mode. See [Verify an existing printer ICC](verify-existing-icc.md).

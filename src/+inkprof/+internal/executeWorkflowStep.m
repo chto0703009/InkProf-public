@@ -6,6 +6,19 @@ function [out,files]=executeWorkflowStep(w,id,o)
 % Operations always receive explicit project-local inputs and destinations.
 out=struct;files=strings(0,1);
 project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+if w.mode()=="verification"&&id=="profile"
+ calculation=inkprof.internal.calculationProgress("Importing existing ICC","Checking the RGB output profile and saving an unchanged project copy."); %#ok<NASGU>
+ source=string(get(o,'Source',""));assert(isfile(source),'inkprof:Input','Select an existing ICC file.');
+ dest=w.newFolder('profiles');mkdir(dest);
+ [profile,receipt]=inkprof.saveICC(source,fullfile(dest,'profile.icc'));
+ paths=inkprof.paths();
+ inkprof.runPython(fullfile(paths.Root,'analysis','validate_external_profile.py'),profile,RequiredModules=["numpy","colour"]);
+ [~,name,ext]=fileparts(source);
+ metadata=struct('documentType',"inkprof.imported-profile",'profileSHA256',receipt.sha256, ...
+  'originalName',name+ext,'trainingData',"unavailable",'modified',false);
+ file=fullfile(dest,'source.json');inkprof.internal.writeJson(file,metadata);
+ out=struct('profile',profile,'job',file);files=[profile;file];return
+end
 switch id
  case "numericalExport"
   calculation=inkprof.internal.calculationProgress("Saving ICC and certificate","Creating the PDF, HTML, figures and delivery copies."); %#ok<NASGU>
@@ -143,6 +156,18 @@ switch id
   assert(c1.allNegativeControlsDetected&&isempty(c1.grossFailureAlerts),'inkprof:WorkflowNumerical','C1 reports serious problems. Review the reports before C2.');
   out.fit=a;out.grid=b;out.c1=c;files=[a;b;c];
  case "c2"
+  if w.mode()=="verification"
+   calculation=inkprof.internal.calculationProgress("Creating verification target","Selecting colours, applying the imported ICC once and preparing TIFF16 files."); %#ok<NASGU>
+   count=get(o,'PatchCount',575);validateattributes(count,{'double'},{'scalar','integer','>=',64,'<=',2000});
+   project.verificationPatchCount=count;inkprof.internal.writeJson(fullfile(w.Root,'inkprof-project.json'),project);
+   inkprof.updateProject(w.Root,Step="verification-patch-count");
+   gray=round(count*.14);challenge=round(count*.096);repeats=round(count*.07);colours=count-gray-challenge-repeats;
+   [folder,~]=inkprof.createVerificationTarget(fileparts(w.output('profile','profile')),ExternalProfile=true, ...
+    OutputFolder=w.newFolder('targets'),Name="Existing ICC verification",ColourPatches=colours,GrayPatches=gray, ...
+    ChallengePatches=challenge,Repeats=repeats,PlanPaper=get(o,'PlanPaper',true),DPI=get(o,'DPI',300));
+   reference=fullfile(folder,'verification.json');
+   out=inkprof.internal.workflowTiffOutputs(fullfile(folder,'print','target.ti2'));out.reference=reference;files=allFiles(folder);return
+  end
   s=w.State.steps.profile.outputs;
   if isfield(s,'verification')
    reference=w.resolve(s.verification);
@@ -181,6 +206,10 @@ switch id
    assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose save locations for both the ICC profile and report.');
    receipt=inkprof.internal.saveWorkflowDelivery(folder,string(o.ICCDestination),string(o.ReportDestination),Overwrite=get(o,'Overwrite',false));
    out.delivery=fullfile(folder,'delivery.json');inkprof.internal.writeJson(out.delivery,receipt);
+  end
+  if w.mode()=="verification"&&isfield(o,'BundleDestination')
+   destination=fullfile(string(o.BundleDestination),"InkProf-verification-"+string(java.util.UUID.randomUUID()));
+   assert(~isfolder(destination),'inkprof:Exists','Report destination exists.');copyfile(folder,destination);
   end
   files=allFiles(folder);
  case "refine"

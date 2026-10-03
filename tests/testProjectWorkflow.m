@@ -395,3 +395,30 @@ inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
 verifyFalse(tc,w.valid('refine'));a=w.inspect();verifyFalse(tc,a.refine.valid);
 verifyError(tc,@()w.run('refine',struct('Confirmed',true,'Method',"errors")),'inkprof:WorkflowBlocked');
 end
+
+function testExternalVerificationMode(tc)
+p=string(tempname);clean=onCleanup(@()rmdir(p,'s'));
+inkprof.createProject(p,Mode="verification",Name="External ICC check");
+w=inkprof.ProjectWorkflow(p);verifyEqual(tc,w.mode(),"verification");
+verifyTrue(tc,w.ready('profile'));verifyFalse(tc,w.ready('c2'));
+verifyFalse(tc,w.ready('definition'));verifyFalse(tc,w.ready('numericalExport'));
+verifyError(tc,@()w.run('continue'),'inkprof:WorkflowBlocked');
+defs=w.definitions();verifyEqual(tc,sum([defs.enabled]),7);
+v=inkprof.ProjectWorkflow(p);verifyEqual(tc,v.mode(),"verification");
+f=inkprof.app(p);verifySize(tc,findobj(f,'Tag','workflowSteps').Data,[7 2]);delete(f);
+end
+function testExternalCertificateDoesNotClaimTrainingChecks(tc)
+w=finalReportFixture(tc);state=w.State;state.mode="verification";
+file=w.output('profile','job');record=jsondecode(fileread(file));record.originalName="synthetic-test.icc";inkprof.internal.writeJson(file,record);
+for key=["definition","render","measurement","review","input","recipe","checks"]
+ state.steps.(key).status="pending";state.steps.(key).outputs=struct;state.steps.(key).artifacts=struct([]);
+end
+inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),state);w.reload();
+w.run('export',struct('ReportUser',"External verification test"));
+r=jsondecode(fileread(w.output('export','reportJSON')));
+verifyEqual(tc,string(r.workflowMode),"verification");
+verifyTrue(tc,contains(r.certificateScope,'träningsdata saknas'));
+verifyTrue(tc,contains(r.results.checks_fit.status,'Not assessed'));
+verifyFalse(tc,isfield(r.sources,'checks_fit'));
+verifyTrue(tc,isfile(w.output('export','reportPDF')));
+end

@@ -2,6 +2,7 @@
 
 ## 1.0.0 — in preparation (1.0.0-rc.1, 2026-10-03)
 
+- Separate existing-ICC verification projects: seven steps, editable 575-patch TIFF16 target, physical measurement, two error comparisons and portable measurement certificates; original ICC bytes preserved.
 - Complete 19-row project workflow with persistent JSON state, prerequisite checks, measurement revisions, result logs and iteration history.
 - Central editable project/material/print settings, portable folders, renaming checks, dye/pigment ink type, printer coating and drying time.
 - TIFF16-only print delivery, editable cut-sheet/roll suggestions, JSON sled limits, row labels on both sides and compact-page footer spacing.

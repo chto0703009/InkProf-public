@@ -62,3 +62,5 @@ Source version **1.0.0-rc.1**, updated 2026-10-03. Start with the [complete app 
 ## Historical records
 
 The planning, decisions and research folders retain dated development evidence, not a claim of current feature status or repeated validation. Some private reference datasets are deliberately excluded from the public distribution. [ISSUE-001](issues/001-inverse-measurement-noise.md), inverse sensitivity to measurement noise, remains open.
+
+Existing ICC profiles can be tested in the separate **Verify existing ICC** project mode. See [Verify an existing printer ICC](usage/verify-existing-icc.md).

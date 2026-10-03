@@ -54,6 +54,11 @@ def create(folder):
     if r.get('patchOutliers'):
         outliers=r['patchOutliers']
         story += [PageBreak(),p('Mätresultat - färgprov och ΔE00','Heading2'),p('Börvärde, profilens uppskattning och uppmätt färg visas som sRGB. ΔE00 gäller uppmätt mot börvärde (över 5). Se bilaga A.'),p(outliers['message'])]
+        if r.get('verificationSummary'):
+            story += [p('Två separata jämförelser (ΔE00)', 'Heading2')]
+            for key,label in [('desired','Uppmätt mot börvärde'),('predicted','Uppmätt mot profilens förutsägelse')]:
+                v=r['verificationSummary'][key]
+                story += [p(label+f": medel {v['mean']:.3f}, median {v['median']:.3f}, P95 {v['p95']:.3f}, max {v['max']:.3f} ({v['count']} unika patchar)")]
         cards=[]
         patches=outliers['patches']
         if isinstance(patches,dict):patches=[patches]

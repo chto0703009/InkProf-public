@@ -75,7 +75,7 @@ end
             candidate.reconcileFolderName(action);
             if action=="cancel",return;end
         end
-        w=candidate;selected=string(w.State.currentStep);refresh();
+        w=candidate;defs=w.definitions();defs=defs([defs.enabled]);selected=string(w.State.currentStep);refresh();
     end
     function newProject(~,~)
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
@@ -83,8 +83,12 @@ end
         paths=inkprof.paths();[n,p]=uiputfile('*','New project name',fullfile(paths.Projects,'New-paper'));
         if isequal(n,0),return;end
         try
+            modeChoice=uiconfirm(fig,'Create a new profile or verify an existing printer ICC?', 'Project purpose', ...
+                'Options',{'Profile printer','Verify existing ICC','Cancel'},'CancelOption',3);
+            if strcmp(modeChoice,'Cancel'),return;end
+            mode="profiling";if strcmp(modeChoice,'Verify existing ICC'),mode="verification";end
             d=inkprof.projectDetailsDialog(struct('name',string(n)));if isempty(d),return;end
-            folder=inkprof.createProject(string(fullfile(p,inkprof.internal.projectFolderName(d.Name))),Name=d.Name,User=d.User,Printing=d.Printing);
+            folder=inkprof.createProject(string(fullfile(p,inkprof.internal.projectFolderName(d.Name))),Name=d.Name,User=d.User,Printing=d.Printing,Mode=mode);
             if isfield(d,'PaperLayout'),inkprof.updateProject(folder,Step="paper-layout-preferences",PaperLayout=d.PaperLayout);end
             loadProject(folder);
         catch err,uialert(fig,err.message,'Project');end
@@ -124,7 +128,13 @@ end
             gamutButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid);
             table.Data=data;index=find(string({defs.id})==selected);titleLabel.Text=defs(index).label;
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
-            hint.Value=cellstr([reason;instruction(selected)]);
+            guide=instruction(selected);
+            if w.mode()=="verification"
+                guide="Verify the imported ICC using the documented printer, paper, ink and settings. The original profile is preserved.";
+                if selected=="c2",guide="Save TIFF16 with the ICC applied once. Print at 100% with further colour management OFF. Let the print dry before measuring.";end
+                if selected=="export",guide="Save the measurement certificate and its evidence in a portable folder. Results apply to this print and these settings; no new ICC is built.";end
+            end
+            hint.Value=cellstr([reason;guide]);
             printButton.Enable=matlab.lang.OnOffSwitchState(assessment.(selected).valid&&any(startsWith(string(fieldnames(w.State.steps.(selected).outputs)),"TIFF16_")));
             step=w.State.steps.(selected);lines=["Iteration "+w.State.cycle;"Status: "+string(data{index,2});""];
             names=string(fieldnames(step.outputs));
@@ -165,6 +175,7 @@ end
             record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
             projectLabel.Text=string(record.name)+" | "+string(record.printing.printer)+" | "+string(record.printing.paper)+newline+w.Root;
             heading.Text="InkProf | Iteration "+w.State.cycle;
+            if w.mode()=="verification",heading.Text="InkProf | Verify existing ICC";end
             status.Text="Last active step: "+string(w.State.currentStep)+" | saved revision "+w.State.revision;
         catch err,status.Text=err.message;runButton.Enable='off';end
     end
@@ -194,7 +205,7 @@ end
                 'If an input or measurement window opens, complete it there.'};
             details.Value={'Running. Results will appear when this step finishes.'};
             status.Text="Running: "+string(defs(index).label);drawnow;
-            if active=="profile"&&(~isfield(o,'Mode')||string(o.Mode)~="manual")
+            if w.mode()~="verification"&&active=="profile"&&(~isfield(o,'Mode')||string(o.Mode)~="manual")
                 progress=uiprogressdlg(fig,'Title','Building ICC profile','Message', ...
                     'Preparing measurements. This can take several minutes.', ...
                     'Indeterminate','on','Cancelable','off');
@@ -272,6 +283,18 @@ end
     end
     function o=optionsFor(id,saveElsewhere)
         o=struct;
+        if w.mode()=="verification"&&id=="profile"
+            o.Source=pick('*.icc;*.icm','Select existing RGB printer ICC');
+            if o.Source=="",o=[];end
+            return
+        elseif w.mode()=="verification"&&id=="c2"
+            project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));count=575;
+            if isfield(project,'verificationPatchCount'),count=project.verificationPatchCount;end
+            a=inputdlg({'Total control patches (including repeats, 64–2000)'},'Verification target',1,{char(string(count))});
+            if isempty(a),o=[];return;end
+            o.PatchCount=str2double(a{1});validateattributes(o.PatchCount,{'double'},{'scalar','integer','>=',64,'<=',2000});
+            return
+        end
         if id=="definition"
             choice=uiconfirm(fig,'Create an RGB target or import an existing definition?','RGB target','Options',{'Create','Import','Cancel'},'CancelOption',3);
             if strcmp(choice,'Cancel'),o=[];return;end
@@ -328,6 +351,11 @@ end
             if isempty(a),o=[];return;end
             o.Notes=inkprof.internal.dialogText(a{1});o.Confirmed=strlength(strtrim(o.Notes))>0;
         elseif any(id==["export","numericalExport"])
+            if w.mode()=="verification"
+                destination=uigetdir(char(fileparts(w.Root)),'Save certificate bundle in this folder (Cancel: keep project copy only)');
+                if ~isequal(destination,0),o.BundleDestination=string(destination);end
+                return
+            end
             if id=="numericalExport"
                 a=inputdlg({'Why are you ending this iteration without a separate verification print? State intended use.'},'Save measurement certificate',[4 70],{''});
                 if isempty(a),o=[];return;end

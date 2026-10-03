@@ -16,7 +16,7 @@ def select_indices(rgb,training,count,min_distance,used=None):
     if count==0:return []
     chosen=[];used=[] if used is None else list(used)
     for i,v in enumerate(rgb):
-        if np.min(np.max(abs(training-v),axis=1))<min_distance: continue
+        if training.size and np.min(np.max(abs(training-v),axis=1))<min_distance: continue
         if used and np.min(np.max(abs(np.asarray(used)-v),axis=1))<1/65535: continue
         chosen.append(i);used.append(v)
         if len(chosen)==count: return chosen
@@ -25,17 +25,23 @@ def select_indices(rgb,training,count,min_distance,used=None):
 
 
 def generate(job,exe,request,out):
-    out=Path(out);job=Path(job);profile=job/'result/profile.icc'
+    out=Path(out);job=Path(job);external=bool(request.get('externalProfile',False));profile=job/('profile.icc' if external else 'result/profile.icc')
     if out.exists(): raise ValueError('Output already exists.')
-    status=json.loads((job/'status.json').read_text());recipe=json.loads((job/'recipe.json').read_text())
-    if status['status']!='succeeded' or sha(profile)!=status['profileSHA256']: raise ValueError('Profile integrity failure.')
-    if sha(job/'recipe.json')!=status['recipeSHA256']:
-        raise ValueError('Profile recipe integrity failure.')
+    if external:
+        source=json.loads((job/'source.json').read_text())
+        status={'profileSHA256':source['profileSHA256']}
+        recipe={'printing':request['printing'],'colorimetry':{'fwaCompensation':False}}
+        if sha(profile)!=status['profileSHA256']:raise ValueError('Imported profile changed.')
+    else:
+        status=json.loads((job/'status.json').read_text());recipe=json.loads((job/'recipe.json').read_text())
+        if status['status']!='succeeded' or sha(profile)!=status['profileSHA256']: raise ValueError('Profile integrity failure.')
+        if sha(job/'recipe.json')!=status['recipeSHA256']:raise ValueError('Profile recipe integrity failure.')
     require_profile(profile.read_bytes())
     counts=[request[k] for k in ('colourPatches','grayPatches','challengePatches','repeats')]
     if any(type(x)!=int or x<0 for x in counts) or not 8<=sum(counts)<=2000 or counts[0]<1 or counts[1]<2 or counts[3]>sum(counts[:3]):
         raise ValueError('Invalid patch counts; require colours, at least two grays, and repeats <= unique patches.')
     train=np.asarray(request['trainingRGB'],float)
+    if external and not train.size:train=np.empty((0,3))
     if train.ndim!=2 or train.shape[1]!=3 or not np.isfinite(train).all() or np.any((train<0)|(train>1)):raise ValueError('Invalid training RGB.')
     separation=float(request['minTrainingRGBDistance'])
     if not 0<separation<.1:raise ValueError('Invalid training separation.')
@@ -45,6 +51,11 @@ def generate(job,exe,request,out):
     # PCS coordinates are chosen without using measured training Lab or model predictions.
     candidates=np.column_stack((rng.uniform(18,90,n),rng.uniform(-75,75,n),rng.uniform(-75,75,n)))
     gray=np.column_stack((np.linspace(18,90,max(300,counts[1]*10)),np.zeros((max(300,counts[1]*10),2))))
+    if external:
+        # Explicit dark and photographic skin-tone candidates, plus broad colour coverage.
+        candidates[:128]=np.column_stack((rng.uniform(5,18,128),rng.uniform(-20,20,128),rng.uniform(-20,20,128)))
+        candidates[128:192]=np.column_stack((rng.uniform(35,80,64),rng.uniform(5,25,64),rng.uniform(8,30,64)))
+        gray[:,0]=np.linspace(3,95,len(gray))
     # Shuffle the denser gray pool so training exclusions do not bias toward dark patches.
     gray=gray[rng.permutation(len(gray))]
     all_lab=np.concatenate((candidates,gray))
@@ -69,7 +80,7 @@ def generate(job,exe,request,out):
             referenceLabD50Absolute=all_lab[i].tolist(),deviceRGB16=np.rint(output_rgb[j]*65535).astype(int).tolist(),deviceRGB=output_rgb[j].tolist(),
             predictedLabD50Absolute=predicted[j].tolist(),numericalInverseResidualDE00=float(reach[i]),
             gamutAssessment='model-reachable' if reach[i]<=.5 else 'outside-or-inversion-unresolved',
-            minTrainingRGBDistance=float(np.min(np.max(abs(train-output_rgb[j]),axis=1)))))
+            minTrainingRGBDistance=float(np.min(np.max(abs(train-output_rgb[j]),axis=1))) if train.size else None))
     if recipe['colorimetry'].get('fwaCompensation'):
         white=lookup(exe,profile,np.ones((1,3)),intent='a')[0]
         patches.append(dict(id=str(len(patches)+1),role='paperwhite',repeatOf=None,
@@ -87,7 +98,7 @@ def generate(job,exe,request,out):
         sourceColourSpace='ICC Lab D50 absolute; direct PCS coordinates',sourceProfile=dict(file='source-Lab-D50.icc',sha256=sha(out/'source-Lab-D50.icc'),role='reference encoding; xicclu receives Lab directly'),
         printerProfile=dict(file='printer.icc',sha256=sha(profile)),intent='absolute colorimetric',bpc=False,profileApplications=1,
         pipeline='Desired absolute D50 Lab -> xicclu -fb -ia -pl -> device RGB -> 16-bit quantization -> layout only -> print with ALL further colour conversion OFF',
-        trainingTI3SHA256=sha(job/'engine.ti3'),generation={k:v for k,v in request.items() if k!='trainingRGB'},printing=recipe['printing'],
+        trainingTI3SHA256=None if external else sha(job/'engine.ti3'),generation={k:v for k,v in request.items() if k!='trainingRGB'},printing=recipe['printing'],
         measurementCondition=recipe.get('measurementCondition'),illuminant='D50',observer='1931_2',
         fwaCompensation=recipe['colorimetry'].get('fwaCompensation',False),fwaIlluminant=recipe['colorimetry'].get('fwaIlluminant'),
         criteria=dict(status='awaiting user acceptance before ranking profiles',deltaE00Limit=None,grayBalanceLimit=None),
@@ -95,6 +106,9 @@ def generate(job,exe,request,out):
         independence='New device RGB separated from training; model-informed gamut screening is disclosed. Independent measured validation remains to be performed. Any paperwhite patch is a model reference, excluded from independent scores.',
         referencePolicy='Compare measured absolute D50 Lab against referenceLabD50Absolute; predictedLabD50Absolute is diagnostic only. Stratify gamutAssessment and role; do not score padding or contrast bars.',
         definitions=dict(file='verification.ti1',sha256=sha(out/'verification.ti1')),patches=patches)
+    if external:
+        record.update(externalProfile=True,trainingIndependence='unknown: original training data unavailable',
+            independence='New verification print; original training data unavailable, so independence from training cannot be established. Model-informed gamut screening is disclosed.')
     (out/'verification.json').write_text(json.dumps(record,indent=2,allow_nan=False));return record
 
 if __name__=='__main__':

@@ -2,7 +2,8 @@
 % SPDX-License-Identifier: GPL-3.0-or-later
 % InkProf is free software under GNU GPL version 3 or later.
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
-function steps=workflowSteps()
+function steps=workflowSteps(mode)
+if nargin<1,mode="profiling";end
 % Stable IDs form the persisted workflow contract. Branches are explicit.
 data={ ...
  'definition','1. Create / import RGB target',{}; ...
@@ -24,5 +25,17 @@ data={ ...
  'continue','Build next iteration',{'refinemeasurement'}; ...
  'compare','Compare with previous iteration',{'profile'}; ...
  'numericalExport','Save ICC + measurement certificate without print verification',{'checks'}};
-steps=struct('id',data(:,1),'label',data(:,2),'requires',data(:,3));
+steps=struct('id',data(:,1),'label',data(:,2),'requires',data(:,3),'enabled',true);
+if mode=="verification"
+ active=["profile","c2","c2measurement","c3","feedback","approve","export"];
+ labels=["1. Import existing RGB printer ICC","2. Save verification TIFF16 (575 suggested)", ...
+  "3. Measure / select verification revision","4. Analyse profile and print", ...
+  "5. Review feedback","6. Record assessment for intended use","7. Save measurement certificate"];
+ for k=1:numel(steps)
+  at=find(active==string(steps(k).id));steps(k).enabled=~isempty(at);
+  if ~isempty(at),steps(k).label=char(labels(at));end
+  if string(steps(k).id)=="profile",steps(k).requires={};end
+  if string(steps(k).id)=="c2",steps(k).requires={'profile'};end
+ end
+end
 end

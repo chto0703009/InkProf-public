@@ -13,6 +13,7 @@ end
 assert(isfile(profile),'inkprof:FinalReport','Spara ICC-profilen innan mätcertifikatet skapas.');
 assert(strlength(strtrim(options.User))>0&&strlength(options.User)<=120,'inkprof:FinalReport','Ange rapportens användare (1-120 tecken).');
 project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+external=w.mode()=="verification";
 source=w.output('profile','profile');digest=inkprof.internal.sha256(profile);
 assert(digest==inkprof.internal.sha256(source),'inkprof:Integrity','Sparad ICC skiljer sig från vald kandidat.');
 approval=jsondecode(fileread(w.output('approve','approval')));
@@ -27,9 +28,19 @@ r=struct('schemaVersion',1,'documentType',"inkprof.final-report",'status',"icc-s
  'printing',struct('performedOutsideApp',true,'verifiedByApp',false,'reportedSettings',project.printing), ...
  'approval',approval,'sources',struct,'results',struct,'history',{w.State.history});
 r.documentTitle="InkProf - mätcertifikat";
+if external
+ r.workflowMode="verification";
+ r.results.checks_fit=struct('status',"Not assessed: original training data unavailable");
+ r.results.checks_grid=struct('status',"Not performed in existing-profile verification");
+ r.results.checks_c1=struct('status',"Not performed in existing-profile verification");
+ r.results.measurement_measurement=struct('status',"Original training measurements unavailable");
+end
 r.standardsReference=inkprof.internal.certificateStandards();
 r.certificateId=string(java.util.UUID.randomUUID());
 r.certificateScope="Mätcertifikatet redovisar sparade mätresultat och användarens bedömning för angiven ICC-profil och projektkonfiguration. Det är inte en ackrediterad certifiering eller ett intyg om ISO-överensstämmelse.";
+if external
+ r.certificateScope="Verifiering av en importerad ICC-profil mot en ny kontrollutskrift. Originalprofilen har inte byggts om. Ursprungliga träningsdata saknas, så kontrollpatcharnas oberoende från dem kan inte fastställas. Resultaten gäller dokumenterad utskrift och mätning; ingen automatisk ISO-certifiering.";
+end
 r.reproductionLimits="Resultatet med en ICC-profil är beroende av vad kombinationen skrivare, papper och bläck fysiskt kan återge. Papperets vithet, yta och optiska vitmedel, bläckets egenskaper samt skrivarens och drivrutinens inställningar begränsar färgomfång, svärta, kontrast och tonåtergivning. En ICC-profil beskriver denna kombination och hjälper färghanteringen att återge färger inom dess förmåga; den kan inte skapa färger eller kontrast som material och utrustning inte kan återge. Det finns därför en fysisk gräns för hur nära en önskad referens utskriften kan komma. Färger utanför färgomfånget behöver anpassas. Fler mätpunkter eller ytterligare profiliterationer garanterar inte ett bättre resultat. Uppmätta avvikelser påverkas även av utskriftsstabilitet, torktid, mätvillkor och betraktningsljus. Resultatet gäller de dokumenterade villkoren; ändringar kan kräva ny profilering och verifiering.";
 legal=inkprof.internal.reportLegalText();
 r.reproductionLiability=legal.reproductionLiability;
@@ -51,6 +62,11 @@ for k=1:size(labels,1)
  value="Ej angivet";if isfield(project.printing,labels{k,1}),value=project.printing.(labels{k,1});end
  addDetail(labels{k,2},value);
 end
+if external
+ r.importedProfile=jsondecode(fileread(w.output('profile','job')));
+ addDetail("Importerad ICC – ursprungligt filnamn",string(r.importedProfile.originalName));
+ addDetail("Verifieringsläge","Extern ICC; ingen ny profil byggd");
+end
 r.shadow=inkprof.internal.shadowReportSummary(w);
 addDetail("Skugginställning i sparat profilrecept",r.shadow.summaryText);
 r.warrantyNotice=inkprof.internal.warrantyNotice();
@@ -58,7 +74,9 @@ r.warrantyNotice=inkprof.internal.warrantyNotice();
 pairs={'checks','fit';'checks','grid';'checks','c1';'c3','report';'feedback','feedback'; ...
  'approve','approval';'measurement','measurement';'c2measurement','measurement';'profile','job'};
 for k=1:size(pairs,1)
- step=pairs{k,1};key=pairs{k,2};original=w.output(step,key);
+ step=pairs{k,1};key=pairs{k,2};
+ if external&&any(string(step)==["checks","measurement"]),continue;end
+ original=w.output(step,key);
  name=string(step)+"-"+key+".json";copyfile(original,fullfile(folder,name));
  id=matlab.lang.makeValidName(step+"_"+key);
  r.sources.(id)=struct('file',name,'projectPath',w.relative(original),'sha256',inkprof.internal.sha256(original));
@@ -71,7 +89,8 @@ for k=1:size(pairs,1)
 end
 % Keep profiling and verification instruments distinct, including legacy measurements.
 r.instruments=struct;
-for stage=["measurement","c2measurement"]
+stages=["measurement","c2measurement"];if external,stages="c2measurement";end
+for stage=stages
  source=w.output(stage,'measurement');measurement=jsondecode(fileread(source));condition=struct;
  if isfield(measurement,'measurementCondition'),condition=measurement.measurementCondition;end
  identity=inkprof.internal.instrumentIdentity(fileparts(source),condition);
@@ -93,6 +112,7 @@ paths=struct('pdf',fullfile(folder,'final-report.pdf'),'html',fullfile(folder,'f
 if isfield(w.State.steps.c2.outputs,'reference')
  reference=w.output('c2','reference');
  ref=jsondecode(fileread(reference));
+ if external,addDetail("Antal kontrollpatchar inklusive upprepningar",string(numel(ref.patches)));end
  assert(string(ref.printerProfile.sha256)==digest,'inkprof:FinalReport','3D-underlaget hör till en annan ICC.');
  f=inkprof.showVerificationLab(reference,Visible=false);
  cleanFigure=onCleanup(@()delete(f));
@@ -102,7 +122,16 @@ if isfield(w.State.steps.c2.outputs,'reference')
  r.visualization=struct('file',"profile-lab-3d.png",'kind',"Predicted C2 patch Lab D50; not measured or full gamut", ...
   'reference',"verification.json",'referenceSHA256',inkprof.internal.sha256(reference));
 end
-r.patchOutliers=inkprof.internal.certificatePatchOutliers(jsondecode(fileread(w.output('c3','report'))));
+c3=jsondecode(fileread(w.output('c3','report')));
+r.patchOutliers=inkprof.internal.certificatePatchOutliers(c3);
+if isfield(c3,'patches')&&~isempty(c3.patches)&&isfield(c3.patches,'predictedDeltaE00')
+unique=c3.patches(~ismember(string({c3.patches.role}),["repeat","paperwhite"]));
+v=sort([unique.predictedDeltaE00]);
+position=1+.95*(numel(v)-1);p95=v(floor(position))+(position-floor(position))*(v(ceil(position))-v(floor(position)));
+r.verificationSummary=struct('desired',c3.summary,'predicted',struct('count',numel(v), ...
+ 'mean',mean(v),'median',median(v),'p95',p95,'max',max(v)));
+end
+
 r.fwa=inkprof.internal.fwaReportSummary(r.results.checks_fit,r.results.c3_report,project.printing,digest);
 r.gamut=inkprof.internal.reportGamut(profile,folder);
 inkprof.internal.writeJson(paths.json,r);
@@ -115,6 +144,13 @@ lines=["INKPROF – MÄTCERTIFIKAT";"Projekt: "+string(project.name);"Projekt-ID
  "";"SLUTLIG BEDÖMNING";string(approval.notes);""; ...
  "MÄTRESULTAT – FÄRGPROV OCH ΔE00";"Börvärde, profilens uppskattning och uppmätt färg visas som sRGB. ΔE00 gäller uppmätt mot börvärde (över 5). Se bilaga A.";r.patchOutliers.message];
 fit=r.results.checks_fit;
+if isfield(r,'verificationSummary')
+for key=["desired","predicted"]
+ label="Uppmätt mot börvärde";if key=="predicted",label="Uppmätt mot profilens förutsägelse";end
+ v=r.verificationSummary.(key);
+ lines(end+1)=sprintf('%s: medel %.3f, median %.3f, P95 %.3f, max %.3f ΔE00 (%d unika patchar).',label,v.mean,v.median,v.p95,v.max,v.count);
+end
+end
 for patch=reshape(r.patchOutliers.patches,1,[])
  lines(end+1)=sprintf('Sida %d / %s | ID %s | %s | sRGB %s | ΔE00 %.4f | över gräns %.4f',patch.page,patch.coordinate,patch.sampleId,patch.role,patch.hex,patch.deltaE00,patch.excess);
 end
@@ -167,6 +203,14 @@ html="<!doctype html><html lang='sv'><meta charset='utf-8'><meta name='viewport'
  "<h2>Sparad ICC-profil</h2><p><a href='profile.icc'>profile.icc</a></p><p>SHA-256: <code>"+digest+"</code></p>"+ ...
  "<h2>Slutlig bedömning</h2><p>"+esc(string(approval.notes))+"</p><h2>Mätresultat – färgprov och ΔE00</h2>"+ ...
  "<p>Börvärde, profilens uppskattning och uppmätt färg visas som sRGB. ΔE00 gäller uppmätt mot börvärde (över 5). Se bilaga A.</p><p>"+esc(r.patchOutliers.message)+"</p>";
+html=html+"<h3>Två separata jämförelser (ΔE00)</h3>";
+if isfield(r,'verificationSummary')
+for key=["desired","predicted"]
+ label="Uppmätt mot börvärde";if key=="predicted",label="Uppmätt mot profilens förutsägelse";end
+ v=r.verificationSummary.(key);
+ html=html+"<p>"+esc(label)+sprintf(': medel %.3f · median %.3f · P95 %.3f · max %.3f (%d unika patchar)</p>',v.mean,v.median,v.p95,v.max,v.count);
+end
+end
 for k=1:3:r.patchOutliers.count
  html=html+"<div class='patch-row' style='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:8px;font-size:9pt'>";
  for j=k:min(k+2,r.patchOutliers.count)
