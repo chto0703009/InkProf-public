@@ -1,6 +1,13 @@
-function file=selectMeasurementRevision(folder,target)
+function file=selectMeasurementRevision(folder,target,options)
 %SELECTMEASUREMENTREVISION Choose by saved time and patch count, not UUID.
+arguments
+ folder (1,1) string
+ target (1,1) string
+ options.Parent = []
+end
+calculation=inkprof.internal.calculationProgress("Finding saved measurement revisions","Checking saved revisions and their integrity before displaying the choices.",Parent=options.Parent);
 file="";revisions=inkprof.internal.measurementRevisions(folder,target);
+clear calculation;
 if isempty(revisions)
  uiwait(msgbox('No complete, intact measurement revision for this target was found. Finish and save the measurement, or import an existing measurement file.', ...
   'Measurement revisions','warn','modal'));return

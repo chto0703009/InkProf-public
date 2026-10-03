@@ -169,8 +169,9 @@ end
         progress=[];watch=[];started=[];finished=false;message="";
         active=selected;
         try
+            preflight=inkprof.internal.calculationProgress("Checking project inputs","Checking saved files and prerequisites before starting.",Parent=fig);
             w.reload();
-            [ready,reason]=w.ready(active);
+            [ready,reason]=w.ready(active);clear preflight;
             if ~ready
                 if active=="export"
                     reason="Step 14 requires print verification and approval for the current profile. An approval from an earlier iteration cannot be reused."+newline+newline+ ...
@@ -199,7 +200,7 @@ end
             saved=inkprof.internal.savedTargetSummary(w,active);
             if ~isempty(saved),message=message+" "+saved(1);end
         catch err
-            message=string(err.message);
+            clear preflight;message=string(err.message);
             stopProgress();
             if ~strcmp(err.identifier,'inkprof:Cancelled'),uialert(fig,err.message,'InkProf');end
         end
@@ -286,7 +287,7 @@ end
             if strcmp(choice,'Cancel'),o=[];return;end
             if strcmp(choice,'Saved revisions')
                 parents=struct('measurement','render','c2measurement','c2','refinemeasurement','refine');
-                o.Source=inkprof.selectMeasurementRevision(fullfile(w.Root,'measurements'),w.output(parents.(id),'target'));
+                o.Source=inkprof.selectMeasurementRevision(fullfile(w.Root,'measurements'),w.output(parents.(id),'target'),Parent=fig);
                 if o.Source=="",o=[];end
             elseif strcmp(choice,'Import file')
                 o.Source=pick('*.json;*.ti3;*.mxf','Import measurement revision');if o.Source=="",o=[];end

@@ -4,6 +4,7 @@ out=struct;files=strings(0,1);
 project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
 switch id
  case "numericalExport"
+  calculation=inkprof.internal.calculationProgress("Saving ICC and certificate","Creating the PDF, HTML, figures and delivery copies."); %#ok<NASGU>
   assert(get(o,'Confirmed',false)&&strlength(strtrim(string(get(o,'Notes',""))))>0, ...
    'inkprof:Cancelled','Record your decision and confirm the absence of separate print verification.');
   folder=w.newFolder('exports');mkdir(folder);
@@ -17,6 +18,7 @@ switch id
   end
   files=allFiles(folder);
  case "compare"
+  calculation=inkprof.internal.calculationProgress("Comparing ICC profiles","Sampling both profiles on common colour grids and creating comparison reports.");
   previous=inkprof.internal.comparisonParent(w.State);
   assert(~isempty(previous),'inkprof:Workflow','A previous iteration is required.');
   old=w.resolve(previous.outputs.profile);
@@ -28,7 +30,7 @@ switch id
    [old,w.output('profile','profile'),fullfile(bin,'xicclu'),dest,"--iteration",string(w.State.cycle)], ...
    RequiredModules=["numpy","colour","reportlab"],TimeoutSeconds=240);
   out.comparison=fullfile(dest,'comparison.json');out.report=fullfile(dest,'comparison.html');out.pdf=fullfile(dest,'comparison.pdf');files=allFiles(dest);
-  web(char(out.report),'-browser');
+  clear calculation;web(char(out.report),'-browser');
  case "definition"
   dest=w.newFolder('targets');mkdir(dest);
   source=get(o,'Source',"");
@@ -62,7 +64,8 @@ switch id
   parent=struct('measurement','render','c2measurement','c2','refinemeasurement','refine');
   target=w.output(parent.(id),'target');source=get(o,'Source',"");
   if source==""
-   dest=w.newFolder('measurements');inkprof.prepareChart(target,dest);
+   calculation=inkprof.internal.calculationProgress("Preparing measurement","Checking the target and preparing the measurement session.");
+   dest=w.newFolder('measurements');inkprof.prepareChart(target,dest);clear calculation;
    dialog=inkprof.measureChart(target,SessionFolder=dest,ScanMode="paired",Condition="M0");
    waitfor(dialog.Figure);
    source=inkprof.selectMeasurementRevision(dest,target);
@@ -71,15 +74,19 @@ switch id
    if lower(ext)==".json"
     % A revision is a package: preserve chart, TI3, raw readings and source.
     if ~startsWith(inkprof.internal.absolutePath(source),w.Root+filesep)
-     dest=w.newFolder('measurements');copyfile(fileparts(source),dest);
+     calculation=inkprof.internal.calculationProgress("Importing measurement revision","Copying the measurement and its supporting files into the project.");
+     dest=w.newFolder('measurements');copyfile(fileparts(source),dest);clear calculation;
      [~,stem,ext]=fileparts(source);source=fullfile(dest,stem+ext);
     end
    else
-    [~,source]=inkprof.importMeasurement(source,TargetFile=target,SessionFolder=w.newFolder('measurements'),ShowPreview=true);
+    calculation=inkprof.internal.calculationProgress("Importing measurements","Converting measurement data and validating patch identities.");
+    [imported,source]=inkprof.importMeasurement(source,TargetFile=target,SessionFolder=w.newFolder('measurements'),ShowPreview=false);
+    clear calculation;inkprof.previewMeasurement(fileparts(source),imported);
    end
   end
   if source=="",cancel();end
-  files=validateMeasurement(source,target);out.measurement=source;
+  calculation=inkprof.internal.calculationProgress("Validating saved measurement","Checking file integrity and matching the measured patches to the printed target.");
+  files=validateMeasurement(source,target);out.measurement=source;clear calculation;
   if any(id==["c2measurement","refinemeasurement"])&&isfield(w.State.steps.refine.outputs,'c2reference')&& ...
     string(w.State.steps.refine.outputs.target)==string(w.State.steps.c2.outputs.target)
    reference=w.output('refine','c2reference');
@@ -234,6 +241,7 @@ r=jsondecode(fileread(fullfile(folder,'manifest.json')));
 files=[string(fullfile(folder,'manifest.json'));fullfile(folder,string({r.files.name})')];
 end
 function [out,files]=continueProfile(w,proposal,source,o,cycle)
+calculation=inkprof.internal.calculationProgress("Building next ICC iteration","Checking measurements, fitting ICC candidates and running numerical checks. This may take several minutes."); %#ok<NASGU>
 [folder,r]=inkprof.continueRefinement(proposal,source,Name="Iteration "+cycle, ...
  MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2));
 iteration=jsondecode(fileread(fullfile(folder,'iteration.json')));

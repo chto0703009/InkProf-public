@@ -353,6 +353,8 @@ classdef MeasurementDialog < handle
                 obj.Hint.Text='No successful save was recorded. Previous measurements are unchanged. See the log.';return;
             end
             try
+                obj.Status.Text='Saving and checking measurement…';
+                calculation=inkprof.internal.calculationProgress("Saving measurement","Importing readings, checking row identities and averaging paired scans.",Parent=obj.Figure);
                 assert(inkprof.internal.sha256(fullfile(obj.Folder,'chart.json'))==obj.ChartHash, ...
                     'inkprof:Integrity','The chart definition changed during measurement.');
                 data=obj.Figure.UserData;
@@ -363,7 +365,8 @@ classdef MeasurementDialog < handle
                 if obj.Result.complete,obj.Status.Text='Saved – all source patches imported';
                 else,obj.Status.Text='Saved – incomplete measurement';end
                 obj.Hint.Text='Results are saved in the project folder and available in dialog.Result. Complete means all patches are present, not that colour accuracy is verified. You can close this window.';
-            catch err,obj.fail("Could not import the saved file: "+string(err.message));return;end
+                clear calculation;
+            catch err,clear calculation;obj.fail("Could not import the saved file: "+string(err.message));return;end
             % Visualization failure must never reclassify a successfully saved measurement.
             try
                 obj.Figure.WindowStyle='normal';

@@ -50,3 +50,12 @@ The combined TIFF16 contains the selected image patches, repeat controls and the
 Measure the combined target once, in step 16 (or the linked C2 measurement step). InkProf computes the C3 report for the C2 subset and registers the same measurement for the refinement. Additional image/control rows are validated but excluded from the C2 colour-error statistics. C2 colour, gray and challenge patches are assigned `fit` roles and used to train the next ICC together with the selected image patches. Repeats and paper-white patches remain controls and do not add duplicate fitting weight. C2 results describe the parent ICC; once used for training, these measurements cannot independently validate the next ICC. Automatic measurement analysis does not approve a profile; review and approval remain explicit. A new ICC still needs its own verification.
 
 The project preserves a snapshot of the original C2, the shared TIFF/TI2, new placement mapping, roles and workflow links. Rebuilding creates a new package; it does not overwrite the previous target.
+
+## Activity feedback after step 15
+
+- **16 — Measure refinement:** preparation, revision discovery, import, integrity checks and combined C2 analysis display activity. The instrument window keeps its scan/calibration status; saving and averaging readings has its own busy indicator.
+- **17 — Build next iteration:** the busy dialog remains visible while training data, ICC candidates, numerical checks and the next verification target are generated.
+- **18 — Compare profiles:** common-grid sampling and report generation display activity before opening the report.
+- **19 — Save ICC and measurement certificate:** PDF/HTML/figure creation and copying delivery files display activity.
+
+Indicators show the operation and elapsed time, without claiming a completion percentage. Nested calculation stages reuse one indicator and restore the outer stage afterward. Indicators close before interactive choices and on errors. Final output hashing and saving project JSON/logs also display activity.

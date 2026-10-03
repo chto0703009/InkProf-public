@@ -1,30 +1,60 @@
-function [guard,progress]=calculationProgress(title,message)
-% A scoped busy dialog for calculations in the active workflow app.
-% Close the guard before asking for input. Never opens UI for batch jobs.
-guard=[];progress=[];parents=findall(groot,'Type','figure','Tag','InkProfWorkflow');parent=[];
+function [guard,progress]=calculationProgress(title,message,options)
+% Scoped activity feedback. Nested phases reuse one dialog and one timer.
+% Close the guard before requesting input. Batch jobs never open a window.
+arguments
+ title (1,1) string
+ message (1,1) string
+ options.Parent = []
+end
+guard=[];progress=[];parents=findall(groot,'Type','figure','Tag','InkProfWorkflow');parent=options.Parent;
 for candidate=reshape(parents,1,[])
- if isappdata(candidate,'InkProfRunning')&&getappdata(candidate,'InkProfRunning'),parent=candidate;break;end
+ if isempty(parent)&&isappdata(candidate,'InkProfRunning')&&getappdata(candidate,'InkProfRunning'),parent=candidate;break;end
 end
 if isempty(parent),return;end
 parent.Visible='on';if strcmp(parent.WindowState,'minimized'),parent.WindowState='normal';end
-figure(parent);setappdata(parent,'InkProfCalculationPhase',string(title));
-progress=uiprogressdlg(parent,'Title',char(title),'Message',char(string(message)+newline+"Please wait. This can take several minutes."), ...
- 'Indeterminate','on','Cancelable','off');
-started=tic;
-watch=timer('ExecutionMode','fixedSpacing','Period',1,'BusyMode','drop', ...
- 'Tag','InkProfCalculationTimer','TimerFcn',@(~,~)update(progress,string(message),started));
-guard=onCleanup(@()finish(progress,watch,parent));start(watch);drawnow;
+figure(parent);previous=[];
+if isappdata(parent,'InkProfCalculationState')
+ previous=getappdata(parent,'InkProfCalculationState');
+ if ~isvalid(previous.progress)
+  if isvalid(previous.watch),stop(previous.watch);delete(previous.watch);end
+  previous=[];
+ end
 end
-function update(progress,message,started)
-if ~isvalid(progress),return;end
-elapsed=floor(toc(started));
-progress.Message=char(message+newline+sprintf('Working — elapsed %d min %02d sec. Please wait.',floor(elapsed/60),mod(elapsed,60)));
+if isempty(previous)
+ progress=uiprogressdlg(parent,'Title',char(title),'Message',char(message),'Indeterminate','on','Cancelable','off');
+ watch=timer('ExecutionMode','fixedSpacing','Period',1,'BusyMode','drop', ...
+  'Tag','InkProfCalculationTimer','TimerFcn',@(~,~)update(parent));
+else
+ progress=previous.progress;watch=previous.watch;
 end
-function finish(progress,watch,parent)
-if isvalid(watch),stop(watch);delete(watch);end
-if isvalid(progress),close(progress);end
-if isgraphics(parent)
+state=struct('progress',progress,'watch',watch,'title',string(title),'message',string(message), ...
+ 'started',tic,'token',string(java.util.UUID.randomUUID()));
+setappdata(parent,'InkProfCalculationState',state);setappdata(parent,'InkProfCalculationPhase',state.title);
+guard=onCleanup(@()finish(parent,state,previous));update(parent);
+if isempty(previous),start(watch);end
+drawnow;
+end
+function update(parent)
+if ~isgraphics(parent)||~isappdata(parent,'InkProfCalculationState'),return;end
+s=getappdata(parent,'InkProfCalculationState');if ~isvalid(s.progress),return;end
+elapsed=floor(toc(s.started));s.progress.Title=char(s.title);
+s.progress.Message=char(s.message+newline+sprintf('Working — elapsed %d min %02d sec. Please wait.',floor(elapsed/60),mod(elapsed,60)));
+end
+function finish(parent,state,previous)
+if ~isgraphics(parent)
+ if isvalid(state.watch),stop(state.watch);delete(state.watch);end
+ return
+end
+if ~isappdata(parent,'InkProfCalculationState'),return;end
+active=getappdata(parent,'InkProfCalculationState');
+if active.token~=state.token,return;end
+if isempty(previous)
+ if isvalid(state.watch),stop(state.watch);delete(state.watch);end
+ if isvalid(state.progress),close(state.progress);end
+ rmappdata(parent,'InkProfCalculationState');
  if isappdata(parent,'InkProfCalculationPhase'),rmappdata(parent,'InkProfCalculationPhase');end
- parent.Visible='on';figure(parent);
+else
+ setappdata(parent,'InkProfCalculationState',previous);setappdata(parent,'InkProfCalculationPhase',previous.title);update(parent);
 end
+parent.Visible='on';figure(parent);
 end

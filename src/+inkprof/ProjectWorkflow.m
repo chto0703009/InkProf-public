@@ -114,6 +114,7 @@ classdef ProjectWorkflow < handle
                 if id=="recipe"&&isfield(outputs,'recipe')
                     recipe=jsondecode(fileread(outputs.recipe));obj.applyFWA(logical(recipe.colorimetry.fwaCompensation),"profiling-recipe");
                 end
+                savingProgress=inkprof.internal.calculationProgress("Saving project results","Checking output files and saving workflow, iteration and result-log records.");
                 assert(~isempty(files),'inkprof:Cancelled','Cancelled without saved results.');
                 artifacts=struct('path',{},'sha256',{});
                 for f=reshape(string(files),1,[])
@@ -152,9 +153,9 @@ classdef ProjectWorkflow < handle
                 obj.event(id,"completed",details);
                 if id=="continue",obj.nextCycle(outputs,artifacts);end
                 obj.save();result=obj.State.steps.(id);
-                inkprof.internal.recordProjectStep(obj.Root,"workflow-"+id);
+                inkprof.internal.recordProjectStep(obj.Root,"workflow-"+id);clear savingProgress;
             catch err
-                status="failed";if strcmp(err.identifier,'inkprof:Cancelled'),status="pending";end
+                clear savingProgress;status="failed";if strcmp(err.identifier,'inkprof:Cancelled'),status="pending";end
                 obj.State.steps.(id).status=status;obj.State.steps.(id).message=string(err.message);
                 obj.event(id,status,string(err.message));obj.save();
                 % Record our own state changes even on cancellation/failure. Do not
