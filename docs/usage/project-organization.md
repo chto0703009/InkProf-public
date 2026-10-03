@@ -23,3 +23,9 @@ Ett sammanhörande paket flyttas som en enhet. Källfil, design-JSON och ett äl
 Gamla metadata och TIFF-sidfötter behåller sina ursprungliga sökvägar. En ny utskrift ska genereras om sidfoten ska visa en ny sökväg; den gamla TIFF-filen får inte ändras tyst. Vid säkerhetskopiering behövs hela kategoriinnehållet. Om gamla kommandon ska fortsätta fungera behöver även kompatibilitetslänkar bevaras. Synkverktygs symlinkhantering är ett separat lokalt val.
 
 FreeFileSync-jobb (`*.ffs_gui`, `*.ffs_batch`) och dess databas-/låsfiler ignoreras av Git. De är datorspecifika och tas inte bort vid kodstädning.
+
+## Städning av huvudmappen 2026-10-03
+
+Äldre lokalt utvecklingsmaterial har flyttats till ett daterat arkiv utanför kodrepot: provkörningarna i `work/`, en äldre guide-PDF i roten, testbilden `MatrixLarge.jpg` och referensfilen `CGATS Chart 575 Patches.txt`. Arkivet innehåller en filförteckning med SHA-256; innehållet verifierades efter flytten. Den aktuella guiden finns under `docs/usage/`.
+
+Hänvisningar till `work/` i äldre forsknings- och provningsanteckningar avser historiska lokala arbetsfiler, inte filer som behövs för att köra appen. Arkivet distribueras inte med det publika repot. Mätprojekten i `projects/`, aktuell kod, testunderlag, lokala inställningar och Pythonmiljön berörs inte av denna städning.
