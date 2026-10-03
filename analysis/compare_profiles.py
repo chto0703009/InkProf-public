@@ -59,22 +59,57 @@ def run(old,new,exe,out,iteration=2,levels=9):
     out.mkdir(parents=True,exist_ok=False)
     for p,name in [(old,'previous.icc'),(new,'current.icc')]:shutil.copy2(p,out/name)
     (out/'comparison.json').write_text(json.dumps(r,indent=2,allow_nan=False))
+    render_reports(r,out)
+    return r
+
+
+def srgb_preview(lab):
+    """D50 Lab to display sRGB, Bradford adapted to D65 and clipped."""
+    white=colour.CCS_ILLUMINANTS['CIE 1931 2 Degree Standard Observer']['D50']
+    xyz=colour.Lab_to_XYZ(np.asarray(lab,dtype=float),illuminant=white)
+    rgb=np.clip(colour.XYZ_to_sRGB(xyz,illuminant=white,chromatic_adaptation_transform='Bradford'),0,1)
+    return '#' + ''.join(f'{int(v):02x}' for v in np.rint(rgb*255))
+
+
+def render_reports(r,out):
+    """Render saved comparison evidence without recalculating or approving it."""
     from html import escape
+    out=Path(out)
+    iteration=r['currentIteration'];grid=r['grid']['rgb'];local=r['localProbes']
+    forward=[np.asarray(r['grid'][key]) for key in ('previousLab','currentLab')]
+    preview_note='sRGB previews of predicted D50 Lab colours, adapted to D65. Colours outside sRGB are clipped; the colour chips are screen approximations. Delta E00 uses the original Lab values.'
+    def chip(lab,label):
+        value=srgb_preview(lab)
+        return f'<span title="{label}: {value}" aria-label="{label}: {value}" style="display:inline-block;width:56px;height:30px;background:{value};border:1px solid #777;print-color-adjust:exact;-webkit-print-color-adjust:exact"></span>'
     summary=f'Iteration {iteration-1} compared with iteration {iteration}. {len(grid)} shared RGB samples; absolute colorimetric, D50. Black point compensation disabled.'
-    rows=''.join(f'<tr><td>{x["rgb"]}</td><td>{x["deltaE00"]:.3f}</td><td>{x["previousLab"]}</td><td>{x["currentLab"]}</td></tr>' for x in r['worst'])
-    text=f'''<!doctype html><meta charset="utf-8"><title>InkProf profile comparison</title><style>body{{font:16px system-ui;max-width:1100px;margin:32px auto;padding:16px;color:#183343}}table{{border-collapse:collapse;width:100%}}td,th{{padding:8px;border:1px solid #ccd}}canvas{{background:#f3f6f8;max-width:100%}}</style><h1>Profile comparison: iteration {iteration-1} to {iteration}</h1><p>{summary}</p><p><b>{r['conclusion']}</b></p><h2>Same RGB: difference in predicted colour</h2><p>ΔE00 colour difference: mean {r['sameRGBDeltaE00']['mean']:.3f}; median {r['sameRGBDeltaE00']['median']:.3f}; 95th percentile {r['sameRGBDeltaE00']['p95']:.3f}; maximum {r['sameRGBDeltaE00']['max']:.3f}.</p><h2>Same desired Lab: difference in printer RGB</h2><p>Largest channel change, percentage points: mean {r['sameLabRGBChangePercentagePoints']['mean']:.3f}; maximum {r['sameLabRGBChangePercentagePoints']['max']:.3f}.</p><h2>Predicted colours: 2D lightness slice or 3D Lab</h2><p>Blue: previous profile. Orange: current profile. Shared RGB samples, not measured gamut boundaries. In 2D, move L* to inspect the a*/b* plane. Uncheck 2D for the full rotatable 3D view.</p><p><label><input type="checkbox" id="slice" checked> 2D a*/b* at selected L*</label> <label>L*: <input id="lightness" type="range" min="0" max="100" value="50" step="1"> <output id="level">50</output></label> <label>Half-width: <input id="width" type="number" min="1" max="50" value="5"> L*</label></p><p id="counts"></p><canvas id="view" width="900" height="460"></canvas><h2>Largest profile differences</h2><table><tr><th>RGB (0–1)</th><th>ΔE00</th><th>Previous Lab</th><th>Current Lab</th></tr>{rows}</table><h2>Local behaviour</h2>'''
+    rows=''.join(f'<tr><td>{chip(x["previousLab"],"Previous")}</td><td>{chip(x["currentLab"],"Current")}</td><td>{x["rgb"]}</td><td>{x["deltaE00"]:.3f}</td><td>{x["previousLab"]}</td><td>{x["currentLab"]}</td></tr>' for x in r['worst'])
+    text=f'''<!doctype html><meta charset="utf-8"><title>InkProf profile comparison</title><style>body{{font:16px system-ui;max-width:1100px;margin:32px auto;padding:16px;color:#183343}}table{{border-collapse:collapse;width:100%}}td,th{{padding:8px;border:1px solid #ccd}}canvas{{background:#f3f6f8;max-width:100%}}</style><h1>Profile comparison: iteration {iteration-1} to {iteration}</h1><p>{summary}</p><p><b>{r['conclusion']}</b></p><h2>Same RGB: difference in predicted colour</h2><p>ΔE00 colour difference: mean {r['sameRGBDeltaE00']['mean']:.3f}; median {r['sameRGBDeltaE00']['median']:.3f}; 95th percentile {r['sameRGBDeltaE00']['p95']:.3f}; maximum {r['sameRGBDeltaE00']['max']:.3f}.</p><h2>Same desired Lab: difference in printer RGB</h2><p>Largest channel change, percentage points: mean {r['sameLabRGBChangePercentagePoints']['mean']:.3f}; maximum {r['sameLabRGBChangePercentagePoints']['max']:.3f}.</p><h2>Predicted colours: 2D lightness slice or 3D Lab</h2><p>Blue: previous profile. Orange: current profile. Shared RGB samples, not measured gamut boundaries. In 2D, move L* to inspect the a*/b* plane. Uncheck 2D for the full rotatable 3D view.</p><p><label><input type="checkbox" id="slice" checked> 2D a*/b* at selected L*</label> <label>L*: <input id="lightness" type="range" min="0" max="100" value="50" step="1"> <output id="level">50</output></label> <label>Half-width: <input id="width" type="number" min="1" max="50" value="5"> L*</label></p><p id="counts"></p><canvas id="view" width="900" height="460"></canvas><h2>Largest profile differences</h2><p>{preview_note}</p><table><tr><th>Previous sRGB</th><th>Current sRGB</th><th>Printer RGB (0–1)</th><th>ΔE00</th><th>Previous Lab</th><th>Current Lab</th></tr>{rows}</table><h2>Local behaviour</h2>'''
     for x in local:text+=f'<p>RGB half-step {x["rgbHalfStep"]}: maximum colour change across interval, previous {x["previous"]["max"]:.4f}, current {x["current"]["max"]:.4f} ΔE00.</p>'
     text+='<h2>Interpretation</h2><ul>'+''.join('<li>'+escape(t)+'</li>' for t in r['limitations'])+'</ul><p><a href="comparison.pdf">PDF report</a> · <a href="comparison.json">Full numerical results</a></p>'
     script = Path(__file__).with_name('profile_comparison_view.js').read_text(encoding='utf-8')
     text += '<script>const groups=' + json.dumps([x.tolist() for x in forward]) + ';\n' + script + '</script>'
     (out/'comparison.html').write_text(text)
-    from reportlab.platypus import SimpleDocTemplate,Paragraph,Spacer,Table
+    from reportlab.platypus import SimpleDocTemplate,Paragraph,Spacer,Table,PageBreak
+    from reportlab.lib import colors
+    from reportlab.graphics.shapes import Drawing,Rect
     from reportlab.lib.styles import getSampleStyleSheet
     styles=getSampleStyleSheet();story=[Paragraph('InkProf - Profile comparison',styles['Title']),Paragraph(summary,styles['BodyText']),Spacer(1,12),Paragraph(r['conclusion'],styles['BodyText'])]
     for label,key in [('Same RGB: colour difference (Delta E00)','sameRGBDeltaE00'),('Same Lab: RGB channel change (percentage points)','sameLabRGBChangePercentagePoints')]:
         story.extend([Spacer(1,14),Paragraph(label,styles['Heading2']),Table([['Mean','Median','95th percentile','Maximum'],[f'{r[key][k]:.4f}' for k in ('mean','median','p95','max')]])])
     story+=[Spacer(1,14),Paragraph('Local probes: maximum Delta E00 across each interval',styles['Heading2']),Table([['RGB half-step','Previous','Current']]+[[str(x['rgbHalfStep']),f"{x['previous']['max']:.4f}",f"{x['current']['max']:.4f}"] for x in local])]
     for line in r['limitations']:story.extend([Spacer(1,8),Paragraph(escape(line),styles['BodyText'])])
+    story.extend([PageBreak(),Paragraph('Largest profile differences',styles['Heading2']),Paragraph(preview_note,styles['BodyText']),Spacer(1,12)])
+    def pdf_chip(lab):
+        drawing=Drawing(42,22)
+        drawing.add(Rect(0,0,42,22,fillColor=colors.HexColor(srgb_preview(lab)),strokeColor=colors.HexColor('#777777'),strokeWidth=.5))
+        return drawing
+    def coordinates(values):return ', '.join(f'{v:.2f}' for v in values)
+    cells=[['Previous','Current','Printer RGB','Delta E00','Previous Lab','Current Lab']]
+    for x in r['worst']:
+        cells.append([pdf_chip(x['previousLab']),pdf_chip(x['currentLab']),coordinates(x['rgb']),f"{x['deltaE00']:.3f}",coordinates(x['previousLab']),coordinates(x['currentLab'])])
+    table=Table(cells,colWidths=[53,53,89,57,108,108],repeatRows=1)
+    table.setStyle([('FONTNAME',(0,0),(-1,0),'Helvetica-Bold'),('FONTSIZE',(0,0),(-1,-1),7),('VALIGN',(0,0),(-1,-1),'MIDDLE'),('BACKGROUND',(0,0),(-1,0),colors.HexColor('#e5eef4')),('GRID',(0,0),(-1,-1),.3,colors.HexColor('#ccd0d8')),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)])
+    story.append(table)
     SimpleDocTemplate(str(out/'comparison.pdf')).build(story)
     return r
 if __name__=='__main__':

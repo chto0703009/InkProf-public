@@ -7,8 +7,12 @@ from pathlib import Path
 from unittest.mock import patch
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'analysis'))
-from compare_profiles import run
+from compare_profiles import run, srgb_preview
 class ComparisonTests(unittest.TestCase):
+ def test_srgb_previews_use_lab_not_printer_rgb(self):
+  self.assertEqual(srgb_preview([0,0,0]),'#000000')
+  self.assertEqual(srgb_preview([100,0,0]),'#ffffff')
+  self.assertEqual(srgb_preview([50,0,0]),'#777777')
  def test_identical_profiles_and_portable_reports(self):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d)/'a.icc';b=bytearray(128);b[36:40]=b'acsp';b[12:20]=b'prtrRGB ';p.write_bytes(b)
@@ -20,5 +24,8 @@ class ComparisonTests(unittest.TestCase):
    html=(Path(d)/'out/comparison.html').read_text()
    self.assertIn('id="lightness"',html)
    self.assertIn('id="slice"',html)
+   self.assertIn('Previous sRGB',html)
+   self.assertEqual(html.count('aria-label="Previous:'),len(r['worst']))
+   self.assertEqual(html.count('aria-label="Current:'),len(r['worst']))
    for f in ['comparison.json','comparison.html','comparison.pdf','previous.icc','current.icc']:self.assertTrue((Path(d)/'out'/f).is_file())
 if __name__=='__main__':unittest.main()

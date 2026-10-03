@@ -36,3 +36,7 @@ The report includes current numerical evidence and, when available, the precedin
 This branch preserves the current ICC, saves the decision and scope in JSON and the results log, and generates a portable report bundle. It does not mark print verification or print approval complete, and it does not reuse a previous iteration's C3 measurement as evidence for the new ICC. The normal measurement-certificate route remains available through rows 9–14. Rebuilding the profile or its checks invalidates the numerical-only certificate in the workflow; previously saved copies remain historical records.
 
 Both numerical-only and print-reviewed measurement certificates place liability, customer-printing responsibility and warranty wording in **Appendix B - Legal terms**, after the signature section and Appendix A (references and explanations). PDF, HTML and text follow this order; the structured JSON retains the wording. Technical scope and verification status remain beside the results.
+
+### Colour previews in comparison reports
+
+The “Largest profile differences” table in HTML and PDF includes adjacent Previous and Current sRGB colour chips. These are derived from each profile’s predicted D50 Lab, Bradford-adapted to D65 and clipped to the sRGB range. Printer RGB coordinates are not treated as sRGB. The chips are screen approximations; Delta E00 remains calculated from the original Lab values. Existing saved reports remain unchanged until a new report is generated.
