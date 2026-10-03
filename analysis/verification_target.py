@@ -24,6 +24,61 @@ def select_indices(rgb,training,count,min_distance,used=None):
     raise ValueError('Not enough distinct verification colours separated from training data.')
 
 
+def balanced_indices(lab,rgb,count,used=None,gray=False):
+    """Deterministic marginal coverage, then farthest Lab; exclude RGB16 duplicates."""
+    available=np.ones(len(lab),bool)
+    for v in ([] if used is None else used):
+        available &= np.max(abs(rgb-v),axis=1)>=1/65535
+    light=np.digitize(lab[:,0],[25,50,75])
+    hue=(np.mod(np.arctan2(lab[:,2],lab[:,1]),2*np.pi)/(np.pi/6)).astype(int)
+    chroma=np.digitize(np.linalg.norm(lab[:,1:],axis=1),[20,45])
+    bins=[light,hue,chroma];loads=[np.zeros(4),np.zeros(12),np.zeros(3)]
+    distance=np.full(len(lab),np.inf);chosen=[]
+    gray_targets=np.linspace(float(lab[:,0].min()),float(lab[:,0].max()),count) if gray and count else []
+    for k in range(count):
+        ids=np.flatnonzero(available)
+        if not len(ids):break
+        if gray:
+            i=ids[np.argmin(abs(lab[ids,0]-gray_targets[k]))]
+        else:
+            # Lightness is primary; hue and chroma balance within that choice.
+            for b,load in zip(bins,loads):
+                ids=ids[load[b[ids]]==np.min(load[b[ids]])]
+            i=ids[np.argmax(distance[ids])]
+        chosen.append(int(i))
+        for b,load in zip(bins,loads):load[b[i]]+=1
+        distance=np.minimum(distance,np.linalg.norm(lab-lab[i],axis=1))
+        available &= np.max(abs(rgb-rgb[i]),axis=1)>=1/65535
+    return chosen
+
+
+def external_selection(lab,rgb,reach,n,counts):
+    """Own photographic target: reserved skin/shadow coverage plus balanced colours."""
+    records=[];used=[];summary={}
+    colour_ids=np.flatnonzero(reach[:n]<=.5)
+    skin=(lab[:,0]>=35)&(lab[:,0]<=80)&(lab[:,1]>=5)&(lab[:,1]<=25)&(lab[:,2]>=8)&(lab[:,2]<=30)
+    shadow=lab[:,0]<18
+    def take(category,role,pool,count,gray=False):
+        chosen=balanced_indices(lab[pool],rgb[pool],count,used,gray)
+        for local in chosen:
+            i=int(pool[local]);used.append(rgb[i]);records.append(dict(sourceIndex=i,role=role,repeatOf=None,selectionCategory=category))
+        summary[category]={'requested':count,'selected':len(chosen)}
+        return len(chosen)
+    # Reserve neutrals first so clipped colour candidates cannot consume the endpoints.
+    take('neutral','gray',np.arange(n,len(lab)),counts[1],True)
+    if summary['neutral']['selected']!=counts[1]:raise ValueError('Not enough distinct neutral patches for this profile; reduce the count.')
+    skin_count=int(np.floor(counts[0]*.15+.5));shadow_count=int(np.floor(counts[0]*.10+.5))
+    selected=take('skin-tone','colour',colour_ids[skin[colour_ids]],skin_count)
+    selected+=take('shadow','colour',colour_ids[shadow[colour_ids]],shadow_count)
+    broad=colour_ids[~skin[colour_ids]&~shadow[colour_ids]]
+    selected+=take('broad-colour','colour',broad,counts[0]-selected)
+    if selected<counts[0]:selected+=take('coverage-fallback','colour',colour_ids,counts[0]-selected)
+    if selected!=counts[0]:raise ValueError('Not enough distinct reachable colours for this profile; reduce the count.')
+    got=take('challenge','challenge',np.flatnonzero(reach[:n]>3),counts[2])
+    if got!=counts[2]:raise ValueError('Not enough distinct challenge colours for this profile; reduce the count.')
+    return records,summary
+
+
 def generate(job,exe,request,out):
     out=Path(out);job=Path(job);external=bool(request.get('externalProfile',False));profile=job/('profile.icc' if external else 'result/profile.icc')
     if out.exists(): raise ValueError('Output already exists.')
@@ -53,8 +108,9 @@ def generate(job,exe,request,out):
     gray=np.column_stack((np.linspace(18,90,max(300,counts[1]*10)),np.zeros((max(300,counts[1]*10),2))))
     if external:
         # Explicit dark and photographic skin-tone candidates, plus broad colour coverage.
-        candidates[:128]=np.column_stack((rng.uniform(5,18,128),rng.uniform(-20,20,128),rng.uniform(-20,20,128)))
-        candidates[128:192]=np.column_stack((rng.uniform(35,80,64),rng.uniform(5,25,64),rng.uniform(8,30,64)))
+        reserve=max(512,n//8)
+        candidates[:reserve]=np.column_stack((rng.uniform(5,18,reserve),rng.uniform(-20,20,reserve),rng.uniform(-20,20,reserve)))
+        candidates[reserve:2*reserve]=np.column_stack((rng.uniform(35,80,reserve),rng.uniform(5,25,reserve),rng.uniform(8,30,reserve)))
         gray[:,0]=np.linspace(3,95,len(gray))
     # Shuffle the denser gray pool so training exclusions do not bias toward dark patches.
     gray=gray[rng.permutation(len(gray))]
@@ -66,11 +122,15 @@ def generate(job,exe,request,out):
     numeric_lab=lookup(exe,profile,numerical,intent='a')
     reach=colour.delta_E(all_lab,numeric_lab,method='CIE 2000')
     masks=[np.where(reach[:n]<=.5)[0],np.arange(n,len(all_lab)),np.where(reach[:n]>3)[0]]
-    records=[];used=[]
-    for role,mask,count in zip(('colour','gray','challenge'),masks,counts[:3]):
-        ids=select_indices(rgb[mask],train,count,separation,used)
-        for local in ids:
-            i=int(mask[local]);used.append(rgb[i]);records.append(dict(sourceIndex=i,role=role,repeatOf=None))
+    if external:
+        if train.size:raise ValueError('External verification expects unavailable training data.')
+        records,selection_summary=external_selection(all_lab,rgb,reach,n,counts)
+    else:
+        records=[];used=[]
+        for role,mask,count in zip(('colour','gray','challenge'),masks,counts[:3]):
+            ids=select_indices(rgb[mask],train,count,separation,used)
+            for local in ids:
+                i=int(mask[local]);used.append(rgb[i]);records.append(dict(sourceIndex=i,role=role,repeatOf=None))
     for i in rng.choice(len(records),size=counts[3],replace=False):
         records.append(dict(sourceIndex=records[i]['sourceIndex'],role='repeat',repeatOf=int(i)+1))
     output_rgb=np.array([rgb[p['sourceIndex']] for p in records]);predicted=lookup(exe,profile,output_rgb,intent='a')
@@ -81,6 +141,8 @@ def generate(job,exe,request,out):
             predictedLabD50Absolute=predicted[j].tolist(),numericalInverseResidualDE00=float(reach[i]),
             gamutAssessment='model-reachable' if reach[i]<=.5 else 'outside-or-inversion-unresolved',
             minTrainingRGBDistance=float(np.min(np.max(abs(train-output_rgb[j]),axis=1))) if train.size else None))
+    if external:
+        for patch,rec in zip(patches,records):patch['selectionCategory']=rec.get('selectionCategory','repeat')
     if recipe['colorimetry'].get('fwaCompensation'):
         white=lookup(exe,profile,np.ones((1,3)),intent='a')[0]
         patches.append(dict(id=str(len(patches)+1),role='paperwhite',repeatOf=None,
@@ -107,7 +169,7 @@ def generate(job,exe,request,out):
         referencePolicy='Compare measured absolute D50 Lab against referenceLabD50Absolute; predictedLabD50Absolute is diagnostic only. Stratify gamutAssessment and role; do not score padding or contrast bars.',
         definitions=dict(file='verification.ti1',sha256=sha(out/'verification.ti1')),patches=patches)
     if external:
-        record.update(externalProfile=True,trainingIndependence='unknown: original training data unavailable',
+        record.update(selection=dict(method='inkprof-balanced-photographic-v1',groups=selection_summary,reference='Own synthetic Lab selection; not a reproduction of ColorChecker SG.'),externalProfile=True,trainingIndependence='unknown: original training data unavailable',
             independence='New verification print; original training data unavailable, so independence from training cannot be established. Model-informed gamut screening is disclosed.')
     (out/'verification.json').write_text(json.dumps(record,indent=2,allow_nan=False));return record
 

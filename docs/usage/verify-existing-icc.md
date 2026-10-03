@@ -24,3 +24,13 @@ Original profile training data are generally unavailable. InkProf therefore repo
 Changing print details invalidates the verification target and subsequent steps. Replacing the imported ICC invalidates all subsequent results. Older files remain preserved. Reopening or moving the whole project uses the persisted relative references and integrity checks.
 
 Validated on macOS with automated workflow tests and a real RGB printer ICC for target generation; Windows/Linux and physical print accuracy are not qualified by those tests.
+
+## Balanced photographic patch selection
+
+External-profile targets use the versioned `inkprof-balanced-photographic-v1` selector. This is InkProf's own synthetic Lab selection, inspired by the idea of a balanced photographic chart, **not a reproduction of ColorChecker SG or its reference values**.
+
+The existing overall quotas remain colours, neutrals, challenges and repeats. Within the reachable colour quota, approximately 15% is reserved for photographic skin-tone candidates and 10% for shadows. The remainder is distributed across lightness, hue and chroma. Neutrals span the candidate lightness range evenly; challenges are distributed across colour regions instead of taking the first difficult candidates. Distinct quantized device RGB values are required, except for intentional repeat patches.
+
+For a 140-patch target, the usual allocation is 97 colours (15 skin-tone, 10 shadow and 72 broad colours), 20 neutrals, 13 challenges and 10 repeats. These are requested quotas: profile reachability and clipping can limit coverage. Reserved-colour shortfalls are filled from other reachable colours and recorded in `verification.json`, together with the selection method, requested/actual group counts and each patch's category. If the profile cannot supply enough distinct patches, generation stops with an explanation. The seed makes the selection reproducible for the same profile and software.
+
+This improves coverage; it does not establish print accuracy or a standardized chart certification. Existing targets and measurements are unchanged. To use the new selection, run **Save verification TIFF16** again and print and measure the new target with its matching TI2. Measurements from an earlier layout must not be reused for the new patch definitions.
