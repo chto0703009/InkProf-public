@@ -95,6 +95,7 @@ if isfield(w.State.steps.c2.outputs,'reference')
 end
 r.patchOutliers=inkprof.internal.certificatePatchOutliers(jsondecode(fileread(w.output('c3','report'))));
 r.fwa=inkprof.internal.fwaReportSummary(r.results.checks_fit,r.results.c3_report,project.printing,digest);
+r.gamut=inkprof.internal.reportGamut(profile,folder);
 inkprof.internal.writeJson(paths.json,r);
 lines=["INKPROF – MÄTCERTIFIKAT";"Projekt: "+string(project.name);"Projekt-ID: "+string(project.projectId);"Datum: "+r.reportDate;"Användare: "+r.reportUser; ...
  "Iteration: "+w.State.cycle;"Iterations-ID: "+w.State.iterationId;"Tid UTC: "+r.createdUTC; ...
@@ -178,6 +179,11 @@ if isfield(r,'visualization')
  plotData=replace(string(jsonencode(animationData)),"<",string(char(92))+"u003c");
  html=html+"<section class='lab-view'><h2>Profilens beräknade kontrollfärger i 3D</h2><p>Automatiskt roterande kontrollpatchar i Lab D50; inte mätningar eller hela skrivarens färgomfång.</p>"+ ...
  "<script type='application/json' class='lab-data'>"+plotData+"</script><canvas class='lab-canvas' role='img' aria-label='Automatically rotating predicted control colours in CIELAB D50'></canvas><img class='lab-still'  src='profile-lab-3d.png' alt='Profilens beräknade kontrollpatchar i Lab 3D' style='width:100%;height:auto'></section>";
+end
+if string(r.gamut.status)=="available"
+ html=html+string(fileread(fullfile(folder,'gamut-view.html')));
+else
+ html=html+"<section><h2>ICC gamut</h2><p>Gamut unavailable: "+esc(string(r.gamut.reason))+"</p></section>";
 end
 signatureStart=find(lines=="UNDERSKRIFT",1,'last');
 % The visual results already appear above; keep their text equivalent in TXT only.

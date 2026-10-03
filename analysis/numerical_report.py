@@ -19,6 +19,9 @@ def create(folder, language="sv"):
     r = json.loads((folder / 'final-report.json').read_text(encoding='utf-8'))
     from certificate_figure import load, interactive, pdf_drawing
     figure_groups = load(folder, r)
+    import gamut_surface
+    gamut = gamut_surface.load(folder, r)
+    gamut_title = "ICC gamut - CIELAB D50"
     figure_title = 'Profiljämförelse - 2D och 3D i CIELAB'
     sections = [('InkProf - mätcertifikat', ['Certifikat-ID: '+r.get('certificateId', 'Ej angivet'), r.get('certificateScope', ''), r['scopeStatement'],
         f"Projekt: {r['project']['name']} | Iteration {r['iteration']}",
@@ -104,6 +107,7 @@ def create(folder, language="sv"):
                  'Uppmätta färgprov med ΔE00 över 5. Färger visas som sRGB. Se bilaga A för urval och färgvisning.']))
     reference_title = content(r)['title']
     sections.append((reference_title, [content(r)['caption']]))
+    sections.append((gamut_title, [gamut_surface.caption(language) if gamut else "Gamut unavailable: "+r.get('gamut', {}).get('reason', 'No surface saved.'), "ICC SHA-256: "+r['profile']['sha256']]))
     explanatory = [
         'Tidigare iterationers utskriftsmätningar används inte som verifiering av denna ICC. Små skillnader mellan profiler bevisar inte att utskriftsresultatet är oförändrat.',
         'Skrivare, papper och bläck begränsar det möjliga färgomfånget och resultatet. Numeriska kontroller ersätter inte en separat utskrift och mätning.',
@@ -137,6 +141,8 @@ def create(folder, language="sv"):
             from certificate_standards import reference
             url = reference(r)['sourceURL']
             body = body.replace(html.escape(url), '<a href="'+html.escape(url, quote=True)+'">MediaStandard Print 2018, tabell 30, sida 50</a>')
+        if title == gamut_title:
+            body += gamut_surface.interactive(gamut, language)
         if title == figure_title:
             body += interactive(figure_groups, language)
         if title == 'Sista mätresultat - färgprov och Delta E00':
@@ -176,7 +182,7 @@ def create(folder, language="sv"):
         if title == reference_title:
             story += pdf_table(r, styles)
             continue
-        if title in (figure_title, 'Sista mätresultat - färgprov och Delta E00', 'Underskrift', 'Bilaga B - Juridiska villkor', content(r)['appendixTitle']):
+        if title in (gamut_title, figure_title, 'Sista mätresultat - färgprov och Delta E00', 'Underskrift', 'Bilaga B - Juridiska villkor', content(r)['appendixTitle']):
             story.append(PageBreak())
         story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - mätcertifikat', 'Underskrift', 'Bilaga B - Juridiska villkor', content(r)['appendixTitle']) else styles['Heading2']))
         for line in lines:
@@ -185,6 +191,8 @@ def create(folder, language="sv"):
             if title == 'Underskrift':
                 story.append(Spacer(1, 8*mm))
 
+        if title == gamut_title and gamut:
+            story.append(gamut_surface.pdf_drawing(gamut, language))
         if title == figure_title:
             story.append(pdf_drawing(figure_groups, language))
         if title in ('Sparad ICC-profil', 'Levererad ICC-profil', 'Kontrollerad ICC-kandidat (projektoriginal)'):

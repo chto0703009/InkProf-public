@@ -76,6 +76,13 @@ def create(folder):
         story += [PageBreak(), p('Profilens beräknade kontrollfärger i 3D', 'Heading2'),
                   p('Kontrollmålets patchar i CIELAB D50. Detta är profilens beräknade värden, inte mätningar eller hela skrivarens färgomfång.'),
                   Image(str(folder / 'profile-lab-3d.png'), width=170*mm, height=121*mm, kind='proportional')]
+    import gamut_surface
+    gamut = gamut_surface.load(folder, r)
+    story += [PageBreak(), p('ICC gamut - CIELAB D50', 'Heading2')]
+    if gamut:
+        story += [p(gamut_surface.caption()), p('ICC SHA-256: '+r['profile']['sha256']), gamut_surface.pdf_drawing(gamut)]
+    else:
+        story += [p('Gamut unavailable: '+r.get('gamut', {}).get('reason', 'No surface saved.'))]
     story += [PageBreak(), p('Fullständig redovisning och historik', 'Heading2')]
     # Flowing paragraphs paginate long notes, file paths and histories safely.
     in_results = False

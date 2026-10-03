@@ -168,5 +168,35 @@
       ]
     ],
     "small": "Befintliga InkProf-exempel: Epson Stylus Pro 3880, glossy-papper, Candidate-1 shared Lab comparison, 2026-09-29. Bilderna illustrerar funktionerna och är inte ett nytt valideringsresultat."
+  },
+  {
+    "tag": "ICC GAMUT | CIELAB D50",
+    "title": "Se skrivarens färgomfång",
+    "lead": "En sammanhängande 3D-yta kompletterar mätpunkterna och visar det färgomfång som ICC-profilen beskriver.",
+    "images": [
+      [
+        "gamut-surface.png",
+        170,
+        117,
+        "Exempel: InkProf, iteration 2. Beräknad A2B-yta i CIELAB D50. Skärmfärgerna är sRGB-förhandsvisningar."
+      ]
+    ],
+    "sections": [
+      [
+        "Förstå möjligheterna",
+        "Ytan hjälper dig att se hur färgomfånget ändras mellan ljusa, mörka och mättade färger. Skrivarens, papperets och bläckets kombination sätter gränsen för vad som kan återges."
+      ],
+      [
+        "Samma underlag i app och certifikat",
+        "Välj View gamut i appen. HTML-certifikatet visar en roterbar yta och PDF en fast bild. Profilens SHA-256 kopplar bilden till rätt ICC. Figuren ersätter inte utskriftsmätningar och är inget kvalitetsbetyg."
+      ]
+    ],
+    "small": "ArgyllCMS iccgamut: forward A2B, absolute colorimetric, Lab D50. Surface detail approximately 5 Delta E; not an accuracy limit.",
+    "links": [
+      [
+        "ArgyllCMS: ICC gamut surface",
+        "https://www.argyllcms.com/doc/iccgamut.html"
+      ]
+    ]
   }
 ]

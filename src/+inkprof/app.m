@@ -18,8 +18,9 @@ uibutton(bar,'Text','Open results log','Tag','openResultLog','ButtonPushedFcn',@
 uibutton(bar,'Text','Iteration history','Tag','iterationHistory','ButtonPushedFcn',@history);
 reportButton=uibutton(bar,'Text','Open report','Tag','openFinalReport','Enable','off','ButtonPushedFcn',@openReport);
 labButton=uibutton(bar,'Text','View 3D','Tag','showProfile3D','Enable','off','ButtonPushedFcn',@show3D);
-projectBar=uigridlayout(g,[1 2]);projectBar.ColumnWidth={'1x',140};projectBar.Padding=[0 0 0 0];
+projectBar=uigridlayout(g,[1 3]);projectBar.ColumnWidth={'1x',120,140};projectBar.Padding=[0 0 0 0];
 projectLabel=uilabel(projectBar,'Text','Create a new project or select an existing one.','WordWrap','on');
+gamutButton=uibutton(projectBar,'Text','View gamut','Tag','showGamut','Enable','off','ButtonPushedFcn',@showGamutView);
 verifyButton=uibutton(projectBar,'Text','Verify project','Tag','verifyProject','Enable','off','ButtonPushedFcn',@verifyCurrentProject);
 body=uigridlayout(g,[1 2]);body.ColumnWidth={490,'1x'};body.Padding=[0 0 0 0];
 table=uitable(body,'ColumnName',{'Step','Status'},'ColumnWidth',{350,105},'ColumnEditable',false,'Tag','workflowSteps','CellSelectionCallback',@select);
@@ -116,6 +117,7 @@ end
             end
             reportButton.Enable=matlab.lang.OnOffSwitchState((assessment.export.valid&&isfield(w.State.steps.export.outputs,'finalReport'))||(assessment.numericalExport.valid&&isfield(w.State.steps.numericalExport.outputs,'finalReport')));
             labButton.Enable=matlab.lang.OnOffSwitchState(assessment.c2.valid);
+            gamutButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid);
             table.Data=data;index=find(string({defs.id})==selected);titleLabel.Text=defs(index).label;
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
             hint.Value=cellstr([reason;instruction(selected)]);
@@ -394,6 +396,24 @@ end
         [valid,reason]=w.valid(id);
         if ~valid,uialert(fig,char(reason),'Report is out of date');return;end
         web(char(w.output(id,'finalReport')),'-browser');
+    end
+    function showGamutView(~,~)
+        if busy || isempty(w),return;end
+        focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
+        busy=true;setappdata(fig,'InkProfRunning',true);
+        busyGuard=onCleanup(@finishGamut); %#ok<NASGU>
+        try
+            w.reload();[ok,why]=w.valid('profile');
+            assert(ok,'inkprof:GamutUnavailable','%s',why);
+            [progressGuard,~]=inkprof.internal.calculationProgress("ICC gamut","Calculating the ICC gamut surface...",Parent=fig); %#ok<ASGLU>
+            inkprof.showGamut(w.output('profile','profile'));
+        catch err
+            uialert(fig,err.message,'ICC gamut');
+        end
+    end
+    function finishGamut()
+        busy=false;
+        if isgraphics(fig),setappdata(fig,'InkProfRunning',false);end
     end
     function show3D(~,~)
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>

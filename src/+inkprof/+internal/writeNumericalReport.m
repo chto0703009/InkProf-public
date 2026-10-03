@@ -43,6 +43,7 @@ copyfile(fullfile(w.Root,'workflow.json'),fullfile(folder,'workflow-snapshot.jso
 copyfile(fullfile(w.Root,'inkprof-project.json'),fullfile(folder,'project-snapshot.json'));
 paths=struct('json',fullfile(folder,'final-report.json'),'html',fullfile(folder,'final-report.html'), ...
  'pdf',fullfile(folder,'final-report.pdf'),'text',fullfile(folder,'final-report.txt'));
+r.gamut=inkprof.internal.reportGamut(profile,folder);
 inkprof.internal.writeJson(paths.json,r);
 config=inkprof.paths();inkprof.runPython(fullfile(config.Root,'analysis','numerical_report.py'),string(folder),RequiredModules="reportlab",WorkingDirectory=config.Root);
 end

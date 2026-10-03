@@ -168,5 +168,35 @@
       ]
     ],
     "small": "Existing InkProf examples: Epson Stylus Pro 3880, glossy paper, Candidate-1 shared Lab comparison, 2026-09-29. The images illustrate the functions and are not new validation results."
+  },
+  {
+    "tag": "ICC GAMUT | CIELAB D50",
+    "title": "See the printer’s colour gamut",
+    "lead": "A continuous 3D surface complements the sample points and shows the colour gamut described by the ICC profile.",
+    "images": [
+      [
+        "gamut-surface.png",
+        170,
+        117,
+        "Example: InkProf, iteration 2. Predicted A2B surface in CIELAB D50. Display colours are sRGB previews."
+      ]
+    ],
+    "sections": [
+      [
+        "Understand the possibilities",
+        "The surface helps you see how the gamut changes between light, dark and saturated colours. The printer, paper and ink combination determines what can be reproduced."
+      ],
+      [
+        "Consistent evidence in app and certificate",
+        "Select View gamut in the app. The HTML certificate provides a rotatable surface and the PDF a static view. The profile SHA-256 ties the figure to the correct ICC. The figure does not replace print measurements or provide a quality score."
+      ]
+    ],
+    "small": "ArgyllCMS iccgamut: forward A2B, absolute colorimetric, Lab D50. Surface detail approximately 5 Delta E; not an accuracy limit.",
+    "links": [
+      [
+        "ArgyllCMS: ICC gamut surface",
+        "https://www.argyllcms.com/doc/iccgamut.html"
+      ]
+    ]
   }
 ]
