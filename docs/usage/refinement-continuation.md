@@ -40,3 +40,5 @@ Ingen mätning uppfinns om den saknas. Identitetskontroller bevisar inte att pap
 Utvecklingsmätningar får inte senare kallas oberoende slutverifiering. Den nya C2-utskriften och dess mätning är nästa fysiska kontroll, och något automatiskt ISO- eller kvalitetsgodkännande görs inte.
 
 The same continuation also accepts [image-guided proposals](image-guided-refinement.md). Image colours are interpreted using their embedded ICC profile, or an explicitly accepted sRGB assumption. Step 16 measures the raw device-RGB target; step 17 retains the frozen fitting, adaptive-development and control roles.
+
+A combined image/C2 target uses C2 colour, gray and challenge rows for fitting the next ICC. Repeats and paper-white rows remain controls. All roles and RGB are checked against the frozen C2 reference. These measurements cannot independently validate the next ICC after being used for fitting. See [combined target handling](image-guided-refinement.md#include-c2-until-measured).

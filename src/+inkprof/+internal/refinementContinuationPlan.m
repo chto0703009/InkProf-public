@@ -36,6 +36,13 @@ assert(roles.rolesFrozenBeforeMeasurement&&~roles.profileApplied&&string(roles.s
 if isfield(p.print,'roleSHA256')
  assert(inkprof.internal.sha256(roleFile)==string(p.print.roleSHA256)&&inkprof.internal.sha256(targetFile)==string(p.print.ti2SHA256),'inkprof:Continuation','Frozen layout changed.');
 end
+c2=[];
+if isfield(p,'verification')
+ c2file=fullfile(folder,p.verification.file);
+ assert(inkprof.internal.sha256(c2file)==string(p.verification.sha256),'inkprof:Continuation','C2 reference changed.');
+ c2=jsondecode(fileread(c2file));
+ assert(string(c2.printerProfile.sha256)==string(status.profileSHA256),'inkprof:Continuation','C2 profile mismatch.');
+end
 n=numel(p.candidates);patches=roles.patches;definitionIds=str2double(string({patches.definitionId}));
 assert(numel(unique(definitionIds))==numel(patches)&&isequal(sort(definitionIds),1:numel(patches)),'inkprof:Continuation','Invalid definition identity mapping.');
 v=inkprof.cgatsData(inkprof.importCgats(fullfile(base,'profiling.ti3')),RGBScale=100);
@@ -44,6 +51,10 @@ for k=1:numel(patches)
  if id<=n
   expected="fit";if n>=10&&mod(id,5)==0,expected="adaptive_holdout";end
   assert(string(q.role)==expected&&max(abs(rgb-double(p.candidates(id).rgbPercent(:)')))<=1e-4,'inkprof:Continuation','New patch role/RGB changed.');
+ elseif ~isempty(c2)&&id>numel(patches)-numel(c2.patches)
+  ci=id-(numel(patches)-numel(c2.patches));
+  expected="fit";if any(string(c2.patches(ci).role)==["repeat","paperwhite"]),expected="control";end
+  assert(string(q.role)==expected&&max(abs(rgb-double(c2.patches(ci).deviceRGB16(:)')/65535*100))<=1e-4,'inkprof:Continuation','C2 verification role/RGB changed.');
  else
   assert(string(q.role)=="control"&&any(max(abs(v.rgb-rgb),[],2)<=.002),'inkprof:Continuation','Unexpected control RGB or role.');
  end
@@ -55,7 +66,7 @@ plan=struct('schemaVersion',1,'documentType',"inkprof.refinement-continuation",'
  'parentIterationId',p.iterationId,'parentJob',job,'baseInputFolder',base,'baseInputSHA256',recipe.inputSHA256, ...
  'roleFile',roleFile,'roleSHA256',inkprof.internal.sha256(roleFile),'targetFile',targetFile,'targetSHA256',inkprof.internal.sha256(targetFile), ...
  'basePatchCount',b.patchCount,'newFitCount',sum(r=="fit"),'developmentCount',sum(r=="adaptive_holdout"), ...
- 'controlCount',sum(r=="control"),'expectedTrainingCount',b.patchCount+sum(r=="fit"), ...
+ 'controlCount',sum(r=="control"),'verificationCount',numelC2(c2),'expectedTrainingCount',b.patchCount+sum(r=="fit"), ...
  'printComparability',"Must use the same printer, paper and unmanaged print settings; drift not inferred from identity checks.");
 if measurementFile=="",return;end
 measurementFile=inkprof.internal.absolutePath(measurementFile);m=jsondecode(fileread(measurementFile));
@@ -71,4 +82,8 @@ for k=1:numel(patches)
 end
 plan.status="ready-for-profile-iteration";plan.measurementFile=measurementFile;
 plan.measurementSHA256=inkprof.internal.sha256(measurementFile);plan.fitIds=fit;plan.developmentIds=dev;plan.roles=record;
+end
+
+function n=numelC2(c2)
+n=0;if ~isempty(c2),n=numel(c2.patches);end
 end

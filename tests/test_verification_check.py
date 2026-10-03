@@ -23,6 +23,18 @@ def fixture():
 
 
 class C3Tests(unittest.TestCase):
+    def test_combined_target_scores_only_c2_and_validates_every_row(self):
+        ref,m,readings=fixture()
+        ref['combinedTarget']=dict(otherPatches=[dict(sampleId='3',role='fit',rgbPercent=[20,30,40],placement=dict(location='3A'))])
+        for key,value in [('ids','3'),('locations','3A'),('rgbPercent',[20,30,40]),('spectra',[50,60])]:m['data'][key].append(value)
+        readings.append(dict(sampleId='3',measuredLab=[99,99,99]))
+        result=analyse(ref,m,readings)
+        self.assertEqual(result['summary']['count'],1)
+        self.assertEqual(len(result['patches']),2)
+        self.assertEqual(len(validate(ref,m)['ids']),3)
+        m['data']['rgbPercent'][-1]=[99,99,99]
+        with self.assertRaises(ValueError):validate(ref,m)
+
     def test_paperwhite_excluded_from_independent_score(self):
         ref,m,readings=fixture()
         p=copy.deepcopy(ref['patches'][0]);p.update(id='3',role='paperwhite',repeatOf=None)

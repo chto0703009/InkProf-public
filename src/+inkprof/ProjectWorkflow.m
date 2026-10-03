@@ -127,6 +127,18 @@ classdef ProjectWorkflow < handle
                     method="errors";if isfield(options,'Method'),method=string(options.Method);end
                     obj.State.steps.refine.method=method;
                 end
+                if id=="refine"&&isfield(outputs,'c2reference')
+                    obj.invalidate('c2');
+                    linked=outputs;linked.reference=linked.c2reference;linked=rmfield(linked,{'c2reference','proposal'});
+                    obj.State.steps.c2=struct('status',"completed",'outputs',linked,'artifacts',artifacts,'message',"C2 included in combined image-refinement TIFF16; not yet measured");
+                    obj.event('c2',"linked",linked);
+                elseif any(id==["c2measurement","refinemeasurement"])&&isfield(outputs,'c3report')
+                    obj.invalidate('c2measurement');obj.invalidate('refinemeasurement');
+                    linked=struct('status',"completed",'outputs',struct('measurement',outputs.measurement),'artifacts',artifacts,'message',"Combined target measured");
+                    obj.State.steps.c2measurement=linked;obj.State.steps.refinemeasurement=linked;
+                    obj.State.steps.c3=struct('status',"completed",'outputs',struct('report',outputs.c3report),'artifacts',artifacts,'message',"C2 subset analysed separately from image patches; approval still required");
+                    obj.event('c3',"completed",obj.State.steps.c3);
+                end
                 details=struct('result',obj.State.steps.(id),'summary',struct);
                 for name=string(fieldnames(outputs))'
                     file=obj.resolve(outputs.(name));

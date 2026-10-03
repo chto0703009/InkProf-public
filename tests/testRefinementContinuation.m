@@ -17,6 +17,21 @@ inkprof.internal.writeJson(fullfile(f,'proposal.json'),r);
 p=inkprof.internal.refinementContinuationPlan(f,m);
 verifyEqual(tc,p.newFitCount,8);verifyEqual(tc,p.developmentCount,2);
 end
+function testC2IncludedInContinuation(tc)
+[w,f,m]=fixture();c=onCleanup(@()rmdir(w,'s'));
+file=fullfile(f,'sources','c2.json');profile=fullfile(f,'sources','profile.icc');
+inkprof.internal.writeJson(file,struct('printerProfile',struct('sha256',inkprof.internal.sha256(profile)),'patches',struct('deviceRGB16',[65535,0,0],'role',"colour")));
+p=jsondecode(fileread(fullfile(f,'proposal.json')));p.verification=struct('file',"sources/c2.json",'sha256',inkprof.internal.sha256(file));
+inkprof.internal.writeJson(fullfile(f,'proposal.json'),p);
+rolefile=fullfile(f,'refinement-print','placement-plan.json');roles=jsondecode(fileread(rolefile));
+q=roles.patches(end);q.definitionId="13";q.sampleId="13";q.rgbPercent=[100;0;0];q.role="fit";q.placement.location="A13";
+roles.patches(end+1)=q;inkprof.internal.writeJson(rolefile,roles);
+r=jsondecode(fileread(m));r.data.ids(end+1)={char("13")};r.data.locations(end+1)={char("A13")};r.data.rgb(end+1,:)=[100 0 0];inkprof.internal.writeJson(m,r);
+p=inkprof.internal.refinementContinuationPlan(f,m);
+verifyEqual(tc,p.verificationCount,1);verifyEqual(tc,p.newFitCount,9);verifyTrue(tc,any(p.fitIds=="13"));
+roles.patches(end).role="final_holdout";inkprof.internal.writeJson(rolefile,roles);
+verifyError(tc,@()inkprof.internal.refinementContinuationPlan(f,m),'inkprof:Continuation');
+end
 function testRejectMismatch(tc)
 for kind=["position","rgb","condition","incomplete","roles"]
  [w,f,m]=fixture();c=onCleanup(@()rmdir(w,'s'));r=jsondecode(fileread(m));

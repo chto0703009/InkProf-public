@@ -40,3 +40,13 @@ For scripted use, `inkprof.refineFromImage(jobFile, Image="photo.tif", ShowDialo
 ## Calculation feedback
 
 During image-profile inspection, colour conversion, patch selection and TIFF16 generation, the app stays visible and displays a busy dialog with the current operation and elapsed time. This is an activity indicator, not a predicted completion percentage. The busy dialog closes before the next input window, and on errors. The workflow also displays elapsed time for running steps. Large images and targets can take several minutes.
+
+## Include C2 until measured
+
+Step 15 automatically includes an existing C2 target for the **current ICC** until a current, valid saved C2 measurement exists. Saving or printing its TIFF does not count as measurement. An older iteration's measurement does not suppress the current C2 target. If you already selected image patches, choose **Use saved image patches** to rebuild the target without recalculating or reselecting the photograph.
+
+The combined TIFF16 contains the selected image patches, repeat controls and the complete C2 set. The image ΔE00 filter does not remove C2 patches. C2's already converted device RGB16 values, desired Lab, IDs and repeat relationships are preserved; only their page positions change. Disable all print colour conversion as usual. Paper size is proposed again for the combined patch count and remains editable.
+
+Measure the combined target once, in step 16 (or the linked C2 measurement step). InkProf computes the C3 report for the C2 subset and registers the same measurement for the refinement. Additional image/control rows are validated but excluded from the C2 colour-error statistics. C2 colour, gray and challenge patches are assigned `fit` roles and used to train the next ICC together with the selected image patches. Repeats and paper-white patches remain controls and do not add duplicate fitting weight. C2 results describe the parent ICC; once used for training, these measurements cannot independently validate the next ICC. Automatic measurement analysis does not approve a profile; review and approval remain explicit. A new ICC still needs its own verification.
+
+The project preserves a snapshot of the original C2, the shared TIFF/TI2, new placement mapping, roles and workflow links. Rebuilding creates a new package; it does not overwrite the previous target.

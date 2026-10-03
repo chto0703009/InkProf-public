@@ -304,6 +304,16 @@ end
                     if ~ok,uialert(fig,"Complete current C3 feedback first: "+why,'Refinement');o=[];return;end
                 end
             end
+            if id=="refine"&&o.Method=="image"
+                reference=inkprof.internal.pendingVerification(w);
+                o.IncludeC2=reference~="";o.C2Reference=reference;
+                if w.valid('refine')&&isfield(w.State.steps.refine,'method')&&string(w.State.steps.refine.method)=="image"
+                    choice=uiconfirm(fig,'Reuse your saved image-patch selection or select another image? Any current C2 patches without a saved measurement will be included automatically.', ...
+                        'Image patches','Options',{'Use saved image patches','Choose another image','Cancel'},'CancelOption',3);
+                    if strcmp(choice,'Cancel'),o=[];return;end
+                    if strcmp(choice,'Use saved image patches'),o.ExistingProposal=w.output('refine','proposal');end
+                end
+            end
             if id=="review"
                 m=w.output('measurement','measurement');inkprof.previewMeasurement(fileparts(m),jsondecode(fileread(m)));
             end

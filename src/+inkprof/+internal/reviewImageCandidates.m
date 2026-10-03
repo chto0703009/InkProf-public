@@ -3,13 +3,14 @@ function [selected,review]=reviewImageCandidates(proposal)
 selected=[];review=struct;c=proposal.candidates;n=numel(c);
 f=uifigure('Name','InkProf - Review image patches','Position',[60 100 1380 750],'WindowStyle','modal');
 cleanup=onCleanup(@()delete(f));f.CloseRequestFcn=@cancel;
-g=uigridlayout(f,[6 1]);g.RowHeight={85,42,30,'1x',95,52};
+g=uigridlayout(f,[6 1]);g.RowHeight={105,42,30,'1x',95,52};
 header=sprintf('%d proposed new patches. Excluded near existing/duplicate RGB: %d.\nOnly visible, checked patches will be added. Print controls are additional.',n,proposal.excludedNearExistingOrDuplicate);
 if isfield(proposal,'fitEstimates')&&proposal.fitEstimates.available
  stats=proposal.fitEstimates.summary;header=header+string(newline)+sprintf('Latest profile: training fit ΔE00 — mean %.2f; p95 %.2f; max %.2f.',stats.mean,stats.p95,stats.max);
 else
  header=string(header)+newline+"No current training-fit report: local error estimates are unavailable.";
 end
+if isfield(proposal,'verification'),header=string(header)+newline+sprintf('Also included: %d unmeasured C2 patches, independent of this filter; colours also train the next ICC.',proposal.verification.patchCount);end
 uilabel(g,'Text',header,'WordWrap','on');
 filterbar=uigridlayout(g,[1 4]);filterbar.ColumnWidth={125,300,145,'1x'};filterbar.Padding=[0 0 0 0];
 uilabel(filterbar,'Text','Filter ΔE00 metric:');

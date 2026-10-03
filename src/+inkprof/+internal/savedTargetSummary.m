@@ -15,7 +15,8 @@ if isempty(pages),return;end
 lines="Target saved: "+numel(r.ids)+" patches in "+numel(pages)+" TIFF16 file(s).";
 if isfield(outputs,'proposal')
  proposal=jsondecode(fileread(w.resolve(outputs.proposal)));
- if isfield(proposal,'candidates'),lines(end+1,1)="New refinement patches: "+numel(proposal.candidates)+" (printed total includes control/repeat patches).";end
+ if isfield(proposal,'verification'),lines(end+1,1)="Included C2 verification patches: "+proposal.verification.patchCount+" (colours also train the next ICC; repeats remain controls).";end
+ if isfield(proposal,'candidates'),lines(end+1,1)="New refinement patches: "+numel(proposal.candidates)+" (printed total includes controls and any C2 patches).";end
 end
 lines=[lines;"Print folder: "+string(fileparts(target));"Select the completed TIFF16 step and use Copy TIFF16 for printing to choose another folder."];
 end

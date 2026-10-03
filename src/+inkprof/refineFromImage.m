@@ -4,6 +4,7 @@ arguments
  jobFile (1,1) string
  options.Image (1,1) string = ""
  options.FitReport (1,1) string = ""
+ options.VerificationFile (1,1) string = ""
  options.SourceProfile (1,1) string = "embedded"
  options.ROI (1,:) double = []
  options.Name (1,1) string = "Image-guided refinement"
@@ -79,6 +80,9 @@ proposal.imageProfile.assumedSRGB=assumed||(~info.hasEmbeddedProfile&&sourceProf
 proposal.imageProfile.warningAcknowledged=assumed;
 proposal.name=options.Name;proposal.iterationId=string(java.util.UUID.randomUUID());
 proposal.createdUTC=string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'"));
+if options.VerificationFile~=""
+ proposal.verification=inkprof.internal.snapshotVerification(options.VerificationFile,job,fullfile(stage,'sources','c2'));
+end
 clear calculation;
 selected=1:numel(proposal.candidates);reviewFilter=struct;
 if options.ShowDialog

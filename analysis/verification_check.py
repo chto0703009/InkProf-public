@@ -41,7 +41,12 @@ def validate(reference, measurement):
     ids = list(map(str, data['ids']))
     wanted = [printed_id(p) for p in patches]
     reference_ids = [str(p['id']) for p in patches]
-    if len(set(reference_ids)) != len(reference_ids) or len(set(ids)) != len(ids) or len(set(wanted)) != len(wanted) or set(ids) != set(wanted):
+    others=reference.get('combinedTarget',{}).get('otherPatches',[])
+    other_ids=[str(p['sampleId']) for p in others]
+    if len(set(other_ids))!=len(other_ids) or set(other_ids)&set(wanted):
+        raise ValueError('Invalid combined-target identity mapping.')
+    expected_ids=set(wanted)|set(other_ids)
+    if len(set(reference_ids)) != len(reference_ids) or len(set(ids)) != len(ids) or len(set(wanted)) != len(wanted) or set(ids) != expected_ids:
         raise ValueError('Measurement patch IDs do not match the verification target uniquely.')
     rgb = np.asarray(data['rgbPercent'], dtype=float)
     if rgb.shape != (len(ids), 3) or not np.isfinite(rgb).all():
@@ -50,6 +55,12 @@ def validate(reference, measurement):
         raise ValueError('Missing measurement locations.')
     lookup = {v: k for k, v in enumerate(ids)}
     by_id = {str(p['id']): p for p in patches}
+    for p in others:
+        k=lookup[str(p['sampleId'])]
+        if (p['role'] not in ('fit','adaptive_holdout','control') or
+            str(data['locations'][k])!=p['placement']['location'] or
+            not np.allclose(rgb[k],p['rgbPercent'],atol=1e-4,rtol=0)):
+            raise ValueError('Combined non-verification patch role, location or RGB changed.')
     for p in patches:
         k = lookup[printed_id(p)]
         if str(data['locations'][k]) != p['placement']['location']:
@@ -74,7 +85,7 @@ def validate(reference, measurement):
 def analyse(reference, measurement, readings):
     validate(reference, measurement)
     measured = {str(p['sampleId']): p for p in readings}
-    if len(measured) != len(readings) or set(measured) != {printed_id(p) for p in reference['patches']}:
+    if len(measured) != len(readings) or set(measured) != set(map(str,measurement['data']['ids'])):
         raise ValueError('Incomplete or duplicated measured Lab.')
     patches = []
     for p in reference['patches']:
@@ -140,12 +151,14 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
     result.update(schemaVersion=1,documentType='inkprof.verification-check',createdUTC=datetime.now(timezone.utc).isoformat(),
                   status='insufficient-evidence',qualityValidated=False,
                   purpose='Diagnostic independent-print comparison; no automatic profile acceptance',
+                  combinedTarget=bool(reference.get('combinedTarget')), excludedNonVerificationCount=len(reference.get('combinedTarget',{}).get('otherPatches',[])),
                   decisionReasons=['Print colour-management chain has not been verified.','Acceptance criteria have not been approved.'],
                   primaryMetric='CIEDE2000 against desired absolute D50 Lab; unique patches in main summary',
                   colorimetry=dict(method='Argyll profcheck spectral integration',illuminant='D50',observer='1931_2',fwaCompensation=reference.get('fwaCompensation',False),fwaIlluminant=reference.get('fwaIlluminant'),labPrecision='six decimal places',measurementCondition=measurement.get('measurementCondition',{})),
                   reportedPrintSettings=print_settings or {},printChainVerified=False,criteria=reference.get('criteria',{}),
                   limitations=['Model-reachable is a numerical classification, not proof of physical gamut.',
-                               'Targets were screened using this profile, although separate from training patches.',
+                               'Targets were screened using this profile, although separate from its training patches.',
+                               'If C2 measurements are used to train a later ICC, they are not independent validation data for that later profile.',
                                'Challenge patches are included in uniqueAll but reported separately.',
                                'Paired sweep differences measure repeatability, not accuracy.',
                                'Repeated printed patches combine positional print variation and measurement variation.',

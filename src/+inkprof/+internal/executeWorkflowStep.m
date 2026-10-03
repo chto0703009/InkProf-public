@@ -80,6 +80,13 @@ switch id
   end
   if source=="",cancel();end
   files=validateMeasurement(source,target);out.measurement=source;
+  if any(id==["c2measurement","refinemeasurement"])&&isfield(w.State.steps.refine.outputs,'c2reference')&& ...
+    string(w.State.steps.refine.outputs.target)==string(w.State.steps.c2.outputs.target)
+   reference=w.output('refine','c2reference');
+   calculation=inkprof.internal.calculationProgress("Analysing combined measurement","Checking C2 colours separately and registering the image/C2 training measurements.");
+   [~,out.c3report]=inkprof.checkVerificationTarget(reference,source,ShowDialog=false,PrintSettings=project.printing);
+   clear calculation;files=[files;allFiles(fileparts(out.c3report))];
+  end
  case "review"
   source=w.output('measurement','measurement');
   assert(get(o,'Confirmed',false),'inkprof:Cancelled','Measurement review has not been confirmed.');
@@ -169,12 +176,19 @@ switch id
   assert(get(o,'Confirmed',false),'inkprof:Cancelled','Record why you are adding patches.');
   method=string(get(o,'Method',"errors"));
   if method=="image"
-   [proposal,folder]=inkprof.refineFromImage(w.output('profile','job'),FitReport=w.output('checks','fit'), ...
+   reference="";
+   if get(o,'IncludeC2',false),reference=string(get(o,'C2Reference',""));assert(reference~="",'inkprof:Verification','Select the unprinted C2 reference.');end
+   if isfield(o,'ExistingProposal')
+    saved=jsondecode(fileread(o.ExistingProposal));assert(string(saved.sourceProfileSHA256)==inkprof.internal.sha256(w.output('profile','profile')),'inkprof:Integrity','Saved image selection belongs to another profile.');
+    [proposal,folder]=inkprof.rebuildImageRefinement(string(o.ExistingProposal),VerificationFile=reference,PlanPaper=get(o,'PlanPaper',true));
+   else
+   [proposal,folder]=inkprof.refineFromImage(w.output('profile','job'),FitReport=w.output('checks','fit'),VerificationFile=reference, ...
     Image=string(get(o,'Image',"")),SourceProfile=string(get(o,'SourceProfile',"embedded")), ...
     ROI=get(o,'ROI',[]),MaxNewPatches=get(o,'MaxNewPatches',100), ...
     MinSpacingPercent=get(o,'MinSpacingPercent',1),NeighborRadiusPercent=get(o,'NeighborRadiusPercent',0), ...
     Name="Iteration "+(w.State.cycle+1)+" - image colours",ShowDialog=get(o,'ShowDialog',true), ...
     PlanPaper=get(o,'PlanPaper',true),CreatePrint=true);
+   end
    assert(~isempty(proposal)&&folder~="",'inkprof:Cancelled','Image refinement cancelled.');
   else
    assert(method=="errors",'inkprof:Workflow','Unknown refinement method.');
@@ -182,8 +196,9 @@ switch id
    [~,folder]=inkprof.refineVerification(w.output('c3','report'),Name="Iteration "+(w.State.cycle+1), ...
     MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true,PlanPaper=true);
   end
-  inkprof.internal.writeJson(fullfile(folder,'workflow-review.json'),struct('notes',get(o,'Notes',""),'method',method,'utc',utc()));
+  inkprof.internal.writeJson(fullfile(folder,'workflow-review.json'),struct('notes',get(o,'Notes',""),'method',method,'includedC2',get(o,'IncludeC2',false),'utc',utc()));
   out=inkprof.internal.workflowTiffOutputs(fullfile(folder,'refinement-print','print','target.ti2'));out.proposal=fullfile(folder,'proposal.json');
+  combined=fullfile(folder,'refinement-print','verification.json');if isfile(combined),out.c2reference=combined;end
   files=allFiles(folder);assert(isfile(out.target),'inkprof:Workflow','No new printable patches were proposed. Review the feedback.');
  case "continue"
   [out,files]=continueProfile(w,fileparts(w.output('refine','proposal')),w.output('refinemeasurement','measurement'),o,w.State.cycle+1);
