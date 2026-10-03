@@ -146,7 +146,13 @@ def create(folder, language="sv"):
     (folder / 'final-report.html').write_text(document, encoding='utf-8')
     fonts = Path(reportlab.__file__).parent / 'fonts'
     for name, filename in [('Report','Vera.ttf'),('ReportBold','VeraBd.ttf')]:
-        pdfmetrics.registerFont(TTFont(name,str(fonts/filename)))
+        font = TTFont(name,str(fonts/filename))
+        # Vera has the triangular increment glyph but no U+0394 Greek Delta.
+        # Reuse that glyph while preserving U+0394 in the PDF text mapping.
+        if 0x394 not in font.face.charToGlyph:
+            font.face.charToGlyph[0x394] = font.face.charToGlyph[0x2206]
+            font.face.charWidths[0x394] = font.face.charWidths[0x2206]
+        pdfmetrics.registerFont(font)
     styles = getSampleStyleSheet()
     for style in styles.byName.values():
         style.fontName = 'Report'
@@ -160,7 +166,8 @@ def create(folder, language="sv"):
             story.append(PageBreak())
         story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - mätcertifikat', 'Underskrift', 'Bilaga A - Juridiska villkor') else styles['Heading2']))
         for line in lines:
-            story.append(Paragraph(html.escape(str(line)).replace('\n', '<br/>'), styles['ReportBody']))
+            body = html.escape(str(line)).replace('\n', '<br/>')
+            story.append(Paragraph(body, styles['ReportBody']))
             if title == 'Underskrift':
                 story.append(Spacer(1, 8*mm))
 
