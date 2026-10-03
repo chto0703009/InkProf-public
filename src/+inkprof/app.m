@@ -170,7 +170,7 @@ end
             if ~ready
                 if active=="export"
                     reason="Step 14 requires print verification and approval for the current profile. An approval from an earlier iteration cannot be reused."+newline+newline+ ...
-                        "To save a numerically checked profile without a separate verification print, select step 19: Save ICC + report without print verification.";
+                        "To save a numerically checked profile without a separate verification print, select step 19: Save ICC + measurement certificate without print verification.";
                 end
                 uialert(fig,reason,'Step not available','Icon','info');return;
             end
@@ -294,7 +294,7 @@ end
             o.Notes=inkprof.internal.dialogText(a{1});o.Confirmed=strlength(strtrim(o.Notes))>0;
         elseif any(id==["export","numericalExport"])
             if id=="numericalExport"
-                a=inputdlg({'Why are you ending this iteration without a separate verification print? State intended use.'},'Save numerical report',[4 70],{''});
+                a=inputdlg({'Why are you ending this iteration without a separate verification print? State intended use.'},'Save measurement certificate',[4 70],{''});
                 if isempty(a),o=[];return;end
                 o.Notes=inkprof.internal.dialogText(a{1});
                 if strlength(strtrim(o.Notes))==0,o=[];return;end
@@ -307,7 +307,7 @@ end
                 "This step saves an approved delivery copy and creates the measurement certificate (PDF and HTML) inside the project."+newline+newline+ ...
                 "You can also save copies elsewhere. The certificate and all supporting files are collected in one report folder. Move or share that entire folder. The project keeps its own copies.";
             if id=="numericalExport"
-                message="Save the current ICC and a numerical report (PDF and HTML). This does not approve print accuracy. Project copies are retained; external copies include all supporting files.";
+                message="Save the current ICC and a measurement certificate (PDF and HTML) with the numerical-only verification scope. This does not approve print accuracy. Project copies are retained; external copies include all supporting files.";
             end
             choice='Also save copies elsewhere';
             if ~saveElsewhere
@@ -321,7 +321,7 @@ end
             [n,p]=uiputfile({'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Choose where to save the ICC profile',fullfile(w.Root,iccName));
             if isequal(n,0),o=[];return;end
             o.ICCDestination=string(fullfile(p,n));
-            reportName='measurement-certificate.pdf';if id=="numericalExport",reportName='numerical-report.pdf';end
+            reportName='measurement-certificate.pdf';
             [n,p]=uiputfile({'*.pdf','Report (*.pdf)';'*.html','Report (*.html)';'*.txt','Report as text (*.txt)'}, ...
                 'Name the report bundle (PDF, HTML and supporting files)',fullfile(p,reportName));
             if isequal(n,0),o=[];return;end
@@ -443,7 +443,7 @@ switch id
  case "render",s="Save TIFF16 in the project. Print the files separately, then return to the app for measurement.";
  case "c2",s="Save C2 as TIFF16. The ICC profile has already been applied once. Print separately without further colour conversion, then measure in the app.";
  case {"measurement","c2measurement","refinemeasurement"},s="When your separately printed sheet is ready, start instrument measurement here. The app uses the saved target TI2 and saves measurement results in the project.";
- case "numericalExport",s="Optional after step 8: save the current ICC and a numerical report without a new verification print. Your decision and the absence of separate print verification are recorded. This does not mark steps 9–14 complete.";
+ case "numericalExport",s="Optional after step 8: save the current ICC and a measurement certificate without a new verification print. Your decision and the absence of separate print verification are recorded. This does not mark steps 9–14 complete.";
  case "export",s="This step requires print verification and approval for the current iteration. To finish without a separate verification print, use step 19. The ICC profile already exists in the project. This step saves the approved profile and creates its measurement certificate in the project. Optionally save additional copies elsewhere. The exported certificate and all supporting files are saved together in one report folder.";
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
  case "compare",s="Compare this ICC with the previous iteration on common RGB and Lab samples. Profile differences do not prove improved print accuracy; fresh independent print verification is still required.";

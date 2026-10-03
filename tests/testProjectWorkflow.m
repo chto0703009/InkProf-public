@@ -348,6 +348,7 @@ w.run('numericalExport',struct('Confirmed',true,'Notes',"Satisfied with iteratio
 verifyTrue(tc,w.valid('numericalExport'));verifyFalse(tc,w.valid('approve'));
 r=jsondecode(fileread(w.output('numericalExport','reportJSON')));
 verifyFalse(tc,r.verification.separatePrintVerified);verifyFalse(tc,r.verification.isoCertification);
+verifyEqual(tc,string(r.documentTitle),"InkProf - mätcertifikat");verifyTrue(tc,isfield(r,'certificateId'));
 verifyEqual(tc,string(r.scopeStatement),"Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.");
 verifyFalse(tc,isfield(r.sources,'c3'));verifyFalse(tc,isfield(r,'approval'));
 verifyTrue(tc,isfile(w.output('numericalExport','reportPDF')));

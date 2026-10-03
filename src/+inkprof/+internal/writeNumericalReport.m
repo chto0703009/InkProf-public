@@ -15,6 +15,13 @@ r=struct('schemaVersion',1,'documentType',"inkprof.numerical-report", ...
  'profile',struct('file',"profile.icc",'sha256',digest), ...
  'verification',struct('separatePrintVerified',false,'isoCertification',false), ...
  'decision',struct('confirmed',true,'notes',notes,'user',user,'meaning',"Use current ICC without claiming separate print verification"),'sources',struct);
+r.documentTitle="InkProf - mätcertifikat";
+r.certificateId=string(java.util.UUID.randomUUID());
+r.certificateScope="Mätcertifikatet dokumenterar profilunderlag, numeriska kontroller och användarens beslut. Omfattningen för aktuell iteration anges nedan. Dokumentet är inte en ackrediterad certifiering eller ett intyg om ISO-överensstämmelse.";
+r.signature=struct('status',"unsigned",'method',"handwritten on printed PDF");
+r.historicalCertificate=inkprof.internal.previousCertificate(w,folder);
+fit=jsondecode(fileread(w.output('checks','fit')));
+r.fwa=inkprof.internal.fwaReportSummary(fit,struct,project.printing,digest);
 r.legalAppendix=inkprof.internal.reportLegalText();
 for key=["fit","grid","c1"]
  src=w.output('checks',key);check=jsondecode(fileread(src));

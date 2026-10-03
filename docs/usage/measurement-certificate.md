@@ -104,3 +104,23 @@ export again to obtain the matching filename and internal display name.
 In step 14, **Open selected step results → Save ICC and report copies...**
 opens the ICC save dialog first, followed by the report destination dialog.
 The PDF and HTML choices in the results list open the existing reports.
+
+
+## Certificates for later iterations without a new verification print
+
+Step 19 now exports **measurement-certificate.pdf** and its HTML counterpart,
+using the measurement certificate title and layout. The internal JSON type
+`inkprof.numerical-report` is retained for compatibility and describes the
+evidence scope, not a different user-facing document.
+
+The certificate explicitly states that the current iteration was numerically
+checked but not verified by a separate print and measurement. It contains the
+current profile identity, project settings, FWA/OBA processing evidence, the
+iteration comparison and the user's recorded decision. It does not create an
+approval for step 14 or transfer an earlier approval to the current profile.
+
+Where available, the previous archived certificate is checked against its saved
+artifact hashes and included as historical evidence in `previous-certificate/`.
+Its measurement errors, instruments and colour patches are labelled with the
+previous iteration. They are not verification results for the current ICC.
+The signature page is followed by **Appendix A - Legal terms** in both PDF and HTML.
