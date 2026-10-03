@@ -38,6 +38,7 @@ addDetail("Dokumentdatum",r.reportDate);addDetail("Dokument upprättat av",r.rep
 if isfield(project,'user'),addDetail("Projektansvarig",project.user);end
 if isfield(project,'createdUTC'),addDetail("Projekt skapat (UTC)",project.createdUTC);end
 labels={"printer","Skrivare";"paper","Papper";"paperSurface","Pappersyta";"ink","Bläck / bläckuppsättning";"inkType","Bläcktyp (dye / pigment)"; ...
+ "shadowMode","Skuggläge (auto-matte gäller endast matt papper)";"shadowPatchEmphasis","Viktning av mörka patchar";"shadowGridEmphasis","Modellens skuggviktning";"shadowExtraPatches","Extra skuggpatchar per iteration (begärt antal)"; ...
  "printerCoating","Coating från skrivaren";"coatingSettings","Coating – produkt och inställningar"; ...
  "media","Drivrutinens mediaval";"driver","Drivrutin / RIP";"quality","Utskriftskvalitet"; ...
  "printPath","Utskriftsprogram";"colorManagement","Färghantering vid utskrift";"dryingHours","Torktid (timmar)";"settings","Övriga skrivarinställningar"};
@@ -45,6 +46,8 @@ for k=1:size(labels,1)
  value="Ej angivet";if isfield(project.printing,labels{k,1}),value=project.printing.(labels{k,1});end
  addDetail(labels{k,2},value);
 end
+r.shadow=inkprof.internal.shadowReportSummary(w);
+addDetail("Skugginställning i sparat profilrecept",r.shadow.summaryText);
 r.warrantyNotice=inkprof.internal.warrantyNotice();
 % Copy the referenced reports alongside the ICC; links survive moving exports.
 pairs={'checks','fit';'checks','grid';'checks','c1';'c3','report';'feedback','feedback'; ...

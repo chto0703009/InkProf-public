@@ -43,6 +43,14 @@ if isfield(p,'verification')
  c2=jsondecode(fileread(c2file));
  assert(string(c2.printerProfile.sha256)==string(status.profileSHA256),'inkprof:Continuation','C2 profile mismatch.');
 end
+shadow=[];shadowCount=0;
+if isfield(p.print,'shadow')
+ ref=p.print.shadow;file=fullfile(folder,ref.file);
+ assert(inkprof.internal.sha256(file)==string(ref.sha256),'inkprof:Integrity','Shadow patch data changed.');
+ shadow=jsondecode(fileread(file));shadowCount=shadow.actualCount;
+ assert(shadowCount==ref.count&&numel(shadow.rgbPercent)==3*shadowCount&&string(shadow.sourceProfileSHA256)==string(status.profileSHA256),'inkprof:Continuation','Invalid shadow patch identity.');
+ if shadowCount>0,shadow.rgbPercent=reshape(shadow.rgbPercent,shadowCount,3);end
+end
 n=numel(p.candidates);patches=roles.patches;definitionIds=str2double(string({patches.definitionId}));
 assert(numel(unique(definitionIds))==numel(patches)&&isequal(sort(definitionIds),1:numel(patches)),'inkprof:Continuation','Invalid definition identity mapping.');
 v=inkprof.cgatsData(inkprof.importCgats(fullfile(base,'profiling.ti3')),RGBScale=100);
@@ -51,8 +59,11 @@ for k=1:numel(patches)
  if id<=n
   expected="fit";if n>=10&&mod(id,5)==0,expected="adaptive_holdout";end
   assert(string(q.role)==expected&&max(abs(rgb-double(p.candidates(id).rgbPercent(:)')))<=1e-4,'inkprof:Continuation','New patch role/RGB changed.');
- elseif ~isempty(c2)&&id>numel(patches)-numel(c2.patches)
-  ci=id-(numel(patches)-numel(c2.patches));
+ elseif shadowCount>0&&id>numel(patches)-shadowCount
+  si=id-(numel(patches)-shadowCount);
+  assert(string(q.role)=="fit"&&max(abs(rgb-double(shadow.rgbPercent(si,:))))<=1e-4,'inkprof:Continuation','Shadow patch role/RGB changed.');
+ elseif ~isempty(c2)&&id>numel(patches)-shadowCount-numel(c2.patches)
+  ci=id-(numel(patches)-shadowCount-numel(c2.patches));
   expected="fit";if any(string(c2.patches(ci).role)==["repeat","paperwhite"]),expected="control";end
   assert(string(q.role)==expected&&max(abs(rgb-double(c2.patches(ci).deviceRGB16(:)')/65535*100))<=1e-4,'inkprof:Continuation','C2 verification role/RGB changed.');
  else

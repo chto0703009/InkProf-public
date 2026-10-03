@@ -28,7 +28,7 @@ def create(folder, language="sv"):
         'Aktuell profil: numeriskt kontrollerad. Tidigare utskriftsmätningar redovisas separat som historiskt underlag.']),
         ('Beslut och avsedd användning', [r['decision']['notes']]),
         ('Sparad ICC-profil', [r['profile']['file'], 'SHA-256: '+r['profile']['sha256']]),
-        ('Projekt och utskriftsinställningar', [f'{label}: {r["printing"].get(key, "Ej angivet")}' for key, label in [('printer','Skrivare'),('paper','Papper'),('paperSurface','Yta'),('ink','Bläck'),('inkType','Bläcktyp (dye / pigment)'),('printerCoating','Coating från skrivaren'),('coatingSettings','Coating – produkt och inställningar'),('media','Mediainställning'),('driver','Drivrutin'),('quality','Utskriftskvalitet'),('printPath','Utskriftsprogram'),('colorManagement','Färghantering'),('dryingHours','Torktid (timmar)'),('fwaCompensation','Kompensation för optiska vitmedel'),('settings','Övriga inställningar')]])]
+        ('Projekt och utskriftsinställningar', [f'{label}: {r["printing"].get(key, "Ej angivet")}' for key, label in [('printer','Skrivare'),('paper','Papper'),('paperSurface','Yta'),('ink','Bläck'),('inkType','Bläcktyp (dye / pigment)'),('shadowMode','Skuggläge (auto-matte gäller endast matt papper)'),('shadowPatchEmphasis','Viktning av mörka patchar'),('shadowGridEmphasis','Modellens skuggviktning'),('shadowExtraPatches','Extra skuggpatchar per iteration (begärt antal)'),('printerCoating','Coating från skrivaren'),('coatingSettings','Coating – produkt och inställningar'),('media','Mediainställning'),('driver','Drivrutin'),('quality','Utskriftskvalitet'),('printPath','Utskriftsprogram'),('colorManagement','Färghantering'),('dryingHours','Torktid (timmar)'),('fwaCompensation','Kompensation för optiska vitmedel'),('settings','Övriga inställningar')]])]
     sections[3][1].insert(0, 'Projekt-ID: '+str(r['project']['id']))
     sections[3][1].insert(1, 'Ansvarig användare: '+r['reportUser'])
     if r.get('deliveryProfile'):
@@ -71,6 +71,8 @@ def create(folder, language="sv"):
         if 'grossFailureAlerts' in data:
             lines.append('Allvarliga numeriska varningar: '+(str(data['grossFailureAlerts']) if data['grossFailureAlerts'] else 'Inga'))
         sections.append(('Numeriskt underlag: '+key, lines))
+    if r.get('shadow'):
+        sections.append(('Skugganpassning i sparat profilrecept', [r['shadow']['summaryText']]))
     if r.get('fwa'):
         sections.append(('FWA/OBA - val och resultat', [r['fwa']['summaryText']]))
     if figure_groups is not None:

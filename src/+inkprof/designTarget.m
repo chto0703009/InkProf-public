@@ -15,6 +15,10 @@ for s=labels,uilabel(settings,'Text',s);end
 name=uieditfield(settings,'text','Value','RGB-refined','Tag','designName','ValueChangedFcn',@invalidate);
 method=uidropdown(settings,'Items',{'InkProf mesh refinement','Argyll OFPS'},'ItemsData',{'mesh','argyll'}, ...
     'Value','mesh','Tag','designMethod','ValueChangedFcn',@invalidate);
+shadow=inkprof.internal.shadowSettings(struct);
+project=inkprof.internal.findProject(options.OutputFile);
+if project~="",record=jsondecode(fileread(fullfile(project,'inkprof-project.json')));shadow=inkprof.internal.shadowSettings(record.printing);end
+if shadow.enabled,method.Value='argyll';method.Enable='off';method.Tooltip='Matte shadow emphasis from Project details uses Argyll OFPS.';end
 levels=number('levels',5,2);limit=number('maxPoints',575,8);gray=number('graySteps',33,0);controls=number('controls',64,0);
 labels=["Extra repeat patches","Max interior gap (0 = off)","Initial gap ratio (0 = off)","Interior placement","",""];
 for s=labels,uilabel(settings,'Text',s);end
@@ -49,6 +53,7 @@ uilabel(root,'Text','Distances describe device RGB geometry, not measured colour
         saveHint.Text='Settings changed. Generate again, then save the new target.';
         if ~fig.UserData.busy,status.Text='Settings changed. Generate again before saving.';end
         enabled='on';if string(method.Value)=="argyll",enabled='off';end
+        if shadow.enabled,method.Enable='off';end
         placement.Enable=enabled;levels.Enable=enabled;edgeLimit.Enable=enabled;gapRatio.Enable=enabled;base.Enable=enabled;
     end
     function generate(doRefine)
@@ -60,7 +65,7 @@ uilabel(root,'Text','Distances describe device RGB geometry, not measured colour
         try
             d=inkprof.designRGBTarget(Name=string(name.Value),Method=string(method.Value),Levels=levels.Value, ...
                 MaxPoints=limit.Value,GraySteps=gray.Value,ControlCount=controls.Value,RepeatCount=repeats.Value, ...
-                MaxEdge=edgeLimit.Value,GapRatio=gapRatio.Value,InteriorPlacement=string(placement.Value),Refine=doRefine,Progress=@progress);
+                MaxEdge=edgeLimit.Value,GapRatio=gapRatio.Value,InteriorPlacement=string(placement.Value),Refine=doRefine,ShadowEmphasis=1+double(shadow.enabled)*(shadow.patchEmphasis-1),Progress=@progress);
             fig.UserData.design=d;fig.UserData.saved=[];
             render(d);
             suggest=regexprep(char(d.name),'[^a-zA-Z0-9_-]','-');
@@ -73,6 +78,7 @@ uilabel(root,'Text','Distances describe device RGB geometry, not measured colour
         if fig.UserData.closePending,delete(fig);return;end
         fig.UserData.busy=false;cancel.Enable='off';refine.Enable='on';for k=1:numel(inputs),set(inputs{k},'Enable','on');end
         enabled='on';if string(method.Value)=="argyll",enabled='off';end
+        if shadow.enabled,method.Enable='off';end
         placement.Enable=enabled;levels.Enable=enabled;edgeLimit.Enable=enabled;gapRatio.Enable=enabled;base.Enable=enabled;
     end
     function yes=progress(s)

@@ -29,6 +29,17 @@ roles.patches(end+1)=q;inkprof.internal.writeJson(rolefile,roles);
 r=jsondecode(fileread(m));r.data.ids(end+1)={char("13")};r.data.locations(end+1)={char("A13")};r.data.rgb(end+1,:)=[100 0 0];inkprof.internal.writeJson(m,r);
 p=inkprof.internal.refinementContinuationPlan(f,m);
 verifyEqual(tc,p.verificationCount,1);verifyEqual(tc,p.newFitCount,9);verifyTrue(tc,any(p.fitIds=="13"));
+% Append one authenticated shadow fitting patch after the C2 subset.
+shadowFile=fullfile(f,'refinement-print','shadow-patches.json');
+inkprof.internal.writeJson(shadowFile,struct('actualCount',1,'rgbPercent',[2 3 4],'sourceProfileSHA256',inkprof.internal.sha256(profile)));
+proposal=jsondecode(fileread(fullfile(f,'proposal.json')));
+proposal.print.shadow=struct('file',"refinement-print/shadow-patches.json",'sha256',inkprof.internal.sha256(shadowFile),'count',1);
+inkprof.internal.writeJson(fullfile(f,'proposal.json'),proposal);
+q.definitionId="14";q.sampleId="14";q.rgbPercent=[2;3;4];q.placement.location="A14";
+roles.patches(end+1)=q;inkprof.internal.writeJson(rolefile,roles);
+r.data.ids(end+1)={char("14")};r.data.locations(end+1)={char("A14")};r.data.rgb(end+1,:)=[2 3 4];inkprof.internal.writeJson(m,r);
+p=inkprof.internal.refinementContinuationPlan(f,m);
+verifyEqual(tc,p.newFitCount,10);verifyTrue(tc,any(p.fitIds=="14"));
 roles.patches(end).role="final_holdout";inkprof.internal.writeJson(rolefile,roles);
 verifyError(tc,@()inkprof.internal.refinementContinuationPlan(f,m),'inkprof:Continuation');
 end

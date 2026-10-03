@@ -30,6 +30,10 @@ if isfield(s,'projectPrinting')&&s.projectPrinting
  for control={name,description,mode,b2a},control{1}.Tooltip='Managed in Project details > Profiling';end
 end
 info=uitextarea(g,'Editable','off','Value',splitlines(sprintf('Locked patches: %d | Spectra: %d | XYZ: %d\nM0/M1/M2 is the measurement condition, not the integration illuminant.\nStored XYZ is used unchanged; its reference must be reviewed before building.\nUnknown printing settings remain unknown. No ICC is generated here.',input.patchCount,hasSpectra,hasXYZ)));info.Layout.Column=[1 2];
+shadow=inkprof.internal.shadowSettings(s.printing);
+if shadow.enabled
+ info.Value=[string(info.Value);sprintf('Matte shadows: patch emphasis %.2g; grid emphasis %.2g; up to %d extra iteration patches. Managed in Project details > Profiling.',shadow.patchEmphasis,shadow.gridEmphasis,shadow.extraPatches)];
+end
 condition=uitextarea(g,'Editable','off','Value',splitlines(string(jsonencode(input.measurementCondition,PrettyPrint=true))));condition.Layout.Column=[1 2];
 uibutton(g,'Text','Save recipe','Tag','SaveProfileRecipe','ButtonPushedFcn',@saveRecipe);
 uibutton(g,'Text','Cancel','Tag','CancelProfileRecipe','ButtonPushedFcn',@cancel);

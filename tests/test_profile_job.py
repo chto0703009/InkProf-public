@@ -85,6 +85,20 @@ class JobTests(unittest.TestCase):
                 self.assertEqual(r['status'],'failed' if tamper else 'succeeded')
                 if tamper:self.assertFalse((p/'work').exists())
 
+    def test_matte_shadow_arguments(self):
+        for value in (1.3, 4):
+            with tempfile.TemporaryDirectory() as d:
+                p=self.prepare(d); recipe=json.loads((p/'recipe.json').read_text())
+                recipe['printing']['paperSurface']='Matte'
+                recipe['engine']['shadow']={'enabled':True,'gridEmphasis':value}
+                recipe['engine']['plannedArguments'] += ['-Z','m','-V',format(value,'.17g')]
+                (p/'recipe.json').write_text(json.dumps(recipe))
+                req=json.loads((p/'request.json').read_text())
+                req['files']['recipe.json']=hashlib.sha256((p/'recipe.json').read_bytes()).hexdigest()
+                (p/'request.json').write_text(json.dumps(req)); r=self.execute(p)
+                self.assertEqual(r['status'],'succeeded' if value==1.3 else 'failed')
+                if value==1.3:self.assertIn('-V',r['arguments'])
+
     def test_failure(self):
         with tempfile.TemporaryDirectory() as d:
             p=self.prepare(d,'fail');r=self.execute(p);self.assertEqual(r['status'],'failed');self.assertEqual(r['exitCode'],7);self.assertFalse((p/'result').exists())

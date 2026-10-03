@@ -83,6 +83,12 @@ def run(folder):
             args += ['-bh' if b2a == 'high' else '-bm']
         args += ['-D', recipe['description']]
         if recipe['printing'].get('paperSurface') == 'Matte': args += ['-Z', 'm']
+        shadow = recipe['engine'].get('shadow', {})
+        if shadow.get('enabled', False):
+            emphasis = shadow.get('gridEmphasis')
+            if recipe['printing'].get('paperSurface', '').lower() != 'matte' or isinstance(emphasis, bool) or not isinstance(emphasis, (int, float)) or not math.isfinite(emphasis) or not 1 <= emphasis <= 3:
+                raise ValueError('Invalid matte shadow emphasis.')
+            args += ['-V', format(emphasis, '.17g')]
         if args != recipe['engine']['plannedArguments']:
             raise ValueError('Recipe planned arguments differ from implemented settings.')
         exe = str(Path(request['executable']).resolve())

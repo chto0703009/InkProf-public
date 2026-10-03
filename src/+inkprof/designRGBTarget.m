@@ -14,6 +14,7 @@ arguments
     options.GapRatio (1,1) double {mustBeNonnegative,mustBeFinite} = 0
     options.Refine (1,1) logical = true
     options.ArgyllBin (1,1) string = ""
+    options.ShadowEmphasis (1,1) double {mustBeFinite,mustBeGreaterThanOrEqual(options.ShadowEmphasis,1),mustBeLessThanOrEqual(options.ShadowEmphasis,4)} = 1
     options.Progress (1,1) function_handle = @(~)true
 end
 assert(strlength(strtrim(options.Name))>0,'inkprof:Design','Enter a target name.');
@@ -46,6 +47,7 @@ else
     bin=inkprof.internal.argyllBin(options.ArgyllBin);suffix="";if ispc,suffix=".exe";end
     exe=fullfile(bin,"targen"+suffix);
     args=["-d2","-e1","-B1","-g"+options.GraySteps,"-m2","-f"+budget,"design"];
+    if options.ShadowEmphasis>1,args=[args(1:end-1),"-A1","-V"+options.ShadowEmphasis,args(end)];end
     log=inkprof.internal.runTool(exe,args,w,300);
     versionInfo=inkprof.internal.runTool(exe,"-?",w,30,true);log.version=versionInfo.output;
     target=inkprof.importTarget(fullfile(w,'design.ti1'));
