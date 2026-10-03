@@ -105,3 +105,9 @@ Record clear coating applied by the printer in **Project details > Printing sett
 The source of truth is `printing.printerCoating` and `printing.coatingSettings` in `inkprof-project.json`. New projects default to unknown; older projects without these fields do not imply that coating was disabled. The profiling recipe reads these fields from the project and does not provide a second editable copy. Both certificate export paths include the recorded settings.
 
 Record the setting actually used for the measured print targets. A correction to project printing details invalidates dependent profiling results through the existing workflow rules. Changing the physical coating setup calls for a new project and targets printed and measured with that setup. Recording coating does not apply a numerical correction to existing measurements or control the printer. Previously exported certificates are not rewritten automatically.
+
+## Ink type
+
+**Project details > Project and materials > Ink type** records `Dye`, `Pigment`, `Mixed`, `Other` or `unknown` in `printing.inkType`. Use **Ink / ink set** to specify the actual product and channels, especially for mixed sets. The ink type is separate from printer-applied coating and paper finish. It is not inferred from the printer model or brand.
+
+The profiling recipe reads the project value; both PDF and HTML measurement certificates include it in the printing conditions. Existing projects without the field remain unspecified. Recording the type does not alter measured spectra. Corrections use the normal project invalidation rules; a physically different ink setup requires a new project and matching measurements. Export certificates again to include updated project information.

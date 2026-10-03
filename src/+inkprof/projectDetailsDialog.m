@@ -17,7 +17,7 @@ uilabel(g,'Text','Maximum measurement sweep (mm)');scanLimit=uieditfield(g,'nume
 uilabel(g,'Text','Maximum target length (mm)');lengthLimit=uieditfield(g,'numeric','Value',prefs.MaxLengthMm,'Limits',[65 Inf]);
 uilabel(g,'Text','Roll width (mm)');rollWidth=uieditfield(g,'numeric','Value',prefs.RollWidthMm,'Limits',[65 Inf]);
 help=uilabel(g,'Text','Editable suggestions compare A5–A3+ sheets, cut pieces and roll feed for the actual patch count. These limits include margins. Changes apply to future targets; existing targets and measurements are preserved.','WordWrap','on');help.Layout.Column=[1 2];
-g=uigridlayout(general,[9 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,40,90,'1x'};g.Padding=[20 16 20 16];
+g=uigridlayout(general,[10 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,32,40,90,'1x'};g.Padding=[20 16 20 16];
 name=field('Project name','projectName',value(record,'name','New project'));
 user=field('User','projectUser',value(record,'user',string(java.lang.System.getProperty('user.name'))));
 printer=field('Printer','projectPrinter',value(printing,'printer','unknown'));
@@ -27,6 +27,12 @@ items=["unknown","Glossy","Matte","Other"];
 finish=value(printing,'paperSurface',value(printing,'finish','unknown'));if ~any(items==finish),items(end+1)=finish;end
 surface=uidropdown(g,'Items',cellstr(items),'Value',char(finish),'Tag','projectFinish');
 ink=field('Ink / ink set','projectInk',value(printing,'ink','unknown'));
+uilabel(g,'Text','Ink type');
+inkTypeValue=value(printing,'inkType','unknown');
+inkTypes=["unknown","Dye","Pigment","Mixed","Other"];if ~any(inkTypes==inkTypeValue),inkTypes(end+1)=inkTypeValue;end
+inkType=uidropdown(g,'Items',cellstr(inkTypes),'Value',char(inkTypeValue),'Tag','projectInkType');
+inkType.Tooltip='Dye-based, pigment-based or a mixed ink set. Record the ink actually used; use Ink / ink set for product and channel details.';
+
 uilabel(g,'Text','FWA / OBA');
 fwa=uicheckbox(g,'Text','Compensate optical brighteners (D50)', ...
  'Value',isfield(printing,'fwaCompensation')&&isequal(printing.fwaCompensation,true),'Tag','projectFWA');
@@ -84,7 +90,7 @@ clear cleanup
         updated.paperSurface=string(surface.Value);
         updated.fwaCompensation=logical(fwa.Value);
         if isfield(updated,'finish'),updated=rmfield(updated,'finish');end
-        updated.ink=string(ink.Value);updated.media=string(media.Value);updated.printPath=string(printPath.Value);
+        updated.ink=string(ink.Value);updated.inkType=string(inkType.Value);updated.media=string(media.Value);updated.printPath=string(printPath.Value);
         hours=strtrim(string(drying.Value));
         if hours~="unknown"&&(isnan(str2double(hours))||~isfinite(str2double(hours))||str2double(hours)<0)
             uialert(fig,'Enter a nonnegative drying time in hours, or unknown.','Project details');return

@@ -37,7 +37,7 @@ if project~=""
  printing=manifest.printing;projectPrinting=true;
 end
 for key=string(fieldnames(options.Printing))',printing.(key)=options.Printing.(key);end
-for key=["printer","paper","paperSurface","media","quality","driver","printPath","colorManagement","dryingHours","printerCoating","coatingSettings"]
+for key=["printer","paper","paperSurface","inkType","media","quality","driver","printPath","colorManagement","dryingHours","printerCoating","coatingSettings"]
  if ~isfield(printing,key),printing.(key)="unknown";end
  if isfield(options.Printing,key),printing.(key)=options.Printing.(key);end
 end
