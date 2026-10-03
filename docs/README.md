@@ -1,8 +1,10 @@
 # InkProf documentation — v1.0.0RC1
 
-Source version **1.0.0-rc.1**, updated 2026-10-03. Start with the [complete app workflow](usage/workflow-v1.0.md). App labels are English; the handbook is Swedish and the presentations/workflow PDFs are available in both languages.
+Source version **1.0.0-rc.1**, updated 2026-10-03. Start with the [complete app workflow](usage/workflow-v1.0.md). App labels are English; the handbook, presentations and workflow PDFs are available in Swedish and English.
 
 ## PDF guides
+
+- [English user handbook](usage/InkProf-user-handbook-English.pdf)
 
 - [InkProf-anvandarhandbok](usage/InkProf-anvandarhandbok.pdf)
 - [InkProf-presentation-English](usage/InkProf-presentation-English.pdf)

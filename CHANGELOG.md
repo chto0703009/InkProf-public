@@ -1,5 +1,9 @@
 # Changelog
 
+## Documentation supplement — 2026-10-03
+
+- Complete 20-page English user handbook, translated diagrams/tables and reproducible bilingual PDF builder. Added as an RC1 documentation asset without changing the source tag.
+
 ## v1.0.0RC1 — public release candidate (1.0.0-rc.1, 2026-10-03)
 
 - External ICC verification: balanced photographic patch selection with reserved skin tones and shadows, distributed neutrals/challenges, and recorded selection quotas; existing targets remain unchanged.

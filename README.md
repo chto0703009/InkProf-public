@@ -53,6 +53,8 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
+- [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
+
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
 - [Swedish presentation (PDF)](docs/usage/InkProf-presentation.pdf)

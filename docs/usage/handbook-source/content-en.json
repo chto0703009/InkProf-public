@@ -1,0 +1,717 @@
+[
+  {
+    "title": "From image to a reliable colour workflow",
+    "tag": "USER HANDBOOK | v1.0.0RC1",
+    "sections": [
+      [
+        "The image should reach the paper",
+        "For the photographer, the aim is for the carefully crafted image to come into its own in print. A clear, well-controlled workflow helps the photographer, printing business and client understand the result and work towards the same goal."
+      ],
+      [
+        "Less time and material wasted",
+        "For a printing business, documented settings and regular checks provide a stronger basis for consistent deliveries. Finding and understanding errors early reduces the need to make new prints and the extra working time, paper and ink they consume."
+      ],
+      [
+        "Transparency makes colour understandable",
+        "InkProf brings colour targets, spectral measurements, ICC profiles and decisions together in one project. Open source and a traceable workflow reveal how results were produced. This makes it easier to understand difficult colours and work right up to the limits of the chosen printer, paper and ink."
+      ],
+      [
+        "How this handbook helps",
+        "This handbook explains the main window, dialogs and all 19 rows of the profiling workflow. Button names and explanations are in English. It describes 1.0.0-rc.1, the release candidate for v1.0.0 dated 3 October 2026. The current online usage guides supplement this handbook, including the separate existing-ICC verification workflow."
+      ],
+      [
+        "The three parts of the work",
+        "First, document and measure the printer. Next, build and check a profile. Finally, verify a print or document an explicitly limited numerical decision. If needed, another iteration adds more measurements."
+      ]
+    ],
+    "lead": "InkProf - When colours have to be right",
+    "callout": "InkProf saves TIFF16 for separate printing. Measurement, profile building, analysis and documentation are part of the app workflow. Print using your usual printing application."
+  },
+  {
+    "title": "Find your way through the workflow",
+    "tag": "OVERVIEW",
+    "sections": [
+      [
+        "Reading the status",
+        "Ready means the step can be run. Complete means its recorded requirements have been met. Locked means a required input is missing. Stale means an input has changed and the result needs updating. Simply opening and closing a dialog does not complete a step."
+      ],
+      [
+        "There is more than one route",
+        "B2 is needed for the manual profiling route. The profile comparison on row 18 supports your decision. Row 19 is a separate option when the current iteration has been checked numerically but has not been verified by a separate print and measurement."
+      ]
+    ],
+    "lead": "The row number on the left and the internal step identifier are different things. This handbook uses row numbers to help you find the step in the app.",
+    "rows": [
+      [
+        "Row",
+        "Step in the app",
+        "Purpose / further reading"
+      ],
+      [
+        "1-2",
+        "Create / import RGB target; Save TIFF16",
+        "Base target and print file. Page 6."
+      ],
+      [
+        "3-4",
+        "Measure / select measurement revision; Review and accept measurement",
+        "Measure, choose a saved revision and review it. Pages 7-8."
+      ],
+      [
+        "5-7",
+        "B1. Lock profiling inputs; B2. Create recipe; B3. Build ICC",
+        "Lock inputs, choose a recipe and build a profile. Page 9."
+      ],
+      [
+        "8",
+        "C1. Fit, Grid and C1",
+        "Numerical checks. Page 10."
+      ],
+      [
+        "9-10",
+        "C2. Save verification target; Measure / select verification revision",
+        "Print and measure a verification target. Page 11."
+      ],
+      [
+        "11-12",
+        "C3. Compare model and print; Review feedback",
+        "Assess the actual print and feedback. Page 11."
+      ],
+      [
+        "13-14",
+        "Approve for intended use; Save ICC and measurement certificate",
+        "Decision and delivery after verification. Page 12."
+      ],
+      [
+        "15-17",
+        "Save refinement TIFF16; Measure refinement; Build next iteration",
+        "New colour patches and a new profile. Pages 13-14."
+      ],
+      [
+        "18",
+        "Compare with previous iteration",
+        "Compare profiles on a common basis. Page 15."
+      ],
+      [
+        "19",
+        "Save ICC + measurement certificate without print verification",
+        "A limited decision without another verification print. Page 16."
+      ]
+    ]
+  },
+  {
+    "title": "The main window",
+    "tag": "THE APP HUB",
+    "sections": [
+      [
+        "Projects and resuming work",
+        "New project creates a project. Open project opens an existing one, including after the app has been closed while prints dry. Project details collects user, material and settings information. The project name and current path appear in the main window."
+      ],
+      [
+        "Running steps and viewing results",
+        "Run selected step opens the next operation or dialog. Open selected step results shows what has already been created. Copy TIFF16 for printing… copies a saved target file for separate printing. Read the result path to make sure you use the correct target and iteration."
+      ],
+      [
+        "History and checks",
+        "Iteration history shows the iterations. Open results log opens the work log. Verify project checks the registered files and project integrity. Refresh reloads the current state; it does not replace Save, Accept or explicit approval in a dialog."
+      ],
+      [
+        "Reports, views and closing",
+        "Open report opens an available report; the label may refer to the certificate. View 3D shows available colour points. View gamut shows a separate ICC-derived 3D surface. Close app provides an explicit way to exit. First finish any active dialog using its intended save or cancel button."
+      ]
+    ],
+    "lead": "First select a row in the table. Read the description and saved results before choosing Run selected step.",
+    "diagram": true
+  },
+  {
+    "title": "The project remembers your work",
+    "tag": "NEW PROJECT / OPEN PROJECT",
+    "sections": [
+      [
+        "Create and enter details",
+        "Choose New project and enter the name, user and project information. Project details has four tabs: Project and materials, Printing settings, Profiling and Target paper. Use Save to save. Cancel leaves the dialog without saving changes."
+      ],
+      [
+        "Project and materials",
+        "Enter Project name, User, Printer, Paper name, Paper finish, Ink / ink set and Ink type (dye/pigment/mixed/unknown). Use product names precise enough to reproduce the combination. Paper finish includes Glossy and Matte. This tab also contains the FWA / OBA optical-brightener option, explained on the next page."
+      ],
+      [
+        "Printing settings",
+        "Fill in Driver media setting, Printing application, Driver / RIP, Print quality, Colour management, Drying time (hours), Printer coating and Coating settings. Use Printer settings to describe additional choices. The workflow reads the drying time here; recording a duration does not itself establish that the sheet has dried."
+      ],
+      [
+        "Correct details or start again?",
+        "Correct typing errors in Project details. The recipe reads shared information here, and shared project information is edited here. A later FWA choice also updates the project. If the printer, paper, ink or printing conditions will actually form a different combination, a new project is clearer. Follow the app requirements to repeat steps when inputs change."
+      ],
+      [
+        "Rename and move",
+        "Changing the project name in the app also renames its folder. If the folder is renamed outside the app, the app can detect the difference and ask you to confirm the intended name. Move the entire project folder to another computer and open it there. Do not copy only workflow.json or a single ICC file if you want to preserve the complete workflow."
+      ],
+      [
+        "What is saved?",
+        "Project JSON files track identity, settings, steps and iterations. The results log is available as readable text and JSONL, with one log entry per line. Raw data and generated results are linked to each operation. Checksums help the app detect changed inputs."
+      ]
+    ],
+    "lead": "A project is a separate folder that keeps settings, files, measurements and history together.",
+    "callout": "Pausing while prints dry: finish saving the current step, close the app and reopen the same project when the sheets are ready. Do not create a new project to continue the same measurement session."
+  },
+  {
+    "title": "Profile and measurement conditions",
+    "tag": "PROJECT DETAILS",
+    "sections": [
+      [
+        "Profiling",
+        "Profile name and Description describe the profile. Colour data can be Spectra (D50 / 2 degrees) or Stored XYZ. Spectral data allow recalculation from measured spectra. Stored XYZ preserves the stored colour values. Inverse table (B2A) offers High (denser) or Medium (baseline). A denser table is a calculation setting, not proof of better printing."
+      ],
+      [
+        "D50 and D65",
+        "D50 is the reference illuminant for spectral profiling in the app, together with the two-degree standard observer. D65 is another daylight reference. Assess colour under documented viewing conditions and do not mix comparisons using different illuminants. The current Profiling tab has no separate D65 option; Spectra explicitly specifies D50."
+      ],
+      [
+        "Optical brighteners: FWA / OBA",
+        "FWA and OBA refer to fluorescent or optical brightening agents in paper. Compensate optical brighteners (D50) requests compensation. It requires spectral M0 measurements, a known instrument and a paper-white patch. This models D50 illumination; it does not turn the measurement into a physical M1 measurement."
+      ],
+      [
+        "Change FWA after measurement",
+        "The option can be changed later. Raw measurements are preserved, but the profile must be rebuilt and checks repeated. Follow the steps that the app marks as stale. Read reports in terms of the compensation actually used to build the profile, not just a checkbox in the project."
+      ],
+      [
+        "Black point compensation: BPC",
+        "Black point compensation maps the black point between colour spaces. It is off in the controlled comparisons described here so that the calculation conditions remain explicit. BPC off describes a condition; it is not an error message."
+      ],
+      [
+        "Computer and instrument",
+        "MATLAB provides the app interface. Python, ArgyllCMS and LittleCMS are used for underlying calculations and tools. Tool paths depend on the computer and must work on the current machine. Check the installation even when the project folder is complete. The program has been tested on macOS. Windows and Linux are not verified environments for the complete InkProf workflow."
+      ]
+    ]
+  },
+  {
+    "title": "Base target and TIFF16",
+    "tag": "ROWS 1-2 / PAPER DIALOG",
+    "sections": [
+      [
+        "Row 1: create or import",
+        "Run Create / import RGB target. Create a target using the dialog options or import compatible existing RGB data. Patch count and identity must remain consistent through layout, printing and measurement. The visual appearance of a target is not enough to identify its measurement definition."
+      ],
+      [
+        "Row 2: save the print file",
+        "Run Save TIFF16 and choose a layout. The app saves a 16-bit TIFF with matching target and layout information. Check page count, patch count and the recorded file path in the result. TIFF16 is the print deliverable; InkProf does not send the job to the printer."
+      ],
+      [
+        "Target paper and the measurement sled",
+        "In Project details, Maximum measurement sweep (mm) sets the greatest width of a sweep. Maximum target length (mm) limits the other target dimension. Roll width (mm) sets the roll width. Limits include margins and are saved in project JSON. Adapt them to your equipment; they are not universal instrument dimensions."
+      ],
+      [
+        "Editable paper suggestions",
+        "Paper planning compares sheets from A5 to A3+, cut pieces and roll feed for the current patch count. You can change the suggestion. A smaller refinement target can therefore use a smaller format. Check that the chosen piece fits the printer and can pass through the measurement equipment."
+      ],
+      [
+        "Print and allow to dry",
+        "Copy the target with Copy TIFF16 for printing… if needed. Print at 100% size without automatic fit-to-page scaling. Use the documented materials and driver settings. For an unconverted base target, no additional profile conversion should change the intended RGB values. Save the print settings and follow the project drying time."
+      ],
+      [
+        "Find the right row when measuring",
+        "Use row and position labels to orient the sheet. Labels on both sides make scanning easier. A previously exported TIFF does not change when the program code is updated; inspect the actual file you will print."
+      ]
+    ],
+    "lead": "A base target defines the RGB values the printer should reproduce. The printed and measured version becomes the input for profiling.",
+    "callout": "Why this step matters: incorrect scale, colour management or paper settings can produce measurements that do not describe the printer combination you intend to profile."
+  },
+  {
+    "title": "The measurement window",
+    "tag": "ROW 3 / MEASURE CHART",
+    "sections": [
+      [
+        "Before starting",
+        "Choose Measure / select measurement revision. In the measurement window, check Chart (TI2), Scan mode, Scan tolerance, Instrument port and Measurement condition. The target file must match the printed sheet. Instrument port 0 means the default selection."
+      ],
+      [
+        "Start and calibrate",
+        "Start measurement begins the measurement. Follow the status instructions and use the instrument calibration reference when calibration is requested. Calibrate controls the calibration stage. Use Page loaded when the next page is in place. The log shows instrument messages."
+      ],
+      [
+        "Scan and retry",
+        "Single direction, Alternate rows and Forward + reverse average describe different scanning patterns. Follow the chosen mode. Reread / retry repeats a reading. Accept reading accepts it when requested. Previous row, Next row and Next unread help you navigate. Use the sheet labels and status instructions, not only letter codes in the log."
+      ],
+      [
+        "Finish with a saved result",
+        "Save and finish ends the session and saves the collected measurement. Open results folder shows the results folder. Close/cancel cancels the dialog. Read the app result afterwards and check that a saved measurement revision really exists."
+      ],
+      [
+        "Measurement conditions and instrument identity",
+        "The window distinguishes conditions including M0 for i1Pro 2 without a UV filter and an unspecified instrument-default mode. Do not specify M1 or M2 unless the instrument workflow actually provides it. Model and serial number are read from instrument output when available; do not replace unknown details with assumptions."
+      ],
+      [
+        "If the first connection fails",
+        "For some early startup failures, the measurement workflow can make limited retry attempts. This is not the same as a full hardware reset. If an error persists, cancel cleanly, read the log and check the connection and whether another program is using the instrument. Then start measurement again."
+      ]
+    ],
+    "lead": "Measurements use a spectrometer supported by the measurement workflow. Instrument calibration and the correct target-file association are essential."
+  },
+  {
+    "title": "Revisions, review and remeasurement",
+    "tag": "ROWS 3-4 / SAVED REVISIONS",
+    "sections": [
+      [
+        "Saved revisions: select the saved input",
+        "After measurement or import, the revision selector lists available saved measurements. Identify the correct session by date, target and coverage. Use revision makes the selected revision the workflow input. Check which revision is now shown as being used."
+      ],
+      [
+        "Row 4: review and accept",
+        "Review and accept measurement opens the measurement overview and associated assessment. Review missing values, obvious deviations and patches needing attention. Enter relevant notes and finish using the explicit acceptance action. Closing the preview is not approval."
+      ],
+      [
+        "When a patch needs remeasurement",
+        "Use the patch coordinate and ID to find the same patch on the correct sheet. Remeasure through the associated measurement/review function, save the new revision and select it for further work. Review again if the app requires it. A small change is still a measurement result; its size does not tell you whether the revision was saved."
+      ],
+      [
+        "Absolute colour and change are different",
+        "Measured Lab describes the colour itself through L*, a* and b*. The change between two measurements describes how those values changed. ΔE00 summarises the colour difference. Read the label before interpreting a number as a new absolute value, a component change or an overall colour difference."
+      ],
+      [
+        "Changed measurements affect the workflow",
+        "Using a new revision can make locked inputs, the profile, checks and approval stale. This is intentional: the finished profile must be traceable to the measurement actually used. Earlier revisions provide history but do not replace updating dependent steps."
+      ]
+    ],
+    "lead": "A measurement displayed on screen is not automatically the revision used for profiling.",
+    "callout": "Always check three things: has the remeasurement been saved, is the new revision selected, and has the review been accepted? Refresh can show the current state but does not perform these actions."
+  },
+  {
+    "title": "Build an ICC candidate",
+    "tag": "ROWS 5-7 / B1, B2 AND B3",
+    "sections": [
+      [
+        "Row 5: B1. Lock profiling inputs",
+        "B1 locks the selected, reviewed measurement together with the necessary target and project information. This creates a traceable starting point so that profile building does not accidentally mix revisions. Repeat the step when the app indicates that the inputs have become stale."
+      ],
+      [
+        "What is a RoleFile?",
+        "A role file describes how patches should be used, for example for training, control or reserved assessment. If the dialog offers No separate role file and you do not have a purpose-made role file, choose that option. Do not invent roles or select an unrelated file. For app-generated refinement targets, role associations are part of the saved evidence."
+      ],
+      [
+        "Row 6: B2. Create recipe",
+        "The manual route uses Profiling recipe. Review the profile name, description, colour data and table quality, together with printing details read from Project details. Shared project information has a single source so that the recipe and project do not describe different printing conditions."
+      ],
+      [
+        "Row 7: B3. Build ICC / automatic iteration",
+        "Choose the offered profiling route. Manual profile building requires the B2 recipe. The automatic route uses its available candidate and iteration inputs. Activity is displayed during calculation; allow the process to finish and read the result or any error message."
+      ],
+      [
+        "What is saved when it finishes?",
+        "The project contains the ICC candidate linked to locked inputs and the profiling job. This is the internal working copy. Later export creates a separate delivery copy with the chosen name and location."
+      ],
+      [
+        "Why is creating an ICC file not enough?",
+        "A successful build shows that a profile could be calculated. It does not by itself show how a new print will turn out. Numerical checks follow, and the full verification route also requires a separate verification print and measurement."
+      ]
+    ],
+    "lead": "An ICC profile describes the relationship between printer RGB values and the colours reproduced. The candidate then needs to be checked."
+  },
+  {
+    "title": "Understand the numerical checks",
+    "tag": "ROW 8 / C1. FIT, GRID AND C1",
+    "sections": [
+      [
+        "Distinguish the error measures",
+        "ΔE00 measures colour difference using CIEDE2000. RGB deviation in percentage points describes a difference in device values. A small difference between two calculation engines can coexist with a larger difference between desired and printed colour. These measures answer different questions."
+      ],
+      [
+        "Is a large step a discontinuity?",
+        "A steep transition or interpolation knot is not itself proof of a discontinuity. Investigate several step sizes and neighbouring samples. Finite numerical sampling cannot prove continuity throughout the colour space."
+      ],
+      [
+        "Next action",
+        "Open the saved check results. Read any warnings and their supporting evidence. Continue with C2 to check a print, or later use the explicitly limited numerical delivery route if that is your documented decision."
+      ]
+    ],
+    "lead": "These checks examine the calculated model and its tables before you assess an actual verification print.",
+    "rows": [
+      [
+        "Item",
+        "What it helps you understand"
+      ],
+      [
+        "Fit",
+        "How closely the model agrees with the measurement data used for comparison. Training data are not an independent verification print."
+      ],
+      [
+        "Grid",
+        "Profile behaviour on a chosen calculation grid. Denser sampling can reveal detail but remains a numerical investigation."
+      ],
+      [
+        "Forward and inverse",
+        "Forward calculates colour from RGB. Inverse calculates RGB for a desired colour. Results from different engines can be compared."
+      ],
+      [
+        "Local probes and ramps",
+        "How RGB or colour changes with small perturbations and along transitions. Strong changes need to be interpreted in context."
+      ],
+      [
+        "Mean, median, P95, max",
+        "Average, middle value, 95th percentile and greatest deviation. Read both typical behaviour and individual extremes."
+      ]
+    ],
+    "callout": "A small numerical deviation is not the same as a small print deviation. Always distinguish calculated results from what was actually measured on paper."
+  },
+  {
+    "title": "Check the actual print",
+    "tag": "ROWS 9-12 / C2, C3 AND FEEDBACK",
+    "sections": [
+      [
+        "Row 9: save the verification target",
+        "C2. Save verification target as TIFF16 creates a verification target for the current candidate. Verification colours are associated with desired references and the printer values calculated by the profile. Save or copy the TIFF16, print separately and allow the sheet to dry under the project conditions."
+      ],
+      [
+        "Avoid double profile conversion",
+        "The C2 target contains the printer values calculated by the workflow. Do not apply another ICC conversion to the same target in the printing application. Check colour management throughout the print path and retain the same materials, quality and media setting documented in the project."
+      ],
+      [
+        "Row 10: measure and select a revision",
+        "Measure / select verification revision uses the verification target definition. Measure, save and select the correct revision just as for the base measurement. A target from an earlier ICC candidate does not automatically verify the new candidate."
+      ],
+      [
+        "Row 11: C3. Compare model and print",
+        "The comparison distinguishes Measured vs desired from Model vs measurement, which compares the profile prediction with the measured colour. Inspect both summaries and individual patches. Large errors for difficult colours may reflect the material gamut; large model errors provide a different reason to investigate measurement, printing and the model."
+      ],
+      [
+        "Row 12: Review feedback",
+        "Open and read the feedback, then document your assessment using the intended completion action. A remaining Ready status may mean you only viewed the result. Go back and check that the assessment was actually saved."
+      ],
+      [
+        "What does not approved mean?",
+        "A statement that colour management or acceptance criteria are unverified means the result does not yet have a documented approval decision. It does not by itself mean measurement failed. Read the available evidence and outstanding requirements before choosing the intended use."
+      ]
+    ],
+    "callout": "A high Measured vs desired but low Model vs measurement may suggest that the model predicts the limitation reasonably well. A large model error warrants closer review. Neither case establishes the cause without further evidence."
+  },
+  {
+    "title": "Decision, ICC and certificate",
+    "tag": "ROWS 13-14 / VERIFIED ROUTE",
+    "sections": [
+      [
+        "Row 13: Approve for intended use",
+        "Open the current check results before approving. Describe how the profile will be used and why the evidence is sufficient for that purpose. Complete the required fields and confirmation, then save the decision. Merely typing accept into text that is not saved does not complete the step."
+      ],
+      [
+        "When approval becomes stale",
+        "Changes to the ICC, inputs or checks may mark approval as stale. Read which dependency changed and update the required steps. An old decision must not simply carry over to a new profile."
+      ],
+      [
+        "Row 14: choose what to save",
+        "Use Save ICC and measurement certificate for delivery. The profile already exists as a working result in the project. The ICC file chooser concerns the separate copy you want to use or hand over. Choose a destination and check the filename."
+      ],
+      [
+        "Profile names in files and image applications",
+        "The export name follows the project name and date, for example MyProject_261003.icc. During export, the internal profile description is adapted to the delivery name so it is recognisable in applications such as Photoshop. Renaming the file later in Finder does not automatically change its internal ICC description."
+      ],
+      [
+        "Certificate contents",
+        "The measurement certificate describes the project, materials, printing conditions, profile and check results. It should identify the iteration, the measurements supporting it and how FWA was handled. Instrument identity is reported when available. Report colour patches are screen previews, not substitutes for the original print."
+      ],
+      [
+        "Where are reports saved?",
+        "The project retains its results. External delivery saves the report and supporting files in a common report folder. Move the entire folder for the HTML version. The PDF can be opened separately. Use the recorded path and Open report to find the project report."
+      ]
+    ],
+    "callout": "The PDF certificate includes a date and space for a handwritten signature. Legal text is placed in an appendix after the signing section so that results and decisions can be read together."
+  },
+  {
+    "title": "Select new colour patches",
+    "tag": "ROW 15 / ERRORS OR IMAGE",
+    "sections": [
+      [
+        "From verification errors",
+        "From verification errors uses available verification and feedback. Describe why you want to continue. A request for a reason does not mean the app has proved another iteration would be useless; it documents your decision."
+      ],
+      [
+        "From an image",
+        "From image extracts representative colours from an RGB image. Choose an image with an embedded ICC profile. If it has none, the app warns you and offers Use sRGB, Choose another image or Cancel. sRGB is then an explicit, recorded assumption. The original image is not changed."
+      ],
+      [
+        "Image region and patch count",
+        "The dialog lets you limit the image region and number of new patches. A minimum RGB distance reduces close duplicates. A neighbourhood radius can add samples around selected colours; a zero radius gives image colours without these neighbours. An image containing many similar pixels does not necessarily need as many separate patches."
+      ],
+      [
+        "Review suggestions",
+        "The selection window shows calculated measures and colour patches. The default filter is an estimated local fit deviation ΔE00 greater than 5. You can change the threshold. Only visible, selected suggestions proceed. If none appear, review the threshold and chosen measure; it is not automatically proof of perfect colour."
+      ],
+      [
+        "What does estimated error mean?",
+        "Estimated local fit uses nearby training measurements to describe local model fit. It is not a new measurement of the printed image. Model mapping ΔE00 is a different measure: the deviation in the profile’s calculated reproduction of the desired image colour. Missing evidence for a local estimate must not be interpreted as zero error."
+      ],
+      [
+        "Save the selection and choose paper",
+        "Confirm the selected patches and review the suggested paper layout. Use saved image patches can reuse a saved selection. The app saves inputs and choices for traceability. Read the patch count and TIFF path in the result before printing."
+      ]
+    ],
+    "lead": "A refinement should investigate something you want to understand or improve. It does not need to target a particular colour."
+  },
+  {
+    "title": "Measure the refinement and iterate",
+    "tag": "ROWS 15-17 / COMBINED TARGET",
+    "sections": [
+      [
+        "C2 is included until it is measured",
+        "When the current C2 verification has not yet been measured, its patches can be included with the image suggestions in the refinement target. Printing C2 is not enough to exclude it. A valid registered measurement for the current C2 determines whether it is still pending."
+      ],
+      [
+        "Patches have different roles",
+        "The combined target preserves C2 device values and references. Image suggestions and additional control patches are added. An image ΔE00 filter does not remove pending C2 patches. The total patch count may therefore exceed the number of selected image colours."
+      ],
+      [
+        "Row 16: Measure refinement",
+        "Print the correct TIFF16 and measure the combined target using its matching target file. Save and use the revision. When target and measurement are correctly linked, the same measurement can also provide C2 evidence and the C3 comparison for the preceding candidate. You should not need to measure the combined sheet twice."
+      ],
+      [
+        "C2 measurements in training",
+        "C2 colour, gray and challenge patches in the combined data may be used to train the next profile. Repeats and paper-white patches are handled as controls to prevent unintended double weighting. The saved target roles determine their use."
+      ],
+      [
+        "Row 17: Build next iteration",
+        "The next iteration uses the previous locked inputs and the new training patches specified by the saved continuation plan. The app builds a new ICC and performs associated checks. When calculation finishes, choose comparison, new physical verification or the limited delivery route on row 19."
+      ],
+      [
+        "An important boundary between training and verification",
+        "A C2 measurement can assess the profile that created its target. Once the same measurement is used to train the next ICC, it is no longer an independent check of that new ICC. Independent checking requires new verification evidence. Do not assume separately measured C2 data are automatically included in every later training run; read the current continuation plan."
+      ]
+    ],
+    "callout": "Row 17 creates the next profile inside the project. This does not automatically mean external delivery. For verified delivery, continue through current verification and rows 13-14; for a numerically limited delivery, use row 19."
+  },
+  {
+    "title": "Compare two iterations",
+    "tag": "ROW 18 / COMPARE WITH PREVIOUS ITERATION",
+    "sections": [
+      [
+        "The right profiles without searching filenames",
+        "The workflow uses the project’s registered iterations and ICC files. Check the displayed profile names and iterations. Comparison is available when a previous and current candidate exist, normally from iteration 2."
+      ],
+      [
+        "Different measurement meshes can be compared",
+        "The profiles do not need to have been built from identical measurement grids. The tool evaluates them at common calculation points, putting a comparable question to both models. It does not make their original physical measurements identical or equally independent."
+      ],
+      [
+        "The 2D view starts at L* = 50",
+        "The flat view shows a* and b* at the selected lightness L*. Change L* to investigate lighter and darker regions, and use the slice width to control which points appear. Turning off 2D displays a rotatable 3D view."
+      ],
+      [
+        "Colours in the comparison",
+        "Blue represents the previous profile and orange the current profile in the iteration comparison. Always read the legend and profile names. A wider extent in a region means the models describe it differently; that alone is not a quality rating."
+      ],
+      [
+        "Interpret differences in context",
+        "Small profile differences may support stopping when the result meets the intended use. Larger or unexpected differences may warrant further review. Compare numerical measures, local transitions and available measurements. A numerical change does not itself show whether new prints are better."
+      ],
+      [
+        "Document the decision",
+        "Save the comparison as evidence and explain which observations mattered to your decision. When comparing error measures between iterations, identify the measurements and conditions they came from. This also makes later deterioration or divergence understandable."
+      ]
+    ],
+    "lead": "Comparison helps you see what changed and document why you continue or stop.",
+    "callout": "A useful decision rationale is specific: what changed, what evidence was assessed and why is it sufficient for the intended use? Do not equate a larger gamut with lower measured error."
+  },
+  {
+    "title": "Finish without another test print",
+    "tag": "ROW 19 / A CERTIFICATE WITH EXPLICIT SCOPE",
+    "sections": [
+      [
+        "When this option fits",
+        "You may be satisfied with a later iteration after numerical checks and comparison, while choosing not to print and measure another C2 target. Row 19 documents that decision and lets you save the ICC and measurement certificate with the correct scope."
+      ],
+      [
+        "What the user does",
+        "Make sure numerical checks exist for the current iteration. Open Save ICC + measurement certificate without print verification. Enter the intended use and rationale. Confirm the scope in the dialog and choose destinations for the delivery files."
+      ],
+      [
+        "The certificate must state this clearly",
+        "Numerically checked; this iteration has not been verified by a separate print and measurement."
+      ],
+      [
+        "Earlier measurements retain their identity",
+        "The last measurement results may be included as background. The measured iteration and profile must be identified. Older physical results do not become new measurements merely because they appear in the current certificate. A profile comparison may explain the decision to stop without serving as physical verification."
+      ],
+      [
+        "PDF and HTML",
+        "PDF provides a fixed document for handover and signature. HTML provides interactive profile viewing: a 2D slice initially at L* = 50 and an option to switch to 3D. PDF renders figures as still images. Move or send the entire HTML report folder so its supporting files are included."
+      ],
+      [
+        "Signature and legal appendix",
+        "Results, scope and decision precede the signing section. Legal text follows in an appendix. It covers matters including information supplied by the client, responsibility for client-printed targets and limitations of the printer, paper and ink. Read the appendix together with the documented scope when handing over the certificate."
+      ]
+    ],
+    "callout": "The document is still called a measurement certificate. Its title must not obscure the difference between measured print verification and an iteration that has only been checked numerically."
+  },
+  {
+    "title": "When something seems to stop",
+    "tag": "STATUS, ACTIVITY AND RECOVERY",
+    "sections": [
+      [
+        "Visible activity in later steps",
+        "Long calculations use an activity dialog showing the operation and elapsed time. This includes preparation and saving of refinement measurements, building the next iteration, profile comparison, reports and export. The time shown is elapsed time, not an estimate of when the job will finish."
+      ],
+      [
+        "The measurement window has its own signals",
+        "Calibration, row reading and instrument questions appear in the measurement status and log. The program may be waiting for a physical action. Distinguish this from profile and report calculations."
+      ],
+      [
+        "Reporting a problem",
+        "State the step, iteration, what you clicked and the exact error text. Include the relevant part of the results log. This helps identify the cause without guessing or changing measurement data."
+      ]
+    ],
+    "rows": [
+      [
+        "What you see",
+        "What to do"
+      ],
+      [
+        "Ready after closing a window",
+        "Check that you actually used Save, Use revision or the acceptance action. Opening a preview is not enough."
+      ],
+      [
+        "Running / calculation in progress",
+        "Read the active operation and elapsed time. Let it finish. Do not open the same operation repeatedly."
+      ],
+      [
+        "Waiting for a dialog",
+        "Check whether a file chooser, confirmation or measurement window needs your response. Follow the status line."
+      ],
+      [
+        "Stale / Requires approve: stale",
+        "Open the results and identify changed inputs. Repeat the necessary checks and make a current decision."
+      ],
+      [
+        "Cannot find a new TIFF",
+        "Read Saved results for the correct iteration and step. Use Open selected step results or Copy TIFF16 for printing…."
+      ],
+      [
+        "Project integrity check failed",
+        "Read which files are identified and open the results log. Do not attempt recovery by arbitrarily editing JSON or deleting integrity records."
+      ],
+      [
+        "Results exist but the list is old",
+        "Press Refresh after the current operation finishes. Then check step status and the revisions being used."
+      ]
+    ]
+  },
+  {
+    "title": "Glossary, sources and version",
+    "tag": "REFERENCES AND TECHNICAL BASIS",
+    "sections": [
+      [
+        "Standards as references",
+        "Project documentation relates quality assessment to ISO, the International Organization for Standardization. References to bvdm mean Bundesverband Druck und Medien, the German printing and media industry association. An internal threshold, such as ΔE00 greater than 5 in a list, must not alone be read as full ISO approval."
+      ],
+      [
+        "Open source and licences",
+        "InkProf is distributed under the GNU General Public License version 3 or later. MATLAB and other external components have their own terms. Read LICENSE and THIRD_PARTY_NOTICES in the project for licensing and third-party references."
+      ],
+      [
+        "Basis of this handbook",
+        "This is the English translation of the Swedish handbook, whose core workflow was checked against app.m, projectDetailsDialog.m, workflowSteps.m and the usage documentation (public code reference ab311f1). It includes subsequent material and delivery sections. Current Markdown guides supplement this handbook for later additions. Translation is not new physical validation of instruments or print results."
+      ]
+    ],
+    "rows": [
+      [
+        "Term",
+        "Meaning"
+      ],
+      [
+        "ICC",
+        "International Color Consortium; here, a profile describing colour conversion for a device or colour space."
+      ],
+      [
+        "CIELAB / L*, a*, b*",
+        "Colour space from the Commission Internationale de l’Éclairage. L* describes lightness; a* and b* describe colour directions."
+      ],
+      [
+        "ΔE00 / CIEDE2000",
+        "A colour-difference measure. Always read the number together with the two colours being compared."
+      ],
+      [
+        "TIFF16 / RGB",
+        "An image with 16 bits per colour channel; RGB denotes red, green and blue."
+      ],
+      [
+        "TI1, TI2, TI3",
+        "ArgyllCMS formats for colour patches, layout/measurement definitions and measurement data, respectively."
+      ],
+      [
+        "JSON / JSONL",
+        "Structured text for project data. JSONL stores separate records line by line, such as an event log."
+      ],
+      [
+        "FWA / OBA / BPC",
+        "Fluorescent Whitening Agent / Optical Brightening Agent. BPC means Black Point Compensation."
+      ],
+      [
+        "RIP / mesh",
+        "Raster Image Processor: software that processes print output. Mesh here means a grid of sample or calculation points."
+      ]
+    ],
+    "links": [
+      [
+        "Public project and installation",
+        "https://github.com/chto0703009/InkProf-public"
+      ],
+      [
+        "User documentation",
+        "https://github.com/chto0703009/InkProf-public/tree/main/docs/usage"
+      ],
+      [
+        "InkProf licence",
+        "https://github.com/chto0703009/InkProf-public/blob/main/LICENSE"
+      ],
+      [
+        "Third-party code and references",
+        "https://github.com/chto0703009/InkProf-public/blob/main/THIRD_PARTY_NOTICES.md"
+      ]
+    ]
+  },
+  {
+    "title": "More samples in dark colours",
+    "tag": "v1.0.0 | MATERIALS AND SHADOWS",
+    "sections": [
+      [
+        "Matte paper",
+        "Project details → Profiling offers Extra shadow detail for Matte. It is used when Paper finish is Matte. Standard distribution disables this adaptation."
+      ],
+      [
+        "Editable starting values",
+        "Dark patch emphasis = 2, Shadow grid emphasis = 1.3 and Extra iteration patches = 48. The first target redistributes the chosen patch budget. The next iteration target adds up to 48 dark training patches without removing colours from the image or C3."
+      ],
+      [
+        "Selection follows the profile black point",
+        "The current ICC profile estimates Lab. Selection covers the darkest quarter between model black and white, so it also works when matte paper has a relatively light black. RGB16 duplicates are avoided. Actual count, colours, limits and profile hash are saved in shadow-patches.json."
+      ],
+      [
+        "Measure and compare",
+        "Denser shadow table resolution gives less emphasis to lighter regions. This is an InkProf strategy using documented Argyll tools, not an official matte-paper recipe. New patches must be printed and measured. Rebuilding a profile alone does not create new measurement data."
+      ],
+      [
+        "Ink and coating belong to the combination",
+        "Specify dye/pigment/mixed/unknown and whether the printer applies coating: off, on, automatic or unknown. Describe the product and settings. These details follow the project and measurement certificate; the app does not change the printer."
+      ]
+    ]
+  },
+  {
+    "title": "Gamut, certificates and source code",
+    "tag": "v1.0.0 | DELIVERY AND LICENSING",
+    "sections": [
+      [
+        "Surfaces and measurement points are different views",
+        "View gamut shows an ICC-derived surface in CIELAB D50. It complements measurement/model points and the profile comparison’s 2D slice, initially at L*=50. HTML supports rotation; PDF shows a fixed figure. The surface is not a new measurement result."
+      ],
+      [
+        "Deliver a complete report",
+        "Save ICC and the measurement certificate through row 14 after current print review, or row 19 after an explicitly limited numerical decision for a later iteration. HTML delivery is a folder with supporting files. Keep the entire folder. The signing section is followed by Appendix A with explanations/references and Appendix B with legal terms."
+      ],
+      [
+        "Open source",
+        "InkProf code and original documentation are licensed under GNU GPL version 3 or later. Copyright 2026 Christer Törnkvist. The program is provided without warranty under LICENSE. MATLAB, Python, ArgyllCMS, fonts and other dependencies have their own terms; see THIRD_PARTY_NOTICES.md."
+      ],
+      [
+        "Release status",
+        "This documentation accompanies 1.0.0-rc.1, published as v1.0.0RC1 ahead of stable v1.0.0. macOS is tested. Windows/Linux and all instrument modes are not qualified. A published source release does not include MATLAB, Python or Argyll binaries."
+      ]
+    ]
+  }
+]
