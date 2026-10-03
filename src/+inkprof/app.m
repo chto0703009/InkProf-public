@@ -291,6 +291,16 @@ end
         elseif id=="approve"
             o=inkprof.internal.approvalDialog(w);
         elseif any(id==["review","refine"])
+            if id=="refine"
+                choice=uiconfirm(fig,'Choose how to propose additional patches. Image-guided refinement can use any colours and requires a current checked ICC. Error-driven refinement also requires C3 feedback.', ...
+                    'Refinement source','Options',{'From image','From verification errors','Cancel'},'CancelOption',3);
+                if strcmp(choice,'Cancel'),o=[];return;end
+                o.Method="image";
+                if strcmp(choice,'From verification errors')
+                    o.Method="errors";[ok,why]=w.valid('feedback');
+                    if ~ok,uialert(fig,"Complete current C3 feedback first: "+why,'Refinement');o=[];return;end
+                end
+            end
             if id=="review"
                 m=w.output('measurement','measurement');inkprof.previewMeasurement(fileparts(m),jsondecode(fileread(m)));
             end
@@ -350,7 +360,7 @@ end
                 if strcmp(choice,'Select RoleFile'),o.RoleFile=pick('*.json','Select RoleFile');if o.RoleFile=="",o=[];return;end,end
             end
         end
-        if any(id==["profile","refine","continue"])
+        if any(id==["profile","refine","continue"])&&~(id=="refine"&&isfield(o,'Method')&&o.Method=="image")
             a=inputdlg({'MaxNewPatches','NormTarget','GrayWeight'},'Iteration parameters',1,{'100','1','2'});
             if isempty(a),o=[];return;end
             o.MaxNewPatches=str2double(a{1});o.NormTarget=str2double(a{2});o.GrayWeight=str2double(a{3});
@@ -458,7 +468,7 @@ switch id
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
  case "compare",s="Compare this ICC with the previous iteration on common RGB and Lab samples. Profile differences do not prove improved print accuracy; fresh independent print verification is still required.";
  case "approve",s="Record the intended use, quality requirements and accepted limitations. This is the user's decision after physical C2/C3 verification, not ISO certification.";
- case "refine",s="Review measurement errors and repeat variation first. Document why additional patches are needed.";
+ case "refine",s="Add patches from an image (any colours) or from current verification errors. Review and select the proposed colours before saving TIFF16. Image refinement uses the current checked ICC; error-driven refinement requires C3 feedback. Record why you are adding patches.";
  case "profile",s="Automatic iteration or manual B3. Manual B3 requires B2. A successful job produces a candidate, not an approval of print quality.";
  case "checks",s="Run numerical checks. Review the reports before printing; these checks do not replace C2/C3.";
  case "continue",s="Link refinement to previous inputs and patch roles. The next iteration requires new checks and new physical C2/C3 verification.";

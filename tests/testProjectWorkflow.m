@@ -366,3 +366,16 @@ function testLegacyAddsNumericalExport(tc)
 s=tc.TestData.w.State;s.steps=rmfield(s.steps,'numericalExport');
 u=inkprof.internal.upgradeWorkflowState(s);verifyEqual(tc,string(u.steps.numericalExport.status),"pending");
 end
+
+function testImageRefinementDoesNotRequireC3(tc)
+w=tc.TestData.w;s=w.State;
+for key=string(fieldnames(s.steps))',s.steps.(key).status="completed";end
+s.steps.feedback.status="pending";s.steps.refine.method="image";
+inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
+verifyTrue(tc,w.ready('refine'));verifyTrue(tc,w.valid('refine'));
+a=w.inspect();verifyTrue(tc,a.refine.valid);
+s.steps.refine.method="errors";
+inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
+verifyFalse(tc,w.valid('refine'));a=w.inspect();verifyFalse(tc,a.refine.valid);
+verifyError(tc,@()w.run('refine',struct('Confirmed',true,'Method',"errors")),'inkprof:WorkflowBlocked');
+end

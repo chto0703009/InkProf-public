@@ -38,3 +38,5 @@ Det kontrollerar kopplingen och sparar en plan utan att starta profileringen. Fu
 Ingen mätning uppfinns om den saknas. Identitetskontroller bevisar inte att papper, torkning och skrivarinställningar varit jämförbara. Automatisk driftbedömning mellan trycktillfällen ingår ännu inte; de upprepade kontrollerna bevaras för granskning. Kandidatvalets befintliga regressionsgränser är oförändrade och kan anges som MaxPatchRegression, MaxGrayRegression och MinImprovement.
 
 Utvecklingsmätningar får inte senare kallas oberoende slutverifiering. Den nya C2-utskriften och dess mätning är nästa fysiska kontroll, och något automatiskt ISO- eller kvalitetsgodkännande görs inte.
+
+The same continuation also accepts [image-guided proposals](image-guided-refinement.md). Image colours are interpreted using their embedded ICC profile, or an explicitly accepted sRGB assumption. Step 16 measures the raw device-RGB target; step 17 retains the frozen fitting, adaptive-development and control roles.

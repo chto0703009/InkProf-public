@@ -10,6 +10,13 @@ verifyEqual(tc,p.developmentCount,2);verifyEqual(tc,p.controlCount,2);
 verifyEqual(tc,r.status,"validated");verifyTrue(tc,isfile(fullfile(folder,'continuation.json')));
 verifyFalse(tc,isfield(r,'profileFile'));
 end
+function testImageProposalContinuation(tc)
+[w,f,m]=fixture();c=onCleanup(@()rmdir(w,'s'));
+r=jsondecode(fileread(fullfile(f,'proposal.json')));r.documentType="inkprof.image-refinement";
+inkprof.internal.writeJson(fullfile(f,'proposal.json'),r);
+p=inkprof.internal.refinementContinuationPlan(f,m);
+verifyEqual(tc,p.newFitCount,8);verifyEqual(tc,p.developmentCount,2);
+end
 function testRejectMismatch(tc)
 for kind=["position","rgb","condition","incomplete","roles"]
  [w,f,m]=fixture();c=onCleanup(@()rmdir(w,'s'));r=jsondecode(fileread(m));

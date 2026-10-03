@@ -72,3 +72,7 @@ inte ett exakt dE00-mått eller en skattad förbättring efter omprofilering.
 konditionstal (null vid numeriskt nära singularitet) och differenssteg.
 `evaluatedPatches` bevarar individuella kontrollfel för jämförelse av recept.
 Befintliga anrop utan `UseJacobian` behåller den äldre viktningen.
+
+## Alternative: colours from an image
+
+Step 15 also offers **From image** for general image-guided sampling, independently of current C3 feedback. See [Image-guided refinement](image-guided-refinement.md) for embedded ICC handling, the missing-profile sRGB warning, editable patch selection and the shared continuation workflow.

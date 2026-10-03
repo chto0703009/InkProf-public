@@ -44,6 +44,9 @@ classdef ProjectWorkflow < handle
             s=obj.State.steps.(id);ok=false;reason=string(s.status);
             if string(s.status)~="completed",return;end
             [ok,reason]=obj.ready(id);if ~ok,return;end
+            if id=="refine"&&(~isfield(s,'method')||string(s.method)~="image")
+                [ok,reason]=obj.valid('feedback');if ~ok,reason="Requires current feedback: "+reason;return;end
+            end
             for a=reshape(s.artifacts,1,[])
                 file=obj.resolve(a.path);
                 if ~isfile(file)||inkprof.internal.sha256(file)~=string(a.sha256)
@@ -73,6 +76,10 @@ classdef ProjectWorkflow < handle
                         end
                     end
                 end
+                if string(d.id)=="refine"&&a.valid&&(~isfield(s,'method')||string(s.method)~="image")
+                    a.valid=assessment.feedback.valid;
+                    if ~a.valid,a.reason="Error-driven refinement requires current C3 feedback.";end
+                end
                 assessment.(d.id)=a;
             end
         end
@@ -96,6 +103,9 @@ classdef ProjectWorkflow < handle
                 assert(islogical(options.FWACompensation)&&isscalar(options.FWACompensation),'inkprof:FWA','FWA selection must be logical.');
                 obj.applyFWA(options.FWACompensation,"automatic-profiling");
             end
+            if id=="refine"&&(~isfield(options,'Method')||string(options.Method)~="image")
+                [ok,reason]=obj.valid('feedback');assert(ok,'inkprof:WorkflowBlocked','Error-driven refinement requires current C3 feedback: %s',reason);
+            end
             % Invalidate descendants before starting, including cancelled reruns.
             obj.invalidate(id);obj.State.currentStep=id;
             obj.State.steps.(id).status="running";obj.State.steps.(id).message="Running";obj.event(id,"started",options);obj.save();
@@ -113,6 +123,10 @@ classdef ProjectWorkflow < handle
                 names=fieldnames(outputs);
                 for k=1:numel(names),outputs.(names{k})=obj.relative(outputs.(names{k}));end
                 obj.State.steps.(id)=struct('status',"completed",'outputs',outputs,'artifacts',artifacts,'message',"Complete");
+                if id=="refine"
+                    method="errors";if isfield(options,'Method'),method=string(options.Method);end
+                    obj.State.steps.refine.method=method;
+                end
                 details=struct('result',obj.State.steps.(id),'summary',struct);
                 for name=string(fieldnames(outputs))'
                     file=obj.resolve(outputs.(name));
@@ -330,6 +344,10 @@ classdef ProjectWorkflow < handle
             defs=inkprof.internal.workflowSteps();affected=string(id);changed=true;
             % Automatic profile does not require B2, but changing B2 invalidates it.
             if id=="recipe",affected=[affected,"profile"];end
+            if any(id==["c2","c2measurement","c3","feedback"])&& ...
+                    (~isfield(obj.State.steps.refine,'method')||string(obj.State.steps.refine.method)~="image")
+                affected=[affected,"refine"];
+            end
             while changed
                 changed=false;
                 for d=defs'

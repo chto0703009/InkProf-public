@@ -166,10 +166,23 @@ switch id
   end
   files=allFiles(folder);
  case "refine"
-  assert(get(o,'Confirmed',false),'inkprof:Cancelled','Review measurement errors before adding patches.');
-  [~,folder]=inkprof.refineVerification(w.output('c3','report'),Name="Iteration "+(w.State.cycle+1), ...
-   MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true,PlanPaper=true);
-  inkprof.internal.writeJson(fullfile(folder,'workflow-review.json'),struct('notes',get(o,'Notes',""),'utc',utc()));
+  assert(get(o,'Confirmed',false),'inkprof:Cancelled','Record why you are adding patches.');
+  method=string(get(o,'Method',"errors"));
+  if method=="image"
+   [proposal,folder]=inkprof.refineFromImage(w.output('profile','job'),FitReport=w.output('checks','fit'), ...
+    Image=string(get(o,'Image',"")),SourceProfile=string(get(o,'SourceProfile',"embedded")), ...
+    ROI=get(o,'ROI',[]),MaxNewPatches=get(o,'MaxNewPatches',100), ...
+    MinSpacingPercent=get(o,'MinSpacingPercent',1),NeighborRadiusPercent=get(o,'NeighborRadiusPercent',0), ...
+    Name="Iteration "+(w.State.cycle+1)+" - image colours",ShowDialog=get(o,'ShowDialog',true), ...
+    PlanPaper=get(o,'PlanPaper',true),CreatePrint=true);
+   assert(~isempty(proposal)&&folder~="",'inkprof:Cancelled','Image refinement cancelled.');
+  else
+   assert(method=="errors",'inkprof:Workflow','Unknown refinement method.');
+   [ok,why]=w.valid('feedback');assert(ok,'inkprof:WorkflowBlocked','Error-driven refinement requires current C3 feedback: %s',why);
+   [~,folder]=inkprof.refineVerification(w.output('c3','report'),Name="Iteration "+(w.State.cycle+1), ...
+    MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true,PlanPaper=true);
+  end
+  inkprof.internal.writeJson(fullfile(folder,'workflow-review.json'),struct('notes',get(o,'Notes',""),'method',method,'utc',utc()));
   out=inkprof.internal.workflowTiffOutputs(fullfile(folder,'refinement-print','print','target.ti2'));out.proposal=fullfile(folder,'proposal.json');
   files=allFiles(folder);assert(isfile(out.target),'inkprof:Workflow','No new printable patches were proposed. Review the feedback.');
  case "continue"
