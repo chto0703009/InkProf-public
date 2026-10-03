@@ -389,3 +389,7 @@ shows the reverse scan on the same row. Failed scans and Previous/Next navigatio
 do not acknowledge a page change. Historical successful scans are consumed only
 once, so they cannot override a later manual page confirmation. The dialog cannot
 verify which physical sheet is in the guide; the operator must still change it.
+
+### Activity during patch remeasurement
+
+Remeasure patch shows progress while preparing the attempt, connecting the spectrometer, calculating the comparison, saving the accepted revision and rebuilding the overview. Calibration and measurement show elapsed time in the status area. Progress closes before a user decision is required. The existing overview remains available until its replacement is ready, and repeated actions are blocked while processing. Closing records the decision and releases the instrument with visible progress.

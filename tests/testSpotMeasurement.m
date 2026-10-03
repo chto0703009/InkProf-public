@@ -59,6 +59,7 @@ for caption=["Calibrate","Calibrate","Measure patch"]
  waitEnabled(action);verifyEqual(tc,string(action.Text),caption);action.ButtonPushedFcn(action,[]);
 end
 accept=findall(fig,'Tag','spotAccept');waitEnabled(accept);
+verifyFalse(tc,isappdata(fig,'InkProfCalculationState'),'Progress must close before the user reviews the candidate.');
 verifyTrue(tc,contains(string(findall(fig,'Tag','spotComparison').Text),'dE00'));
 review=findall(fig,'Tag','spotReviewValues');verifyEqual(tc,string(review.Visible),"on");
 verifySize(tc,review.Data,[6 4]);verifyEqual(tc,string(review.Data{4,4}),"-10.000");verifyEqual(tc,review.Data{4,2},20);verifyEqual(tc,review.Data{4,3},10);

@@ -12,7 +12,7 @@ arguments
  options.ParentPreview = []
 end
 measurementFile=inkprof.internal.absolutePath(measurementFile);
-folder=inkprof.preparePatchRemeasurement(measurementFile,coordinate);
+folder="";busy=false;activity="";activityStarted=tic;
 session=[];candidate="";closed=false;decided=false;
 fig=uifigure('Name','InkProf – Remeasure patch '+coordinate,'WindowStyle','modal','Position',[200 130 830 660],'Tag','InkProfSpotMeasurement');
 g=uigridlayout(fig,[6 1]);g.RowHeight={40,85,70,'1x',85,48};
@@ -29,30 +29,55 @@ comparison.Layout.Row=5;comparison.Layout.Column=1;
 bar=uigridlayout(g,[1 3]);bar.Layout.Row=6;bar.Layout.Column=1;bar.ColumnWidth={'1x','1x','1x'};
 % Reserve the entire footer height for buttons, without nested default padding.
 bar.Padding=[0 0 0 0];bar.RowHeight={'1x'};bar.ColumnSpacing=12;
-action=uibutton(bar,'Text','Start spot measurement','ButtonPushedFcn',@trigger,'Tag','spotAction');
+action=uibutton(bar,'Text','Start spot measurement','ButtonPushedFcn',@trigger,'Tag','spotAction','Enable','off');
 accept=uibutton(bar,'Text','Accept replacement','Enable','off','ButtonPushedFcn',@save,'Tag','spotAccept');
 uibutton(bar,'Text','Discard / Close','ButtonPushedFcn',@closeDialog);
+try
+    preparation=inkprof.internal.calculationProgress("Preparing patch remeasurement", ...
+        "Checking the saved measurement and locating patch "+upper(coordinate)+".",Parent=fig);
+    folder=inkprof.preparePatchRemeasurement(measurementFile,coordinate);
+    clear preparation;
+catch err
+    clear preparation;delete(fig);rethrow(err);
+end
+action.Enable='on';
 fig.CloseRequestFcn=@closeDialog;fig.UserData=struct('attemptFolder',folder,'measurementFile',measurementFile);
 poller=timer('ExecutionMode','fixedSpacing','Period',.15,'BusyMode','drop','TimerFcn',@poll);
 fig.DeleteFcn=@cleanup;
     function trigger(~,~)
+        if busy||closed||strcmp(action.Enable,'off'),return;end
+        busy=true;
         try
             action.Enable='off';
             if isempty(session)
+                status.Text='Checking Python and connecting to the instrument…';
+                connection=inkprof.internal.calculationProgress("Connecting spectrometer", ...
+                    "Checking Python and starting instrument communication. Please wait.",Parent=fig);
                 session=inkprof.SpotReadSession(folder,ArgyllBin=options.ArgyllBin,PythonExecutable=options.PythonExecutable);
-                status.Text='Waiting for instrument…';start(poller);
+                clear connection;setActivity("Waiting for the instrument and its calibration instructions.");start(poller);
             else
                 session.sendKey(' ');
                 if strcmp(action.Text,'Measure patch')
-                    status.Text='Measuring patch '+upper(coordinate)+'. Keep the instrument still until the result appears.';
+                    setActivity("Measuring patch "+upper(coordinate)+". Keep the instrument still.");
                 else
-                    status.Text='Calibrating. Keep the instrument on its white reference and wait…';
+                    setActivity("Calibrating. Keep the instrument on its white reference.");
                 end
             end
-        catch err,fail(err.message);end
+        catch err,clear connection;fail(err.message);end
+        busy=false;
+    end
+    function setActivity(message)
+        activity=message;activityStarted=tic;showActivity();
+    end
+    function showActivity()
+        if strlength(activity)==0||~isgraphics(fig),return;end
+        status.Text=activity+newline+sprintf('Working — elapsed %.0f seconds. Please wait.',toc(activityStarted));
+        drawnow limitrate nocallbacks;
     end
     function poll(~,~)
+        if busy||closed,return;end
         try
+            showActivity();
             events=session.poll(0,false);
             for k=1:numel(events)
                 e=events{k};
@@ -62,13 +87,18 @@ fig.DeleteFcn=@cleanup;
                     case 'state'
                         switch string(e.kind)
                             case {'calibration','calibrationRetry'}
+                                activity="";
                                 status.Text='Place the instrument on its own white reference, then press Calibrate.';action.Text='Calibrate';action.Enable='on';
                             case {'ready','retry'}
+                                activity="";
                                 status.Text='Place the instrument still at the centre of patch '+upper(coordinate)+'. Click Measure patch in this window. Do not swipe or press the instrument button.';action.Text='Measure patch';action.Enable='on';
                             otherwise,action.Enable='off';
                         end
                     case 'candidate'
-                        candidate=string(e.path);stop(poller);action.Enable='off';
+                        candidate=string(e.path);stop(poller);action.Enable='off';activity="";
+                        busy=true;
+                        calculation=inkprof.internal.calculationProgress("Comparing patch measurements", ...
+                            "Calculating Lab and Delta E00, then saving the candidate for your review.",Parent=fig);
                         paths=inkprof.paths();comparisonFile=fullfile(folder,'comparison.json');
                         inkprof.runPython(fullfile(paths.Root,'analysis','spot_compare.py'),[measurementFile,candidate,comparisonFile], ...
                             PythonExecutable=options.PythonExecutable,RequiredModules=["numpy","colour"]);
@@ -81,8 +111,9 @@ fig.DeleteFcn=@cleanup;
                         log.Visible='off';review.Visible='on';
                         comparison.Text=sprintf('Patch %s — colour difference from previous measurement: %.3f dE00 (ΔE00).\nMeasured L*, a*, b* are colour coordinates, not changes. Change = new − previous.\nΔE00 summarises the colour difference; it is not profile accuracy.',upper(coordinate),v.deltaE00);
                         status.Text='Review the previous and new values below. Accept replaces only this patch; Discard keeps the previous value.';
-                        accept.Text=sprintf('Accept %s (dE00 %.3f)',upper(coordinate),v.deltaE00);drawnow;accept.Enable='on';
+                        accept.Text=sprintf('Accept %s (dE00 %.3f)',upper(coordinate),v.deltaE00);
                         inkprof.internal.recordProjectStep(folder,'Single-patch candidate awaiting review');
+                        clear calculation;accept.Enable='on';
                     case 'error',fail(e.message);
                 end
             end
@@ -90,26 +121,42 @@ fig.DeleteFcn=@cleanup;
                 % Drain buffered output on the following timer tick before declaring failure.
                 if isempty(events),fail('Instrument process ended without a candidate. Close and try again.');end
             end
-        catch err,fail(err.message);end
+        catch err,clear calculation;fail(err.message);end
+        busy=false;
     end
     function fail(message)
-        stop(poller);action.Enable='off';accept.Enable='off';status.Text='Measurement not accepted: '+string(message);
+        activity="";stop(poller);action.Enable='off';accept.Enable='off';status.Text='Measurement not accepted: '+string(message);
     end
     function save(~,~)
+        if busy||closed||decided,return;end
+        busy=true;
         try
-            accept.Enable='off';[r,path]=inkprof.acceptPatchRemeasurement(measurementFile,candidate);
+            accept.Enable='off';
+            saving=inkprof.internal.calculationProgress("Saving accepted patch", ...
+                "Saving a new measurement revision and checking the updated rows. Please wait.",Parent=fig);
+            [r,path]=inkprof.acceptPatchRemeasurement(measurementFile,candidate);
             decided=true;fig.UserData.savedMeasurement=path;
+            refresh=inkprof.internal.calculationProgress("Updating measurement overview", ...
+                "Preparing the colour patches and the newly saved measurement values.",Parent=fig);
+            inkprof.previewMeasurement(fileparts(path),r);
+            cleanup([],[]);
+            clear refresh saving;
             if ~isempty(options.ParentPreview)&&isgraphics(options.ParentPreview),delete(options.ParentPreview);end
             delete(fig);
-            inkprof.previewMeasurement(fileparts(path),r);
-        catch err,fail(err.message);end
+        catch err,clear refresh saving;fail(err.message);end
+        busy=false;
     end
     function closeDialog(~,~)
+        if busy||closed,return;end
+        busy=true;
+        closing=inkprof.internal.calculationProgress("Closing patch remeasurement", ...
+            "Stopping instrument communication and recording the measurement decision.",Parent=fig); %#ok<NASGU>
         if ~decided
             inkprof.internal.writeJson(fullfile(folder,'decision.json'),struct('decision','discarded','parentMeasurementSHA256',inkprof.internal.sha256(measurementFile)));
             decided=true;
         end
-        delete(fig);
+        cleanup([],[]);
+        clear closing;delete(fig);
     end
     function cleanup(~,~)
         if closed,return;end;closed=true;
