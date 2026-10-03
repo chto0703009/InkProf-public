@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function [border,inner]=selectionBorder(rgb)
 %SELECTIONBORDER Contrast for nominal on-screen RGB, not print colour accuracy.
 rgb=max(0,min(1,double(reshape(rgb,1,3))));

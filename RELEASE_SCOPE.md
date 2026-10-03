@@ -1,17 +1,11 @@
-# Public release scope
+# Public release scope — v1.0.0 preparation
 
-The v0.9 public repository is a clean source snapshot with a new history. The private development history has not been published or rewritten.
+This is a source-only preparation tree (1.0.0-rc.1), based on the separate public repository. Private development history is neither merged into it nor rewritten.
 
-Excluded from the public snapshot:
+Excluded: local projects/measurements/ICC profiles, imported i1Profiler reference packages and real MXF fixtures, vendor screenshots, private historical datasets, machine settings, virtual environments, caches and external runtime binaries. Synthetic fixtures and original explanatory documentation figures are included. Some historical research notes refer to excluded data; they are not reproducible release tests.
 
-- Imported i1Profiler target/reference packages, real MXF examples and vendor-format measurement exports from the private fixtures.
-- The 575-patch reference PXF/TIFF and root CGATS reference file.
-- Vendor screenshots, raw research JSON/TI1 data and historical planning PDFs.
-- Examples and tests requiring these excluded reference packages.
-- Local projects, measurements, configuration, environments, secrets, binaries and caches.
+Separately licensed resources: complete unmodified CxF3 schema with its licence and provenance; unmodified DejaVu Sans font with full notice and hash. ReportLab's separately installed fonts are embedded in PDFs with notices. MATLAB, Python and ArgyllCMS must be installed separately. The root GPL licence does not relicense these dependencies.
 
-Included test fixtures are the synthetic RGB reflectance MXF, synthetic CxF spectrum and fake instrument scripts. The CxF3 schema is an explicit exception to the third-party-resource exclusion: it is provided unmodified with its separate redistribution licence and provenance.
+Five current documentation PDFs have reproducible sources: Swedish/English presentation, Swedish/English workflow guide and Swedish app handbook. Existing private measurement certificates are not regenerated or included as release assets.
 
-The four presentation/workflow PDFs contain InkProf-produced figures and text. Font notices for their embedded fonts are included under licenses/fonts. Research notes describe earlier experiments; the underlying private reference material is not included, and those notes are not a claim that every earlier test can be reproduced from this source snapshot.
-
-Do not merge or push the private repository history into this public repository. Bring future changes across as reviewed source patches, preserving attribution and checking new data and dependencies.
+Only reviewed current source patches are copied between repositories. Do not merge private Git history into the public tree. Consult LICENSE_SCOPE.md, THIRD_PARTY_NOTICES.md and licenses/review-v1.0.0.md before adding source or assets.

@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function manifest=createTarget(outputFolder, options)
 %CREATETARGET Create a verified RGB TIFF16 + TI1/TI2 print package.
 %   inkprof.createTarget("projects/test", PatchCount=100, ArgyllBin="/usr/local/bin")

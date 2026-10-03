@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function report=exportCgats(path,document)
 %EXPORTCGATS Write a CGATS document without changing its dialect or values.
 % Edit tables.fields/data/metadata before export. Counts are regenerated.

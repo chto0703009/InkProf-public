@@ -1,5 +1,7 @@
 # CGATS-import och export
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 ## Varning: externa utskrifter utan kontrastmarkörer
 
 **Mål som skrivits ut utan kontrastmarkörer mellan patcharna kan ge problem vid radmätning med chartread**, särskilt när intilliggande patchar har snarlika färger. Det kan exempelvis ge fel om för få eller för många patchar. En korrekt importerad patchdefinition garanterar inte att det befintliga arket går att läsa tillförlitligt.

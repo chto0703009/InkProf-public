@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function report=exportPxfTarget(sourcePath,outputPath,options)
 %EXPORTPXFTARGET Export RGB TI1/TI2 definitions as a Prism/CxF3 PXF patch set.
 % Preserves patch order; RGB8 compatibility by default. No print layout implied.
@@ -53,7 +57,7 @@ end
 raw=block(raw,'<cc:ObjectCollection>.*?</cc:ObjectCollection>',"<cc:ObjectCollection>"+newline+join(objects,newline)+newline+"</cc:ObjectCollection>");
 raw=regexprep(raw,'<cc:Creator>[^<]*</cc:Creator>','<cc:Creator>InkProf</cc:Creator>');
 raw=regexprep(raw,'<cc:CreationDate>[^<]*</cc:CreationDate>','<cc:CreationDate>'+date+'</cc:CreationDate>');
-% Preserve the observed private Prism structure as compatibility defaults.
+% The bundled scaffold is minimal; caller-supplied templates retain their fields.
 % These defaults are not a reproduction of TI2 physical print layout.
 attrs=string(regexp(char(raw),'<xrp:CustomAttributes\s[^>]*?/?>','match','once'));
 name=options.Name;if name=="",name=stem;end
@@ -78,7 +82,7 @@ report=struct('schemaVersion',1,'documentType','inkprof.pxf-export','sourcePath'
  'patchCount',n,'excludedPaddingCount',excluded,'rgbScale',255,'rgbQuantization',options.RGBEncoding,'exportedRGB255',rgb,'maxRGB255Change',max(abs(rgb-sourceRGB),[],'all'), ...
  'maxRGBPercentRoundtripError',error/2.55,'mapping',map,'targetInfo',target.targetInfo, ...
  'layoutStatus','Patch definitions only. TI2 physical coordinates retained in JSON; PXF does not recreate the print.', ...
- 'templateDefaults','Private Prism fields retained for compatibility; not verified source print/profile settings','receiverImportVerified',false);
+ 'templateDefaults','Minimal bundled scaffold or caller-supplied fields; not verified source print/profile settings','receiverImportVerified',false);
 inkprof.internal.writeJson(fullfile(stage,'target.json'),report);
 published=strings(0,1);
 try

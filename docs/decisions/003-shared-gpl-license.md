@@ -1,5 +1,7 @@
 # 003 - Gemensam GPL-licens för InkProf och Camera-41
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Datum: 2026-09-25. Status: beslutat av projektägaren och implementerat.
 
 ## Bakgrund

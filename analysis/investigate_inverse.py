@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Reproduce the inverse diagnostic from an existing InkProf grid report.
 Usage: python analysis/investigate_inverse.py JOB GRID_REPORT OUTPUT [--xicclu PATH]
 No profile or measurement is modified.

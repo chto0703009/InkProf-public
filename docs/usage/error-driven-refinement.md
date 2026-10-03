@@ -1,5 +1,7 @@
 # Felstyrd lokal förtätning
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Första implementationen: `inkprof.proposeRefinement` använder en lyckad InkProf-profil och en separat komplett spektral mätning för att föreslå nästa kompletteringsmål. MATLAB Base sköter anrop och granskning; Python/NumPy/SciPy/Colour analyserar fel och geometri. Argyll `profcheck` beräknar framåtprediktioner. Inga mätvärden slås samman och ingen ICC ersätts.
 
 ```matlab
@@ -50,7 +52,7 @@ Första versionen stöder endast spektral D50/2°-framåtjämförelse med samma 
 
 Vald mätning deklareras uttryckligen som `adaptive_validation` i API-kontraktet. Ett låst slutmål får inte skickas till funktionen. Rollen kan inte avgöras automatiskt från en äldre mätfil; anroparen ansvarar för detta. Kontroll av skrivare, papper, drivrutinsinställningar, kalibreringsstandard och drift kräver fortfarande granskning. Samma M-villkor räcker inte för att bevisa identiska mätkedjor. Ingen automatisk sammanslagning görs.
 
-Ingen ny låst slutkontroll genereras från de felstyrda kandidaterna: det vore inte oberoende. Sådan kontroll måste hållas separat. Ny mätning/profilrevision och konvergenshistorik över flera iterationer återstår att integrera.
+Ingen ny låst slutkontroll genereras från de felstyrda kandidaterna: det vore inte oberoende. Sådan kontroll måste hållas separat. Ny mätning och nästa profilrevision hanteras nu av appens steg 15–17, med jämförelse i steg 18 och sparad iterationshistorik.
 
 ## Sammanhållen iteration och Jacobian (2026-09-29)
 

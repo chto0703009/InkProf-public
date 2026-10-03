@@ -1,5 +1,7 @@
 # Image-guided refinement
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Use **step 15 → From image** to propose additional patches from a photograph or other RGB image. All colours are eligible. The selection does not favour green or any other colour family. A current ICC profile and completed numerical checks are required. Error-driven refinement remains available as a separate choice and requires current verification feedback.
 
 ## Image profile and selection

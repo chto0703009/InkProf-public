@@ -1,5 +1,7 @@
 # 008 – Patchdefinition, utskriftslayout och mätresultat
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Datum: 2026-09-26. Status: beslutad specifikation. Beslutet beskriver önskat beteende; formatstöd och fysisk kompatibilitet måste verifieras separat.
 
 ## Grundprincip

@@ -1,2 +1,3 @@
 -r requirements-analysis.txt
 reportlab==4.4.3
+charset-normalizer==3.5.1

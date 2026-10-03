@@ -1,5 +1,7 @@
 # TXF: i1Profiler Test Charts
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Datum: 2026-09-25. Status: preliminärt läs-/skrivkontrakt för InkProf.
 
 Ett verkligt [TXF-referensfall med 2 033 patchar](chart-2033-txf-inspection.md) har nu inspekterats. Där dokumenteras konkreta XML-sökvägar och layoutattribut; rendering och mätning är ännu inte verifierade.

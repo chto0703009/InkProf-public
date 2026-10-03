@@ -1,5 +1,7 @@
 # Canon PRO-2600: 12-bitarsläge i Mirage
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Dokumenterat 2026-09-25. Källa: skärmbild tillhandahållen av Christer i planeringssamtalet. Datumet avser dokumentationen, inte en verifierad tidpunkt för skärmbildens skapande.
 
 ## Direkt observerat

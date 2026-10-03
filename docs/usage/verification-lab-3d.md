@@ -1,5 +1,7 @@
 # Roterbar Lab-vy av verifieringsmål
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 `fig = inkprof.showVerificationLab(referenceFile)` öppnar en vanlig MATLAB-figur med rotation och zoom. Input är `verification.json` från ett färdigrenderat C2-paket. Utan argument öppnas filväljare. MATLAB Base räcker.
 
 Punkterna visar `predictedLabD50Absolute`, alltså profilens framåtberäknade Lab efter att respektive profils invers och RGB16-kvantisering använts. De är inte målets önskade Lab eller uppmätta värden. Punktmolnet visar de valda patcharna, inte hela skrivarens gamut eller dess yta.

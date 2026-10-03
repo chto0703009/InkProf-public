@@ -1,6 +1,8 @@
-# InkProf v0.9
+# InkProf v1.0.0 — release preparation
 
 **InkProf - When colours have to be right**
+
+Target release: **1.0.0**. Current source: **1.0.0-rc.1**, not a published stable release. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
 
 [Swedish description / Svenska](README.sv.md)
 
@@ -12,7 +14,7 @@ Documented comparisons with standards-based limits support quality assessment wi
 
 InkProf is an open-source MATLAB application for RGB printer profiling: colour targets, spectral measurements, ICC generation, independent print verification and traceable refinement. Each project has its own folder, a persistent JSON workflow, prerequisites and a readable results log. You can close the app while prints dry and resume the same project later.
 
-The app saves TIFF16 targets for separate printing. Measurement is started in the app using a compatible spectrometer. ICC candidates are built with ArgyllCMS, checked numerically and assessed against a separately printed and measured verification target. After user approval, save the ICC file and PDF/HTML reports to locations of your choice. A rotatable CIELAB view shows the profile's predicted verification colours.
+The app saves TIFF16 targets for separate printing. Measurement is started in the app using a compatible spectrometer. ICC candidates are built with ArgyllCMS, checked numerically and assessed against a separately printed and measured verification target. After user approval, save the ICC file and PDF/HTML reports to locations of your choice. A 2D view starts at L*=50, with a switch to rotatable 3D sample points. View gamut provides a separate ICC-derived 3D surface in the app and certificates.
 
 **Platform testing:** InkProf has been tested on macOS only. Windows and Linux have not been tested. See [tested platforms and limitations](docs/usage/tested-platforms.md).
 
@@ -26,7 +28,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 - Instrument measurement uses a POSIX bridge. Windows instrument operation has not been qualified.
 - The project app uses English labels, dialogs and workflow guidance. Swedish and English PDF documentation is included.
 
-Download the v0.9 source archive or clone this repository:
+Clone this repository to try the 1.0.0-rc.1 preparation build:
 
 ```sh
 git clone https://github.com/chto0703009/InkProf-public.git
@@ -52,7 +54,7 @@ Choose **New project** or **Open project**. Create your own RGB target or import
 - [Swedish presentation (PDF)](docs/usage/InkProf-presentation.pdf)
 - [Swedish MATLAB guide (PDF)](docs/usage/InkProf-profileringskedja-MATLAB-guide.pdf)
 - [Project app, step guards and recovery (Swedish)](docs/usage/project-workflow-app.txt)
-- [Release notes](docs/releases/v0.9.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](docs/releases/v1.0.0.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 
@@ -109,3 +111,11 @@ The HTML final report automatically rotates the predicted CIELAB control colours
 ## Measurement certificate
 
 The final profiling report is now a **measurement certificate** with project and printing details, the limits of printer/paper/ink reproduction, and a dated page for handwritten signature. It states the customer's responsibility when the customer prints the targets or supplies project information, subject to mandatory law and the provider's own responsibilities. See [certificate documentation](docs/usage/measurement-certificate.md).
+
+## Current project settings and refinement
+
+Project details is the single source for printer, paper finish, dye/pigment ink type, printer coating, drying time, profiling settings and paper/sled dimensions. Matte paper can use additional shadow sampling: up to 48 extra dark fitting patches per iteration, editable dark emphasis and denser shadow tables. See [matte shadows](docs/usage/matte-shadow-profiling.md).
+
+Image-guided refinement honours the embedded ICC; missing profiles trigger an sRGB warning. Candidate filtering defaults to estimated ΔE00 > 5. Unmeasured C2 patches can join the refinement target and are then used as fitting data for the next profile, with controls retained. They no longer constitute independent verification of that next profile.
+
+The current app has 19 workflow rows. [Start with the complete workflow guide](docs/usage/workflow-v1.0.md). Step 14 delivers a print-reviewed profile and certificate; step 19 delivers a numerically checked later iteration with the lack of separate print verification stated explicitly. HTML exports are self-contained folders with supporting files.

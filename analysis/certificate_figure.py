@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Certificate views of the verified shared RGB comparison samples.
 Uses the existing interactive comparison viewer and a vector PDF projection.
 """

@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function [accepted,s]=profileRecipeDialog(s,input,hasSpectra,hasXYZ)
 accepted=false;dismissed=false;
 f=uifigure('Name','InkProf - Profiling recipe','Tag','InkProfProfileRecipe','Visible','off', ...

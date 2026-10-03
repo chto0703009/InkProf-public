@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function condition=measurementCondition(folder,chartHash,metadata)
 % Keep requested mode separate from file-reported and inferred conditions.
 condition=struct('requested',"unknown",'reported',"unknown",'interpreted',"unknown", ...

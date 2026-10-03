@@ -1,4 +1,4 @@
-# InkProf v0.9 – svensk beskrivning
+# InkProf v1.0.0 – inför utgåvan
 
 [English description](README.md)
 
@@ -59,3 +59,11 @@ InkProf tillhandahålls i befintligt skick utan garantier. Användaren ansvarar 
 Rapportera reproducerbara fel via [GitHub Issues](https://github.com/chto0703009/InkProf-public/issues). Ta först bort privata mätningar och personuppgifter.
 
 Kontakt: Christer Törnkvist – christer@borgasundsfotografiska.se
+
+## Inför v1.0.0
+
+Koden är märkt **1.0.0-rc.1** medan utgåvan förbereds. Det är ännu ingen publicerad stabil v1.0.0. Se [ändringslogg](CHANGELOG.md), [validering](VALIDATION.txt) och [utgåvechecklista](docs/releases/v1.0.0.md).
+
+Project details samlar även bläcktyp (dye/pigment), coating från skrivaren, torktid och inställningar för matt papper. Skuggläget ger upp till 48 extra mörka träningspatchar per iteration och tätare numerisk upplösning i skuggorna; värdena kan ändras. Se [matta papper](docs/usage/matte-shadow-profiling.md).
+
+Appens 19 steg omfattar bildstyrd komplettering, C2 som träningsunderlag i nästa iteration, profiljämförelse (2D vid L*=50 eller 3D), en separat 3D-gamutyta samt mätcertifikat med underskrift och bilagor A/B. Rad 14 gäller utskriftsgranskat resultat. Rad 19 dokumenterar uttryckligen en senare iteration utan separat kontrollutskrift. Se [aktuell arbetsgång](docs/usage/workflow-v1.0.md) och PDF-handboken.

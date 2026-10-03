@@ -3,7 +3,9 @@
     "font": "DejaVuSans.ttf",
     "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954",
     "noticeSource": "Embedded TrueType name records 0, 13 and 14",
-    "fontFilesDistributed": false
+    "fontFilesDistributed": true,
+    "savedPath": "resources/fonts/DejaVuSans.ttf",
+    "modified": false
   },
   {
     "font": "Ubuntu-B.ttf",

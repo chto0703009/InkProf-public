@@ -1,5 +1,7 @@
 # C2 – oberoende verifieringsmål med applicerad ICC
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Första implementationen använder **absolut kolorimetri, D50/2° och ingen svartpunktskompensation**, enligt användarens val. Profilen appliceras en gång när patcharnas device-RGB beräknas. TIFF16 skrivs därefter utan ytterligare färghantering, utan tilldelad/inbäddad ICC och utan skalning.
 
 ```matlab
@@ -9,7 +11,7 @@ Första implementationen använder **absolut kolorimetri, D50/2° och ingen svar
     Seed=20260928, DPI=300, Paper="A4-landscape");
 ```
 
-Utan jobbargument öppnas en mappväljare. Namn anges med `Name`, och `OutputFolder` kan ange en egen ny mapp. Annars skapas en unik mapp under projektets `verification`. Befintligt innehåll skrivs aldrig över. En separat C2-inställningsdialog är ännu inte implementerad. A4 liggande är förval; befintlig utskriftsstandard med max 320 mm bredd, kontrastmarkörer, bokstäver, radnummer, sidantal och fullständig sökväg används.
+Utan jobbargument öppnas en mappväljare. Namn anges med `Name`, och `OutputFolder` kan ange en egen ny mapp. Annars skapas en unik mapp under projektets `verification`. Befintligt innehåll skrivs aldrig över. Appen erbjuder pappersförslag med ändringsbara projektmått för C2. A4 liggande är förval; befintlig utskriftsstandard med projektets ändringsbara måttgränser, kontrastmarkörer, bokstäver, radnummer, sidantal och fullständig sökväg används.
 
 ## Färger och oberoende
 

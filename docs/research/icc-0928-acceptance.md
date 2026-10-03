@@ -1,5 +1,7 @@
 # Acceptans inför ny verifieringsutskrift, 2026-09-28
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Användaren accepterade att gå vidare och begärde commit/push efter granskning av den nya 575-mätningen. Acceptansen gäller fungerande B1–B3 och numeriska kontroller som underlag för nästa C2. Den är inte ett godkännande av profilens uppmätta utskriftskvalitet.
 
 - Källa: `InkProf-575-from-TI2-v2_0928.mxf`, 575 RGB-patchar, M0/XRGA, i1 Pro 2, 36 spektralband 380–730 nm.

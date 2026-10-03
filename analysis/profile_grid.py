@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """ICC numerical diagnostics on a synthetic grid; no independent measurements."""
 import argparse,hashlib,json,subprocess
 from pathlib import Path

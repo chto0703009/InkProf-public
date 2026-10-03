@@ -1,5 +1,7 @@
 # Tre verkliga MXF-referensfall för mätimport
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Datum: 2026-09-25. Status: XML-innehåll granskat; ingen färdig InkProf-import, TI3-export eller återimport i i1Profiler har provats.
 
 Christer har valt tre filer ur i1Profilers lokala datamappar. Oförändrade referenskopior finns under `tests/fixtures/i1profiler/mxf-examples/`. De används som exempeldata, inte som belägg för en ny instrumentmätning eller som InkProf-kod. Filernas ursprung och eventuella externa rättigheter kvarstår.

@@ -1,5 +1,7 @@
 # Förkortningar i InkProf
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Förkortningar ska förklaras vid första användningen i en fristående beskrivning eller rapport. Denna ordlista är ett komplement.
 
 | Begrepp | Betydelse och funktion |

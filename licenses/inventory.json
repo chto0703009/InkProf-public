@@ -1,6 +1,6 @@
 {
-  "reviewed": "2026-09-27",
-  "scope": "Installed runtime Python packages excluding installer pip; additional external notices. Not exhaustive legal clearance.",
+  "reviewed": "2026-10-03",
+  "scope": "Installed analysis/report packages excluding installer pip, external notices and separately licensed resource hashes; source-only v1.0.0 preparation. Not legal clearance.",
   "pythonPackages": [
     {
       "name": "colour-science",
@@ -116,6 +116,22 @@
       "source": "https://raw.githubusercontent.com/colour-science/colour-cxf/703301d1e5e827153292c9a3cad8c7e0ce083ac0/licenses/CxF_Schema_Open_License.pdf",
       "savedPath": "licenses/cxf3/CxF_Schema_Open_License.pdf",
       "sha256": "24b06b1d008c8c8cfaf0bd7d3eb092428b2974364685397bd31181820c2a3f4f"
+    },
+    {
+      "savedPath": "resources/fonts/DejaVuSans.ttf",
+      "sha256": "7da195a74c55bef988d0d48f9508bd5d849425c1770dba5d7bfc6ce9ed848954"
+    },
+    {
+      "savedPath": "licenses/fonts/DejaVuSans.ttf.notices.txt",
+      "sha256": "24da3dd89c4ff4815a6a7bb0178c2fcd86e9b548d35d17564839c3fbb57bccd8"
+    },
+    {
+      "savedPath": "licenses/spectralab/LICENSE",
+      "sha256": "1c5acd853fdd29e097ef4747e7170175fd9acc5ca25430859b6f90104d99ba19"
+    },
+    {
+      "savedPath": "licenses/spectralab/LICENSE_NOTE.txt",
+      "sha256": "b1b7f0f41387964e22b59a0b0f6567cad7c0e64336857fd23f00d3da58b3e575"
     }
   ]
 }

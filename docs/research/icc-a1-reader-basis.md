@@ -1,5 +1,7 @@
 # A1 – underlag för InkProfs ICC-läsare
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Datum: 2026-09-27. Status: implementationsunderlag; A1 är nu implementerad. Se [aktuell användning](../usage/icc-reader.md).
 
 ## Rekommendation och avgränsning

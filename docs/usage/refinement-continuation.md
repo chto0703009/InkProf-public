@@ -1,5 +1,7 @@
 # Fortsätta från uppmätt kompletteringsmål till ny ICC och C2
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 `inkprof.continueRefinement` kopplar ihop `refineVerification` och `iterateProfile`. Den används **efter** att det nya kompletteringsmålet skrivits ut utan färgkonvertering och mätts. Den behöver förslagsmappen och den nya mätfilen, inte manuell inställning av BaseInputFolder och RoleFile.
 
 ```matlab
@@ -42,3 +44,7 @@ Utvecklingsmätningar får inte senare kallas oberoende slutverifiering. Den nya
 The same continuation also accepts [image-guided proposals](image-guided-refinement.md). Image colours are interpreted using their embedded ICC profile, or an explicitly accepted sRGB assumption. Step 16 measures the raw device-RGB target; step 17 retains the frozen fitting, adaptive-development and control roles.
 
 A combined image/C2 target uses C2 colour, gray and challenge rows for fitting the next ICC. Repeats and paper-white rows remain controls. All roles and RGB are checked against the frozen C2 reference. These measurements cannot independently validate the next ICC after being used for fitting. See [combined target handling](image-guided-refinement.md#include-c2-until-measured).
+
+## v1.0.0 project settings
+
+Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.

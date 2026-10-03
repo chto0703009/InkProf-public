@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Deterministic PTY fixture: no instrument access."""
 import sys,tty
 assert '-s' in sys.argv and '-e' not in sys.argv and '-N' not in sys.argv

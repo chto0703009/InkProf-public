@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """InkProf single-patch reflectance transport (POSIX, standard library only).
 Workflow and spectral block interpretation informed by SpectraLab v1.2.1-dev
 spotread_manual_measure.py and Parser.m (GPL-3.0); own transport/strict parser.

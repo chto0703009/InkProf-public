@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function result=verificationCandidates(observations,training,settings)
 % MATLAB Base: bounded sampling around model residuals, never an RGB correction.
 assert(size(training,2)==3&&all(isfinite(training),'all')&&all(training>=0&training<=100,'all'),'inkprof:Refinement','Invalid training RGB.');

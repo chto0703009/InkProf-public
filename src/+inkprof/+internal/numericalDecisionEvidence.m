@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function evidence=numericalDecisionEvidence(w,folder,digest)
 % Decision support only; differing training meshes are not equal test sets.
 evidence=struct('purpose',"decision-support-only",'printAccuracyImprovement',"not-assessed", ...

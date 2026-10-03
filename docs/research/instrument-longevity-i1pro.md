@@ -1,5 +1,7 @@
 # Projektmotivering: fortsatt användning av i1Pro och i1Pro 2
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Dokumenterat 2026-09-25 utifrån X-Rites egna supportuppgifter.
 
 ## Varför detta motiverar InkProf

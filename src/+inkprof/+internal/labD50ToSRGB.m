@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function [rgb,clipped]=labD50ToSRGB(lab)
 % Display preview only: D50 Lab -> Bradford D65 -> clipped sRGB.
 assert(size(lab,2)==3&&all(isfinite(lab),'all'),'inkprof:Colour','Finite Lab triplets required.');

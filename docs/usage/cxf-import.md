@@ -1,5 +1,7 @@
 # CxF3-inläsning
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 För RGB-patchdefinitioner rekommenderas TI1/TI2 i första hand och generell CGATS från andra program. CxF är ett kompletterande alternativ, särskilt för strukturerad metadata; se [formatprioriteringen](cgats-import-export.md#rekommenderade-importformat-för-rgb-patchdefinitioner).
 
 Implementerad 2026-09-28. Inläsaren utgår från **ISO 17972-1:2015 / CxF3**.

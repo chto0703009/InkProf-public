@@ -1,5 +1,7 @@
 # InkProf: modell, invers och mätstrategi
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Tekniskt diskussionsunderlag • 25 september 2026 • Version 1.0
 
 **Förslag:** beskriv den samlade utskriftskedjan med en uppmätt RGB-framåtmodell. Beräkna inversen lokalt med en approximerad Jacobian, dämpning och bra startvärden. Anpassa mätningen efter observerade fel och användarens prioriteringar.

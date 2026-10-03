@@ -1,5 +1,7 @@
 # Inversfel i 575-profilen – undersökning 2026-09-27
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 ## Slutsats
 
 Två problem måste skiljas åt: färgfelet från en approximativ B2A-tabell och att framåtmodellen kan ge praktiskt taget samma Lab för olika RGB. En tätare B2A-tabell hjälper det första men löser inte det andra. Profilen är fortfarande en kandidat, inte utskriftsvaliderad.

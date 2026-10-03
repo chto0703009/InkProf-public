@@ -1,5 +1,7 @@
 # C1 – RGB-nät, invers, gråramp och CMM-jämförelse
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 ```matlab
 [gridReport, gridFile] = inkprof.checkProfileGrid(jobFolder);
 ```

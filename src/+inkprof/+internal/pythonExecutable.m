@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function executable=pythonExecutable(requested,root,configured)
 % Resolve a Python executable without running it or searching shell PATH.
 if nargin<2,p=inkprof.paths();root=p.Root;configured=p.PythonConfigured;end

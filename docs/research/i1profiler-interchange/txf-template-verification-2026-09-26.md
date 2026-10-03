@@ -1,5 +1,7 @@
 # TXF-verifiering med licensdongel, 2026-09-26
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Kontroll i i1Profiler 3.8.5 med synlig PUBLISH & DEVICE LINK-licens. Fyra TXF-kandidater från aktuell `createTiff16` provades, baserade på 2033 RGB-patchar, slumpfrö 42 och 287 utfyllnadsfält. Varje kandidat innehåller 580 positioner på en sida.
 
 ## Resultat och korrigering

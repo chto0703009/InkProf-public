@@ -1,5 +1,7 @@
 # Färgavvikelse, branschtoleranser och acceptans i InkProf
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Tillagt 2026-09-29 efter användarens underlag och källkontroll. Detta är
 bakgrund och stöd för val av acceptanskriterier. Inga kodgränser ändras genom
 dokumentet och tidigare mätningar får ingen ny godkännandestatus.

@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function target = importTarget(path, options)
 %IMPORTTARGET Read RGB patch definitions; no measured data or relayout implied.
 % CGATS needs RGBScale. CxF3 uses MaxRange/default 255; Prism PXF/TXF use 255.

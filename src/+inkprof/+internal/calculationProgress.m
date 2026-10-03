@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function [guard,progress]=calculationProgress(title,message,options)
 % Scoped activity feedback. Nested phases reuse one dialog and one timer.
 % Close the guard before requesting input. Batch jobs never open a window.

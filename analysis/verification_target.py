@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """C2 absolute D50 Lab verification definitions; profile applied once to device RGB."""
 import argparse,json,shutil
 from pathlib import Path

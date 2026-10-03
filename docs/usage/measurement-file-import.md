@@ -1,5 +1,7 @@
 # Import av mätfil inför analys och profilering
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Status: grundflöde implementerat 2026-09-27. `inkprof.importMeasurement`
 öppnar filval för TI3/MXF och använder samma interna mätmodell och
 punktmätningsrevisioner. Begränsningar och kvarstående verifiering anges nedan.

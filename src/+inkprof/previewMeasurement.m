@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function fig=previewMeasurement(folder,result)
 %PREVIEWMEASUREMENT Show target swatches and their saved measurement values.
 % Colours are nominal device RGB previews, not a colourimetric rendering.

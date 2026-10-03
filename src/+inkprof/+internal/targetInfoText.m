@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function text=targetInfoText(info)
 %TARGETINFOTEXT Single summary line; full precision/provenance stays in JSON.
 source=string(info.source.fileName);if source=="",source="generated target";end

@@ -1,33 +1,67 @@
-InkProf v0.9 - Release validation
-Date: 2026-09-30
+InkProf v1.0.0 preparation — source 1.0.0-rc.1
+Date: 2026-10-03
 
-Environment: macOS, MATLAB R2025b, Python 3.13.
+Environment: macOS, MATLAB R2025b, Python 3.13, ArgyllCMS 3.5.0.
+Source-only preparation; no stable v1.0.0 tag/release is published by this work.
 
-Public-source automated checks:
-- Python unittest suite: 96 tests passed.
-- MATLAB suite: 86 tests passed across the full run and an environment-test
-  rerun. The full run passed 85 tests; the remaining test initially failed
-  because a temporary .venv symlink resolved outside the checkout. Replacing
-  it with a real local venv fixed the environment check; all three tests in
-  testPython then passed, with none incomplete. No test was weakened.
-- The local venv reused installed development dependency packages through a
-  .pth file. A fresh installation from the package index was not tested.
-- Recorded third-party license inventory and installed versions checked.
-- Included CxF3 schema hash matches the recorded unmodified source.
-- Staged source boundary and high-confidence credential-pattern scan checked.
+PUBLIC SOURCE TESTS
+- Python unittest discovery: 117 tests passed, no failures (16.865 s).
+- Full MATLAB tests: 153 passed, 0 failed, 2 incomplete (168.321 s).
+  The two incomplete tests require INKPROF_TEST_PYTHON and were filtered by
+  their existing assumptions when that variable was absent.
+- Rerun with the public checkout's .venv/bin/python selected:
+  testPython/testRuntime and testSpectralAnalysis/testPythonRoundTrip both
+  passed. Cumulative result: all 155 MATLAB tests passed; none unresolved.
+  No test expectations or skip conditions were weakened.
+- Public .venv reuses installed development dependencies via a .pth file;
+  this is not a fresh package-index installation test.
+- Python compilation of source/build scripts passed.
+- PXF definition export/import round-trip tests passed for the new minimal
+  scaffold. External i1Profiler receiver compatibility is NOT newly tested.
 
-Documentation:
-- Swedish and English presentations: 4 pages each.
-- Swedish and English workflow guides: 11 pages each.
-- Public repository URL and link annotations checked on every PDF page.
-- Layout reviewed; updated footer samples visually inspected.
-- PDF font attribution/license texts included as embedded attachments and
-  in the source archive.
+LICENSING / SOURCE BOUNDARY
+- 279 public first-party MATLAB/Python/JavaScript source files have copyright,
+  GPL-3.0-or-later identifiers and warranty references (287 in private tree).
+- tools/check_release.py passed version, source notices, excluded local-folder
+  checks, unmodified CxF3 schema hash and additional resource hashes.
+- tools/check_license_inventory.py passed exact installed dependency versions
+  and preserved licence-file bytes/hashes.
+- Bundled DejaVu Sans is unmodified and matches its recorded source hash.
+- SpectraLab's original local licence declarations and origin note preserved.
+- Current PXF scaffold is independently authored; old vendor settings removed.
+- Source-only boundary: no external runtime/interpreter, real project data,
+  private measurements or third-party ICC profiles newly distributed.
+- This is a scoped source/notice audit, not universal legal clearance.
 
-Distribution:
-- New public Git history, independent of the private development history.
-- Unclear-rights targets/reference files, vendor screenshots and dependent
-  fixture tests excluded. See RELEASE_SCOPE.md.
-- Source release; MATLAB, Python and ArgyllCMS runtimes are not bundled.
-- No new hardware/print qualification was performed by these automated runs.
-  Automated results do not establish instrument compatibility or ISO certification.
+DOCUMENTATION
+- Current user guides/index and README updated; historical research/planning
+  explicitly labelled and dated evidence preserved.
+- Current README/index/usage Markdown local links checked: none broken.
+- Five current PDFs rebuilt from included sources:
+  Swedish presentation 7 pages; English presentation 7 pages;
+  Swedish app handbook 20 pages; Swedish workflow guide 20 pages;
+  English workflow guide 8 pages.
+- All 62 pages rendered and visually reviewed. Text boundary checks passed.
+- Every page checked for version, author contact, n (total) page numbering
+  and public GitHub link annotation.
+- Full Vera and DejaVu font notices embedded as attachments, byte-checked.
+- A private temporary 9-page certificate preview validated the new font and
+  attachments; existing project/Downloads measurement certificates unchanged.
+
+REMAINING QUALIFICATION
+- Windows/Linux, all physical instrument modes and new matte-shadow accuracy
+  are not qualified by these automated tests.
+- The latest matte feature has an earlier real-ICC target-generation test
+  (48 additional dark fitting patches, combined with C2); no new physical
+  print/measurement validation was performed in this documentation task.
+- ISSUE-001 (inverse sensitivity to measurement noise) remains open.
+- The replacement PXF scaffold needs external receiver testing before any
+  new i1Profiler-compatibility claim. See docs/releases/v1.0.0.md.
+
+REPRODUCE
+python -m unittest discover -s tests -p 'test_*.py'
+MATLAB: addpath('src'); r=runtests('tests'); disp(table(r)); assertSuccess(r)
+Set INKPROF_TEST_PYTHON to the selected Python executable for real-runtime tests.
+python tools/check_release.py
+python tools/check_license_inventory.py
+PDF build commands: docs/releases/v1.0.0.md

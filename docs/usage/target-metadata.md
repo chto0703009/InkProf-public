@@ -1,5 +1,7 @@
 # Gemensam targetinformation i JSON och TIFF
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Infört 2026-09-26. Import och generering använder samma toppnivåfält: **`targetInfo`**. Det gäller importerade PXF/TXF/CxF, TI1, TI2 och RGB-CGATS samt mål från Argyll och InkProfs nätförfining. Äldre filer skrivs inte om automatiskt.
 
 ## Gemensam struktur
@@ -38,4 +40,4 @@ Separat sparade nätdefinitioner använder `definition.ti1SHA256` i design-JSON.
 
 ## Planerad återkoppling från mätfel
 
-Nästa etapp ska kunna koppla profilvalideringens ΔE00 och Lab-residualer tillbaka till enhets-RGB och nätversion, föreslå kompletteringar och behålla tidigare mätningar. Detta är ännu inte implementerat. [Plan och JSON-kontrakt](../planning/error-driven-refinement.md) beskriver separata profilrevisioner, permanent patchkoppling, mätvillkor, utvecklingsvalidering och låst slutkontroll. Den geometriska generatorn får inte beskrivas som felstyrd innan den kedjan finns.
+Nästa etapp ska kunna koppla profilvalideringens ΔE00 och Lab-residualer tillbaka till enhets-RGB och nätversion, föreslå kompletteringar och behålla tidigare mätningar. Detta är ännu inte implementerat. [Plan och JSON-kontrakt](error-driven-refinement.md) beskriver separata profilrevisioner, permanent patchkoppling, mätvillkor, utvecklingsvalidering och låst slutkontroll. Den geometriska generatorn får inte beskrivas som felstyrd innan den kedjan finns.

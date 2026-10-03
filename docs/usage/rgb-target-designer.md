@@ -1,5 +1,7 @@
 # RGB-target: iterativ förtätning och Argyll-alternativ
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Infört 2026-09-26 som en geometrisk prototyp. Ingen uppmätt färgmodell ingår och ingen profilnoggrannhet utlovas.
 
 ## Öppna fönstret
@@ -78,7 +80,7 @@ Att frysa nivån undviker att algoritmen hela tiden flyttar sitt mål till nya, 
 - Extra upprepningar kopierar ett jämnt urval av index i anpassningsmängden. De har egna prov-ID och `repeatOf`-referenser. Urvalet är ännu inte en optimerad fördelning mellan vitt, svart och olika kulörer.
 - Definitionen sparar RGB som flyttal. TIFF16-kvantisering hör till det senare utskriftssteget.
 
-Rollerna sparas som `fit`, `control` och `repeat`. Alla skrivs ut och mäts. **Framtida profilbyggande måste utesluta kontrollrollerna och hantera upprepningar uttryckligt.** En generell TI3 innehåller inte automatiskt denna policy. Nuvarande generella mätimport för inte automatiskt över designerrollerna; design-JSON måste bevaras och kopplas via den matchande layouten. Automatisk rollkoppling till profilbygge återstår.
+Rollerna sparas som `fit`, `control` och `repeat`. Alla skrivs ut och mäts. **Profilbyggandet ska använda den sparade rollfilen för att skilja träning och kontroller.** En generell TI3 innehåller inte automatiskt denna policy. Nuvarande generella mätimport för inte automatiskt över designerrollerna; design-JSON måste bevaras och kopplas via den matchande layouten. Projektets iterationsflöde kopplar roller och kontrollerar dem före fortsatt profilering; fristående importer kräver rätt matchande underlag.
 
 ## Argyll-alternativet
 
@@ -159,4 +161,8 @@ Tyngdpunkter behålls som förval: de nya alternativen förbättrade inte alla t
 
 ## Planerad återkoppling från mätfel
 
-Nästa etapp ska kunna koppla profilvalideringens ΔE00 och Lab-residualer tillbaka till enhets-RGB och nätversion, föreslå kompletteringar och behålla tidigare mätningar. Detta är ännu inte implementerat. [Plan och JSON-kontrakt](../planning/error-driven-refinement.md) beskriver separata profilrevisioner, permanent patchkoppling, mätvillkor, utvecklingsvalidering och låst slutkontroll. Den geometriska generatorn får inte beskrivas som felstyrd innan den kedjan finns.
+Nästa etapp ska kunna koppla profilvalideringens ΔE00 och Lab-residualer tillbaka till enhets-RGB och nätversion, föreslå kompletteringar och behålla tidigare mätningar. Detta är ännu inte implementerat. [Plan och JSON-kontrakt](error-driven-refinement.md) beskriver separata profilrevisioner, permanent patchkoppling, mätvillkor, utvecklingsvalidering och låst slutkontroll. Den geometriska generatorn får inte beskrivas som felstyrd innan den kedjan finns.
+
+## v1.0.0 project settings
+
+Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.

@@ -1,5 +1,7 @@
 # Referensfall: Chart 2033 Patches
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Granskat 2026-09-25. Originalfiler tillhandahållna av Christer från i1Profiler. Exakt i1Profiler-version är ännu inte angiven. Ingen import tillbaka i i1Profiler eller fysisk mätning har genomförts.
 
 **Senare komplettering samma dag:** en TXF har nu tillkommit och granskats separat i [TXF-anteckningen](chart-2033-txf-inspection.md). Uppgifter nedan om avsaknad av TXF beskriver det första underlaget med två filer.

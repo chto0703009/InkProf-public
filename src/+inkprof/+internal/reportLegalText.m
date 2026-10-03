@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function legal=reportLegalText()
 % Shared existing report wording; shown only in the appendix after signatures.
 legal.reproductionLiability="Utföraren av profileringen ansvarar inte för avvikelser som enbart beror på inneboende, fysiska begränsningar hos den aktuella kombinationen skrivare, papper och bläck, förutsatt att uppdraget i övrigt har utförts fackmässigt och enligt avtal. En ICC-profil innebär inte någon utfästelse om återgivning av färger, svärta, kontrast eller tonomfång utöver denna kombinations faktiska förmåga. Denna ansvarsbegränsning omfattar inte fel i utförarens eget arbete, bristfälliga instruktioner eller rekommendationer, avvikelser från uttryckligen avtalade åtaganden eller ansvar som följer av tvingande lag.";

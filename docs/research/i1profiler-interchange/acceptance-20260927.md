@@ -1,5 +1,7 @@
 # Acceptans av provat RGB-utbyte – 2026-09-27
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Christer har accepterat det provade utbytet mellan InkProf och i1Profiler.
 Acceptansen gäller nedanstående konkreta flöden, inte alla programversioner,
 filvarianter, instrument eller mätvillkor.

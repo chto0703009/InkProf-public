@@ -1,5 +1,7 @@
 # Analys: fungerande MXF, avvisade InkProf-exporter och ChromIQ
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Aktuell status: se [acceptans 2026-09-27](acceptance-20260927.md).
 Daterade uppgifter om väntande importprov nedan beskriver tidigare felsökning.
 

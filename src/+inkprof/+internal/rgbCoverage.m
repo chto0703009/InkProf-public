@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function result=rgbCoverage(rgb)
 %RGBCOVERAGE Separate sampled interior/surface coverage; not colour error.
 a=linspace(0,1,33);[r,g,b]=ndgrid(a,a,a);q=[r(:) g(:) b(:)];

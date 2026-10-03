@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function report=exportTxfTarget(packageFolder,outputFolder,options)
 %EXPORTTXFTARGET Experimental TXF candidates plus exact patch mapping.
 % One TXF per printed page. NOT yet qualified for measuring existing prints.

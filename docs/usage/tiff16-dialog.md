@@ -1,5 +1,7 @@
 # TIFF16-dialog för patchdefinitioner
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Öppna i MATLAB efter `setupInkProf()`:
 
 ```matlab
@@ -10,7 +12,7 @@ window=inkprof.renderTarget(fullfile(paths.Projects,'chart.pxf'));
 
 Dialogen är på engelska. Välj indatafil med **Browse…**: stödda RGB-varianter av TI1, TI2, PXF, TXF, CGATS/TXT och CxF hanteras av den befintliga importören. För generell CGATS/CxF väljs explicit RGB-skala när formatet kräver det. CMYK avvisas.
 
-**A4 landscape**, 297 × 210 mm, och 300 dpi är förval. Välj ett annat standardformat eller ändra bredd/längd för **Custom**. Bredd inklusive marginaler får vara högst 320 mm. Längden bestäms av användaren, utan tidigare gräns på 280 mm; faktiskt möjliga bildstorlekar beror på tillgängligt minne och renderaren. DPI kan vara 72–1200.
+**A4 landscape**, 297 × 210 mm, och 300 dpi är förval. Välj ett annat standardformat eller ändra bredd/längd för **Custom**. Måttgränser hämtas från Project details → Target paper; 320 × 370 mm är ändringsbara startvärden. Längden bestäms av användaren, utan tidigare gräns på 280 mm; faktiskt möjliga bildstorlekar beror på tillgängligt minne och renderaren. DPI kan vara 72–1200.
 
 Indatafilens basnamn plus `-TIFF16` föreslås som **Output package name**. **Generate and save…** öppnar en dialog där namn och överordnad mapp kan ändras. Namnet avser en ny paketmapp; inuti behålls standardnamnen `target*.tif`, `target.ti1`, `target.ti2` och JSON-filer. Befintliga paket skrivs inte över. Genereringen är synkron; vänta tills den avslutats innan fönstret stängs.
 

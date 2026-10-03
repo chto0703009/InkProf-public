@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function image=drawBitmapText(image,text,positionMm,dpi,heightMm,alignment,inkValue)
 %DRAWBITMAPTEXT Draw small dependency-free labels into an RGB image.
 arguments

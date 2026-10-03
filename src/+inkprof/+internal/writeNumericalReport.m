@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function paths=writeNumericalReport(w,profile,folder,notes)
 % Separate evidence scope: never borrow C3 or approval from an older cycle.
 assert(w.valid('checks'),'inkprof:WorkflowBlocked','Current numerical checks are required.');

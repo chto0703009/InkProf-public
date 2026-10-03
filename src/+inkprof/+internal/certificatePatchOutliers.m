@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function r=certificatePatchOutliers(c3)
 % Use a disclosed ISO-related reference, not an ISO compliance decision.
 r=struct('threshold',5,'metric',"CIEDE2000",'isoCompliance',"not-assessed", ...

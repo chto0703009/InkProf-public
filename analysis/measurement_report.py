@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 import json,re,hashlib,shutil
 from pathlib import Path
 from reportlab.pdfgen import canvas
@@ -112,6 +116,8 @@ for (sheet,row),idx in sorted(groups.items()):
   c.rect(32+44+32+7,top-(ordinal+1)*height+3,30,height-6,fill=1,stroke=1)
  txt(32,57,f'! = dE TI2 > {args.target_warning_threshold:g}. Grovkontroll mot uppskattade färger, inte profilfel. Färgrutan är en sRGB-förhandsvisning.',8)
  c.showPage()
+from pdf_notices import attach
+attach(c)
 c.save()
 sidecar=out.with_suffix('.target-check.json')
 with sidecar.open('x') as handle:json.dump(target,handle,indent=2,allow_nan=False)

@@ -1,5 +1,7 @@
 # Optiska vitmedel: OBA, FWA och OBC
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Uppdaterat 2026-10-02. InkProf erbjuder nu valbar D50-kompensation i projektdefinitionen. Direktmätningens instrumentläge ändras inte.
 
 ## Begrepp och fysisk betydelse

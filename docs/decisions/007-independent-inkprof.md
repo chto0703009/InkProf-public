@@ -1,5 +1,7 @@
 # 007 - Självständigt InkProf
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Datum: 2026-09-26. Status: beslutad arkitektur. Ersätter beroendet av SpectraLab i tidigare planer och beslut 006.
 
 InkProf ska kunna installeras och köras utan Camera-41 och SpectraLab. Projektet äger sin chartmodell, sina mätningar, färgberäkningar och sin historik. Ingen sökväg till dessa projekt ska behövas i MATLAB-path, Python-miljö eller lokal konfiguration.

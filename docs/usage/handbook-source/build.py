@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 from pathlib import Path
 import json, os, sys
 from xml.sax.saxutils import escape
@@ -17,7 +21,7 @@ for name,file in [('Vera','Vera.ttf'),('VeraBold','VeraBd.ttf')]: pdfmetrics.reg
 pdfmetrics.registerFontFamily('Vera',normal='Vera',bold='VeraBold',italic='Vera',boldItalic='VeraBold')
 INK=HexColor('#182F42');TEAL=HexColor('#007F83');MUTED=HexColor('#50616C');PALE=HexColor('#EDF5F5');LINE=HexColor('#D3E1E5')
 S={k:ParagraphStyle(k,fontName=f,fontSize=z,leading=l,textColor=c,spaceAfter=a,spaceBefore=b,keepWithNext=k in ('title','h','tag')) for k,f,z,l,c,a,b in [('title','VeraBold',24,29,INK,13,0),('tag','VeraBold',8.5,12,TEAL,7,0),('lead','Vera',11.4,16,INK,12,0),('h','VeraBold',11,15,INK,4,9),('body','Vera',9.7,14,INK,7,0),('cell','Vera',8.4,11.7,INK,0,0),('small','Vera',8.2,11.5,MUTED,5,0)]}
-pdfmetrics.registerFont(TTFont('Greek','/System/Library/Fonts/Supplemental/Arial.ttf'))
+pdfmetrics.registerFont(TTFont('Greek',str(ROOT.parents[2]/'resources/fonts/DejaVuSans.ttf')))
 def p(t,k='body'):return Paragraph(t.replace('Δ','<font name="Greek">Δ</font>'),S[k])
 class Pages(canvas.Canvas):
  def __init__(self,*a,**kw):super().__init__(*a,**kw);self.states=[]
@@ -26,7 +30,7 @@ class Pages(canvas.Canvas):
   n=len(self.states);ann=self._annotationCount
   for st in self.states:
    self.__dict__.update(st);self._annotationCount=ann
-   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf Quality Profiling RGB printer')
+   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf Quality Profiling RGB printer | 1.0.0-rc.1')
    self.setFont('Vera',7.7);self.setFillColor(MUTED);self.drawCentredString(105*mm,277.5*mm,'Christer Törnkvist  |  christer@borgasundsfotografiska.se')
    self.setStrokeColor(LINE);self.setLineWidth(.6)
    self.line(18*mm,273.5*mm,192*mm,273.5*mm);self.line(18*mm,22*mm,192*mm,22*mm)
@@ -34,6 +38,9 @@ class Pages(canvas.Canvas):
    self.setFillColor(TEAL);self.drawCentredString(105*mm,11*mm,'christer@borgasundsfotografiska.se')
    url='https://github.com/chto0703009/InkProf-public';self.setFont('Vera',7);self.drawCentredString(105*mm,6*mm,url);self.linkURL(url,(45*mm,4*mm,165*mm,9*mm),relative=0)
    ann=self._annotationCount;super().showPage()
+  sys.path.insert(0,str(ROOT.parents[2]/'analysis'))
+  from pdf_notices import attach
+  attach(self)
   super().save()
 class Diagram(Flowable):
  def __init__(self):Flowable.__init__(self);self.width=174*mm;self.height=59*mm

@@ -1,5 +1,7 @@
 # Scan direction and row-order diagnostics
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 The measurement dialog states FORWARD (left to right on the printed chart)
 or REVERSE (right to left). The direction is recalculated from the selected
 pass after Previous, Next and Next unread; navigation does not count as a

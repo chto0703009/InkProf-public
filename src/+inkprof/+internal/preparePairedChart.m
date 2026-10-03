@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function plan=preparePairedChart(folder)
 % Two logical passes per physical row. Reverse pass has reversed identities,
 % so chartread -B stores both readings separately without overwriting.

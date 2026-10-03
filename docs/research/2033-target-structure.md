@@ -1,5 +1,7 @@
 # Struktur i Chart 2033 Patches.txt
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Undersökt 2026-09-28. RGB-värdena i denna fil är på skalan 0–255.
 
 De första 1872 patcharna bildar ett komplett kartesiskt nät med 12 R-nivåer, 13 G-nivåer och 12 B-nivåer. R/B-steget är ungefär 23,18/255 = 9,09 procentenheter och G-steget 21,25/255 = 8,33 procentenheter. Detta är generell förtätning utan att känna skrivarens individuella fel.

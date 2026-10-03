@@ -31,7 +31,7 @@ InkProf does not explicitly activate LittleCMS's optional speed plug-ins. Their 
 The complete, unmodified license file shipped with the reviewed Pillow installation is preserved as [Pillow-12.3.0-bundled-LICENSE.txt](licenses/Pillow-12.3.0-bundled-LICENSE.txt). It also contains notices for libraries included by that distribution; its inclusion does not mean InkProf directly uses every listed component.
 
 Source within the installed package: `pillow-12.3.0.dist-info/licenses/LICENSE`.
-Reviewed: 2026-09-27.
+Rechecked: 2026-10-03.
 SHA-256: `dda12a98c1979cf3d94df1cff45d27a4cb3f04a60c76f76902ac54cac03ec0ce`.
 
 When redistributing these dependencies, include their applicable notices and full license texts, including the bundled notices for the actual binaries distributed. Refresh these records when versions or packaging change. The inventory below extends this review to the installed Python runtime dependencies and selected external tools; it is not a complete legal clearance.
@@ -60,13 +60,13 @@ Preserved from the installed distribution: [AGPL text](licenses/ArgyllCMS-3.5.0-
 
 ## Fonts used by PDF reports
 
-Bitstream Vera supplied by ReportLab is embedded in measurement reports. The full [Bitstream Vera copyright and license](licenses/Bitstream-Vera.txt) is preserved. Internal ReportLab aliases in existing code do not make these Microsoft Arial font files. Other ReportLab fonts are not selected by the current measurement-report routine. Review font permissions when adding or changing fonts or distributing generated documents.
+Bitstream Vera supplied by ReportLab is embedded in measurement reports. The full [Bitstream Vera copyright and license](licenses/Bitstream-Vera.txt) is preserved. Internal ReportLab aliases in existing code do not make these Microsoft Arial font files. Current certificate PDFs use the unmodified bundled DejaVu Sans font; documentation also uses ReportLab’s unmodified Vera and Vera Bold. Font licence texts are attached to newly generated PDFs. Review font permissions when adding or changing fonts or distributing generated documents.
 
 ## External runtimes and source provenance
 
-MATLAB is proprietary software from MathWorks, installed/licensed separately. Python's standard library and interpreter retain Python's own terms. Neither runtime is relicensed as InkProf code. No runtime distribution is covered by this inventory.
+MATLAB is proprietary software from MathWorks, installed/licensed separately. Python's standard library and interpreter retain Python's own terms. Neither runtime is relicensed as InkProf code. No interpreter or proprietary runtime is distributed. The separately licensed DejaVu font is the only newly bundled binary resource in this preparation.
 
-`bridge/spotread_bridge.py` records workflow/parser knowledge from SpectraLab v1.2.1-dev (`spotread_manual_measure.py`, `Parser.m`); that source's local LICENSE_NOTE declares GPL v3. The existing origin note is retained. Earlier project inventories reference Camera-41 and ChromIQ; a reference is not itself a source-code import. No ChromIQ source was copied in the recent ICC implementation. This review is not an exhaustive line-by-line provenance determination of all historical code.
+`bridge/spotread_bridge.py` records workflow/parser knowledge from SpectraLab v1.2.1-dev (`spotread_manual_measure.py`, `Parser.m`); that source's local LICENSE_NOTE declares GPL v3. The existing origin note is retained. Earlier project inventories reference Camera-41 and ChromIQ; a reference is not itself a source-code import. No ChromIQ source was copied in the recent ICC implementation. The local SpectraLab LICENSE explicitly selects GPL-3.0-or-later; both its LICENSE and shorter LICENSE_NOTE are preserved in licenses/spectralab. The bridge provenance note remains intact. The v1.0.0 review covers the current release tree, not a claim of legal clearance for every historical private artifact.
 
 User-supplied ICC profiles, measurement data, vendor PDFs and screenshots retain their own rights. Local availability is not redistribution permission. They are not covered by InkProf's GPL declaration. Review each file's terms before including it in a release.
 
@@ -91,10 +91,13 @@ is the Colour Developers mirror; no Colour-CxF implementation or X-Rite SDK
 code is included. InkProf's independently implemented reader remains GPL-3.0-or-later.
 Validation of this schema is not a certification of every ISO 17972 workflow.
 
-## Public v0.9 documentation fonts
+## v1.0.0 source preparation review (2026-10-03)
 
-The four presentation/workflow PDFs include embedded font subsets. Bitstream Vera notices are above. DejaVu Sans (Bitstream/Arev notices; DejaVu changes public domain), Ubuntu Bold (Canonical, Ubuntu Font Licence 1.0) and Inconsolata (SIL Open Font License 1.1) are used by the workflow guides. Exact embedded-font copyright/licence metadata, full licence texts and source/hash records are in [licenses/fonts](licenses/fonts/). These notices are also attached to the distributed PDFs. No standalone font binaries are included.
+- Own MATLAB/Python/JavaScript source files now carry copyright, GPL-3.0-or-later identifiers and warranty references. [Source coverage check](tools/check_release.py) prevents missing notices in the release tree.
+- DejaVu Sans is redistributed unmodified at `resources/fonts/DejaVuSans.ttf`, with its [exact embedded copyright and licence notice](licenses/fonts/DejaVuSans.ttf.notices.txt) and hash in `licenses/fonts/provenance.json`. It supplies the real Greek Delta glyph. No Microsoft Arial font is required by the handbook builder. The former Vera glyph remapping is removed. Legacy Ubuntu/Inconsolata notices are retained for older documentation history.
+- The bundled PXF scaffold was rewritten as minimal InkProf-authored XML. It contains format identifiers and no copied vendor profile recipe, device serial or private calibration settings. InkProf round-trip tests apply; compatibility of this replacement with an external i1Profiler installation must be tested separately. Users may supply their own compatible template. Earlier receiver tests do not qualify this new scaffold.
+- The CxF3 XSD remains byte-identical to its separately licensed source, with the complete licence supplied.
+- Colour-science datasets, NumPy/SciPy native libraries and Pillow bundled codecs are installed dependencies, not copied into this source release. Their preserved distribution notices remain applicable when packaging those actual dependencies.
+- Standards, ICC specifications and referenced manufacturer documents are citations, not relicensed source imports. User measurements and third-party ICC files are excluded from the public release.
 
-## Public snapshot exclusions
-
-The private development fixtures and vendor screenshots with unresolved redistribution rights are excluded from v0.9 and from its public Git history. See [RELEASE_SCOPE.md](RELEASE_SCOPE.md). References in earlier research notes describe investigations, not bundled third-party data. Synthetic fixtures remain available for the public tests.
+See [licensing review](licenses/review-v1.0.0.md) and [release scope](RELEASE_SCOPE.md). A source/notice audit does not determine every possible legal question about future binaries, services or contributions.

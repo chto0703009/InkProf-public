@@ -1,5 +1,7 @@
 # Automatisk profiliteration från mätning
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 `inkprof.iterateProfile` kopplar ihop validerad inläsning, fryst träningsunderlag,
 Argyll-profilering, modelljämförelse, numerisk kontroll och utskrivbara TIFF16-mål.
 MATLAB Base styr flödet; Python och Argyll gör färgberäkningarna. Ingen koppling
@@ -144,3 +146,7 @@ C3 ger nu en maskinläsbar diagnostisk prioritering, med konfigurerbara gränser
 ## Fortsätt efter kompletteringsmätning
 
 [`continueRefinement`](refinement-continuation.md) hittar förälderns låsta träningspaket och målets rollplan, validerar den nya mätningen och anropar profiliterationen med rätt kopplingar.
+
+## v1.0.0 project settings
+
+Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.

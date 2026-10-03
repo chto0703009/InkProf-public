@@ -1,5 +1,7 @@
 # C1 – verifiering 2026-09-27
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Status: **Tekniskt genomförd för den aktuella kandidaten; klar för användarens acceptans.**
 
 Kandidat: Epson 3880 / Glossy / 575 korrigerade mätpatchar, A2B medium och B2A high. Jobb `63dfb8f4-034b-488e-82b0-341511343016`, SHA256 `90ac68bb407ceacc1b59edb0e838e76d0d54dcf1218d49ff8ee57d4cb8cc1258`. Alla kontroller nedan avser relativ kolorimetri utan BPC.

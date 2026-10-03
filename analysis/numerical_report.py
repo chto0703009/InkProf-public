@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Portable numerical-only ICC report, explicitly excluding print validation."""
 import html
 import json
@@ -164,14 +168,8 @@ def create(folder, language="sv"):
     document = "<!doctype html><html lang='sv'><meta charset='utf-8'><title>InkProf - mätcertifikat</title><style>body{font:16px system-ui;background:#eef2f4;color:#19303c}article{background:white;max-width:850px;margin:24px auto;padding:35px;overflow-wrap:anywhere}header,footer{font-size:13px;color:#52656e}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:15px}h1{font-size:24px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:8px;border-bottom:1px solid #ccd8de;text-align:left}.patches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.patch{border:1px solid #ccc;padding:5px;font-size:12px;break-inside:avoid}@media print{article{break-after:page;margin:0}}</style>"+''.join(pages)+"<nav>"+delivery_link+"<a href='final-report.pdf'>PDF</a> | <a href='final-report.json'>JSON</a> | <a href='profile.icc'>ICC</a><ul>"+links+'</ul></nav></html>'
     (folder / 'final-report.html').write_text(document, encoding='utf-8')
     fonts = Path(reportlab.__file__).parent / 'fonts'
-    for name, filename in [('Report','Vera.ttf'),('ReportBold','VeraBd.ttf')]:
-        font = TTFont(name,str(fonts/filename))
-        # Vera has the triangular increment glyph but no U+0394 Greek Delta.
-        # Reuse that glyph while preserving U+0394 in the PDF text mapping.
-        if 0x394 not in font.face.charToGlyph:
-            font.face.charToGlyph[0x394] = font.face.charToGlyph[0x2206]
-            font.face.charWidths[0x394] = font.face.charWidths[0x2206]
-        pdfmetrics.registerFont(font)
+    for name in ['Report', 'ReportBold']:
+        pdfmetrics.registerFont(TTFont(name, str(Path(__file__).resolve().parents[1]/'resources/fonts/DejaVuSans.ttf')))
     styles = getSampleStyleSheet()
     for style in styles.byName.values():
         style.fontName = 'Report'
@@ -237,6 +235,8 @@ def create(folder, language="sv"):
                 self.drawRightString(192*mm, 12*mm, f'{self._pageNumber} ({total})')
                 self.restoreState()
                 super().showPage()
+            from pdf_notices import attach
+            attach(self)
             super().save()
 
     SimpleDocTemplate(str(folder / 'final-report.pdf'), pagesize=(210*mm, 297*mm),

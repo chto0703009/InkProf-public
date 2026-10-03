@@ -1,5 +1,7 @@
 # Chartinläsning och interaktiv radmätning
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 ## Varning: externa utskrifter utan kontrastmarkörer
 
 **Mål som skrivits ut utan kontrastmarkörer mellan patcharna kan ge problem vid radmätning med chartread**, särskilt när intilliggande patchar har snarlika färger. Det kan exempelvis ge fel om för få eller för många patchar. En korrekt importerad patchdefinition garanterar inte att det befintliga arket går att läsa tillförlitligt.
@@ -222,7 +224,7 @@ Källor: [chartread](https://www.argyllcms.com/doc/chartread.html), [TI3](https:
 
 ## Egen punktomläsning och självständighet
 
-InkProf har inget körberoende till SpectraLab eller Camera-41. Separat punktomläsning ska implementeras i InkProf med Argyll `spotread`, stabil patchkoppling, bevarade original och godkända revisioner. Funktionen är ännu inte implementerad. Chartreads radomläsning och återupptagning är ett annat flöde och kräver fysisk verifiering. Se [beslut 007](../decisions/007-independent-inkprof.md).
+InkProf har inget körberoende till SpectraLab eller Camera-41. Separat punktomläsning är implementerad med Argyll `spotread`, stabil patchkoppling, bevarade original och accepterade sparade revisioner. Granska och spara kandidaten; att mäta en gång till ersätter inte automatiskt den använda revisionen. Chartreads radomläsning och återupptagning är ett annat flöde och kräver fysisk verifiering. Se [beslut 007](../decisions/007-independent-inkprof.md).
 
 ## Rättning efter första startprov, 2026-09-26
 

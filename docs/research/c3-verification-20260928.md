@@ -1,5 +1,7 @@
 # C3 – första uppmätta kontrollen, 2026-09-28
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 **Diagnostiskt resultat; profilen är inte utskriftsgodkänd.**
 Utskriftskedjan ska granskas med skärmdumpar. Användaren rapporterar Photoshop
 Printer Manages Colors, Absolute Colorimetric och gråat Off i drivrutinen.

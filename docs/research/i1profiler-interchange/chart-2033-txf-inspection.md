@@ -1,5 +1,7 @@
 # Referensfall: Chart 2033 Patches.txf
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Granskat 2026-09-25. Kompletterar [granskningen av PXF och TXT](chart-2033-inspection.md).
 
 ## Original och metod

@@ -1,5 +1,7 @@
 # Matte paper: additional shadow sampling
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 InkProf can allocate more measurement patches and numerical table resolution to dark colours on matte paper. This is an InkProf strategy using documented ArgyllCMS options, not an official ArgyllCMS matte-paper preset. Additional samples help describe shadows; improvement must be established by printing and measuring.
 
 In **Project details > Profiling**, choose **Extra shadow detail for Matte**. It activates only when **Paper finish = Matte**. The adjustable defaults are:

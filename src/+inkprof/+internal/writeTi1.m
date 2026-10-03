@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function xyz=writeTi1(path,target,template)
 % Keep Argyll's own spacer/device helper tables; replace only the target table.
 raw=fileread(template); ends=regexp(raw,'(?m)^END_DATA\s*\n','end');

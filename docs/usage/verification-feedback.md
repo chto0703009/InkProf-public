@@ -1,5 +1,7 @@
 # Verifieringsanalys som återkoppling till iterationen
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 `inkprof.analyseVerification` analyserar ett sparat C3 `verification-check.json`. Beräkningarna sker i Python; MATLAB Base ger anropet. Från och med denna ändring skapar även nya C3-körningar automatiskt `iteration-feedback.json`, `.md` och `feedback.log` med standardparametrar, tillsammans med C3-rapporten.
 
 ```matlab

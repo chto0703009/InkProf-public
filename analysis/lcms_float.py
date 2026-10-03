@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """LittleCMS public C API with double RGB/Lab buffers (not Pillow's 8-bit path).
 API constants/signatures: LittleCMS lcms2.h, MIT, see THIRD_PARTY_NOTICES.md.
 No claim that internal LUT calculations use double precision throughout.

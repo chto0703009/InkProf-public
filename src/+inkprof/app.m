@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function fig=app(projectFolder)
 %APP Project workflow for the complete InkProf profiling chain.
 % inkprof.app() or inkprof.app('/path/to/existing/project')
@@ -5,7 +9,7 @@ arguments
  projectFolder (1,1) string = ""
 end
 w=[];busy=false;selected="definition";defs=inkprof.internal.workflowSteps();
-fig=uifigure('Name','InkProf | Projects and iterations','Position',[80 70 1220 810],'Tag','InkProfWorkflow');
+fig=uifigure('Name',char("InkProf "+inkprof.version()+" | Projects and iterations"),'Position',[80 70 1220 810],'Tag','InkProfWorkflow');
 fig.CloseRequestFcn=@closeApp;
 g=uigridlayout(fig,[5 1]);g.RowHeight={42,40,48,'1x',42};g.Padding=[18 14 18 14];
 heading=uilabel(g,'Text','InkProf | Project-based profiling','FontSize',23,'FontWeight','bold');

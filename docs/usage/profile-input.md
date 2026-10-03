@@ -1,5 +1,7 @@
 # B1 – välj och lås profileringsunderlag
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 **MXF-import:** kompletta mätvärden betyder inte att utskriftsuppgifterna är fullständiga. Kontrollera skrivare, pappersprodukt, drivrutinsinställningar, färghantering och mätvillkor; behåll obekräftade uppgifter som unknown. Se [varning och regler för komplettering](measurement-file-import.md#varning-mxf-kan-behöva-kompletterande-uppgifter).
 
 Implementerad 2026-09-27; användaracceptans återstår. A1 och A2 är användargodkända.

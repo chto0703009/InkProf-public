@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Image-selected device RGB probes. No print accuracy or gamut claim.
 MATLAB supplies full precision 8/16-bit samples; ICC metadata comes from Pillow.
 """

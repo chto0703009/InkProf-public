@@ -1,5 +1,7 @@
 # InkProf: antal patchar och täckning av RGB-rummet
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Datum: 2026-09-26. Första utredningen. Rekommendationerna är försöksförslag, inte verifierade kvalitetslöften. Inga nya utskrifter eller instrumentmätningar har genomförts för denna analys.
 
 ## Rekommendation

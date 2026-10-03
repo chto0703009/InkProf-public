@@ -1,5 +1,7 @@
 # Sammanhållet profileringsprojekt
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Ett profileringsarbete bor i en gemensam mapp med `inkprof-project.json`. JSON-filer för definition, layout, mätning och analys behåller sina egna roller; projektmanifestet sammanställer dem och lagrar historik.
 
 ```matlab
@@ -23,7 +25,7 @@ Spara definitioner under projektet och öppna dem med `inkprof.renderTarget`. Re
 
 MATLAB-API:erna registrerar framgångsrik sparning av RGB-definition, TIFF16-paket, chart-förberedelse, mätinställningar, mätresultat, spektralanalys och PDF/kontrollrapport. Äldre fristående mappar fortsätter fungera utan att omvandlas automatiskt. Om ett manifest inte går att uppdatera efter sparning visas en varning; sparade mätdata förstörs inte. Kör då `inkprof.updateProject(project)`.
 
-Filer som kopieras manuellt eller skapas genom direkta Python-/Argyll-CLI-anrop registreras med samma uppdateringsfunktion efteråt. Ingen bakgrundsbevakning av filsystemet är installerad. Framtida profilgenerering ska anropa samma registreringsfunktion när profilen är färdig.
+Filer som kopieras manuellt eller skapas genom direkta Python-/Argyll-CLI-anrop registreras med samma uppdateringsfunktion efteråt. Ingen bakgrundsbevakning av filsystemet är installerad. Profilgenerering och leverans registreras i projektets manifest och arbetsgång när operationerna slutförs.
 
 ```matlab
 inkprof.updateProject(project,Step="external-files-imported");
@@ -48,3 +50,7 @@ inkprof.updateProject(project,Step="physical-print-recorded",Printing=printing);
 Den aktuella 575-patchkedjan är kopierad till `projects/Canon-575-20260927`. Originalmapparna har bevarats. Alla kopierade filer verifierades med SHA256. Historiska absoluta sökvägar i rådata har inte skrivits om, eftersom det skulle ändra kontrollsummor. `relocations` kopplar deras gamla rotmappar till relativa sökvägar inom projektet; PDF-rutinen använder denna koppling för layouten. Nya mätningar ska startas från den kopierade TI2-filen i projektets targets-mapp.
 
 Ta med hela projektmappen vid överföring till en annan dator. `inkprof.updateProject` kan därefter uppdatera inventeringen utan att vara beroende av den gamla projektrotens sökväg.
+
+## v1.0.0 project settings
+
+Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.

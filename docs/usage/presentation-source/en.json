@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf - When colours have to be right",
+    "tag": "InkProf - When colours have to be right | v1.0.0 - PREPARATION",
     "title": "Your image deserves the right colours",
     "lead": "You chose the light, shaped the image and worked on every nuance. When the image reaches paper, that work should come with it.",
     "sections": [
@@ -198,5 +198,28 @@
         "https://www.argyllcms.com/doc/iccgamut.html"
       ]
     ]
+  },
+  {
+    "tag": "v1.0.0 | NEW OPTIONS",
+    "title": "Understand your materials",
+    "sections": [
+      [
+        "One project definition",
+        "Printer, paper and finish, dye or pigment ink, printer coating and drying time are recorded centrally and included in the measurement certificate."
+      ],
+      [
+        "More dark colour samples for matte paper",
+        "An editable shadow strategy proposes up to 48 extra dark fitting patches per iteration and denser numerical shadow tables. Colour selection follows the current profile’s black-to-white range."
+      ],
+      [
+        "Paper according to need",
+        "Cut-sheet or roll suggestions adapt to patch count and your measurement sled dimensions. Suggestions and limits remain editable."
+      ],
+      [
+        "Release preparation",
+        "This documentation accompanies 1.0.0-rc.1 ahead of v1.0.0. New features do not alter saved targets or measurements. Assess improvement through printing and measurement."
+      ]
+    ],
+    "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub."
   }
 ]

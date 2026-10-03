@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """POSIX PTY transport for chartread. JSON-lines stdin/stdout; raw transcript on disk.
 No prompt guessing, automatic keypresses, or claims of successful measurement.
 """

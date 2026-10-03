@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function result=averagePairedMeasurement(folder,raw,threshold)
 if nargin<3,threshold=1;end
 % Equal-weight spectral/XYZ mean. Preserve raw readings and comparison data.

@@ -1,5 +1,7 @@
 # InkProf – standard för utskrift av mål
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 ## Varning: externa utskrifter utan kontrastmarkörer
 
 **Mål som skrivits ut utan kontrastmarkörer mellan patcharna kan ge problem vid radmätning med chartread**, särskilt när intilliggande patchar har snarlika färger. Det kan exempelvis ge fel om för få eller för många patchar. En korrekt importerad patchdefinition garanterar inte att det befintliga arket går att läsa tillförlitligt.
@@ -88,7 +90,7 @@ Dokumentera skrivare, papper, utskriftsprogram/drivrutin, medieläge och kvalite
 
 ## Implementation
 
-Kontrastmarkörer är ett beslutat standardkrav. Gemensamt förval återstår: `createTarget` använder ännu `SpacerMode="auto"`, medan det provade kontrastmålet använder `"colored"`; den fasta 29 × 20-mallen saknar kontrastfält. Generell MXF-mätimport är ett specificerat flöde och ska verifieras per formatvariant.
+Projektets generella targetflöde använder kontrastmarkörer; kompletteringsmål använder svart/vitt. Äldre createTiff16-mallar har annan layout och ska inte förväxlas med nuvarande appflöde. MXF-import finns för de dokumenterade formatvarianterna.
 
 Centrerad fullständig TIFF-sökväg är implementerad i båda renderingsvägarna, tillsammans med rubrik, datum/tid och sidnummer.
 
@@ -111,3 +113,7 @@ Record the setting actually used for the measured print targets. A correction to
 **Project details > Project and materials > Ink type** records `Dye`, `Pigment`, `Mixed`, `Other` or `unknown` in `printing.inkType`. Use **Ink / ink set** to specify the actual product and channels, especially for mixed sets. The ink type is separate from printer-applied coating and paper finish. It is not inferred from the printer model or brand.
 
 The profiling recipe reads the project value; both PDF and HTML measurement certificates include it in the printing conditions. Existing projects without the field remain unspecified. Recording the type does not alter measured spectra. Corrections use the normal project invalidation rules; a physically different ink setup requires a new project and matching measurements. Export certificates again to include updated project information.
+
+## v1.0.0 project settings
+
+Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.

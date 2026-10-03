@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function f=showGamut(profile)
 %SHOWGAMUT Display an ICC-derived surface, independently of measured patches.
 folder=string(tempname);mkdir(folder);cleanup=onCleanup(@()rmdir(folder,'s')); %#ok<NASGU>

@@ -1,5 +1,7 @@
 # C1 – kompletterande numerisk profilkontroll
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 `inkprof.checkProfileC1` kompletterar `checkProfileFit` och `checkProfileGrid` med flyttalsjämförelse mot LittleCMS, lokala inversprov och avsiktligt skadade testkopior.
 
 ```matlab

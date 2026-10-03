@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Christer Törnkvist.
+// SPDX-License-Identifier: GPL-3.0-or-later
+// InkProf is free software under GNU GPL version 3 or later.
+// Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 // Exercise the offline viewer without a browser or external assets.
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 let polygons=0,frame,ready;const context=new Proxy({fill(){polygons++}}, {get(o,k){if(k in o)return o[k];return (...args)=>{for(const v of args)if(typeof v==='number')assert(Number.isFinite(v));}},set(o,k,v){o[k]=v;return true;}});

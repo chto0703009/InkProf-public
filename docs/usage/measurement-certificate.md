@@ -1,5 +1,7 @@
 # InkProf - mätcertifikat
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Mätcertifikatet är ett överlämningsdokument för en sparad ICC-profil. Det sammanfattar projektets förutsättningar, mätresultat och användarens bedömning för en uppdragsgivare. Det ersätter benämningen slutrapport i appens leveranssteg.
 
 ## Projekt och resultat
@@ -147,3 +149,7 @@ are recorded in the report JSON.
 After the colour results, both certificate paths show a selected four-row ΔE00 reference table from bvdm MediaStandard Print 2018, Table 30 (printed page 50), summarizing ISO 12647-7:2016. The table is reference context, not automatic pass/fail classification of InkProf RGB targets. It remains present when no patch exceeds the list threshold or when the current iteration has only numerical checks. Historical results keep their iteration scope.
 
 After signing, Appendix A contains expanded organization names, source, standard edition, explanation of metrics and limits of applicability. Appendix B contains legal terms. The versioned resource `resources/certificate-standards.json` is copied into new report JSON as `standardsReference`; PDF, HTML and text use the same values. Existing signed/project certificates are not silently rewritten.
+
+## v1.0.0 project settings
+
+Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.

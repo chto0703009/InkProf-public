@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function image=drawPrintFurniture(image,dpi,page,total,timestamp,filePath,summary,footerInsetMm)
 %DRAWPRINTFURNITURE Standard heading, date, centred full TIFF path and page footer.
 % Java2D is used only to rasterize text in the white margins. Device RGB

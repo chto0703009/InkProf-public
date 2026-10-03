@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function [page,offset]=completedScanPage(transcript,offset,chart,pairedPlan)
 %COMPLETEDSCANPAGE Consume new successful scans, tied to their preceding pass.
 % A hardware scan can bypass Page loaded. Never infer progress from navigation

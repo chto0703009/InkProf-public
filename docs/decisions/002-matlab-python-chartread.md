@@ -1,5 +1,7 @@
 # 002 - MATLAB, Python-brygga och radmätning med ArgyllCMS
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Datum: 2026-09-25. Uppdaterat: 2026-09-26. Status: egen mätprototyp simuleringsprovad; fysisk verifiering återstår. Kompletterar projektplan v0.6 och [beslut 007](007-independent-inkprof.md).
 
 ## Uppdaterat beslut: terminalägd mätsession

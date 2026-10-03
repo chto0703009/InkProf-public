@@ -1,5 +1,7 @@
 # Spektral analys med Python
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Implementerad 2026-09-26. MATLAB Base anropar en separat Python-process. Instrumentet används inte vid analysen.
 
 ## Installation per dator

@@ -1,3 +1,7 @@
+% Copyright (c) 2026 Christer Törnkvist.
+% SPDX-License-Identifier: GPL-3.0-or-later
+% InkProf is free software under GNU GPL version 3 or later.
+% Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function [data,jsonFile]=readCxF(path,options)
 %READCXF Validate CxF3 XSD and preserve colour data/specifications in JSON.
 % XSD validation is not certification of all ISO 17972 CxF/X workflow rules.

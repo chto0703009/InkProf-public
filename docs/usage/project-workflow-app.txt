@@ -1,3 +1,9 @@
+InkProf 1.0.0-rc.1 — preparation for v1.0.0
+Updated 2026-10-03
+
+The current complete app guide is docs/usage/workflow-v1.0.md.
+Open docs/usage/InkProf-anvandarhandbok.pdf for the Swedish illustrated handbook.
+
 APPENS SPRÅK
 Från uppdateringen 2026-10-02 är appens menyer, dialoger och arbetssteg på engelska.
 Denna svenska guide använder delvis äldre svenska knappnamn.
@@ -65,7 +71,7 @@ ITERATIONER
 Varje iteration har ett nummer, UUID och koppling till föregående iteration.
 Iterationshistorik visar händelser med tid, steg, resultat och sparade detaljer.
 Vid fortsättning arkiveras föregående stegstatus och kandidatkopplingar.
-Nästa kandidat kräver nya C1-, C2- och C3-steg och ett nytt godkännande.
+Nästa kandidat kräver nya C1-kontroller. För separat utskriftsverifiering krävs nya C2/C3 och godkännande; rad 19 medger uttryckligen numeriskt begränsad leverans.
 Ett tidigare godkännande gäller aldrig automatiskt för nästa kandidat.
 Gamla resultatfiler kan öppnas via sökvägarna i historiken/loggen.
 

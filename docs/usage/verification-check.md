@@ -1,5 +1,7 @@
 # C3 – analys av en uppmätt verifieringsutskrift
 
+> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+
 Implementerad 2026-09-28. MATLAB Base är gränssnitt, Python/Colour och
 ArgyllCMS profcheck utför analysen. Inget instrument öppnas av analysrutinen.
 

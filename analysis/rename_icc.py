@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Change the ICC display name while preserving every other tag payload.
 ICC profile ID: ICC.1 bytes 44..47, 64..67 and 84..99 are zero for MD5.
 """

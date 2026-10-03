@@ -1,5 +1,7 @@
 # InkProf: placering av nya inre RGB-punkter
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Jämförelse 2026-09-26. Samma budget: 499 anpassningspunkter, 64 kontroller och 12 upprepningar. InkProf börjar med 153 punkter och lägger till 346. Alla InkProf-varianter behåller 98 ytpunkter och har 401 inre anpassningspunkter. Argyll har 190 ytpunkter och 309 inre.
 
 ## Oberoende kontroll med 100 000 slumpmässiga provpunkter

@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Christer Törnkvist.
+# SPDX-License-Identifier: GPL-3.0-or-later
+# InkProf is free software under GNU GPL version 3 or later.
+# Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Create the printable counterpart of the persisted InkProf final report."""
 import json
 import sys
@@ -18,12 +22,8 @@ def create(folder):
     folder = Path(folder)
     r = json.loads((folder / 'final-report.json').read_text(encoding='utf-8'))
     fonts = Path(reportlab.__file__).parent / 'fonts'
-    for name, file in [('Report', 'Vera.ttf'), ('ReportBold', 'VeraBd.ttf')]:
-        font = TTFont(name, str(fonts / file))
-        if 0x394 not in font.face.charToGlyph:
-            font.face.charToGlyph[0x394] = font.face.charToGlyph[0x2206]
-            font.face.charWidths[0x394] = font.face.charWidths[0x2206]
-        pdfmetrics.registerFont(font)
+    for name in ['Report', 'ReportBold']:
+        pdfmetrics.registerFont(TTFont(name, str(Path(__file__).resolve().parents[1]/'resources/fonts/DejaVuSans.ttf')))
     styles = getSampleStyleSheet()
     for s in styles.byName.values():
         s.fontName = 'Report'
@@ -153,6 +153,8 @@ def create(folder):
                 self.linkURL(url, (55*mm, 5*mm, 155*mm, 9*mm), relative=0)
                 annotation_count = self._annotationCount
                 super().showPage()
+            from pdf_notices import attach
+            attach(self)
             super().save()
 
     SimpleDocTemplate(str(folder / 'final-report.pdf'), pagesize=(210*mm, 297*mm),

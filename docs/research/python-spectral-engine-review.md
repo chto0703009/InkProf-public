@@ -1,5 +1,7 @@
 # MATLAB Base, Python och spektral profilering i InkProf
 
+> Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
+
 Datum: 2026-09-26. Status: granskning och rekommenderad fortsättning; ingen ny beräkningsmotor är implementerad genom detta dokument.
 
 ## Rekommendation

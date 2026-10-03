@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf - När färgerna måste bli rätt",
+    "tag": "InkProf - När färgerna måste bli rätt | v1.0.0 - FÖRBEREDELSE",
     "title": "Din bild förtjänar rätt färger",
     "lead": "Du har valt ljuset, format bilden och arbetat med varje nyans. När bilden når papperet ska det arbetet följa med.",
     "sections": [
@@ -198,5 +198,28 @@
         "https://www.argyllcms.com/doc/iccgamut.html"
       ]
     ]
+  },
+  {
+    "tag": "v1.0.0 | FLER MÖJLIGHETER",
+    "title": "Mer kunskap om materialet",
+    "sections": [
+      [
+        "En gemensam projektdefinition",
+        "Skrivare, papper och yta, dye- eller pigmentbläck, eventuell coating och torktid dokumenteras på ett ställe och följer med i mätcertifikatet."
+      ],
+      [
+        "Fler mörka färgprov för matt papper",
+        "Ett ändringsbart skuggläge ger som förslag upp till 48 extra mörka träningspatchar per iteration och tätare numerisk tabell i skuggorna. Färgurvalet följer den aktuella profilens svart- och vitpunkt."
+      ],
+      [
+        "Papper efter behov",
+        "Programmet föreslår arkstorlek eller rullmått utifrån patchantal och mätslädens mått. Du kan ändra förslaget och gränserna."
+      ],
+      [
+        "Utgåvan förbereds",
+        "Dokumentationen gäller 1.0.0-rc.1 inför v1.0.0. Nya funktioner förändrar inte sparade mål eller mätningar. Utvärdera förbättring genom utskrift och mätning."
+      ]
+    ],
+    "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. Externa komponenter har egna licenser. Se GitHub för källkod, licenser och valideringsstatus."
   }
 ]
