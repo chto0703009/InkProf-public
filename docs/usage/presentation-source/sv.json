@@ -32,8 +32,8 @@
         "När en kund beställer fler bilder eller en serie kompletteras vill du veta vilka förutsättningar som gav det tidigare resultatet. InkProf samlar material, inställningar, mätningar och iterationer i ett projekt. Det hjälper dig att återskapa arbetssättet och upptäcka när en förändring behöver undersökas."
       ],
       [
-        "Transparens ger förståelse för svåra färger",
-        "InkProfs öppna källkod och sparade underlag gör det möjligt att följa hur resultatet har tagits fram. Transparensen skapar förståelse för flödet och hjälper dig att hantera svåra färger, ända till gränsen för vad vald skrivare, papper och bläck kan återge. Du kan skilja mellan en färg som behöver bättre underlag och en färg som materialkombinationen har svårt att återge."
+        "Öppen källkod ger trygghet och insyn",
+        "Med öppen källkod får du tryggheten att kunna följa och granska hur InkProf arbetar. Flödet är synligt: från färgprov och mätning till beräkning och dokumenterat resultat. InkProf är ingen sluten ”black box”. Transparensen ger förståelse för hur svåra färger hanteras, ända till gränsen för vad vald skrivare, papper och bläck kan återge. Kod och sparade underlag gör det möjligt att undersöka avvikelser och fatta välgrundade beslut."
       ],
       [
         "Välj kvalitet som går att beskriva",

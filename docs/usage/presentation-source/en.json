@@ -32,8 +32,8 @@
         "When a client orders more prints or adds to a series, you want to know which conditions produced the earlier result. InkProf collects materials, settings, measurements and iterations in one project. This helps you reproduce the working process and identify changes that need investigation."
       ],
       [
-        "Transparency helps you understand challenging colours",
-        "InkProf's open source code and saved evidence let you trace how a result was produced. Transparency builds understanding of the workflow and helps you handle challenging colours, right up to the limits of your chosen printer, paper and ink. You can distinguish between a colour that needs better measurement coverage and one the materials struggle to reproduce."
+        "Open source brings confidence and transparency",
+        "Open source gives you the confidence of being able to follow and inspect how InkProf works. The workflow is visible: from colour patches and measurement to calculation and documented results. InkProf is not a closed “black box”. This transparency helps you understand how difficult colours are handled, right up to the limits of your chosen printer, paper and ink. The code and saved evidence let you investigate differences and make informed decisions."
       ],
       [
         "Choose quality you can describe",
