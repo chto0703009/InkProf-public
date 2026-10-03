@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "standard": "ISO 12647-7:2016",
+  "publication": "MediaStandard Print 2018",
+  "table": 30,
+  "printedPage": 50,
+  "sourceURL": "https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50",
+  "checkedOn": "2026-10-03",
+  "isCertification": false,
+  "sv": {
+    "title": "Jämförelsereferens - bvdm / ISO 12647-7:2016",
+    "caption": "Urval av ΔE00-kriterier ur MediaStandard Print 2018, tabell 30. Förklaringar och källor: bilaga A. Ingen automatisk ISO-klassning av InkProfs RGB-mål.",
+    "columns": [
+      "Kontroll i referensens mediekil",
+      "Gräns, ΔE00"
+    ],
+    "rows": [
+      [
+        "Medel över samtliga färgfält",
+        "≤ 2,5"
+      ],
+      [
+        "Största avvikelse över samtliga färgfält",
+        "≤ 5,0"
+      ],
+      [
+        "Primärfärgernas solider, största avvikelse",
+        "≤ 3,0"
+      ],
+      [
+        "Pappersvitt",
+        "≤ 3,0"
+      ]
+    ],
+    "appendixTitle": "Bilaga A - Referenser och förklaringar",
+    "paragraphs": [
+      "Bundesverband Druck und Medien (bvdm) är Tysklands branschorganisation för tryck och medier och utgivare av MediaStandard Print. ISO står för International Organization for Standardization, Internationella standardiseringsorganisationen.",
+      "Tabellen efter färgresultaten är ett urval ur bvdm:s MediaStandard Print 2018, tabell 30, tryckt sida 50. Där sammanfattas jobbrelaterad digital provtryckskontroll enligt ISO 12647-7:2016. Publikationen sammanfattar standardkrav och ersätter inte själva ISO-standarden.",
+      "InkProfs valfria RGB-kontrollmål är inte Fogra MediaWedge. Referensvärdena används som orientering, inte som automatisk godkänd/underkänd-klassning. Andra patchgrupper, mått och krav ingår i fullständig standardprovning; tabellen här återger inte alla kriterier.",
+      "ΔE00 betyder färgskillnad enligt CIEDE2000. Det ska inte förväxlas med ΔE*ab eller särskilda mått för kulör och gråbalans. Medel, maximum och enskilda färgfält beskriver olika saker. Färgproven i certifikatet visar sRGB-förhandsvisningar; skärmen kan inte återge alla uppmätta färger.",
+      "En lista med ΔE00 över 5 markerar prov för närmare granskning. Den bevisar inte ISO-avvikelse, och värden under gränsen bevisar inte ISO-överensstämmelse. Vid historiska mätresultat gäller värdena den angivna tidigare iterationen, inte en ny omätt ICC-profil.",
+      "Träningsfel och numeriska profiljämförelser är inte oberoende utskriftsverifiering. Bedöm resultatet tillsammans med mätvillkor, referens, avsedd användning och dokumenterad iteration. Fysisk återgivning begränsas av skrivare, papper och bläck."
+    ]
+  },
+  "en": {
+    "title": "Comparison reference - bvdm / ISO 12647-7:2016",
+    "caption": "Selected ΔE00 criteria from MediaStandard Print 2018, Table 30. Explanations and sources: Appendix A. No automatic ISO classification of InkProf RGB targets.",
+    "columns": [
+      "Check in the reference media wedge",
+      "Limit, ΔE00"
+    ],
+    "rows": [
+      [
+        "Mean across all colour patches",
+        "≤ 2.5"
+      ],
+      [
+        "Largest difference across all colour patches",
+        "≤ 5.0"
+      ],
+      [
+        "Primary solid colours, largest difference",
+        "≤ 3.0"
+      ],
+      [
+        "Paper white",
+        "≤ 3.0"
+      ]
+    ],
+    "appendixTitle": "Appendix A - References and explanations",
+    "paragraphs": [
+      "Bundesverband Druck und Medien (bvdm) is the German printing and media industry association and publisher of MediaStandard Print. ISO stands for International Organization for Standardization.",
+      "The table following the colour results is a selection from bvdm MediaStandard Print 2018, Table 30, printed page 50. It summarizes job-related digital proof control under ISO 12647-7:2016. The publication summarizes requirements and does not replace the ISO standard itself.",
+      "InkProf custom RGB verification targets are not the Fogra MediaWedge. These values provide context, not an automatic pass/fail classification. Full standards testing includes other patch groups, metrics and requirements; the table here does not reproduce every criterion.",
+      "ΔE00 denotes colour difference using CIEDE2000. It must not be confused with ΔE*ab or specific hue and grey-balance metrics. Mean, maximum and individual patches describe different properties. Certificate colour swatches are sRGB previews; a display cannot reproduce every measured colour.",
+      "A list of ΔE00 values above 5 identifies patches for closer review. It does not establish ISO nonconformity, and values below that limit do not establish ISO conformity. Historical measurements apply to their stated earlier iteration, not a new unmeasured ICC profile.",
+      "Training errors and numerical profile comparisons are not independent print verification. Interpret results alongside measurement conditions, reference, intended use and recorded iteration. The printer, paper and ink limit physical reproduction."
+    ]
+  }
+}

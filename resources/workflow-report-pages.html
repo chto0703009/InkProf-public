@@ -22,7 +22,7 @@ body{max-width:none;margin:0;padding:0;background:#e9edef}
  const originals=Array.from(document.body.children).filter(n=>!['STYLE','SCRIPT'].includes(n.tagName));
  const units=[];
  for(const node of originals){
-  if(node.classList.contains('legal-appendix')){
+  if(node.classList.contains('legal-appendix') || node.classList.contains('reference-appendix')){
    const children=Array.from(node.children).map(n=>n.cloneNode(true));
    if(children.length)children[0].dataset.newPage='true';
    units.push(...children);

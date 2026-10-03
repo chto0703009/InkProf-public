@@ -23,6 +23,7 @@ r.historicalCertificate=inkprof.internal.previousCertificate(w,folder);
 fit=jsondecode(fileread(w.output('checks','fit')));
 r.fwa=inkprof.internal.fwaReportSummary(fit,struct,project.printing,digest);
 r.legalAppendix=inkprof.internal.reportLegalText();
+r.standardsReference=inkprof.internal.certificateStandards();
 for key=["fit","grid","c1"]
  src=w.output('checks',key);check=jsondecode(fileread(src));
  if isfield(check,'profileSHA256')

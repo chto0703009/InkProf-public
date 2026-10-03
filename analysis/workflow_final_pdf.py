@@ -3,6 +3,7 @@ import json
 import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
+from certificate_standards import content, appendix_lines, pdf_table
 import reportlab
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib import colors
@@ -18,7 +19,11 @@ def create(folder):
     r = json.loads((folder / 'final-report.json').read_text(encoding='utf-8'))
     fonts = Path(reportlab.__file__).parent / 'fonts'
     for name, file in [('Report', 'Vera.ttf'), ('ReportBold', 'VeraBd.ttf')]:
-        pdfmetrics.registerFont(TTFont(name, str(fonts / file)))
+        font = TTFont(name, str(fonts / file))
+        if 0x394 not in font.face.charToGlyph:
+            font.face.charToGlyph[0x394] = font.face.charToGlyph[0x2206]
+            font.face.charWidths[0x394] = font.face.charWidths[0x2206]
+        pdfmetrics.registerFont(font)
     styles = getSampleStyleSheet()
     for s in styles.byName.values():
         s.fontName = 'Report'
@@ -31,7 +36,7 @@ def create(folder):
     story = []
 
     def p(text, style='BodyReport'):
-        text = str(text).replace('Δ', 'Delta ').replace('–', '-').replace('—', '-')
+        text = str(text).replace('–', '-').replace('—', '-')
         return Paragraph(escape(text).replace('\n', '<br/>'), styles[style])
 
     story += [p('InkProf - mätcertifikat', 'Title'), p(r['project']['name'], 'Heading2'),
@@ -47,7 +52,7 @@ def create(folder):
               p('Slutlig bedömning', 'Heading2'), p(r['approval']['notes'])]
     if r.get('patchOutliers'):
         outliers=r['patchOutliers']
-        story += [PageBreak(),p('Mätresultat - färgprov och ΔE00','Heading2'),p(outliers['basis']),p(outliers['message']),p(outliers['colourNote'])]
+        story += [PageBreak(),p('Mätresultat - färgprov och ΔE00','Heading2'),p('Uppmätta färgprov med ΔE00 över 5. Färger visas som sRGB. Se bilaga A.'),p(outliers['message'])]
         cards=[]
         patches=outliers['patches']
         if isinstance(patches,dict):patches=[patches]
@@ -64,11 +69,9 @@ def create(folder):
             grid=Table(rows,colWidths=[57*mm]*3,hAlign='LEFT')
             grid.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('GRID',(0,0),(-1,-1),.3,colors.lightgrey),('LEFTPADDING',(0,0),(-1,-1),1),('RIGHTPADDING',(0,0),(-1,-1),1)]))
             story += [grid,Spacer(1,3*mm)]
-        story += [p('Källa: Bundesverband Druck und Medien (bvdm), Tysklands tryck- och medieförbund: MediaStandard Print 2018, tabell 30 (ISO 12647-7:2016).')]
+    story += pdf_table(r, styles)
     if r.get('fwa'):
         story += [KeepTogether([p('FWA/OBA - val och resultat','Heading2'),p(r['fwa']['summaryText'])])]
-    if r.get('reproductionLimits'):
-        story += [KeepTogether([p('Fysisk återgivningsförmåga och resultatets gränser','Heading2'),p(r['reproductionLimits'])])]
     if (folder / 'profile-lab-3d.png').is_file():
         story += [PageBreak(), p('Profilens beräknade kontrollfärger i 3D', 'Heading2'),
                   p('Kontrollmålets patchar i CIELAB D50. Detta är profilens beräknade värden, inte mätningar eller hela skrivarens färgomfång.'),
@@ -97,7 +100,13 @@ def create(folder):
         for label in ('Ort och datum','Underskrift','Namnförtydligande','Organisation / roll'):
             story += [p(label+': __________________________________________________'),Spacer(1,12*mm)]
 
-    story += [PageBreak(), p('Bilaga A - Juridiska villkor', 'Title')]
+    story += [PageBreak(), p(content(r)['appendixTitle'], 'Title')]
+    story += [p(line) for line in appendix_lines(r)]
+    if r.get('patchOutliers'):
+        story += [p(r['patchOutliers']['basis']), p(r['patchOutliers']['colourNote'])]
+    if r.get('reproductionLimits'):
+        story += [p('Fysisk återgivningsförmåga och resultatets gränser','Heading2'),p(r['reproductionLimits'])]
+    story += [PageBreak(), p('Bilaga B - Juridiska villkor', 'Title')]
     for key, title in [('reproductionLiability', 'Ansvar för utrustningens och materialens begränsningar'),
                        ('clientPrintResponsibility', 'Beställarens utskrifter och uppgifter'),
                        ('warrantyNotice', 'Garanti och ansvar')]:

@@ -11,6 +11,7 @@ from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import reportlab
+from certificate_standards import content, appendix_lines, pdf_table, table_html
 
 
 def create(folder, language="sv"):
@@ -73,6 +74,7 @@ def create(folder, language="sv"):
         sections.append((figure_title, ['Blå: föregående profil. Orange: aktuell profil. Gemensamma RGB-provpunkter, beräknade i CIELAB D50; inte uppmätta färgomfångsgränser.', 'HTML startar i 2D vid L*=50 med halvbredd 5. Ändra L* för att se andra snitt. Avmarkera 2D och dra i figuren för att rotera 3D-vyn. PDF visar en fast 3D-vy.']))
     historical = r.get('historicalCertificate', {})
     historical_patches = []
+    measurement_explanations = []
     if historical:
         import hashlib
         source = folder / historical['file']
@@ -95,24 +97,27 @@ def create(folder, language="sv"):
         historical_patches = outliers.get('patches', [])
         if isinstance(historical_patches, dict):
             historical_patches = [historical_patches]
+        measurement_explanations = [outliers.get('basis',''), outliers.get('colourNote','')]
         if historical_patches:
             sections.append(('Sista mätresultat - färgprov och Delta E00',
                 ['Gäller iteration '+str(historical['iteration'])+'. Dessa avvikelser är inte uppmätta för aktuell profil.',
-                 outliers.get('basis',''), outliers.get('colourNote',''),
-                 'Källa: Bundesverband Druck und Medien (bvdm), Tysklands tryck- och medieförbund: MediaStandard Print 2018, tabell 30 (ISO 12647-7:2016).']))
-    sections.append(('Omfattning och begränsningar', [
+                 'Uppmätta färgprov med ΔE00 över 5. Färger visas som sRGB. Se bilaga A för urval och färgvisning.']))
+    reference_title = content(r)['title']
+    sections.append((reference_title, [content(r)['caption']]))
+    explanatory = [
         'Tidigare iterationers utskriftsmätningar används inte som verifiering av denna ICC. Små skillnader mellan profiler bevisar inte att utskriftsresultatet är oförändrat.',
         'Skrivare, papper och bläck begränsar det möjliga färgomfånget och resultatet. Numeriska kontroller ersätter inte en separat utskrift och mätning.',
-        'Underlagsfilerna medföljer rapporten. Verifieringsstatus och användarens beslut finns i final-report.json.']))
+        'Underlagsfilerna medföljer rapporten. Verifieringsstatus och användarens beslut finns i final-report.json.']
     sections.append(('Underskrift', [r['scopeStatement'],
         'Med min underskrift bekräftar jag att jag granskat mätcertifikatets förutsättningar, resultat, angivna omfattning och dokumenterade beslut.',
         'Ort och datum: ____________________________________',
         'Underskrift: ______________________________________',
         'Namnförtydligande: _________________________________',
         'Organisation / roll: ______________________________']))
+    sections.append((content(r)['appendixTitle'], appendix_lines(r) + measurement_explanations + explanatory))
     legal = r.get('legalAppendix', {})
     if legal:
-        sections.append(('Bilaga A - Juridiska villkor', [
+        sections.append(('Bilaga B - Juridiska villkor', [
             title+': '+legal[key] for key, title in [
                 ('reproductionLiability', 'Ansvar för utrustningens och materialens begränsningar'),
                 ('clientPrintResponsibility', 'Beställarens utskrifter och uppgifter'),
@@ -120,12 +125,18 @@ def create(folder, language="sv"):
     project_section = next(section for section in sections if section[0] == 'Projekt och utskriftsinställningar')
     sections.remove(project_section)
     sections.insert(1, project_section)
-    text = '\n\n'.join(title+'\n'+'\n'.join(lines) for title, lines in sections)
+    text = '\n\n'.join(title+'\n'+'\n'.join(lines + [': '.join(row) for row in content(r)['rows']] if title == reference_title else lines) for title, lines in sections)
     (folder / 'final-report.txt').write_text(text, encoding='utf-8')
     # Each HTML section is a page with an explicit footer, also when printed.
     pages = []
     for i, (title, lines) in enumerate(sections, 1):
         body = ''.join('<p>'+html.escape(str(line))+'</p>' for line in lines)
+        if title == reference_title:
+            body = table_html(r).replace('<h2>'+html.escape(reference_title)+'</h2>', '')
+        if title == content(r)['appendixTitle']:
+            from certificate_standards import reference
+            url = reference(r)['sourceURL']
+            body = body.replace(html.escape(url), '<a href="'+html.escape(url, quote=True)+'">MediaStandard Print 2018, tabell 30, sida 50</a>')
         if title == figure_title:
             body += interactive(figure_groups, language)
         if title == 'Sista mätresultat - färgprov och Delta E00':
@@ -142,7 +153,7 @@ def create(folder, language="sv"):
         from urllib.parse import quote
         delivery_link = "<a href='"+quote(r['deliveryProfile']['file'])+"'>Namngiven leveransprofil</a> | "
     links = ''.join(f"<li><a href='{html.escape(s['file'], quote=True)}'>{html.escape(k)}</a></li>" for k, s in r['sources'].items())
-    document = "<!doctype html><html lang='sv'><meta charset='utf-8'><title>InkProf - mätcertifikat</title><style>body{font:16px system-ui;background:#eef2f4;color:#19303c}article{background:white;max-width:850px;margin:24px auto;padding:35px;overflow-wrap:anywhere}header,footer{font-size:13px;color:#52656e}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:15px}h1{font-size:24px}.patches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.patch{border:1px solid #ccc;padding:5px;font-size:12px;break-inside:avoid}@media print{article{break-after:page;margin:0}}</style>"+''.join(pages)+"<nav>"+delivery_link+"<a href='final-report.pdf'>PDF</a> | <a href='final-report.json'>JSON</a> | <a href='profile.icc'>ICC</a><ul>"+links+'</ul></nav></html>'
+    document = "<!doctype html><html lang='sv'><meta charset='utf-8'><title>InkProf - mätcertifikat</title><style>body{font:16px system-ui;background:#eef2f4;color:#19303c}article{background:white;max-width:850px;margin:24px auto;padding:35px;overflow-wrap:anywhere}header,footer{font-size:13px;color:#52656e}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:15px}h1{font-size:24px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:8px;border-bottom:1px solid #ccd8de;text-align:left}.patches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.patch{border:1px solid #ccc;padding:5px;font-size:12px;break-inside:avoid}@media print{article{break-after:page;margin:0}}</style>"+''.join(pages)+"<nav>"+delivery_link+"<a href='final-report.pdf'>PDF</a> | <a href='final-report.json'>JSON</a> | <a href='profile.icc'>ICC</a><ul>"+links+'</ul></nav></html>'
     (folder / 'final-report.html').write_text(document, encoding='utf-8')
     fonts = Path(reportlab.__file__).parent / 'fonts'
     for name, filename in [('Report','Vera.ttf'),('ReportBold','VeraBd.ttf')]:
@@ -162,9 +173,12 @@ def create(folder, language="sv"):
     story = []
     for title, lines in sections:
         section_start = len(story)
-        if title in (figure_title, 'Sista mätresultat - färgprov och Delta E00', 'Underskrift', 'Bilaga A - Juridiska villkor'):
+        if title == reference_title:
+            story += pdf_table(r, styles)
+            continue
+        if title in (figure_title, 'Sista mätresultat - färgprov och Delta E00', 'Underskrift', 'Bilaga B - Juridiska villkor', content(r)['appendixTitle']):
             story.append(PageBreak())
-        story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - mätcertifikat', 'Underskrift', 'Bilaga A - Juridiska villkor') else styles['Heading2']))
+        story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - mätcertifikat', 'Underskrift', 'Bilaga B - Juridiska villkor', content(r)['appendixTitle']) else styles['Heading2']))
         for line in lines:
             body = html.escape(str(line)).replace('\n', '<br/>')
             story.append(Paragraph(body, styles['ReportBody']))

@@ -123,7 +123,7 @@ Where available, the previous archived certificate is checked against its saved
 artifact hashes and included as historical evidence in `previous-certificate/`.
 Its measurement errors, instruments and colour patches are labelled with the
 previous iteration. They are not verification results for the current ICC.
-The signature page is followed by **Appendix A - Legal terms** in both PDF and HTML.
+The signature page is followed by **Appendix B - Legal terms** in both PDF and HTML.
 
 
 ## Profile figure in iteration certificates
@@ -141,3 +141,9 @@ D50 values, not measured gamut boundaries or evidence of improved print accuracy
 No figure is invented when a valid comparison is absent. The source checksum and
 current ICC identity are checked before rendering, and the default view settings
 are recorded in the report JSON.
+
+## Reference table and appendices (2026-10-03)
+
+After the colour results, both certificate paths show a selected four-row ΔE00 reference table from bvdm MediaStandard Print 2018, Table 30 (printed page 50), summarizing ISO 12647-7:2016. The table is reference context, not automatic pass/fail classification of InkProf RGB targets. It remains present when no patch exceeds the list threshold or when the current iteration has only numerical checks. Historical results keep their iteration scope.
+
+After signing, Appendix A contains expanded organization names, source, standard edition, explanation of metrics and limits of applicability. Appendix B contains legal terms. The versioned resource `resources/certificate-standards.json` is copied into new report JSON as `standardsReference`; PDF, HTML and text use the same values. Existing signed/project certificates are not silently rewritten.
