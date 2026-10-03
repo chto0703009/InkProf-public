@@ -77,12 +77,12 @@ proposal.imageProfile.assumedSRGB=assumed||(~info.hasEmbeddedProfile&&sourceProf
 proposal.imageProfile.warningAcknowledged=assumed;
 proposal.name=options.Name;proposal.iterationId=string(java.util.UUID.randomUUID());
 proposal.createdUTC=string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'"));
-selected=1:numel(proposal.candidates);
+selected=1:numel(proposal.candidates);reviewFilter=struct;
 if options.ShowDialog
- selected=inkprof.internal.reviewImageCandidates(proposal);if isempty(selected),proposal=[];return;end
+ [selected,reviewFilter]=inkprof.internal.reviewImageCandidates(proposal);if isempty(selected),proposal=[];return;end
 end
 proposal.selection=struct('proposedCount',numel(proposal.candidates),'selectedPatchIds',string({proposal.candidates(selected).patchId}), ...
- 'reviewed',options.ShowDialog,'selectedCount',numel(selected));
+ 'reviewed',options.ShowDialog,'selectedCount',numel(selected),'filter',reviewFilter);
 inkprof.internal.writeJson(fullfile(stage,'proposed-candidates.json'),proposal.candidates);
 proposal.candidates=proposal.candidates(selected);proposal.status="selected-for-print";
 context=struct('profileJob',replace(extractAfter(job,strlength(project)+1),filesep,'/'),'trainingTI3SHA256',inkprof.internal.sha256(training));

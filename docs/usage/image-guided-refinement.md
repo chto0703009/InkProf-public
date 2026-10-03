@@ -11,7 +11,7 @@ Supported inputs are true-colour 8/16-bit TIFF and PNG, and RGB JPEG. Convert in
 1. Select an image and review its profile description.
 2. Use the whole image or enter an editable pixel rectangle.
 3. Set the maximum number of new patches, minimum device-RGB spacing, and optionally a neighboring probe radius. A zero radius selects image colours only.
-4. Review the proposed colour swatches, estimated local errors and measurement support. Uncheck unwanted patches.
+4. Review the proposed colour swatches, estimated local errors and measurement support. The default filter shows only **estimated local fit ΔE00 > 5**. Change the threshold or select **Model mapping ΔE00** explicitly to filter that different measure. Missing estimates are excluded. Only visible, checked patches are added; uncheck unwanted patches. If no rows qualify, lower the threshold or change the metric.
 5. Review the editable paper-size proposal and save the TIFF16 target. Repeat controls are added separately, so the printed total can exceed the new-patch budget.
 6. Print with colour management disabled and the project's printing settings. After drying, measure in step 16 and build the next iteration in step 17.
 
@@ -29,7 +29,7 @@ The displayed **Model mapping ΔE00** compares the image colour with the model's
 
 The review shows the latest profile's measured training-fit summary (mean, 95th percentile and maximum ΔE00). Each candidate also has **Est. local fit ΔE00**, a local estimate computed from up to four nearby training measurements. Measurements must be within 10 percentage points in every device-RGB channel. Their measured fitting residuals are averaged with inverse-distance weights; distances below 0.1 percentage points use that weight floor. The support column shows the number of measurements and distance to the closest one.
 
-This is a local indication from the existing measurements, not a prediction with a known confidence interval or an independently verified print error. If nearby measurements are absent, InkProf displays **Unavailable** instead of inventing a value. The estimate is separate from **Model mapping ΔE00**, which describes image-to-profile mapping. The validated fit report, estimation method, support and values are saved in JSON with the proposal. A report from another profile or measurement set is rejected.
+This is a local indication from the existing measurements, not a prediction with a known confidence interval or an independently verified print error. If nearby measurements are absent, InkProf displays **Unavailable** instead of inventing a value. The estimate is separate from **Model mapping ΔE00**, which describes image-to-profile mapping. The validated fit report, estimation method, support and values are saved in JSON with the proposal. The selected filter metric, strict greater-than threshold, visible count and selected count are also recorded. A report from another profile or measurement set is rejected.
 
 ## Portable project record
 
