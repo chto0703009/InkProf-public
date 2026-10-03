@@ -33,7 +33,11 @@ end
 function testPairedModalFlow(tc)
 runFlow(tc,"paired");
 end
-function runFlow(tc,mode)
+function testRepeatedStartDuringPreparation(tc)
+runFlow(tc,"paired",true);
+end
+function runFlow(tc,mode,reenter)
+if nargin<3,reenter=false;end
 assumeTrue(tc,isunix);
 w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
 pkg=fullfile(w,'target');inkprof.createTarget(pkg,PatchCount=20,GraySteps=3,DPI=100);
@@ -47,8 +51,18 @@ dialog=inkprof.MeasurementDialog(folder,ArgyllBin=bin,ScanMode=mode);closer=onCl
 verifyEqual(tc,string(dialog.Figure.WindowStyle),"modal");
 verifyEqual(tc,string(findobj(dialog.Figure,'Tag','direction').Value),mode);
 verifyFalse(tc,isfile(fullfile(folder,'chartread-input.json')));
+if reenter
+    secondStart=timer('StartDelay',.01,'TimerFcn',@(~,~)press(dialog,'begin'));
+    timerCleanup=onCleanup(@()delete(secondStart));
+    start(secondStart);
+end
 press(dialog,'begin');
-waitButton(dialog,'calibrate');press(dialog,'calibrate');
+waitButton(dialog,'calibrate');
+if reenter
+    runs=dir(fullfile(folder,'paired','run-*.json'));
+    verifyEqual(tc,numel(runs),1,'Preparation must launch exactly one bridge.');
+end
+press(dialog,'calibrate');
 for attempt=1:2
     waitButton(dialog,'calibrate');
     verifyEqual(tc,string(findobj(dialog.Figure,'Tag','calibrate').Text),"Retry calibration");

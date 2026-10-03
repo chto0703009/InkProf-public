@@ -11,6 +11,7 @@ classdef MeasurementDialog < handle
     end
     properties (Access=private)
         Session
+        Starting = false
         PollTimer
         Status
         Hint
@@ -130,7 +131,12 @@ classdef MeasurementDialog < handle
             set(findobj(obj.Figure,'Tag','targetFile'),'Value',fullfile(folder,name));
         end
         function begin(obj)
-            if ~isempty(obj.Session)||obj.Ended,return;end
+            if obj.Starting||~isempty(obj.Session)||obj.Ended||obj.Closing,return;end
+            % Runtime checks yield to MATLAB callbacks. Guard before any yield
+            % so queued clicks cannot launch a second bridge for this folder.
+            obj.Starting=true;
+            startCleanup=onCleanup(@()obj.finishStarting()); %#ok<NASGU>
+            set(findobj(obj.Figure,'Tag','begin'),'Enable','off');
             try
                 obj.Status.Text='Preparing measurement…';
                 obj.Hint.Text='Checking chart coordinates and scan mode. Please wait.';drawnow limitrate nocallbacks;
@@ -199,6 +205,9 @@ classdef MeasurementDialog < handle
                 fprintf(2,'InkProf: measurement could not start: %s\n',err.message);
                 uialert(obj.Figure,string(err.message),'Measurement could not start');
             end
+        end
+        function finishStarting(obj)
+            if isvalid(obj),obj.Starting=false;end
         end
         function openFolder(obj)
             if ~isfolder(obj.Folder),return;end

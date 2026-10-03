@@ -25,6 +25,19 @@ def chart():
 
 @unittest.skipUnless(os.name == 'posix', 'PTY adapter supports POSIX')
 class BridgeTests(unittest.TestCase):
+    def test_session_lock_has_actionable_error(self):
+        import fcntl
+        with tempfile.TemporaryDirectory() as directory:
+            folder = Path(directory)
+            with (folder/'chartread.lock').open('a') as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                result = subprocess.run([sys.executable, str(ROOT/'bridge/chartread_bridge.py'),
+                                         str(folder), '/unused'], capture_output=True, text=True, timeout=5)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn('already open in another process', result.stdout)
+                self.assertNotIn('Errno 35', result.stdout)
+                self.assertEqual(list(folder.glob('run-*.json')), [])
+
     def test_numeric_tokens_are_unquoted(self):
         c = chart()
         c['exchangeTables'][0]['fields'] += ['XYZ_X', 'XYZ_Y', 'XYZ_Z']

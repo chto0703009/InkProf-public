@@ -98,7 +98,11 @@ def main():
     import pty
     folder = Path(opt.session).resolve()
     with (folder / 'chartread.lock').open('a') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as error:
+            raise RuntimeError('This measurement session is already open in another process. '
+                               'Close the other measurement window before starting again.') from error
         chart_bytes = (folder / 'chart.json').read_bytes()
         chart = json.loads(chart_bytes)
         chart_hash = hashlib.sha256(chart_bytes).hexdigest()
