@@ -2,6 +2,7 @@
 const c = document.getElementById('view'), ctx = c.getContext('2d');
 const slice = document.getElementById('slice');
 const light = document.getElementById('lightness'), width = document.getElementById('width');
+const words = Object.assign({previous:'previous',current:'current',visible:'Visible samples',sparse:'Samples within the L* band; a sparse slice does not imply missing printable colours.',all:'All lightness levels shown.',rotate:'3D Lab - drag to rotate; L* increases upwards'}, typeof viewLabels === 'undefined' ? {} : viewLabels);
 let angle = .6, drag = false, last = 0;
 // Fixed scale across both profiles and all L* slices, with equal a*/b* units.
 const extent = Math.max(20, ...groups.flatMap(g => g.flatMap(p => [Math.abs(p[1]), Math.abs(p[2])])));
@@ -44,9 +45,9 @@ function draw() {
         });
     });
     ctx.globalAlpha = 1;ctx.fillStyle = '#183343';ctx.font = '14px system-ui';
-    ctx.fillText(slice.checked ? '2D a*/b* - L* ' + level + ' ± ' + half : '3D Lab - drag to rotate; L* increases upwards', 20, 20);
-    document.getElementById('counts').textContent = 'Visible samples: previous ' + counts[0] + ', current ' + counts[1] +
-        (slice.checked ? '. Samples within the L* band; a sparse slice does not imply missing printable colours.' : '. All lightness levels shown.');
+    ctx.fillText(slice.checked ? '2D a*/b* - L* ' + level + ' ± ' + half : words.rotate, 20, 20);
+    document.getElementById('counts').textContent = words.visible + ': ' + words.previous + ' ' + counts[0] + ', ' + words.current + ' ' + counts[1] +
+        '. ' + (slice.checked ? words.sparse : words.all);
 }
 [slice, light, width].forEach(e => e.oninput = draw);
 c.onpointerdown = e => { if (slice.checked) return;drag = true;last = e.clientX;c.setPointerCapture(e.pointerId); };

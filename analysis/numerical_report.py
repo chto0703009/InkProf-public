@@ -13,9 +13,12 @@ from reportlab.pdfbase.ttfonts import TTFont
 import reportlab
 
 
-def create(folder):
+def create(folder, language="sv"):
     folder = Path(folder)
     r = json.loads((folder / 'final-report.json').read_text(encoding='utf-8'))
+    from certificate_figure import load, interactive, pdf_drawing
+    figure_groups = load(folder, r)
+    figure_title = 'Profiljämförelse - 2D och 3D i CIELAB'
     sections = [('InkProf - mätcertifikat', ['Certifikat-ID: '+r.get('certificateId', 'Ej angivet'), r.get('certificateScope', ''), r['scopeStatement'],
         f"Projekt: {r['project']['name']} | Iteration {r['iteration']}",
         'Aktuell profil: numeriskt kontrollerad. Tidigare utskriftsmätningar redovisas separat som historiskt underlag.']),
@@ -66,6 +69,8 @@ def create(folder):
         sections.append(('Numeriskt underlag: '+key, lines))
     if r.get('fwa'):
         sections.append(('FWA/OBA - val och resultat', [r['fwa']['summaryText']]))
+    if figure_groups is not None:
+        sections.append((figure_title, ['Blå: föregående profil. Orange: aktuell profil. Gemensamma RGB-provpunkter, beräknade i CIELAB D50; inte uppmätta färgomfångsgränser.', 'HTML startar i 2D vid L*=50 med halvbredd 5. Ändra L* för att se andra snitt. Avmarkera 2D och dra i figuren för att rotera 3D-vyn. PDF visar en fast 3D-vy.']))
     historical = r.get('historicalCertificate', {})
     historical_patches = []
     if historical:
@@ -121,6 +126,8 @@ def create(folder):
     pages = []
     for i, (title, lines) in enumerate(sections, 1):
         body = ''.join('<p>'+html.escape(str(line))+'</p>' for line in lines)
+        if title == figure_title:
+            body += interactive(figure_groups, language)
         if title == 'Tidigare mätresultat - färgprov och Delta E00':
             body += '<div class="patches">'+''.join(
                 '<div class="patch"><div style="height:45px;background:'+html.escape(p['hex'],quote=True)+'"></div><p>'+html.escape(
@@ -149,7 +156,7 @@ def create(folder):
     story = []
     for title, lines in sections:
         section_start = len(story)
-        if title in ('Tidigare mätresultat - färgprov och Delta E00', 'Underskrift', 'Bilaga A - Juridiska villkor'):
+        if title in (figure_title, 'Tidigare mätresultat - färgprov och Delta E00', 'Underskrift', 'Bilaga A - Juridiska villkor'):
             story.append(PageBreak())
         story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - mätcertifikat', 'Underskrift', 'Bilaga A - Juridiska villkor') else styles['Heading2']))
         for line in lines:
@@ -157,6 +164,8 @@ def create(folder):
             if title == 'Underskrift':
                 story.append(Spacer(1, 8*mm))
 
+        if title == figure_title:
+            story.append(pdf_drawing(figure_groups, language))
         if title in ('Sparad ICC-profil', 'Levererad ICC-profil', 'Kontrollerad ICC-kandidat (projektoriginal)'):
             story[section_start:] = [KeepTogether(story[section_start:])]
         if title == 'Tidigare mätresultat - färgprov och Delta E00':

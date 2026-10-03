@@ -34,6 +34,8 @@ end
 if w.valid('compare')
  src=w.output('compare','comparison');copyfile(src,fullfile(folder,'comparison.json'));
  r.sources.comparison=struct('file',"comparison.json",'sha256',inkprof.internal.sha256(src));
+ r.visualization=struct('source',"comparison.json",'defaultView',"2d",'defaultLightness',50,'halfWidth',5, ...
+  'pdfView',"3d",'scope',"Predicted shared RGB samples in CIELAB D50, not measured gamut boundaries");
 end
 r.decisionEvidence=inkprof.internal.numericalDecisionEvidence(w,folder,digest);
 copyfile(fullfile(w.Root,'workflow.json'),fullfile(folder,'workflow-snapshot.json'));

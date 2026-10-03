@@ -124,3 +124,20 @@ artifact hashes and included as historical evidence in `previous-certificate/`.
 Its measurement errors, instruments and colour patches are labelled with the
 previous iteration. They are not verification results for the current ICC.
 The signature page is followed by **Appendix A - Legal terms** in both PDF and HTML.
+
+
+## Profile figure in iteration certificates
+
+When a current, checksum-verified profile comparison is available, the certificate
+embeds its shared RGB sample data directly. HTML reuses
+`analysis/profile_comparison_view.js`: the default view is the a*/b* plane at
+L*=50 with a half-width of 5. The L* slider selects a different slice; unchecking
+2D displays all lightness levels and enables pointer-drag rotation in 3D.
+Controls are local and require no internet connection.
+
+The PDF contains a static vector 3D projection of the same samples. Blue denotes
+the previous profile and orange the current profile. These are predicted CIELAB
+D50 values, not measured gamut boundaries or evidence of improved print accuracy.
+No figure is invented when a valid comparison is absent. The source checksum and
+current ICC identity are checked before rendering, and the default view settings
+are recorded in the report JSON.
