@@ -1,0 +1,172 @@
+[
+  {
+    "tag": "InkProf - När färgerna måste bli rätt",
+    "title": "Din bild förtjänar rätt färger",
+    "lead": "Du har valt ljuset, format bilden och arbetat med varje nyans. När bilden når papperet ska det arbetet följa med.",
+    "sections": [
+      [
+        "Låt bildens uttryck nå hela vägen",
+        "Hudtonernas värme, nyanserna i ett landskap och balansen i en svartvit bild är en del av det du vill förmedla. Ett genomtänkt färgflöde ger bättre förutsättningar för att bevara det avsedda uttrycket i utskriften. För fotografen betyder det större trygghet i det sista, avgörande steget från bildfil till färdig bild. [1]"
+      ],
+      [
+        "Fatta kreativa beslut med större säkerhet",
+        "När du vet hur din kombination av skrivare, papper och bläck återger färg blir det lättare att välja papper och bedöma bilden före utskrift. En passande profil kan också användas för soft proofing, alltså en simulering av utskriften på en profilerad bildskärm i ditt bildprogram. Då kan du göra medvetna anpassningar innan papper och bläck används. [1, 2]"
+      ],
+      [
+        "Gör plats för bilden och kunden",
+        "Varje extra provutskrift tar tid: justera, skriva ut, vänta och bedöma igen. Ett kontrollerat och verifierat flöde kan minska onödiga försök och behovet av att göra nya utskrifter. Den praktiska nyttan är mer tid för bildarbetet och kunden, och mindre material som går åt till att söka orsaken till ett färgfel."
+      ],
+      [
+        "Skapa förtroende genom ett begripligt resultat",
+        "För utskriftsföretaget är rätt färger också en fråga om samarbete. En tydlig referens, dokumenterade inställningar och uppmätta resultat gör det lättare att förklara vad som levererats och vad kunden kan förvänta sig. Det ger ett gemensamt underlag för kvalitetsbedömningen. [3]"
+      ]
+    ],
+    "callout": "InkProf knyter ihop färgmål, spektrometermätning, profilering och kontroll. Du får både en ICC-profil för din skrivarkombination och ett dokumenterat underlag för att bedöma resultatet."
+  },
+  {
+    "tag": "NYTTAN I VARDAGEN",
+    "title": "Mer kontroll. Mindre gissning.",
+    "sections": [
+      [
+        "Återkommande arbete blir lättare att följa",
+        "När en kund beställer fler bilder eller en serie kompletteras vill du veta vilka förutsättningar som gav det tidigare resultatet. InkProf samlar material, inställningar, mätningar och iterationer i ett projekt. Det hjälper dig att återskapa arbetssättet och upptäcka när en förändring behöver undersökas."
+      ],
+      [
+        "Transparens ger förståelse för svåra färger",
+        "InkProfs öppna källkod och sparade underlag gör det möjligt att följa hur resultatet har tagits fram. Transparensen skapar förståelse för flödet och hjälper dig att hantera svåra färger, ända till gränsen för vad vald skrivare, papper och bläck kan återge. Du kan skilja mellan en färg som behöver bättre underlag och en färg som materialkombinationen har svårt att återge."
+      ],
+      [
+        "Välj kvalitet som går att beskriva",
+        "För fotografer och utskriftsföretag ger mätning ett konkret språk för att diskutera kvalitet. InkProf redovisar skillnader mellan önskad färg, profilens beräkning och uppmätt utskrift. Dokumenterade standardreferenser ger sammanhang för bedömningen; mätcertifikatet visar omfattning, resultat och beslut."
+      ],
+      [
+        "Ett sammanhängande färgflöde",
+        "InkProf tar hand om skrivarprofileringen och dess dokumentation. Kombinera det med en kalibrerad och profilerad bildskärm när du bedömer bilder, rätt färghantering vid utskrift och lämpligt betraktningsljus. Profilen beskriver en bestämd kombination av skrivare, papper, bläck och inställningar. [1, 2]"
+      ],
+      [
+        "Källor till motivationen",
+        "Webbkällor kontrollerade 2026-10-03. Adobe beskriver förutsägbara färgresultat, soft proofing och profilens koppling till utskriftsvillkoren. Fogra beskriver förutsägbara arbetsflöden och objektiv färgbedömning. International Color Consortium (ICC) verkar för öppen, leverantörsoberoende färghantering. [1-4] Tillämpningen på InkProf och resonemanget om minskade försök är vår sammanfattning, inte en uppmätt besparing eller ett godkännande av InkProf från dessa organisationer."
+      ]
+    ],
+    "links": [
+      [
+        "[1] Adobe - Understanding color management",
+        "https://helpx.adobe.com/acrobat/using/color-management.html"
+      ],
+      [
+        "[2] Adobe - Print with color management in Photoshop",
+        "https://helpx.adobe.com/photoshop/using/printing-color-management-photoshop1.html"
+      ],
+      [
+        "[3] Fogra - Researching Prepress",
+        "https://fogra.org/en/research/prepress-technology"
+      ],
+      [
+        "[4] International Color Consortium - organisationens uppdrag",
+        "https://www.color.org/"
+      ]
+    ]
+  },
+  {
+    "tag": "ARBETSGÅNGEN",
+    "title": "Från färgmål till beslut",
+    "lead": "InkProf är en projektbaserad MATLAB-app för profilering av RGB-styrda skrivare. Den leder dig genom arbetet och bevarar sambandet mellan underlag och resultat.",
+    "sections": [
+      [
+        "01  Skapa eller öppna ett projekt",
+        "Ange skrivare, papper, bläck, utskriftsinställningar och användare på ett ställe. Skapa eller importera RGB-färgmålet och välj en layout som passar papper och mätutrustning."
+      ],
+      [
+        "02  Spara TIFF16 och skriv ut separat",
+        "Appen sparar 16-bitars TIFF och matchande mätunderlag. Du skriver ut i ditt vanliga program och låter arken torka. Projektet kan stängas och återupptas senare."
+      ],
+      [
+        "03  Mät och granska",
+        "Mät med en spektrometer av hög kvalitet, exempelvis i1Pro 2. Appen hanterar instrumentmätning och sparade mätrevisioner. Granska och acceptera rätt revision innan underlaget låses."
+      ],
+      [
+        "04  Bygg och kontrollera ICC-profilen",
+        "Profilen byggs med ArgyllCMS. Numeriska kontroller granskar modellens anpassning och färgomvandlingar. En skapad profil är en kandidat att bedöma, inte slutpunkten för kvalitetskontrollen."
+      ],
+      [
+        "05  Kontrollera en verklig utskrift",
+        "Spara kontrollmålet, skriv ut och mät det. Analysen skiljer mellan avvikelse från önskad färg och avvikelse från profilens förutsägelse. Resultatet hjälper dig att avgöra vad som behöver undersökas."
+      ],
+      [
+        "06  Godkänn, dokumentera eller förbättra",
+        "Spara ICC och mätcertifikat, eller tillför färgprov från kontrollfel eller en bild för nästa iteration. Profiler kan jämföras på gemensamma provpunkter. Om en senare iteration avslutas utan ny kontrollutskrift anges den numeriska omfattningen uttryckligen i certifikatet."
+      ]
+    ],
+    "callout": "TIFF16 sparas för separat utskrift. Mätningen ingår i appen. ICC och PDF-/HTML-certifikat kan sparas där du vill, medan projektet bevarar underlag och historik."
+  },
+  {
+    "tag": "EGENSKAPER OCH ANSVARSFULL LEVERANS",
+    "title": "Ett arbete som går att följa",
+    "sections": [
+      [
+        "Projekt som minns",
+        "Varje projekt har en egen mapp. JSON lagrar arbetsläge, inställningar, iterationer och resultatkopplingar. Appen stoppar beroende operationer när underlag saknas eller har ändrats. Resultatloggen går att öppna, och hela projektmappen kan flyttas mellan datorer."
+      ],
+      [
+        "Förbättring med ett tydligt syfte",
+        "Kompletterande patchar kan väljas från verifieringsfel eller färger i en profilerad bild. Pappersförslaget anpassas efter mängden färgprov och utrustningens mått. Du kan jämföra iterationer i ett 2D-snitt, med L*=50 som startvärde, eller växla till 3D."
+      ],
+      [
+        "Mätcertifikat för överlämning",
+        "PDF och HTML samlar projektuppgifter, mätvillkor, resultat, profilidentitet och beslut. Där framgår om aktuell iteration är verifierad genom utskrift eller endast numeriskt kontrollerad. Certifikatet har signeringsdel, referenser och förklaringar i bilaga A samt juridiska villkor i bilaga B."
+      ],
+      [
+        "Standardreferenser som stöd för bedömningen",
+        "ISO är International Organization for Standardization. InkProf dokumenterar jämförelsereferenser till bland annat ISO 12647-7:2016 via MediaStandard Print 2018 från Bundesverband Druck und Medien (bvdm), Tysklands branschorganisation för tryck och medier. Urvalet av gränsvärden ger stöd för bedömning av resultaten; appens egna RGB-mål innebär inte i sig ett fullständigt standardprov eller ISO-certifiering."
+      ],
+      [
+        "Öppen källkod och teknisk grund",
+        "InkProf är öppen källkod under GNU GPL version 3 eller senare. MATLAB Base används utan obligatoriska tilläggstoolboxar, tillsammans med Python och ArgyllCMS. Externa beroenden har egna licenser. Kod, licens och tredjepartsreferenser finns på GitHub."
+      ],
+      [
+        "Testmiljö och användning",
+        "Programmet är testat på macOS. Hela InkProf-flödet är inte verifierat på Windows eller Linux. Programmet tillhandahålls utan garantier enligt GPL; användaren ansvarar för att bedöma profiler och utskrifter för den avsedda användningen. Se licens och certifikatets juridiska bilaga för villkoren."
+      ]
+    ],
+    "links": [
+      [
+        "MediaStandard Print 2018, tabell 30, sida 50",
+        "https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50"
+      ],
+      [
+        "InkProf: kod, installation och dokumentation",
+        "https://github.com/chto0703009/InkProf-public"
+      ],
+      [
+        "Licens och tredjepartsreferenser",
+        "https://github.com/chto0703009/InkProf-public/blob/main/THIRD_PARTY_NOTICES.md"
+      ]
+    ]
+  },
+  {
+    "tag": "BILDEXEMPEL FRÅN INKPROF",
+    "title": "Från färgprov till färgmodell",
+    "lead": "Exemplen visar hur ett utskrivet kontrollmål och profilens beräknade färger ger två olika perspektiv på samma arbete.",
+    "images": [
+      [
+        "patch-target.png",
+        85,
+        60,
+        "Patchmål. Exempel med 131 färgfält, inklusive upprepningar, kontrastmarkörer och positionsangivelser. Denna förminskade bild ska inte användas som mätutskrift."
+      ],
+      [
+        "profile-3d.png",
+        104,
+        65,
+        "Profilens kontrollfärger i 3D. Punkterna visar beräknade färger i CIELAB D50: ljushet L* och färgaxlarna a* och b*. Detta är kontrollpunkter, inte uppmätta värden eller hela skrivarens färgomfång. Färgerna är skärmanpassade förhandsvisningar."
+      ]
+    ],
+    "sections": [
+      [
+        "Mätning och modell kompletterar varandra",
+        "En modell gör färgomvandling möjlig. Mätningen visar vad som verkligen hamnade på papperet. Tillsammans ger de underlag för nästa beslut: använda profilen, kontrollera ett avvikande prov eller tillföra fler färger i en ny iteration."
+      ]
+    ],
+    "small": "Befintliga InkProf-exempel: Epson Stylus Pro 3880, glossy-papper, Candidate-1 shared Lab comparison, 2026-09-29. Bilderna illustrerar funktionerna och är inte ett nytt valideringsresultat."
+  }
+]
