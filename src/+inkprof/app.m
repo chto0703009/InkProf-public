@@ -73,6 +73,7 @@ end
         w=candidate;selected=string(w.State.currentStep);refresh();
     end
     function newProject(~,~)
+        focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if busy,return;end
         paths=inkprof.paths();[n,p]=uiputfile('*','New project name',fullfile(paths.Projects,'New-paper'));
         if isequal(n,0),return;end
@@ -84,6 +85,7 @@ end
         catch err,uialert(fig,err.message,'Project');end
     end
     function editDetails(~,~)
+        focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if isempty(w)||busy,return;end
         try
             record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
@@ -92,6 +94,7 @@ end
         catch err,uialert(fig,err.message,'Project details');end
     end
     function openProject(~,~)
+        focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if busy,return;end
         paths=inkprof.paths();p=uigetdir(char(paths.Projects),'Select an existing InkProf project');
         if isequal(p,0),return;end
@@ -160,6 +163,7 @@ end
         catch err,status.Text=err.message;runButton.Enable='off';end
     end
     function run(~,~,saveElsewhere)
+        focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if nargin<3,saveElsewhere=false;end
         if isempty(w)||busy,return;end
         progress=[];watch=[];started=[];finished=false;message="";
@@ -244,6 +248,7 @@ end
         end
     end
     function copyPrint(~,~)
+        focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if isempty(w)||busy,return;end
         copyPrintStep(selected);
     end
@@ -367,12 +372,14 @@ end
         web(char(w.output(id,'finalReport')),'-browser');
     end
     function show3D(~,~)
+        focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if isempty(w),return;end
         w.reload();[ok,why]=w.valid('c2');
         if ~ok,uialert(fig,char(why),'3D data unavailable');return;end
         inkprof.showVerificationLab(w.output('c2','reference'));
     end
     function history(~,~)
+        focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if isempty(w),return;end
         w.reload();h=w.State.history;if isstruct(h),h=num2cell(h);end
         rows=cell(0,4);
@@ -401,8 +408,11 @@ end
             labels(strcmp(names,'reportText'))={'Open text report'};
             labels(strcmp(names,'delivery'))={'Open delivery receipt (saved locations)'};
         end
+        dialogFocus=inkprof.internal.restoreAppFocus(fig);
         [ix,ok]=listdlg('ListString',labels,'SelectionMode','single','PromptString','Choose a result or save copies');
+        clear dialogFocus
         if ~ok,return;end
+        resultFocus=inkprof.internal.restoreAppFocus(fig,RestoreOnReturn=false); %#ok<NASGU>
         if deliveryStep&&strcmp(names{ix},'profile')
             run([],[],true);
         else
