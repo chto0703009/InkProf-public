@@ -9,7 +9,7 @@ function setupOnce(~)
 root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
 end
 function testThresholdIdentitySortingAndNoTruncation(tc)
-p=struct('sampleId',"a",'coordinate',"A1",'page',1,'role',"colour",'deltaE00',5,'measuredLab',[50 0 0]);
+p=struct('sampleId',"a",'coordinate',"A1",'page',1,'role',"colour",'deltaE00',5,'measuredLab',[50 0 0],'desiredLab',[60 0 0],'predictedLab',[55 0 0]);
 patches=repmat(p,1,43);
 for i=1:43,patches(i).sampleId=string(i);patches(i).deltaE00=5+i/10;end
 patches(1).deltaE00=5;patches(2).deltaE00=4;
@@ -17,6 +17,8 @@ patches(3).role="repeat";patches(4).role="paperwhite";patches(5).role="challenge
 r=inkprof.internal.certificatePatchOutliers(struct('patches',patches));
 verifyTrue(tc,r.available);verifyEqual(tc,r.evaluatedCount,41);verifyEqual(tc,r.count,39);
 verifyEqual(tc,r.patches(1).sampleId,"43");verifyEqual(tc,r.patches(end).sampleId,"5");
+verifyNotEqual(tc,r.patches(1).desiredHex,r.patches(1).hex);
+verifyNotEqual(tc,r.patches(1).predictedHex,r.patches(1).hex);
 verifyEqual(tc,r.patches(end).role,"challenge");verifyEqual(tc,r.isoCompliance,"not-assessed");
 verifyTrue(tc,all(vertcat(r.patches.sRGB8)>=0,'all'));verifyTrue(tc,all(vertcat(r.patches.sRGB8)<=255,'all'));
 end

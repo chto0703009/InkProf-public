@@ -113,7 +113,7 @@ lines=["INKPROF – MÄTCERTIFIKAT";"Projekt: "+string(project.name);"Projekt-ID
  "";"FWA/OBA - VAL OCH RESULTAT";r.fwa.summaryText; ...
  "";"SPARAD ICC";"Fil: profile.icc";"SHA-256: "+digest;"Byte-identisk med vald kandidat."; ...
  "";"SLUTLIG BEDÖMNING";string(approval.notes);""; ...
- "MÄTRESULTAT – FÄRGPROV OCH ΔE00";"Uppmätta färgprov med ΔE00 över 5. Färger visas som sRGB. Se bilaga A.";r.patchOutliers.message];
+ "MÄTRESULTAT – FÄRGPROV OCH ΔE00";"Börvärde, profilens uppskattning och uppmätt färg visas som sRGB. ΔE00 gäller uppmätt mot börvärde (över 5). Se bilaga A.";r.patchOutliers.message];
 fit=r.results.checks_fit;
 for patch=reshape(r.patchOutliers.patches,1,[])
  lines(end+1)=sprintf('Sida %d / %s | ID %s | %s | sRGB %s | ΔE00 %.4f | över gräns %.4f',patch.page,patch.coordinate,patch.sampleId,patch.role,patch.hex,patch.deltaE00,patch.excess);
@@ -166,12 +166,18 @@ html="<!doctype html><html lang='sv'><meta charset='utf-8'><meta name='viewport'
  "<p>Certifikat-ID: "+esc(r.certificateId)+"</p><p>"+esc(r.certificateScope)+"</p>"+projectHTML+ ...
  "<h2>Sparad ICC-profil</h2><p><a href='profile.icc'>profile.icc</a></p><p>SHA-256: <code>"+digest+"</code></p>"+ ...
  "<h2>Slutlig bedömning</h2><p>"+esc(string(approval.notes))+"</p><h2>Mätresultat – färgprov och ΔE00</h2>"+ ...
- "<p>Uppmätta färgprov med ΔE00 över 5. Färger visas som sRGB. Se bilaga A.</p><p>"+esc(r.patchOutliers.message)+"</p>";
+ "<p>Börvärde, profilens uppskattning och uppmätt färg visas som sRGB. ΔE00 gäller uppmätt mot börvärde (över 5). Se bilaga A.</p><p>"+esc(r.patchOutliers.message)+"</p>";
 for k=1:3:r.patchOutliers.count
  html=html+"<div class='patch-row' style='display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:8px;font-size:9pt'>";
  for j=k:min(k+2,r.patchOutliers.count)
   patch=r.patchOutliers.patches(j);mark="";if patch.clipped,mark="*";end
-  html=html+"<div style='border:1px solid #ccd8de;padding:6px;overflow-wrap:anywhere'><span style='display:inline-block;width:100%;height:40px;border:1px solid #777;background:"+patch.hex+";print-color-adjust:exact;-webkit-print-color-adjust:exact'></span> "+esc(patch.hex+mark)+ ...
+  chips="<div style='display:flex;gap:3px'>";
+  for field=["desiredHex","predictedHex","hex"]
+   label="Uppmätt";if field=="desiredHex",label="Börvärde";elseif field=="predictedHex",label="Uppskattat";end
+   color=string(patch.(field));if color=="",color="transparent";label=label+" (saknas)";end
+   chips=chips+"<div style='flex:1'><span style='display:block;height:40px;border:1px solid #777;background:"+color+";print-color-adjust:exact;-webkit-print-color-adjust:exact'></span>"+label+"</div>";
+  end
+  html=html+"<div style='border:1px solid #ccd8de;padding:6px;overflow-wrap:anywhere'>"+chips+"</div>"+ ...
    "<br><strong>"+esc("ID "+patch.sampleId)+"</strong> · "+esc("sida "+patch.page+" / "+patch.coordinate)+ ...
    "<br>"+esc(patch.role)+" · ΔE00 <strong>"+compose('%.4f',patch.deltaE00)+"</strong></div>";
  end

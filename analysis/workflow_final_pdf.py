@@ -3,6 +3,7 @@
 # InkProf is free software under GNU GPL version 3 or later.
 # Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Create the printable counterpart of the persisted InkProf final report."""
+from certificate_swatches import enrich, pdf_chips
 import json
 import sys
 from pathlib import Path
@@ -52,13 +53,13 @@ def create(folder):
               p('Slutlig bedömning', 'Heading2'), p(r['approval']['notes'])]
     if r.get('patchOutliers'):
         outliers=r['patchOutliers']
-        story += [PageBreak(),p('Mätresultat - färgprov och ΔE00','Heading2'),p('Uppmätta färgprov med ΔE00 över 5. Färger visas som sRGB. Se bilaga A.'),p(outliers['message'])]
+        story += [PageBreak(),p('Mätresultat - färgprov och ΔE00','Heading2'),p('Börvärde, profilens uppskattning och uppmätt färg visas som sRGB. ΔE00 gäller uppmätt mot börvärde (över 5). Se bilaga A.'),p(outliers['message'])]
         cards=[]
         patches=outliers['patches']
         if isinstance(patches,dict):patches=[patches]
+        patches=enrich(patches,r,folder)
         for patch in patches:
-            swatch=Table([['']],colWidths=[49*mm],rowHeights=[13*mm])
-            swatch.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.HexColor(patch['hex'])),('BOX',(0,0),(-1,-1),.3,colors.grey)]))
+            swatch=pdf_chips(patch)
             marker='*' if patch['clipped'] else ''
             label=f"ID {patch['sampleId']} | sida {patch['page']} / {patch['coordinate']}\n{patch['role']} | ΔE00 {patch['deltaE00']:.4f}\n{patch['hex']}{marker}"
             card=Table([[swatch],[p(label,'DetailReport')]],colWidths=[54*mm])

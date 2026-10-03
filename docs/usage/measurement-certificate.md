@@ -159,3 +159,7 @@ Project details also records dye/pigment ink type, printer coating and coating s
 Nya PDF-, HTML-, text- och JSON-exporter innehåller även en gemensam licensnotis: InkProfs GPL-licens och ansvarsfriskrivning ersätter inte eventuella tillstånd för annans upphovsrätt, varumärken eller patent. Externa komponenters villkor finns i LICENSE och THIRD_PARTY_NOTICES.md på projektets GitHub. Detta gäller både utskriftsgranskade och numeriskt avgränsade certifikat.
 
 Utgåvans öppna rättighetsfrågor dokumenteras i licensgranskningen och utgåvechecklistan, inte som slutsatser om kundens mätresultat. Notisen löser inte en rättighetsfråga. Redan sparade certifikat är historiska dokument och ändras inte automatiskt; skapa en ny export för den uppdaterade bilagan.
+
+### Colour chips for the last measured result
+
+Each outlier shows target (Börvärde), profile prediction (Uppskattat) and measurement (Uppmätt) as adjacent sRGB previews in HTML and PDF. D50 Lab is Bradford-adapted to D65 and clipped to sRGB. Delta E00 still compares measured Lab with target Lab. Historical results retain their original iteration; they are not measurements of the current ICC. Legacy target/prediction colours are recovered only from the checksum-verified accompanying C3 source. Missing evidence is labelled, never inferred from printer RGB.

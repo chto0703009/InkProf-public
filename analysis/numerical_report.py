@@ -4,6 +4,7 @@
 # Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Portable numerical-only ICC report, explicitly excluding print validation."""
 import html
+from certificate_swatches import enrich, html_chips, pdf_chips
 import json
 import sys
 from pathlib import Path
@@ -106,11 +107,12 @@ def create(folder, language="sv"):
         historical_patches = outliers.get('patches', [])
         if isinstance(historical_patches, dict):
             historical_patches = [historical_patches]
-        measurement_explanations = [outliers.get('basis',''), outliers.get('colourNote','')]
+        historical_patches = enrich(historical_patches, old, source.parent)
+        measurement_explanations = [outliers.get('basis',''), 'Börvärde, profilens uppskattning och uppmätt D50-Lab omräknas till sRGB med Bradford-anpassning till D65. Färger utanför sRGB klipps. Rutorna är skärmförhandsvisningar; ΔE00 beräknas från ursprungliga Lab-värden. Saknas anger att underlag för färgrutan inte finns.']
         if historical_patches:
             sections.append(('Sista mätresultat - färgprov och Delta E00',
                 ['Gäller iteration '+str(historical['iteration'])+'. Dessa avvikelser är inte uppmätta för aktuell profil.',
-                 'Uppmätta färgprov med ΔE00 över 5. Färger visas som sRGB. Se bilaga A för urval och färgvisning.']))
+                 'Börvärde, profilens uppskattning och uppmätt färg visas som sRGB. ΔE00 gäller uppmätt mot börvärde (över 5). Se bilaga A för urval och färgvisning.']))
     reference_title = content(r)['title']
     sections.append((reference_title, [content(r)['caption']]))
     sections.append((gamut_title, [gamut_surface.caption(language) if gamut else "Gamut unavailable: "+r.get('gamut', {}).get('reason', 'No surface saved.'), "ICC SHA-256: "+r['profile']['sha256']]))
@@ -154,7 +156,7 @@ def create(folder, language="sv"):
             body += interactive(figure_groups, language)
         if title == 'Sista mätresultat - färgprov och Delta E00':
             body += '<div class="patches">'+''.join(
-                '<div class="patch"><div style="height:45px;background:'+html.escape(p['hex'],quote=True)+'"></div><p>'+html.escape(
+                '<div class="patch">'+html_chips(p)+'<p>'+html.escape(
                     'ID '+str(p['sampleId'])+' | '+str(p['coordinate'])+' | Delta E00 '+format(p['deltaE00'],'.4f')+' | '+p['hex'])+'</p></div>'
                 for p in historical_patches)+'</div>'
         if title == 'Tidigare utskriftsmätningar - historiskt underlag':
@@ -201,8 +203,7 @@ def create(folder, language="sv"):
         if title == 'Sista mätresultat - färgprov och Delta E00':
             cards=[]
             for patch in historical_patches:
-                swatch=Table([['']],colWidths=[49*mm],rowHeights=[13*mm])
-                swatch.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.HexColor(patch['hex']))]))
+                swatch=pdf_chips(patch)
                 label='ID '+str(patch['sampleId'])+' | '+str(patch['coordinate'])+'\nDelta E00 '+format(patch['deltaE00'],'.4f')+' | '+patch['hex']
                 cards.append(Table([[swatch],[Paragraph(html.escape(label).replace('\n','<br/>'),styles['ReportBody'])]],colWidths=[54*mm]))
             rows=[cards[i:i+3]+['']*(3-len(cards[i:i+3])) for i in range(0,len(cards),3)]
