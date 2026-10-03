@@ -36,3 +36,7 @@ This is a local indication from the existing measurements, not a prediction with
 The project stores the selected image, source ICC, parent printer ICC, parent training measurements, sampling rectangle, parameters, all proposals, selected patch IDs, profile assumptions and hashes beneath `refinements/<id>/`. The workflow JSON identifies the method as `image`. No original image is edited. Keep the project folder together when moving it between computers.
 
 For scripted use, `inkprof.refineFromImage(jobFile, Image="photo.tif", ShowDialog=false, SourceProfile="embedded")` requires a tagged image. For an untagged image, specify `SourceProfile="sRGB"` explicitly. Interactive use always offers the missing-profile warning before assuming sRGB.
+
+## Calculation feedback
+
+During image-profile inspection, colour conversion, patch selection and TIFF16 generation, the app stays visible and displays a busy dialog with the current operation and elapsed time. This is an activity indicator, not a predicted completion percentage. The busy dialog closes before the next input window, and on errors. The workflow also displays elapsed time for running steps. Large images and targets can take several minutes.

@@ -179,7 +179,7 @@ end
                 uialert(fig,reason,'Step not available','Icon','info');return;
             end
             o=optionsFor(selected,saveElsewhere);if isempty(o),return;end
-            busy=true;runButton.Enable='off';started=datetime('now');
+            busy=true;setappdata(fig,'InkProfRunning',true);fig.Visible='on';figure(fig);runButton.Enable='off';started=datetime('now');
             index=find(string({defs.id})==active);
             data=table.Data;data{index,2}='Running';table.Data=data;
             titleLabel.Text="Running — "+string(defs(index).label);
@@ -191,9 +191,9 @@ end
                 progress=uiprogressdlg(fig,'Title','Building ICC profile','Message', ...
                     'Preparing measurements. This can take several minutes.', ...
                     'Indeterminate','on','Cancelable','off');
-                watch=timer('ExecutionMode','fixedSpacing','Period',1,'BusyMode','drop','TimerFcn',@updateProgress);
-                start(watch);
             end
+            watch=timer('ExecutionMode','fixedSpacing','Period',1,'BusyMode','drop','TimerFcn',@updateProgress);
+            start(watch);
             w.run(active,o);finished=true;
             message="Complete: "+string(defs(index).label)+". Results saved.";
             saved=inkprof.internal.savedTargetSummary(w,active);
@@ -226,9 +226,11 @@ end
         function updateProgress(~,~)
             if ~isvalid(fig),return;end
             elapsed=seconds(datetime('now')-started);
-            text="Building ICC profile — elapsed "+floor(elapsed/60)+" min "+mod(floor(elapsed),60)+" sec";
+            phase=string(defs(index).label);
+            if isappdata(fig,'InkProfCalculationPhase'),phase=getappdata(fig,'InkProfCalculationPhase');end
+            text=phase+" — elapsed "+floor(elapsed/60)+" min "+mod(floor(elapsed),60)+" sec";
             logs=dir(fullfile(w.Root,'profiles','iterations','*','progress.log'));
-            if ~isempty(logs)
+            if any(active==["profile","continue"])&&~isempty(logs)
                 [~,last]=max([logs.datenum]);entry=logs(last);
                 if entry.datenum>=datenum(started)
                     try
@@ -240,9 +242,10 @@ end
                 end
             end
             if ~isempty(progress)&&isvalid(progress),progress.Message=char(text);end
-            details.Value=cellstr(splitlines(text));status.Text="Running: ICC profiling. Please wait.";
+            details.Value=cellstr(splitlines(text+newline+"Work is in progress. Complete any open input dialog; otherwise please wait."));status.Text="Running: "+phase+". Please wait.";
         end
         function stopProgress()
+            if isgraphics(fig),setappdata(fig,'InkProfRunning',false);end
             if ~isempty(watch)&&isvalid(watch),stop(watch);delete(watch);end
             if ~isempty(progress)&&isvalid(progress),close(progress);end
         end

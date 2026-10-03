@@ -1,7 +1,8 @@
 function settings=imageRefinementDialog(file,defaults,profileDescription)
 % Base MATLAB image preview and editable pixel rectangle; no image toolbox.
+calculation=inkprof.internal.calculationProgress("Opening image preview","Reading the image for region selection.");
 [pixels,map]=imread(file);assert(isempty(map)&&ndims(pixels)==3&&size(pixels,3)==3,'inkprof:Image','Select an RGB image.');
-[h,w,~]=size(pixels);settings=[];
+[h,w,~]=size(pixels);settings=[];clear calculation;
 f=uifigure('Name','InkProf - Select image colours','Position',[140 90 1050 720],'WindowStyle','modal');
 cleanup=onCleanup(@()delete(f));f.CloseRequestFcn=@cancel;
 g=uigridlayout(f,[3 2]);g.ColumnWidth={'1x',320};g.RowHeight={55,'1x',42};

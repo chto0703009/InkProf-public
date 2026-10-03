@@ -31,9 +31,10 @@ while true
   [n,p]=uigetfile({'*.tif;*.tiff;*.png;*.jpg;*.jpeg','RGB images (8/16-bit TIFF, PNG, JPEG)'},'Select image for refinement');
   if isequal(n,0),return;end;image=string(fullfile(p,n));
  end
+ calculation=inkprof.internal.calculationProgress("Reading image profile","Reading image metadata and checking the Python runtime.");
  image=inkprof.internal.absolutePath(image);imageDigest=inkprof.internal.sha256(image);
  inkprof.runPython(fullfile(paths.Root,'analysis','image_refinement.py'),[image,fullfile(work,'image-info.json'),"--inspect"],RequiredModules=["numpy","scipy","colour","PIL"]);
- info=jsondecode(fileread(fullfile(work,'image-info.json')));
+ info=jsondecode(fileread(fullfile(work,'image-info.json')));clear calculation;
  if sourceProfile=="embedded"&&~info.hasEmbeddedProfile
   if ~options.ShowDialog,error('inkprof:ImageProfile','Image has no embedded profile. Set SourceProfile="sRGB" explicitly, or choose a tagged image.');end
   choice=questdlg('This image has no embedded colour profile. sRGB will be used unless you choose another image. If the image is actually Adobe RGB or another space, select a correctly tagged image instead.', ...
@@ -49,6 +50,7 @@ if options.ShowDialog
  description=sourceProfile;if sourceProfile=="embedded",description=string(info.description);elseif assumed,description="sRGB (assumed after missing-profile warning)";end
  settings=inkprof.internal.imageRefinementDialog(image,settings,description);if isempty(settings),return;end
 end
+calculation=inkprof.internal.calculationProgress("Calculating image patches","Converting image colours through the ICC profiles, selecting patches and estimating local errors.");
 [pixels,map,alpha]=imread(image);
 assert(isempty(map)&&ndims(pixels)==3&&size(pixels,3)==3&&any(strcmp(class(pixels),{'uint8','uint16'})), ...
  'inkprof:Image','Use a true-colour 8-bit or 16-bit RGB image. Convert CMYK, indexed or floating-point images before import.');
@@ -77,10 +79,12 @@ proposal.imageProfile.assumedSRGB=assumed||(~info.hasEmbeddedProfile&&sourceProf
 proposal.imageProfile.warningAcknowledged=assumed;
 proposal.name=options.Name;proposal.iterationId=string(java.util.UUID.randomUUID());
 proposal.createdUTC=string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'"));
+clear calculation;
 selected=1:numel(proposal.candidates);reviewFilter=struct;
 if options.ShowDialog
  [selected,reviewFilter]=inkprof.internal.reviewImageCandidates(proposal);if isempty(selected),proposal=[];return;end
 end
+calculation=inkprof.internal.calculationProgress("Saving image selection","Saving selected patches, the source image and profile records in the project.");
 proposal.selection=struct('proposedCount',numel(proposal.candidates),'selectedPatchIds',string({proposal.candidates(selected).patchId}), ...
  'reviewed',options.ShowDialog,'selectedCount',numel(selected),'filter',reviewFilter);
 inkprof.internal.writeJson(fullfile(stage,'proposed-candidates.json'),proposal.candidates);
@@ -94,6 +98,7 @@ proposal.snapshots=struct('context',"sources/context.json",'profile',"sources/pr
 assert(inkprof.internal.sha256(fullfile(stage,'sources','training.ti3'))==string(context.trainingTI3SHA256),'inkprof:Integrity','Training measurements changed.');
 folder=fullfile(project,'refinements',proposal.iterationId);if ~isfolder(fileparts(folder)),mkdir(fileparts(folder));end;movefile(stage,folder);
 inkprof.internal.writeJson(fullfile(folder,'proposal.json'),proposal);
+clear calculation;
 if options.CreatePrint
  proposal.print=inkprof.internal.createRefinementPrint(proposal,job,fullfile(folder,'refinement-print'),options.DPI,options.Paper,options.Seed,options.PlanPaper);
  inkprof.internal.writeJson(fullfile(folder,'proposal.json'),proposal);

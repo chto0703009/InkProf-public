@@ -70,6 +70,7 @@ if options.PlanPaper
     targetLimitMm=[choice.preferences.MaxScanMm choice.preferences.MaxLengthMm];
 end
 assert(all(options.PaperSizeMm<=targetLimitMm),'inkprof:Paper','Target exceeds the measurement limits in project Target paper settings.');
+calculation=inkprof.internal.calculationProgress("Creating TIFF16 target","Arranging patches and writing TIFF16 print files. Large targets may take several minutes."); %#ok<NASGU>
 checkpoint(options.Continue);
 bin=inkprof.internal.argyllBin(options.ArgyllBin);
 parent=string(fileparts(outputFolder));if ~isfolder(parent),mkdir(parent);end
