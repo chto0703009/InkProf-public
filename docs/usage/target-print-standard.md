@@ -54,7 +54,7 @@ Mallen visar kolumner efter Z som 2A, 2B och 2C; Argylls TI2 kan beteckna motsva
 
 ## Centrering på sidan
 
-Målområdet ska vara centrerat horisontellt och vertikalt i den tillgängliga ytan mellan rubrik/kolumnetiketter och sidfot. Centreringen omfattar patcharna och deras kontrastfält. Flytten görs i hela pixlar utan omskalning; positionsbeskrivningen i JSON uppdateras samtidigt. Argyll-renderingen reserverar 20 mm upptill och 22 mm nedtill. Argylls sidkapacitet minskas i motsvarande grad; patchar skalas inte. Sidfotens mått sparas i target-JSON under `printSettings`. TI2 behåller patchidentitet, radordning och RGB-värden; den absoluta sidplaceringen lagras i layout-JSON och `page-placement.json`. Äldre paket utan placeringsfil behåller sina ursprungliga koordinater.
+Målområdet ska vara centrerat horisontellt och vertikalt i den tillgängliga ytan mellan rubrik/kolumnetiketter och sidfot. Centreringen omfattar patcharna och deras kontrastfält. Flytten görs i hela pixlar utan omskalning; positionsbeskrivningen i JSON uppdateras samtidigt. Argyll-renderingen reserverar 20 mm upptill och 22 mm nedtill, eller 30 mm nedtill för mål smalare än 240 mm (inklusive A5 i båda orienteringarna). Argylls sidkapacitet minskas i motsvarande grad; patchar skalas inte. Sidfotens mått sparas i target-JSON under `printSettings`. TI2 behåller patchidentitet, radordning och RGB-värden; den absoluta sidplaceringen lagras i layout-JSON och `page-placement.json`. Äldre paket utan placeringsfil behåller sina ursprungliga koordinater.
 
 I i1Pro 2-provet 2026-09-26 berodde första radens omsvep enligt användaren på att arket satt för långt till höger i släden. Efter korrigerad placering accepterades alla sju rader. Centrering ska ge utrymme för start och avslut på papper; omsvepet ska inte tillskrivas patchigenkänningen.
 
@@ -73,6 +73,8 @@ Den äldre beskurna 263 × 195 mm-bilden behåller 3,5 mm sidfotsavstånd inom b
 - Förhandsvisningsbilder är endast för skärmvisning; skriv ut TIFF16-filen.
 
 Patchmått, kontrastfält och antal rader bestäms av den valda layouten och ska dokumenteras i paketet. De får inte ändras genom skalning vid utskrift. Nuvarande sidmall har 8 × 8 mm patchar; kontrastprovet för tidigare rader 13–17 har 10 × 8 mm patchar och 1 mm kontrastfält. Dessa är olika layouter, inte universella patchmått.
+
+Sedan 2026-10-03 har smala mål en separat sidfotslayout: källbeskrivningen centreras 27 mm, filsökvägen 19 mm och datum/sidnummer 10 mm från nederkanten. Sökvägen kan radbrytas till högst fyra rader inom 12 mm. Nedersta 8 mm hålls vita. Pappersförslagen räknar med det större sidfotsutrymmet. Skapa ett nytt TIFF16-paket för att få den nya layouten; befintliga TIFF-filer och mätunderlag ändras inte. Använd det nya paketets matchande TI2/JSON när den nya utskriften mäts.
 
 ## Mätunderlag och spårbarhet
 

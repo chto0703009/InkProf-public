@@ -37,8 +37,9 @@ for k=1:numel(pages)
     assert(outDpi(1)==outDpi(2),'inkprof:TIFF','Expected square pixels.');
     pixels=floor(paperMm.*outDpi/25.4+1e-6);
     % Center the entire strip body, including spacers, using integer pixels.
-    % Reserve 20 mm above (heading/column labels) and 22 mm below (footer).
-    top=ceil(20*outDpi(2)/25.4);bottom=floor((paperMm(2)-22)*outDpi(2)/25.4);
+    % Reserve heading space and the same footer band as the text renderer.
+    furniture=inkprof.internal.printFurnitureLayout(paperMm(1));
+    top=ceil(20*outDpi(2)/25.4);bottom=floor((paperMm(2)-furniture.footerReservedMm)*outDpi(2)/25.4);
     assert(numel(y)<=pixels(1)&&numel(x)<=bottom-top,'inkprof:Geometry','Strip body does not fit the printable area.');
     dx=floor((pixels(1)-numel(y))/2)+1-y(1);
     dy=top+floor((bottom-top-numel(x))/2)+1-x(1);
@@ -76,7 +77,7 @@ for k=1:numel(pages)
         geom=str2double(tokens(6:9));
         output=label(output,columnLabel,[geom(4)+geom(2)/2-2+offset(1),lo(1)-6+offset(2)],outDpi,2.5);
     end
-    assert(hi(1)+offset(2)<paperMm(2)-21,'inkprof:Geometry','No clear space for footer.');
+    assert(hi(1)+offset(2)<paperMm(2)-furniture.footerReservedMm+1,'inkprof:Geometry','No clear space for footer.');
     output=inkprof.internal.drawPrintFurniture(output,outDpi(1),k,numel(pages),timestamp,fullfile(outputFolder,name),targetInfo.footerText);
     file=Tiff(fullfile(folder,name),'w');c=onCleanup(@()close(file));
     tags=struct('ImageLength',size(output,1),'ImageWidth',size(output,2), ...

@@ -6,16 +6,17 @@ if nargin<7,summary="";end
 if nargin<8,footerInsetMm=12;end
 widthMm=size(image,2)/dpi*25.4;heightMm=size(image,1)/dpi*25.4;
 image=textAt(image,"InkProf Quality Profiling RGB printer",[widthMm/2 9],dpi,20,"center",widthMm-16);
-if widthMm<240
+layout=inkprof.internal.printFurnitureLayout(widthMm);
+if layout.compact
     if strlength(string(summary))>0
-        image=textAt(image,string(summary),[widthMm/2 heightMm-19],dpi,7,"center",widthMm-16);
+        image=textAt(image,string(summary),[widthMm/2 heightMm-layout.summaryInsetMm],dpi,7,"center",widthMm-16);
     end
     [lines,points,lineMm]=footerLines(string(filePath),widthMm-16,dpi,4,12);
     for k=1:numel(lines)
-        image=textAt(image,lines(k),[widthMm/2 heightMm-11+(k-(numel(lines)+1)/2)*lineMm],dpi,points,"center",widthMm-16);
+        image=textAt(image,lines(k),[widthMm/2 heightMm-layout.footerCenterInsetMm+(k-(numel(lines)+1)/2)*lineMm],dpi,points,"center",widthMm-16);
     end
-    image=textAt(image,timestamp,[8 heightMm-3],dpi,7,"left");
-    image=textAt(image,string(page)+" ("+total+")",[widthMm-8 heightMm-3],dpi,7,"right");
+    image=textAt(image,timestamp,[8 heightMm-layout.dateInsetMm],dpi,7,"left");
+    image=textAt(image,string(page)+" ("+total+")",[widthMm-8 heightMm-layout.dateInsetMm],dpi,7,"right");
 else
 if strlength(string(summary))>0
     image=textAt(image,string(summary),[widthMm/2 heightMm-footerInsetMm-5.3],dpi,7,"center",widthMm-16);

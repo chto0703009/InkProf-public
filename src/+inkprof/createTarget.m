@@ -135,9 +135,10 @@ end
 target.estimatedXYZ=inkprof.internal.writeTi1(fullfile(stage,'target.ti1'),target,template);
 if isfile(fullfile(stage,'helper.ti1')),delete(fullfile(stage,'helper.ti1'));end
 [~,packageName]=fileparts(outputFolder);
+furniture=inkprof.internal.printFurnitureLayout(min(options.PaperSizeMm(1),targetLimitMm(1)));
 target.printSettings=struct('packageName',string(packageName),'outputFolder',outputFolder, ...
     'inputFile',originalPath,'dpi',options.DPI,'paperSizeMm',options.PaperSizeMm, ...
-    'footerCenterInsetMm',12,'footerReservedMm',22, ...
+    'footerCenterInsetMm',furniture.footerCenterInsetMm,'footerReservedMm',furniture.footerReservedMm,'footerBottomClearMm',furniture.bottomClearMm, ...
     'maximumWidthMm',targetLimitMm(1),'maximumLengthMm',targetLimitMm(2),'lengthPolicy',"project JSON limits",'marginMm',options.MarginMm, ...
     'spacerMode',options.SpacerMode,'randomize',options.Randomize,'seed',options.Seed, ...
     'tiffBitsPerChannel',16,'embeddedICCProfile',false);
@@ -151,9 +152,9 @@ inkprof.internal.writeJson(fullfile(stage,'target.json'),target);
 % The target canvas includes margins and is capped independently of paper.
 % Floor to whole pixels within the measurement limits recorded in JSON.
 renderPaper=min(options.PaperSizeMm,floor(targetLimitMm*options.DPI/25.4)*25.4/options.DPI-1e-7);
-% Reduce native row capacity by the extra footer reservation (22 vs 12 mm).
+% Reduce native row capacity by the extra footer reservation above 12 mm.
 % Final TIFF retains the requested paper size; patch pixels are not scaled.
-nativePaper=fliplr(renderPaper);nativePaper(1)=nativePaper(1)-10;
+nativePaper=fliplr(renderPaper);nativePaper(1)=nativePaper(1)-(furniture.footerReservedMm-12);
 paper=compose('%.12gx%.12g',nativePaper(1),nativePaper(2));
 mkdir(fullfile(stage,'argyll'));
 copyfile(fullfile(stage,'target.ti1'),fullfile(stage,'argyll','target.ti1'));
