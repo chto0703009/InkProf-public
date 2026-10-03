@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0 — in preparation (1.0.0-rc.1, 2026-10-03)
+## v1.0.0RC1 — public release candidate (1.0.0-rc.1, 2026-10-03)
 
 - External ICC verification: balanced photographic patch selection with reserved skin tones and shadows, distributed neutrals/challenges, and recorded selection quotas; existing targets remain unchanged.
 
@@ -16,7 +16,7 @@
 - Updated Swedish/English presentations and workflow PDFs, Swedish handbook, installation and current usage index.
 - Licensing review: source notices, full dependency notices, preserved provenance, redistributable font and PDF notices. Minimal independently authored PXF scaffold replaces older vendor settings; PXF patch-set import/display, printing and physical measurement with the replacement were verified and accepted by the user on 2026-10-03 (tested round8 export).
 
-This is preparation, not a published stable v1.0.0. See VALIDATION.txt and docs/releases/v1.0.0.md. No new physical accuracy claim follows from automated tests.
+This is a public release candidate, not the stable v1.0.0. See VALIDATION.txt and docs/releases/v1.0.0.md. No new physical accuracy claim follows from automated tests.
 
 ## 0.9 — historical public snapshot
 

@@ -1,4 +1,6 @@
-# InkProf v1.0.0 – inför utgåvan
+# InkProf v1.0.0RC1 – publik testutgåva
+
+Publik Release Candidate **v1.0.0RC1**, intern version **1.0.0-rc.1**. Detta är en testutgåva inför den stabila v1.0.0. Se [releaseinformationen](docs/releases/v1.0.0RC1.md).
 
 [English description](README.md)
 

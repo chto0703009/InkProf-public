@@ -1,6 +1,6 @@
-# Public release scope — v1.0.0 preparation
+# Public release scope — v1.0.0RC1
 
-This is a source-only preparation tree (1.0.0-rc.1), based on the separate public repository. Private development history is neither merged into it nor rewritten.
+This is a source-only release candidate (tag v1.0.0RC1, internal version 1.0.0-rc.1), based on the separate public repository. Private development history is neither merged into it nor rewritten.
 
 Excluded: local projects/measurements/ICC profiles, imported i1Profiler reference packages and real MXF fixtures, vendor screenshots, private historical datasets, machine settings, virtual environments, caches and external runtime binaries. Synthetic fixtures and original explanatory documentation figures are included. Some historical research notes refer to excluded data; they are not reproducible release tests.
 

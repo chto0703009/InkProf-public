@@ -1,8 +1,8 @@
-# InkProf v1.0.0 — release preparation
+# InkProf v1.0.0RC1 — public release candidate
 
 **InkProf - When colours have to be right**
 
-Target release: **1.0.0**. Current source: **1.0.0-rc.1**, not a published stable release. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
+Public prerelease: **[v1.0.0RC1](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0RC1)**. Internal version: **1.0.0-rc.1**. This is a release candidate for testing, not the stable v1.0.0. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
 
 [Swedish description / Svenska](README.sv.md)
 
@@ -28,10 +28,10 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 - Instrument measurement uses a POSIX bridge. Windows instrument operation has not been qualified.
 - The project app uses English labels, dialogs and workflow guidance. Swedish and English PDF documentation is included.
 
-Clone this repository to try the 1.0.0-rc.1 preparation build:
+Clone the tagged release candidate:
 
 ```sh
-git clone https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.0.0RC1 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
@@ -46,6 +46,10 @@ startInkProfApp();
 ```
 
 Choose **New project** or **Open project**. Create your own RGB target or import a definition you are entitled to use. Print the saved TIFF16 separately and use its matching target data for measurement. The app does not print, install profiles automatically or certify ISO conformity.
+
+## Verify an existing printer profile
+
+Choose **New project → Verify existing ICC** for a separate seven-step workflow. The editable 575-patch suggestion uses a balanced photographic selection, including neutrals, skin tones, shadows, difficult colours and repeats. Print, measure and document the result without rebuilding the imported profile. See [existing ICC verification](docs/usage/verify-existing-icc.md).
 
 ## Documentation
 

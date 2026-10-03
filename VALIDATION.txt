@@ -1,3 +1,34 @@
+InkProf v1.0.0RC1 — public release candidate
+Date: 2026-10-03 | Internal version: 1.0.0-rc.1
+
+RELEASE-CANDIDATE RECHECK (supersedes earlier automated totals below)
+- Public checkout: 130 Python tests passed, 0 failures (18.104 s).
+- Public checkout: 158 MATLAB tests passed, 0 failed, 0 incomplete
+  (171.9184 s testing time), with INKPROF_TEST_PYTHON explicitly selected.
+- Environment: macOS, MATLAB R2025b, Python 3.13, ArgyllCMS 3.5.0.
+- All tracked Python sources parsed successfully; git diff --check passed.
+- Release/version/resource/source checks passed: 284 public source files
+  carry the required notices. Installed dependency versions and complete
+  recorded licence bytes/hashes passed the inventory check.
+- Five current PDF documents checked for version and contact on every page:
+  Swedish/English presentations 7/7 pages, Swedish handbook 20 pages,
+  Swedish/English workflow guides 20/8 pages. The updated presentation pages
+  were visually reviewed. Earlier full-document visual review is below.
+- Release/index local documentation links passed. New Markdown guidance
+  documents external ICC verification and balanced target selection.
+- Additional real-ICC generation test: 140 and 575 patches, correct quotas
+  and distinct device RGB except intentional repeats. At 140 patches:
+  15 skin tones, 10 shadows, 72 broad colours, 20 neutrals, 13 challenges,
+  10 repeats. This generation check did not print or measure new targets.
+- The public virtual environment reuses installed development dependencies;
+  a fresh package-index installation was not tested.
+- No physical instrument operation was started by this release recheck.
+  Existing user-confirmed print/measurement evidence retains its scope below.
+- This is a public prerelease, not stable v1.0.0 or universal legal/colour
+  qualification. Known limitations: docs/releases/v1.0.0RC1.md.
+
+EARLIER PREPARATION RECORD (historical counts retained)
+====================================================
 InkProf v1.0.0 preparation — source 1.0.0-rc.1
 Date: 2026-10-03
 

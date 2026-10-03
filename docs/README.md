@@ -1,4 +1,4 @@
-# InkProf documentation — v1.0.0 preparation
+# InkProf documentation — v1.0.0RC1
 
 Source version **1.0.0-rc.1**, updated 2026-10-03. Start with the [complete app workflow](usage/workflow-v1.0.md). App labels are English; the handbook is Swedish and the presentations/workflow PDFs are available in both languages.
 
@@ -10,7 +10,11 @@ Source version **1.0.0-rc.1**, updated 2026-10-03. Start with the [complete app 
 - [InkProf-profileringskedja-MATLAB-guide](usage/InkProf-profileringskedja-MATLAB-guide.pdf)
 - [InkProf-profiling-workflow-MATLAB-guide-English](usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
 
+Release candidate notes: [v1.0.0RC1](releases/v1.0.0RC1.md). The current Markdown guides supplement the PDF handbooks, including the recently added external-profile verification workflow.
+
 ## Detailed usage
+
+- [Verify an existing ICC: balanced photographic targets](usage/verify-existing-icc.md)
 
 - [Förkortningar i InkProf](usage/abbreviations.md)
 - [Automatisk profiliteration från mätning](usage/automatic-profile-iteration.md)
