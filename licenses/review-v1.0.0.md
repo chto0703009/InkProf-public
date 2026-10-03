@@ -23,3 +23,7 @@ No declaration of universal legal clearance is made. Old private history is not 
 Run `python tools/check_release.py` for source notices, version, public file boundary and schema/font hashes. Run the analysis/report environment's `python tools/check_license_inventory.py` for installed versions and exact notice hashes. VALIDATION.txt records the actual test results.
 
 Sources: [GNU GPL application guidance](https://www.gnu.org/licenses/gpl-howto.en.html), [GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html), [ArgyllCMS](https://www.argyllcms.com/). Licence statements are additionally checked against the preserved installed distribution texts; web references are not substitutes for those texts.
+
+## Open rights questions before stable v1.0.0
+
+Review the earlier vendor-derived PXF scaffold in public history and the v0.9 archive; replacing the current file does not settle earlier redistribution rights. Separately assess the bvdm/ISO-related table reproduction: attribution is not itself permission to reproduce protected material. No complete trademark clearance for the InkProf name or patent freedom-to-operate search has been conducted. The certificate's Appendix B now explains that the GPL warranty disclaimer does not grant third-party rights; adding that notice does not resolve these questions. See https://www.iso.org/copyright.html and https://www.prv.se/sv/intrang .

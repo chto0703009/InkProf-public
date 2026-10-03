@@ -116,7 +116,8 @@ def create(folder):
     story += [PageBreak(), p('Bilaga B - Juridiska villkor', 'Title')]
     for key, title in [('reproductionLiability', 'Ansvar för utrustningens och materialens begränsningar'),
                        ('clientPrintResponsibility', 'Beställarens utskrifter och uppgifter'),
-                       ('warrantyNotice', 'Garanti och ansvar')]:
+                       ('warrantyNotice', 'Garanti och ansvar'),
+                ('licensingNotice', 'Licenser och tredjepartsrättigheter')]:
         if r.get(key):
             story += [p(title, 'Heading2'), p(r[key])]
 

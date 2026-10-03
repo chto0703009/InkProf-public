@@ -131,7 +131,8 @@ def create(folder, language="sv"):
             title+': '+legal[key] for key, title in [
                 ('reproductionLiability', 'Ansvar för utrustningens och materialens begränsningar'),
                 ('clientPrintResponsibility', 'Beställarens utskrifter och uppgifter'),
-                ('warrantyNotice', 'Garanti och ansvar')] if legal.get(key)]))
+                ('warrantyNotice', 'Garanti och ansvar'),
+                ('licensingNotice', 'Licenser och tredjepartsrättigheter')] if legal.get(key)]))
     project_section = next(section for section in sections if section[0] == 'Projekt och utskriftsinställningar')
     sections.remove(project_section)
     sections.insert(1, project_section)

@@ -157,6 +157,7 @@ verifyEqual(tc,r.results.c3_report.summary.mean,1.25);verifyFalse(tc,r.printing.
 verifyTrue(tc,isfield(r,'fwa'));verifyTrue(tc,contains(r.fwa.summaryText,'FWA-effekt'));
 verifyEqual(tc,string(r.documentTitle),"InkProf - mätcertifikat");verifyNotEmpty(tc,r.certificateId);
 verifyTrue(tc,contains(r.reproductionLiability,'enbart beror'));verifyTrue(tc,contains(r.reproductionLiability,'tvingande lag'));
+verifyTrue(tc,contains(r.licensingNotice,'ersätter inte tillstånd'));
 verifyTrue(tc,contains(r.clientPrintResponsibility,'Om beställaren'));verifyTrue(tc,contains(r.clientPrintResponsibility,'tvingande lag'));
 verifyEqual(tc,string(r.signature.status),"unsigned");verifyTrue(tc,contains(r.reproductionLimits,'skrivare, papper och bläck'));
 verifyEqual(tc,string(r.projectDetails(string({r.projectDetails.label})=="Skrivare").value),"Certificate printer <demo>");
@@ -164,6 +165,7 @@ verifyTrue(tc,contains(fileread(w.output('export','reportText')),'Ort och datum:
 
 h=fileread(w.output('export','finalReport'));verifyTrue(tc,contains(h,'Mätresultat – färgprov och ΔE00'));verifyFalse(tc,contains(h,'<th>Grupp</th>'));verifyTrue(tc,contains(h,'1.250'));
 verifyTrue(tc,contains(h,'Underskrift av mätcertifikat'));
+verifyGreaterThan(tc,strfind(h,'Licenser och tredjepartsrättigheter'),strfind(h,'Bilaga B – Juridiska villkor'));
 verifyFalse(tc,r.standardsReference.isCertification);
 verifyTrue(tc,contains(h,'≤ 2,5'));verifyTrue(tc,contains(h,'≤ 5,0'));
 verifyGreaterThan(tc,strfind(h,'Bilaga A - Referenser och förklaringar'),strfind(h,'Underskrift av mätcertifikat'));
@@ -360,6 +362,8 @@ verifyEqual(tc,string(r.documentTitle),"InkProf - mätcertifikat");verifyTrue(tc
 verifyEqual(tc,string(r.scopeStatement),"Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.");
 verifyFalse(tc,isfield(r.sources,'c3'));verifyFalse(tc,isfield(r,'approval'));
 verifyTrue(tc,isfile(w.output('numericalExport','reportPDF')));
+verifyTrue(tc,contains(r.legalAppendix.licensingNotice,'ersätter inte tillstånd'));
+verifyTrue(tc,contains(fileread(w.output('numericalExport','finalReport')),'Licenser och tredjepartsrättigheter'));
 h=fileread(w.output('numericalExport','finalReport'));verifyGreaterThan(tc,strfind(h,'Bilaga B - Juridiska villkor'),strfind(h,'<h1>Underskrift</h1>'));
 verifyTrue(tc,isfield(r,'legalAppendix'));
 verifyFalse(tc,r.standardsReference.isCertification);

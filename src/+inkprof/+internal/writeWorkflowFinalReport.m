@@ -34,6 +34,7 @@ r.reproductionLimits="Resultatet med en ICC-profil är beroende av vad kombinati
 legal=inkprof.internal.reportLegalText();
 r.reproductionLiability=legal.reproductionLiability;
 r.clientPrintResponsibility=legal.clientPrintResponsibility;
+r.licensingNotice=legal.licensingNotice;
 r.signature=struct('status',"unsigned",'method',"handwritten on printed PDF", ...
  'statement',"Med min underskrift bekräftar jag att jag har granskat mätcertifikatet och dess angivna förutsättningar, resultat, begränsningar och ansvarsfördelning.");
 r.projectDetails=struct('label',{},'value',{});
@@ -153,7 +154,7 @@ lines=[lines;"";string(r.standardsReference.sv.appendixTitle);string(r.standards
 lines=[lines;"";"BILAGA B – JURIDISKA VILLKOR"; ...
  "ANSVAR FÖR UTRUSTNINGENS OCH MATERIALENS BEGRÄNSNINGAR";r.reproductionLiability; ...
  "";"BESTÄLLARENS UTSKRIFTER OCH UPPGIFTER";r.clientPrintResponsibility; ...
- "";"GARANTI OCH ANSVAR";r.warrantyNotice];
+ "";"GARANTI OCH ANSVAR";r.warrantyNotice;"";"LICENSER OCH TREDJEPARTSRÄTTIGHETER";r.licensingNotice];
 writeText(paths.text,strjoin(lines,newline));
 projectHTML="<h2>Projekt och utskriftsvillkor</h2>";
 for detail=r.projectDetails
@@ -210,7 +211,7 @@ html=html+"<h2>Fullständig redovisning och historik</h2><pre>"+esc(strjoin(appe
  "<section class='legal-appendix' style='break-before:page'><h2>Bilaga B – Juridiska villkor</h2>"+ ...
  "<h3>Ansvar för utrustningens och materialens begränsningar</h3><p>"+esc(r.reproductionLiability)+"</p>"+ ...
  "<h3>Beställarens utskrifter och uppgifter</h3><p>"+esc(r.clientPrintResponsibility)+"</p>"+ ...
- "<h3>Garanti och ansvar</h3><p>"+esc(r.warrantyNotice)+"</p></section></html>";
+ "<h3>Garanti och ansvar</h3><p>"+esc(r.warrantyNotice)+"</p><h3>Licenser och tredjepartsrättigheter</h3><p>"+esc(r.licensingNotice)+"</p></section></html>";
 config=inkprof.paths();
 furniture=struct('header',r.pageHeader,'date',r.reportDate,'user',r.reportUser);
 pages=string(fileread(fullfile(config.Root,'resources','workflow-report-pages.html')));

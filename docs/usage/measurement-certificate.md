@@ -153,3 +153,9 @@ After signing, Appendix A contains expanded organization names, source, standard
 ## v1.0.0 project settings
 
 Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.
+
+## Licenser och tredjepartsrättigheter i bilaga B
+
+Nya PDF-, HTML-, text- och JSON-exporter innehåller även en gemensam licensnotis: InkProfs GPL-licens och ansvarsfriskrivning ersätter inte eventuella tillstånd för annans upphovsrätt, varumärken eller patent. Externa komponenters villkor finns i LICENSE och THIRD_PARTY_NOTICES.md på projektets GitHub. Detta gäller både utskriftsgranskade och numeriskt avgränsade certifikat.
+
+Utgåvans öppna rättighetsfrågor dokumenteras i licensgranskningen och utgåvechecklistan, inte som slutsatser om kundens mätresultat. Notisen löser inte en rättighetsfråga. Redan sparade certifikat är historiska dokument och ändras inte automatiskt; skapa en ny export för den uppdaterade bilagan.
