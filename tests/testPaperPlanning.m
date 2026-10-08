@@ -50,6 +50,7 @@ verifyGreaterThan(tc,m.renderPaperSizeMm(1),320);
 verifyTrue(tc,inkprof.verifyPackage(fullfile(folder,'wide')).passed);
 end
 function testDialogAcceptAndCancel(tc)
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
 t=timer('ExecutionMode','fixedSpacing','Period',.2,'TimerFcn',@acceptPaper);
 clean=onCleanup(@()disposeTimer(t));start(t);
 c=inkprof.internal.paperLayoutDialog(120,"");
@@ -63,4 +64,12 @@ stop(t);try,b.ButtonPushedFcn(b,[]);catch err,disp(getReport(err));delete(f);end
 end
 function disposeTimer(t)
 stop(t);delete(t);delete(findall(groot,'Tag','paperLayoutDialog'));
+end
+
+function teardown(~)
+deadlines=timerfindall('Name','InkProfTestDeadline');if ~isempty(deadlines),stop(deadlines);delete(deadlines);end
+if isappdata(groot,'InkProfTestDialogExpired')
+ expired=getappdata(groot,'InkProfTestDialogExpired');rmappdata(groot,'InkProfTestDialogExpired');
+ assert(~expired,'inkprof:TestDialogTimeout','Dialog interaction did not finish before its deadline.');
+end
 end

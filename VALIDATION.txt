@@ -1,3 +1,29 @@
+InkProf v1.0.0-rc.3 — public release candidate
+Date: 2026-10-08 | Internal version: 1.0.0-rc.3
+
+RC3 FOLLOW-UP
+- Local development full MATLAB suite: 210 passed, 1 failed, 0 incomplete
+  (631.2 seconds). Only failure: obsolete lengthPolicy expectation.
+- Corrective retest: entire testRenderDialog file passed 4/4, 0 incomplete.
+- All 211 unique MATLAB tests have a passing latest result across these runs.
+  This is cumulative evidence, not a zero-failure single full run.
+- Includes four actual Argyll builds, gradient diagnostics, modal dialogs,
+  ICC cancellation, revisions, row measurement, workflow and report export.
+- Scripted temporary-project UI/render/reopen/integrity check passed; exported
+  window images visually inspected. Full manual click-through remains open.
+- Development uses private reference fixtures excluded from public source;
+  replacement by public synthetic fixtures remains separate work.
+- No new physical printing/measurement or fresh dependency installation.
+- RC3 Python unittest discovery: 172 passed, 0 failures in development
+  (22.002 seconds) and 172 passed, 0 failures in the public checkout.
+- RC3 source/version/resource and licence-inventory checks passed.
+- Five RC3 PDFs rebuilt and version checked on every page (44/44/7/7/8
+  pages); changed title-page layouts visually inspected. Copies in Downloads.
+- Detailed record: docs/validation/rc2-follow-up.md and
+  docs/validation/rc2-matlab-follow-up-results.json.
+
+HISTORICAL RC2 VALIDATION (published RC2 remains unchanged)
+=========================================================
 InkProf v1.0.0-rc.2 — public release candidate
 Date: 2026-10-08 | Internal version: 1.0.0-rc.2
 

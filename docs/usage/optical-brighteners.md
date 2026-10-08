@@ -1,6 +1,6 @@
 # Optical brighteners: OBA, FWA and OBC
 
-> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Updated 2026-10-02. InkProf now offers selectable D50 compensation in the project definition. The instrument mode of direct measurement is not changed.
 

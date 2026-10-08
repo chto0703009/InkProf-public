@@ -237,7 +237,14 @@ report=string(r.reportFile);verifyTrue(tc,isfile(report));verifyTrue(tc,isfile(f
 delivered=jsondecode(fileread(fullfile(r.reportAssets,'final-report.json')));
 verifyEqual(tc,string(delivered.deliveryProfile.sha256),inkprof.internal.sha256(icc));
 verifyEqual(tc,string(delivered.deliveryProfile.sourceSHA256),inkprof.internal.sha256(w.output('export','profile')));
-html=string(fileread(report));verifyTrue(tc,contains(html,"href='underlag/"));verifyFalse(tc,contains(html,"href='profile.icc'"));verifyTrue(tc,contains(html,"src='underlag/"));
+html=string(fileread(report));verifyTrue(tc,contains(html,"href='underlag/"));verifyFalse(tc,contains(html,"href='profile.icc'"));verifyTrue(tc,contains(html,"Measured print colours"));
+verifyTrue(tc,isfile(fullfile(r.reportAssets,'measured-colours.html')));
+% Interactive plots are now inline; validate every external relative asset.
+links=regexp(char(html),'(?:href|src)=["''](underlag/[^"'']+)["'']','tokens');
+for k=1:numel(links)
+ relative=char(java.net.URLDecoder.decode(links{k}{1},'UTF-8'));
+ verifyTrue(tc,isfile(fullfile(fileparts(report),relative)),relative);
+end
 folder=fileparts(w.output('export','profile'));
 verifyError(tc,@()inkprof.internal.saveWorkflowDelivery(folder,icc,report),'inkprof:Exists');
 original=inkprof.internal.sha256(icc);
@@ -429,4 +436,13 @@ verifyTrue(tc,contains(r.certificateScope,'training data are unavailable'));
 verifyTrue(tc,contains(r.results.checks_fit.status,'Not assessed'));
 verifyFalse(tc,isfield(r.sources,'checks_fit'));
 verifyTrue(tc,isfile(w.output('export','reportPDF')));
+end
+
+function testCharacterVectorDefinitionSource(tc)
+saveDefinition(tc);w=tc.TestData.w;
+source=char(w.output('definition','definition'));
+w.run('definition',struct('Source',source));
+[~,stem,ext]=fileparts(w.output('definition','definition'));
+verifyEqual(tc,stem+ext,"test.ti1");verifyTrue(tc,w.valid('definition'));
+verifyTrue(tc,isfile(w.output('definition','definition')));
 end

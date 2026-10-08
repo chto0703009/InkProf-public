@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.0.0-rc.2 | 2026-10-08",
+    "tag": "InkProf | v1.0.0-rc.3 | 2026-10-08",
     "title": "Din bild förtjänar rätt färger",
     "lead": "Du valde ljuset, formade bilden och arbetade med varje nyans. Det arbetet ska följa med till papperet.",
     "sections": [
@@ -223,7 +223,7 @@
       ],
       [
         "Förberedelse för utgåva",
-        "Dokumentationen gäller 1.0.0-rc.2 inför v1.0.0. Nya funktioner ändrar inte sparade mål och mätningar. Bedöm förbättring genom utskrift och mätning."
+        "Dokumentationen gäller 1.0.0-rc.3 inför v1.0.0. Nya funktioner ändrar inte sparade mål och mätningar. Bedöm förbättring genom utskrift och mätning."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. Externa komponenter har egna licenser. Kod, villkor och verifieringsstatus finns på GitHub."

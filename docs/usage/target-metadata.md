@@ -1,6 +1,6 @@
 # Shared target information in JSON and TIFF
 
-> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Introduced 2026-09-26. Import and generation use the same top-level field: **`targetInfo`**. This applies to imported PXF/TXF/CxF, TI1, TI2 and RGB CGATS, and to targets from Argyll and from InkProf's mesh refinement. Older files are not rewritten automatically.
 

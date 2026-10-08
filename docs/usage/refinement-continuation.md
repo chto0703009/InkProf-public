@@ -1,6 +1,6 @@
 # Continuing from a measured supplementary target to a new ICC and C2
 
-> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 `inkprof.continueRefinement` connects `refineVerification` and `iterateProfile`. It is used **after** the new supplementary target has been printed without colour conversion and measured. It needs the proposal folder and the new measurement file, not a manual setting of BaseInputFolder and RoleFile.
 

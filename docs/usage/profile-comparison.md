@@ -1,6 +1,6 @@
 # Compare successive profiles
 
-> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 **Compare with previous iteration** is available after the ICC profile for iteration 2 or later has been built. It is an optional branch; it does not approve the profile or block the normal verification workflow. Existing projects acquire the new step when opened.
 

@@ -12,6 +12,7 @@ verifyEqual(tc,profile,f);verifyFalse(tc,r.converted);
 end
 function testV4CancelDoesNotCreateCopy(tc)
 f=string(tempname);c=onCleanup(@()delete(f));h=zeros(128,1,'uint8');h(9)=4;fid=fopen(f,'wb');fwrite(fid,h);fclose(fid);dest=string(tempname);
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
 t=timer('ExecutionMode','fixedSpacing','Period',.3,'TimerFcn',@cancel);cleanup=onCleanup(@()dispose(t));start(t);
 verifyError(tc,@()inkprof.internal.iccV2Compatibility(f,dest),'inkprof:Cancelled');
 verifyFalse(tc,isfolder(dest));
@@ -23,4 +24,12 @@ verifyFalse(tc,isfolder(dest));
 end
 function dispose(t)
 if isvalid(t),stop(t);delete(t);end
+end
+
+function teardown(~)
+deadlines=timerfindall('Name','InkProfTestDeadline');if ~isempty(deadlines),stop(deadlines);delete(deadlines);end
+if isappdata(groot,'InkProfTestDialogExpired')
+ expired=getappdata(groot,'InkProfTestDialogExpired');rmappdata(groot,'InkProfTestDialogExpired');
+ assert(~expired,'inkprof:TestDialogTimeout','Dialog interaction did not finish before its deadline.');
+end
 end

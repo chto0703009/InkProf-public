@@ -14,7 +14,8 @@ inkprof.internal.writeJson(fullfile(folder,'c3.json'),struct('summary',s,'patche
 inkprof.internal.writeJson(fullfile(folder,'feedback.json'),struct('recommendation','Review print conditions','repeatability',struct('status','within-reference'),'priorities',[]));
 w=struct('State',struct('cycle',1),'output',@(id,key)fullfile(folder,string(id)+'.json'));
 for approve=[false true]
- t=timer('StartDelay',1,'TimerFcn',@respond);cleanup=onCleanup(@()delete(t));start(t);
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
+ t=timer('ExecutionMode','fixedSpacing','StartDelay',2,'Period',.5,'TimerFcn',@respond);cleanup=onCleanup(@()delete(t));start(t);
  result=inkprof.internal.approvalDialog(w);
  if approve,verifyTrue(tc,result.Confirmed);verifyEqual(tc,result.Notes,"Photographic prints; reviewed limitations.");
  else,verifyEmpty(tc,result);end
@@ -22,7 +23,9 @@ for approve=[false true]
 end
     function respond(~,~)
         f=findall(groot,'Tag','InkProfApproval');
-        verifyEqual(tc,numel(f),1);
+        if isempty(f),return;end
+        if isempty(findall(f,'Tag','approvalSave')),return;end
+        stop(t);verifyEqual(tc,numel(f),1);
         table=findall(f,'Tag','approvalPatches');verifyEqual(tc,table.Data{1,1},'B1');
         evidence=findall(f,'Tag','approvalEvidence');verifyTrue(tc,any(contains(string(evidence.Value),'Review print conditions')));
         if approve
@@ -33,4 +36,12 @@ end
             f.CloseRequestFcn(f,[]);
         end
     end
+end
+
+function teardown(~)
+deadlines=timerfindall('Name','InkProfTestDeadline');if ~isempty(deadlines),stop(deadlines);delete(deadlines);end
+if isappdata(groot,'InkProfTestDialogExpired')
+ expired=getappdata(groot,'InkProfTestDialogExpired');rmappdata(groot,'InkProfTestDialogExpired');
+ assert(~expired,'inkprof:TestDialogTimeout','Dialog interaction did not finish before its deadline.');
+end
 end

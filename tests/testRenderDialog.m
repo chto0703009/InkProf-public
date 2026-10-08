@@ -18,18 +18,22 @@ p=findobj(f,'Tag','renderPaper');p.Value='A3 portrait';p.ValueChangedFcn(p,[]);
 verifyEqual(tc,findobj(f,'Tag','renderHeight').Value,420);
 h=findobj(f,'Tag','renderHeight');h.Value=600;h.ValueChangedFcn(h,[]);
 verifyEqual(tc,p.Value,'Custom');
-verifyEqual(tc,findobj(f,'Tag','renderWidth').Limits,[61 320]);
+% Size fields permit custom sleds; createTarget enforces project limits.
+verifyEqual(tc,findobj(f,'Tag','renderWidth').Limits,[61 Inf]);
 s=findobj(f,'Tag','renderSource');s.Value=fullfile(tc.TestData.root,'example.pxf');s.ValueChangedFcn(s,[]);
 verifyEqual(tc,findobj(f,'Tag','renderName').Value,'example-TIFF16');
 end
 function testLongPageMetadata(tc)
 w=string(tempname);cleanup=onCleanup(@()remove(w));
-m=inkprof.createTarget(w,PatchCount=20,GraySteps=3,DPI=100,PaperSizeMm=[297 420],SpacerMode="colored");
+prefs=inkprof.internal.paperPreferences();prefs.MaxLengthMm=420;
+m=inkprof.createTarget(w,PatchCount=20,GraySteps=3,DPI=100,PaperSizeMm=[297 420], ...
+ PaperLayout=struct('preferences',prefs),SpacerMode="colored");
 t=jsondecode(fileread(fullfile(w,'target.json')));
 verifyEqual(tc,t.printSettings.paperSizeMm,[297;420]);
 verifyEqual(tc,t.printSettings.dpi,100);
 verifyEqual(tc,string(t.printSettings.outputFolder),w);
-verifyEqual(tc,string(t.printSettings.lengthPolicy),"user-selected");
+verifyEqual(tc,string(t.printSettings.lengthPolicy),"project JSON limits");
+verifyEqual(tc,t.printSettings.maximumLengthMm,420);
 verifyEqual(tc,t.printSettings.tiffBitsPerChannel,16);
 verifyFalse(tc,t.printSettings.embeddedICCProfile);
 verifyEqual(tc,m.printSettings.paperSizeMm,[297 420]);

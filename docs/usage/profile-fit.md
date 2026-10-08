@@ -1,6 +1,6 @@
 # Profile check – fit error per patch
 
-> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Implemented 2026-09-27. This is the first part of C1, not all of its forward/inverse validation. B3 has been accepted by the user, so the generated ICC candidate can now be checked numerically against its training data.
 

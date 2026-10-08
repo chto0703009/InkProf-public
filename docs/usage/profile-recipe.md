@@ -1,6 +1,6 @@
 # B2 – profiling recipe
 
-> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 **MXF import:** complete measurement values do not mean that the print information is complete. Check the printer, paper product, driver settings, colour management and measurement conditions, and keep unconfirmed information as unknown. See the [warning and rules for completing information](measurement-file-import.md#warning-mxf-may-need-additional-information).
 

@@ -52,6 +52,7 @@ if isunix
  verifyEmpty(tc,data.spectra);verifyEmpty(tc,data.lab);verifyEqual(tc,size(data.xyz,1),40);
  verifyFalse(tc,isfolder(fullfile(job,'result')));
  fid=fopen(fake,'w');fprintf(fid,'#!/bin/sh\nif [ "$1" = "-?" ]; then echo "Fake colprof test"; exit 1; fi\nexec sleep 30\n');fclose(fid);
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
  t=timer('ExecutionMode','fixedSpacing','Period',.5,'TimerFcn',@cancelProfileWindow);
  timerCleanup=onCleanup(@()deleteTimer(t));start(t);
  [cancelledJob,cancelled]=inkprof.runProfileJob(recipeFile,ShowDialog=true,ColprofExecutable=fake);
@@ -123,6 +124,7 @@ workflow=inkprof.ProjectWorkflow(project);state=workflow.State;
 for key=string(fieldnames(state.steps))',state.steps.(key).status="completed";end
 state.steps.input.outputs.input=workflow.relative(fullfile(folder,'profile-input.json'));
 inkprof.internal.writeJson(fullfile(project,'workflow.json'),state);workflow.reload();
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
 t=timer('ExecutionMode','fixedSpacing','Period',.5,'TimerFcn',@saveRecipeWithoutFWA);
 timerCleanup=onCleanup(@()deleteTimer(t));start(t);workflow.run("recipe");deleteTimer(t);
 manifest=jsondecode(fileread(fullfile(project,'inkprof-project.json')));verifyFalse(tc,manifest.printing.fwaCompensation);
@@ -136,4 +138,12 @@ function saveRecipeWithoutFWA(t,~)
 b=findall(groot,'Tag','SaveProfileRecipe');c=findall(groot,'Tag','RecipeFWA');
 if isempty(b)||isempty(c),return;end
 stop(t);c.Value=false;cb=b.ButtonPushedFcn;cb(b,[]);
+end
+
+function teardown(~)
+deadlines=timerfindall('Name','InkProfTestDeadline');if ~isempty(deadlines),stop(deadlines);delete(deadlines);end
+if isappdata(groot,'InkProfTestDialogExpired')
+ expired=getappdata(groot,'InkProfTestDialogExpired');rmappdata(groot,'InkProfTestDialogExpired');
+ assert(~expired,'inkprof:TestDialogTimeout','Dialog interaction did not finish before its deadline.');
+end
 end

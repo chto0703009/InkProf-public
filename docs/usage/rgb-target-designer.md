@@ -1,6 +1,6 @@
 # RGB target: iterative refinement and the Argyll alternative
 
-> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Introduced 2026-09-26 as a geometric prototype. No measured colour model is included and no profile accuracy is promised.
 

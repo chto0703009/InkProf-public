@@ -1,0 +1,1497 @@
+{
+  "date": "2026-10-08",
+  "scope": "Development checkout including private fixtures; local changes after cb1afa0",
+  "fullRun": {
+    "passed": 210,
+    "failed": 1,
+    "incomplete": 0,
+    "durationSeconds": 631.2
+  },
+  "retest": {
+    "suite": "testRenderDialog",
+    "passed": 4,
+    "failed": 0,
+    "incomplete": 0,
+    "reason": "Updated obsolete lengthPolicy expectation; verified explicit 420 mm limit"
+  },
+  "uniqueTestsWithPassingLatestResult": 211,
+  "results": [
+    {
+      "name": "testApprovalDialog/testEvidenceAndExplicitApproval",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 5.6305
+    },
+    {
+      "name": "testArgyllDiscovery/testNativeHomebrewOrder",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.036529
+    },
+    {
+      "name": "testArgyllDiscovery/testResolution",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.2897
+    },
+    {
+      "name": "testArgyllDiscovery/testOnlyExplicitPathsAreSaved",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.015286
+    },
+    {
+      "name": "testArgyllRefinementCandidates/testPrintablePlacementAndExclusion",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.016011
+    },
+    {
+      "name": "testCalculationProgress/testBatchDoesNotOpenWindow",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.018154
+    },
+    {
+      "name": "testCalculationProgress/testVisibleElapsedAndCleanup",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.3818
+    },
+    {
+      "name": "testCalculationProgress/testFailureClosesProgress",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.88782
+    },
+    {
+      "name": "testCalculationProgress/testNestedPhasesRestoreOuterWithoutExtraTimers",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.2938
+    },
+    {
+      "name": "testCalculationProgress/testExplicitMeasurementParent",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.0526
+    },
+    {
+      "name": "testCalculationProgress/testExternalProcessKeepsActivityUpdating",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 3.1337
+    },
+    {
+      "name": "testCertificateOutliers/testThresholdIdentitySortingAndNoTruncation",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.16244
+    },
+    {
+      "name": "testCertificateOutliers/testEmptyMissingAndSingle",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.025038
+    },
+    {
+      "name": "testCertificateOutliers/testSRGBPreview",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.059102
+    },
+    {
+      "name": "testCertificateOutliers/testReachabilityIsNotPhysicalGamutProof",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.014775
+    },
+    {
+      "name": "testCertificateOutliers/testOverviewIncludesGoodColoursAndExactBoundaries",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.01877
+    },
+    {
+      "name": "testCgats/testRealSpectralConditions",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 5.4253
+    },
+    {
+      "name": "testCgats/testTargetRoundTrip",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.63284
+    },
+    {
+      "name": "testCgats/testMultipleTablesAndMetadata",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.045109
+    },
+    {
+      "name": "testCgats/testRejectBadStructureAndSpectra",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.081273
+    },
+    {
+      "name": "testCombinedRefinement/testCombinedPrintKeepsC2PixelsAndRoles",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 3.1321
+    },
+    {
+      "name": "testCxF/testReadAndImport",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.84287
+    },
+    {
+      "name": "testCxF/testInvalidSchema",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.10266
+    },
+    {
+      "name": "testCxF/testDuplicateIdentity",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.091354
+    },
+    {
+      "name": "testCxF/testSavedJSON",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.51754
+    },
+    {
+      "name": "testDeviationRanking/testSortedSelectionAcrossPages",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.1797
+    },
+    {
+      "name": "testDeviationRanking/testRedPatchUsesContrastingSelection",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0044041
+    },
+    {
+      "name": "testDialogText/testMultilineMotivation",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.060203
+    },
+    {
+      "name": "testDialogText/testBlankAndSingleLine",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0034868
+    },
+    {
+      "name": "testICC/testReadAndDialog",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 3.2379
+    },
+    {
+      "name": "testICCV2Compatibility/testV2PassesThroughWithoutConversion",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.057123
+    },
+    {
+      "name": "testICCV2Compatibility/testV4CancelDoesNotCreateCopy",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.2237
+    },
+    {
+      "name": "testImageRefinementDialogs/testSelectionAndPreview",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.0925
+    },
+    {
+      "name": "testImageRefinementDialogs/testCandidateDefaultFilterAndClose",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.0777
+    },
+    {
+      "name": "testImageRefinementDialogs/testCancelCloses",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 25.083
+    },
+    {
+      "name": "testImageRefinementDialogs/testSelectionCancelCloses",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.0679
+    },
+    {
+      "name": "testImageRefinementDialogs/testChangedThresholdAndSelection",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.0912
+    },
+    {
+      "name": "testImageRefinementDialogs/testEmptyFilterCanRecover",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.0993
+    },
+    {
+      "name": "testInstrumentIdentity/testLinkedTranscriptAndUnknown",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.058467
+    },
+    {
+      "name": "testInstrumentIdentity/testCaptureAtImport",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.011623
+    },
+    {
+      "name": "testInteriorRefinement/testInteriorPointsAndParents",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.2966
+    },
+    {
+      "name": "testInteriorRefinement/testInteriorStopping",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.091445
+    },
+    {
+      "name": "testInteriorRefinement/test575Coverage",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.6968
+    },
+    {
+      "name": "testInteriorRefinement/testCubeCenter",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.012886
+    },
+    {
+      "name": "testInteriorRefinement/testSpherePlacementVariants",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.22101
+    },
+    {
+      "name": "testMeasurement/testJsonChartAndResults",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.787
+    },
+    {
+      "name": "testMeasurement/testMatlabController",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.7516
+    },
+    {
+      "name": "testMeasurement/testTerminalLaunchAndImport",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.6763
+    },
+    {
+      "name": "testMeasurementDialog/testPromptBoundaries",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.06657
+    },
+    {
+      "name": "testMeasurementDialog/testStartupErrorVisible",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.1599
+    },
+    {
+      "name": "testMeasurementDialog/testModalFlow",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 7.4442
+    },
+    {
+      "name": "testMeasurementDialog/testPairedModalFlow",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 9.6632
+    },
+    {
+      "name": "testMeasurementDialog/testRepeatedStartDuringPreparation",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 10.426
+    },
+    {
+      "name": "testMeasurementDialog/testEmptyDialogAndBadSource",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.94386
+    },
+    {
+      "name": "testMeasurementDialog/testConditionEvidence",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.034646
+    },
+    {
+      "name": "testMeasurementDialog/testPageMapping",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.023418
+    },
+    {
+      "name": "testMeasurementDialog/testShuffledPhysicalRows",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0059095
+    },
+    {
+      "name": "testMeasurementDialog/testHardwareScanConfirmsPageOnce",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.031145
+    },
+    {
+      "name": "testMeasurementDialog/testPairedFirstSweepConfirmsNewPage",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.014925
+    },
+    {
+      "name": "testMeasurementImport/testMxfSpotAndTi3Roundtrip",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 4.5421
+    },
+    {
+      "name": "testMeasurementRevisions/testOnlyIntactCompleteMatchingRevisions",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.1045
+    },
+    {
+      "name": "testNumericalDecisionEvidence/testChangedFitIsDecisionOnly",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.16997
+    },
+    {
+      "name": "testPairedMeasurement/testReverseMappingAndMean",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 3.1956
+    },
+    {
+      "name": "testPairedMeasurement/testRandomizedReverseMappingAndMean",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 3.124
+    },
+    {
+      "name": "testPaperPlanning/testBoundariesAndStock",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.10659
+    },
+    {
+      "name": "testPaperPlanning/testFewerPatchesSavePaper",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.028046
+    },
+    {
+      "name": "testPaperPlanning/testWideRollAndCustomLimits",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.036621
+    },
+    {
+      "name": "testPaperPlanning/testLimitsCanExceedOriginalSled",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.030263
+    },
+    {
+      "name": "testPaperPlanning/testSmallTargetAndLargerSled",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.5318
+    },
+    {
+      "name": "testPaperPlanning/testDialogAcceptAndCancel",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.3761
+    },
+    {
+      "name": "testPreviousCertificate/testHistoricalEvidenceAndTampering",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.069918
+    },
+    {
+      "name": "testPrintFooter/testFilenameAndPatchArea",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.1528
+    },
+    {
+      "name": "testPrintFooter/testSmallPaperKeepsSafeBottomMargin",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.20975
+    },
+    {
+      "name": "testPrintFooter/testA5PackagePreservesPatchPixels",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.6338
+    },
+    {
+      "name": "testPrintFooter/testLongSummaryDoesNotBlockSmallTarget",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.08375
+    },
+    {
+      "name": "testPrintWindowLifecycle/testCancelButtons",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.4377
+    },
+    {
+      "name": "testPrintWindowLifecycle/testCancelledPackage",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.59676
+    },
+    {
+      "name": "testPrintWindowLifecycle/testSavedPages",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.0637
+    },
+    {
+      "name": "testProfileInput/testFreezeAndReject",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 7.463
+    },
+    {
+      "name": "testProfileInput/testPositionedMXFWithoutXYZReference",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 5.1107
+    },
+    {
+      "name": "testProfileInput/testFWARecipeFromExistingMeasurement",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 5.9298
+    },
+    {
+      "name": "testProfileInputDialog/testAccept",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.5173
+    },
+    {
+      "name": "testProfileInputDialog/testCancel",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.6987
+    },
+    {
+      "name": "testProfileIteration/testRoleIdentityAndExclusions",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.040221
+    },
+    {
+      "name": "testProfileIteration/testRegressionGuard",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.016312
+    },
+    {
+      "name": "testProfileIteration/testGrayGuard",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0049246
+    },
+    {
+      "name": "testProfileIteration/testIdentityMismatch",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.013472
+    },
+    {
+      "name": "testProfileIteration/testCompositeMappingAndTamper",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.25748
+    },
+    {
+      "name": "testProfileIteration/testNextPrintRoles",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.80728
+    },
+    {
+      "name": "testProfileIteration/testGradientSelectionGuard",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.017842
+    },
+    {
+      "name": "testProfileJobProgressMessage/testFinalStageWins",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.010523
+    },
+    {
+      "name": "testProfileJobProgressMessage/testStartingAndWhitePoint",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0051755
+    },
+    {
+      "name": "testProfileRecipeDialog/testSave",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.6919
+    },
+    {
+      "name": "testProfileRecipeDialog/testCancel",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.8085
+    },
+    {
+      "name": "testProfileRecipeDialog/testArgyllMethodsOnly",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0039762
+    },
+    {
+      "name": "testProfileRecipeDialog/testColprofSelection",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.7352
+    },
+    {
+      "name": "testProfileTradeoffResults/testSavedStringsAndMissingMetricsDisplay",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.2037
+    },
+    {
+      "name": "testProfileTradeoffs/testCartesianComparisonPreservesInput",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 338.4
+    },
+    {
+      "name": "testProjectDetailsDialog/testSaveAndPreserveUnknownFields",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.0709
+    },
+    {
+      "name": "testProjectDetailsDialog/testCancelLegacyRecord",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.5606
+    },
+    {
+      "name": "testProjectFolderName/testAcceptAndRecord",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.1516
+    },
+    {
+      "name": "testProjectFolderName/testRestore",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.064602
+    },
+    {
+      "name": "testProjectFolderName/testCancelRemainsDetectable",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.070493
+    },
+    {
+      "name": "testProjectFolderName/testRestoreCollisionRecorded",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.061671
+    },
+    {
+      "name": "testProjectFolderName/testDifferentParentIsNotRename",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.023058
+    },
+    {
+      "name": "testProjectFolderName/testLegacyFallback",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.025483
+    },
+    {
+      "name": "testProjectManifest/testLifecycle",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.051233
+    },
+    {
+      "name": "testProjectManifest/testLock",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.022824
+    },
+    {
+      "name": "testProjectManifest/testAutomaticDefinitionAndPrint",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.004
+    },
+    {
+      "name": "testProjectManifest/testMetadataAndHistory",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.039633
+    },
+    {
+      "name": "testProjectManifest/testFinderMetadataDoesNotMaskEvidenceChanges",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.05204
+    },
+    {
+      "name": "testProjectWorkflow/testGuardAndPersistence",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.32266
+    },
+    {
+      "name": "testProjectWorkflow/testHashAndScopeGuards",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.22668
+    },
+    {
+      "name": "testProjectWorkflow/testPrintAndWrongMeasurement",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.3052
+    },
+    {
+      "name": "testProjectWorkflow/testFailureUpdatesOnlyWorkflowMetadata",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.19257
+    },
+    {
+      "name": "testProjectWorkflow/testConcurrentLock",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.026838
+    },
+    {
+      "name": "testProjectWorkflow/testUIResume",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.95859
+    },
+    {
+      "name": "testProjectWorkflow/testIterationTransition",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.071631
+    },
+    {
+      "name": "testProjectWorkflow/testMatchingMeasurementAndTamper",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.3273
+    },
+    {
+      "name": "testProjectWorkflow/testProjectBoundDesignerAndRenderer",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 5.9107
+    },
+    {
+      "name": "testProjectWorkflow/testRemovedPrintStagesAndMigration",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.065401
+    },
+    {
+      "name": "testProjectWorkflow/testFinalReportSavedWithICC",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 4.739
+    },
+    {
+      "name": "testProjectWorkflow/testFinalReportRejectsDifferentApproval",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.0615
+    },
+    {
+      "name": "testProjectWorkflow/testSeparateDeliveryDestinations",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 5.4042
+    },
+    {
+      "name": "testProjectWorkflow/testEditDetailsKeepsEvidenceAndInvalidatesDelivery",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 4.1652
+    },
+    {
+      "name": "testProjectWorkflow/testEditDetailsRespectsWorkflowLock",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.38125
+    },
+    {
+      "name": "testProjectWorkflow/testRenameRejectsOccupiedFolderAndInvalidName",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.37432
+    },
+    {
+      "name": "testProjectWorkflow/testPortableProjectAndIntegrity",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 3.8219
+    },
+    {
+      "name": "testProjectWorkflow/testFWAEditAfterProfilePreservesEvidence",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.65938
+    },
+    {
+      "name": "testProjectWorkflow/testLaterFWAChoiceUpdatesProjectAndKeepsInput",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.64406
+    },
+    {
+      "name": "testProjectWorkflow/testFWACertificateUsesBuiltProfileEvidence",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.32085
+    },
+    {
+      "name": "testProjectWorkflow/testExplicitFWAOffIsRecordedWithoutInvalidation",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.47511
+    },
+    {
+      "name": "testProjectWorkflow/testComparisonAvailabilityAndMigration",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.31989
+    },
+    {
+      "name": "testProjectWorkflow/testNumericalExportWithoutPrintVerification",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.999
+    },
+    {
+      "name": "testProjectWorkflow/testLegacyAddsNumericalExport",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.32048
+    },
+    {
+      "name": "testProjectWorkflow/testImageRefinementDoesNotRequireC3",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.34193
+    },
+    {
+      "name": "testProjectWorkflow/testExternalVerificationMode",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.71302
+    },
+    {
+      "name": "testProjectWorkflow/testExternalCertificateDoesNotClaimTrainingChecks",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 3.6282
+    },
+    {
+      "name": "testProjectWorkflow/testCharacterVectorDefinitionSource",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.115
+    },
+    {
+      "name": "testPxfExport/testFractionalDuplicateAndEscaping",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.4247
+    },
+    {
+      "name": "testPxfExport/testTi2PaddingAndCoordinates",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.1189
+    },
+    {
+      "name": "testPxfExport/testCmykRejected",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.029971
+    },
+    {
+      "name": "testPython/testDiscovery",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.025874
+    },
+    {
+      "name": "testPython/testRuntime",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.24816
+    },
+    {
+      "name": "testPython/testVenvLauncherIsPreserved",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.063727
+    },
+    {
+      "name": "testRGBDefinition/testDefinitionAndRender",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.93772
+    },
+    {
+      "name": "testRGBDefinition/testDesignWindowSeparation",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.26338
+    },
+    {
+      "name": "testRGBDesign/testMidpointsAndBudget",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.10363
+    },
+    {
+      "name": "testRGBDesign/testStopsAndDeterminism",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.13771
+    },
+    {
+      "name": "testRGBDesign/testSaveAndRoundtrip",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.0044
+    },
+    {
+      "name": "testRGBDesign/testArgyll",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.43811
+    },
+    {
+      "name": "testRGBDesign/testArgyllPlacementMethods",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.8796
+    },
+    {
+      "name": "testRGBDesign/testPreconditionValidation",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.17965
+    },
+    {
+      "name": "testRGBDesign/testDialog",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.247
+    },
+    {
+      "name": "testRGBDesign/testBudgetExplanation",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.032712
+    },
+    {
+      "name": "testRGBGradientDialog/testOptionalNonblockingWindow",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.0655
+    },
+    {
+      "name": "testRefinementContinuation/testPlanAndPrepareOnly",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.31315
+    },
+    {
+      "name": "testRefinementContinuation/testImageProposalContinuation",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.097628
+    },
+    {
+      "name": "testRefinementContinuation/testC2IncludedInContinuation",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.10472
+    },
+    {
+      "name": "testRefinementContinuation/testRejectMismatch",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.17056
+    },
+    {
+      "name": "testRegularizationReport/testSavedMethodAndResult",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.079683
+    },
+    {
+      "name": "testRegularizationReport/testMatchingGradientEvidence",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.074908
+    },
+    {
+      "name": "testRenderDialog/testDefaultsAndSizes",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.4128
+    },
+    {
+      "name": "testRenderDialog/testLongPageMetadata",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.6749
+    },
+    {
+      "name": "testRenderDialog/testPageCountBeforeSaving",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 5.6792
+    },
+    {
+      "name": "testRenderDialog/testPreviewPageOrder",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0044055
+    },
+    {
+      "name": "testRestoreAppFocus/testModalReturnAndChildClose",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.74202
+    },
+    {
+      "name": "testRestoreAppFocus/testSiblingRetainsFocus",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.1501
+    },
+    {
+      "name": "testRestoreAppFocus/testDeletedParentAndExistingWindow",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.59607
+    },
+    {
+      "name": "testRowGuides/testBoundariesBothSidesKeepScanClear",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.099731
+    },
+    {
+      "name": "testRowRemeasurement/testPrepareAndReplaceOnlySelectedRow",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.9304
+    },
+    {
+      "name": "testRowRemeasurement/testRejectWrongPageAndRetainPairedMode",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 5.3094
+    },
+    {
+      "name": "testRowRemeasurement/testPairedRowDialogFlow",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 8.8837
+    },
+    {
+      "name": "testSavedTargetSummary/testRefinementSummaryIsColumn",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.14924
+    },
+    {
+      "name": "testShadowSettings/testMatteAndOverrides",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.065576
+    },
+    {
+      "name": "testShadowSettings/testRejectInvalid",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.018513
+    },
+    {
+      "name": "testShadowSettings/testArgyllDarkDistribution",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.61935
+    },
+    {
+      "name": "testSpectralAnalysis/testMissingScale",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.01709
+    },
+    {
+      "name": "testSpectralAnalysis/testPythonRoundTrip",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.243
+    },
+    {
+      "name": "testSpotMeasurement/testReplacementAndRejections",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.124
+    },
+    {
+      "name": "testSpotMeasurement/testModalFakeInstrument",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 3.3624
+    },
+    {
+      "name": "testTargetInfo/testImportsAndDegenerateGrid",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.3735
+    },
+    {
+      "name": "testTargetInfo/testArgyllAndSummaryPixels",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.1139
+    },
+    {
+      "name": "testTargetInfo/testCgatsMetadata",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.15207
+    },
+    {
+      "name": "testTargets/testReferenceImports",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.1226
+    },
+    {
+      "name": "testTargets/testXmlSecurityAndMissingIds",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.86446
+    },
+    {
+      "name": "testTargets/testCgatsRejectsMalformed",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.13627
+    },
+    {
+      "name": "testTargets/testGeneratedAndRandomization",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.268
+    },
+    {
+      "name": "testTargets/testImportedMultiPage",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 7.334
+    },
+    {
+      "name": "testTargets/testFractionalCgatsAndQuotedPaths",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.65625
+    },
+    {
+      "name": "testTargets/testRelativePathsAfterCd",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.91239
+    },
+    {
+      "name": "testTargets/testPortableCheckout",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.8007
+    },
+    {
+      "name": "testTargets/testTargetSizeLimits",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 2.104
+    },
+    {
+      "name": "testTargets/testNamedPaperFormats",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.4308
+    },
+    {
+      "name": "testTargets/testRejectCmykTarget",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.21867
+    },
+    {
+      "name": "testTi2Target/testImportAndRelayout",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.9699
+    },
+    {
+      "name": "testTiff16/testModelAndScale",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.3858
+    },
+    {
+      "name": "testTiff16/testFailureDoesNotPublish",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.44502
+    },
+    {
+      "name": "testTiff16/testCandidateCollision",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.0321
+    },
+    {
+      "name": "testTiff16/testCompactA4",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 1.5777
+    },
+    {
+      "name": "testTiff16/testMultiplePages",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 10.512
+    },
+    {
+      "name": "testTiff16/testRejectNonRgbExport",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.081689
+    },
+    {
+      "name": "testTiffICCInstructions/testConversionAndTagAreIndependent",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.06689
+    },
+    {
+      "name": "testTxfExport/testMappingAndGuards",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 4.9239
+    },
+    {
+      "name": "testVerificationChainSummaryText/testAvailableStagesProduceScalarString",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.025495
+    },
+    {
+      "name": "testVerificationChainSummaryText/testUnavailableStages",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.00481
+    },
+    {
+      "name": "testVerificationRefinement/testBoundsSpacingAndBudget",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.029465
+    },
+    {
+      "name": "testVerificationRefinement/testSingularDoesNotExplode",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0093204
+    },
+    {
+      "name": "testVerificationRefinement/testGatesAndNorm",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0090243
+    },
+    {
+      "name": "testVerificationRefinement/testRepeatGroupCountsOnce",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.0065278
+    },
+    {
+      "name": "testVerificationRefinement/testSavedProposalTableText",
+      "passed": true,
+      "failed": false,
+      "incomplete": false,
+      "durationSeconds": 0.070654
+    }
+  ]
+}

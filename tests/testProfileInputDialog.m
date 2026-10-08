@@ -13,6 +13,7 @@ exercise(tc,'CancelProfileInput',false);
 end
 function exercise(tc,button,expected)
 root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
 t=timer('ExecutionMode','fixedSpacing','Period',.5,'TimerFcn',@clickButton);
 c=onCleanup(@()cleanupTimer(t));start(t);
 [accepted,name]=inkprof.internal.confirmProfileInput("Synthetic dialog test", "Test revision");
@@ -28,4 +29,12 @@ cleanupTimer(t);
 end
 function cleanupTimer(t)
 if isvalid(t),stop(t);delete(t);end
+end
+
+function teardown(~)
+deadlines=timerfindall('Name','InkProfTestDeadline');if ~isempty(deadlines),stop(deadlines);delete(deadlines);end
+if isappdata(groot,'InkProfTestDialogExpired')
+ expired=getappdata(groot,'InkProfTestDialogExpired');rmappdata(groot,'InkProfTestDialogExpired');
+ assert(~expired,'inkprof:TestDialogTimeout','Dialog interaction did not finish before its deadline.');
+end
 end

@@ -1,7 +1,7 @@
 [
   {
     "title": "Från bild till tryggt färgflöde",
-    "tag": "ANVÄNDARHANDBOK | RC2 | 2026-10-08",
+    "tag": "ANVÄNDARHANDBOK | RC3 | 2026-10-08",
     "lead": "InkProf - När färgerna måste bli rätt",
     "sections": [
       [
@@ -18,7 +18,7 @@
       ],
       [
         "Vad den här handboken hjälper dig med",
-        "Handboken beskriver huvudfönstret, dialogerna och profilflödets 19 steg för 1.0.0-rc.2. Appens knappar och fältnamn är engelska i båda språkversionerna. Uppdaterad 8 oktober 2026. Bilagan beskriver hela profileringen och besluten längs vägen."
+        "Handboken beskriver huvudfönstret, dialogerna och profilflödets 19 steg för 1.0.0-rc.3. Appens knappar och fältnamn är engelska i båda språkversionerna. Uppdaterad 8 oktober 2026. Bilagan beskriver hela profileringen och besluten längs vägen."
       ],
       [
         "Arbetets tre delar",
@@ -859,7 +859,7 @@
       ],
       [
         "Utgåvestatus",
-        "Handboken beskriver release candidate 1.0.0-rc.2, daterad 8 oktober 2026. Det är inte den stabila v1.0.0-utgåvan. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
+        "Handboken beskriver release candidate 1.0.0-rc.3, daterad 8 oktober 2026. Det är inte den stabila v1.0.0-utgåvan. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
       ]
     ]
   },

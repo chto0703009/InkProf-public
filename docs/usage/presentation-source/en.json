@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.0.0-rc.2 | 2026-10-08",
+    "tag": "InkProf | v1.0.0-rc.3 | 2026-10-08",
     "title": "Your image deserves the right colours",
     "lead": "You chose the light, shaped the image and worked on every nuance. When the image reaches paper, that work should come with it.",
     "sections": [
@@ -223,7 +223,7 @@
       ],
       [
         "Release preparation",
-        "This documentation accompanies 1.0.0-rc.2 ahead of v1.0.0. New features do not alter saved targets or measurements. Assess improvement through printing and measurement."
+        "This documentation accompanies 1.0.0-rc.3 ahead of v1.0.0. New features do not alter saved targets or measurements. Assess improvement through printing and measurement."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub."

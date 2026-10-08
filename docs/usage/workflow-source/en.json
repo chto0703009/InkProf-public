@@ -1,17 +1,17 @@
 [
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0 PREPARATION",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
     "title": "From colour target to ICC",
     "sections": [
       [
         "",
-        "Source build 1.0.0-rc.2, prepared 2026-10-03. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with setupInkProf(CheckPython=true); startInkProfApp(); from the source folder."
+        "Source build 1.0.0-rc.3, updated 2026-10-08. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with setupInkProf(CheckPython=true); startInkProfApp(); from the source folder."
       ]
     ],
     "lead": "InkProf - When colours have to be right"
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0 PREPARATION",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
     "title": "One project, one source of settings",
     "sections": [
       [
@@ -25,7 +25,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0 PREPARATION",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
     "title": "The 19 rows",
     "rows": [
       [
@@ -86,7 +86,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0 PREPARATION",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
     "title": "The 19 rows — continued",
     "rows": [
       [
@@ -148,7 +148,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0 PREPARATION",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
     "title": "Targets, paper and measurement",
     "sections": [
       [
@@ -166,7 +166,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0 PREPARATION",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
     "title": "Refinement and shadows",
     "sections": [
       [
@@ -184,7 +184,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0 PREPARATION",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
     "title": "Interpret and deliver",
     "sections": [
       [
@@ -206,7 +206,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0 PREPARATION",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
     "title": "Code, licensing and maintenance",
     "sections": [
       [

@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## v1.0.0-rc.3 — 2026-10-08
+
+- Fix early Save/Cancel/Approve responses in project details and profile approval
+  dialogs so they do not enter a new modal wait after dismissal.
+- Fix RGB-definition import with MATLAB character-vector paths, preserving the
+  filename and extension.
+- Add bounded dialog test interactions and teardown checks; update ICC, portable
+  HTML report and configurable paper-size tests to the current workflow.
+- Record post-RC2 full MATLAB and UI follow-up separately from the published
+  release validation in `docs/validation/rc2-follow-up.md`.
+
 ## v1.0.0-rc.2 — 2026-10-08
 
 Substantial update since RC1; see [full release notes](docs/releases/v1.0.0-rc.2.md).

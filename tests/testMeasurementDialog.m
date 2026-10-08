@@ -52,6 +52,7 @@ verifyEqual(tc,string(dialog.Figure.WindowStyle),"modal");
 verifyEqual(tc,string(findobj(dialog.Figure,'Tag','direction').Value),mode);
 verifyFalse(tc,isfile(fullfile(folder,'chartread-input.json')));
 if reenter
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
     secondStart=timer('StartDelay',.01,'TimerFcn',@(~,~)press(dialog,'begin'));
     timerCleanup=onCleanup(@()delete(secondStart));
     start(secondStart);
@@ -224,4 +225,12 @@ plan=struct('passes',passes);
 t="Ready to read strip pass 3"+newline+"Strip read OK"+newline+"Ready to read strip pass 4";
 [page,offset]=inkprof.internal.completedScanPage(t,0,chart,plan);verifyEqual(tc,page,2);
 [page,~]=inkprof.internal.completedScanPage(t,offset,chart,plan);verifyEmpty(tc,page);
+end
+
+function teardown(~)
+deadlines=timerfindall('Name','InkProfTestDeadline');if ~isempty(deadlines),stop(deadlines);delete(deadlines);end
+if isappdata(groot,'InkProfTestDialogExpired')
+ expired=getappdata(groot,'InkProfTestDialogExpired');rmappdata(groot,'InkProfTestDialogExpired');
+ assert(~expired,'inkprof:TestDialogTimeout','Dialog interaction did not finish before its deadline.');
+end
 end

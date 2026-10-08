@@ -4,7 +4,7 @@
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function options=approvalDialog(w)
 %APPROVALDIALOG Show saved evidence before requesting explicit user approval.
-options=[];
+options=[];dismissed=false;
 reportFile=w.output('c3','report');report=jsondecode(fileread(reportFile));
 feedbackFile=w.output('feedback','feedback');feedback=jsondecode(fileread(feedbackFile));
 profile=w.output('profile','profile');s=report.summary;
@@ -32,18 +32,21 @@ notes=uitextarea(g,'Value',{''},'Tag','approvalNotes');
 confirm=uicheckbox(g,'Text','I have reviewed these results and checked that the print settings match the project.', ...
     'Value',false,'Tag','approvalConfirm');
 bar=uigridlayout(g,[1 2]);bar.Padding=[0 0 0 0];
-uibutton(bar,'Text','Cancel - continue reviewing','ButtonPushedFcn',@(~,~)uiresume(f));
+uibutton(bar,'Text','Cancel - continue reviewing','ButtonPushedFcn',@cancel);
 uibutton(bar,'Text','Approve for stated use','ButtonPushedFcn',@accept,'Tag','approvalSave');
-f.CloseRequestFcn=@(~,~)uiresume(f);
+f.CloseRequestFcn=@cancel;
 topGuard=inkprof.internal.lowerTopWindows(f); %#ok<NASGU> keep the dialog above always-on-top windows
-uiwait(f);
+if ~dismissed,uiwait(f);end
 if isvalid(f),delete(f);end
+    function cancel(~,~)
+        dismissed=true;uiresume(f);
+    end
     function accept(~,~)
         note=strtrim(join(string(notes.Value),newline));
         if ~confirm.Value||strlength(note)==0
             uialert(f,'Review the results, record your assessment and tick the confirmation before approving.','Review required');return
         end
         options=struct('Confirmed',true,'Notes',note);
-        uiresume(f);
+        dismissed=true;uiresume(f);
     end
 end

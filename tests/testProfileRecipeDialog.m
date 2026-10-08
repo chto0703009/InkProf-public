@@ -24,6 +24,7 @@ root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
 s=struct('name',"Test",'description',"Description",'dataMode',"spectral",'b2aQuality',"medium",'projectPrinting',true,'printing',struct);
 for key=["printer","paper","media","quality","driver","printPath","colorManagement"],s.printing.(key)="unknown";end
 s.printing.inkType="Mixed";s.printing.printerCoating="on";s.printing.coatingSettings="Chroma Optimizer | Auto";s.printing.dryingHours="24";s.printing.paperSurface="Glossy";input=struct('patchCount',575,'measurementCondition',struct('interpreted',"M0"));
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
 t=timer('ExecutionMode','fixedSpacing','Period',.5,'TimerFcn',@clickButton);c=onCleanup(@()clean(t));start(t);
 [accepted,out]=inkprof.internal.profileRecipeDialog(s,input,true,true);
 verifyEqual(tc,accepted,expected);if expected,verifyEqual(tc,out.b2aQuality,"medium");verifyEqual(tc,out.smoothing,0.22);verifyEqual(tc,out.perceptualCompression,25);verifyEqual(tc,out.preRegularization,method);verifyFalse(tc,isfield(out,'conditioningSelection'));verifyEqual(tc,out.gradientPreview,method~="off");end;verifyEqual(tc,out.printing.paperSurface,"Glossy");verifyEqual(tc,out.printing.dryingHours,"24");
@@ -58,4 +59,12 @@ verifyEmpty(tc,findall(groot,'Tag','InkProfProfileRecipe'));clean(t);
 end
 function clean(t)
 if isvalid(t),stop(t);delete(t);end
+end
+
+function teardown(~)
+deadlines=timerfindall('Name','InkProfTestDeadline');if ~isempty(deadlines),stop(deadlines);delete(deadlines);end
+if isappdata(groot,'InkProfTestDialogExpired')
+ expired=getappdata(groot,'InkProfTestDialogExpired');rmappdata(groot,'InkProfTestDialogExpired');
+ assert(~expired,'inkprof:TestDialogTimeout','Dialog interaction did not finish before its deadline.');
+end
 end

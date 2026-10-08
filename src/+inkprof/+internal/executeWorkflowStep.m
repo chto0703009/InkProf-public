@@ -52,7 +52,7 @@ switch id
   clear calculation;web(char(out.report),'-browser');
  case "definition"
   dest=w.newFolder('targets');mkdir(dest);
-  source=get(o,'Source',"");
+  source=string(get(o,'Source',""));
   if source==""
    file=fullfile(dest,'definition.ti1');fig=inkprof.designTarget(OutputFile=file);waitfor(fig);
    if ~isfile(file),cancel();end

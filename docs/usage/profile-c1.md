@@ -1,6 +1,6 @@
 # C1 – supplementary numerical profile check
 
-> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 `inkprof.checkProfileC1` supplements `checkProfileFit` and `checkProfileGrid` with three checks: a floating-point comparison against LittleCMS, local tests of the inverse, and deliberately damaged test copies.
 

@@ -1,6 +1,6 @@
 # Verification analysis as feedback to the iteration
 
-> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 `inkprof.analyseVerification` analyses a saved C3 `verification-check.json`. The computations are done in Python, and MATLAB Base provides the call. As of this change, new C3 runs also create `iteration-feedback.json`, `.md` and `feedback.log` automatically with default parameters, together with the C3 report.
 

@@ -1,8 +1,8 @@
-# InkProf documentation — v1.0.0-rc.2
+# InkProf documentation — v1.0.0-rc.3
 
-Source version **1.0.0-rc.2**, documentation updated 2026-10-08. Start with the [complete app workflow](usage/workflow-v1.0.md). The user handbook is maintained in matching Swedish and English editions, updated 2026-10-08. App labels and the other current usage guides remain English. Dated development records and original source citations are retained.
+Source version **1.0.0-rc.3**, documentation updated 2026-10-08. Start with the [complete app workflow](usage/workflow-v1.0.md). The user handbook is maintained in matching Swedish and English editions, updated 2026-10-08. App labels and the other current usage guides remain English. Dated development records and original source citations are retained.
 
-Current release: [v1.0.0-rc.2](releases/v1.0.0-rc.2.md). Earlier changes: [workflow update, 2026-10-07](releases/2026-10-07-workflow-update.md). The two user handbooks include the 2026-10-07 additions and a matching seven-page complete-profiling appendix (pages 38–44), added 2026-10-08. The presentation was aligned with the current handbook on 2026-10-08: smooth gradients, optional optical-brightener correction, measured final assessment and handbook support. It omits internal refinement-method choices. All five maintained PDFs are marked 1.0.0-rc.2; the MATLAB workflow guide remains a compact overview supplemented by the current handbook.
+Current release: [v1.0.0-rc.3](releases/v1.0.0-rc.3.md). Earlier changes: [workflow update, 2026-10-07](releases/2026-10-07-workflow-update.md). The two user handbooks include the 2026-10-07 additions and a matching seven-page complete-profiling appendix (pages 38–44), added 2026-10-08. The presentation was aligned with the current handbook on 2026-10-08: smooth gradients, optional optical-brightener correction, measured final assessment and handbook support. It omits internal refinement-method choices. All five maintained PDFs are marked 1.0.0-rc.3; the MATLAB workflow guide remains a compact overview supplemented by the current handbook.
 
 ## PDF guides
 
@@ -13,7 +13,7 @@ Current release: [v1.0.0-rc.2](releases/v1.0.0-rc.2.md). Earlier changes: [workf
 - [English presentation](usage/InkProf-presentation-English.pdf)
 - [InkProf-profiling-workflow-MATLAB-guide-English](usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
 
-Release candidate notes: [v1.0.0-rc.2](releases/v1.0.0-rc.2.md). The current Markdown guides supplement the PDF handbooks, including the recently added external-profile verification workflow.
+Release candidate notes: [v1.0.0-rc.3](releases/v1.0.0-rc.3.md). The current Markdown guides supplement the PDF handbooks, including the recently added external-profile verification workflow.
 
 ## Research notes
 
@@ -74,6 +74,7 @@ Release candidate notes: [v1.0.0-rc.2](releases/v1.0.0-rc.2.md). The current Mar
 ## Release and licensing
 
 - [Release notes](../CHANGELOG.md), [preparation checklist](releases/v1.0.0.md), [validation](../VALIDATION.txt).
+- [Post-RC2 MATLAB and UI follow-up](validation/rc2-follow-up.md) — local fixes and checks after the published release.
 - [Licence and third-party sources](../THIRD_PARTY_NOTICES.md), [licensing review](../licenses/review-v1.0.0.md).
 
 ## Historical records

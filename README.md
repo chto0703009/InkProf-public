@@ -1,8 +1,8 @@
-# InkProf v1.0.0-rc.2 — public release candidate
+# InkProf v1.0.0-rc.3 — public release candidate
 
 **InkProf - When colours have to be right**
 
-Public prerelease: **[v1.0.0-rc.2](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.2)**. Internal version: **1.0.0-rc.2**. This is a release candidate for testing, not the stable v1.0.0. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
+Public prerelease: **[v1.0.0-rc.3](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.3)**. Internal version: **1.0.0-rc.3**. This is a release candidate for testing, not the stable v1.0.0. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
 
 
 For photographers, the carefully crafted image should reach paper with its intended colours, tones and expression. A smooth workflow builds confidence and satisfaction for photographers, printing businesses and clients. Calibration and verification can reduce reprints, save time, paper and ink, and improve consistency.
@@ -30,7 +30,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 Clone the tagged release candidate:
 
 ```sh
-git clone --branch v1.0.0-rc.2 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.0.0-rc.3 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt

@@ -1,7 +1,7 @@
 [
   {
     "title": "From image to a reliable colour workflow",
-    "tag": "USER HANDBOOK | RC2 | 2026-10-08",
+    "tag": "USER HANDBOOK | RC3 | 2026-10-08",
     "sections": [
       [
         "The image should reach the paper",
@@ -859,7 +859,7 @@
       ],
       [
         "Release status",
-        "This handbook describes release candidate 1.0.0-rc.2, dated 8 October 2026. It is not the stable v1.0.0 release. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+        "This handbook describes release candidate 1.0.0-rc.3, dated 8 October 2026. It is not the stable v1.0.0 release. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
       ]
     ]
   },

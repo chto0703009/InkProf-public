@@ -1,6 +1,6 @@
 # Verify an existing printer ICC
 
-InkProf 1.0.0-rc.2 offers a separate project purpose, **Verify existing ICC**, under **New project**. Existing profiling projects keep their original workflow. Project mode is saved in the project and workflow JSON.
+InkProf 1.0.0-rc.3 offers a separate project purpose, **Verify existing ICC**, under **New project**. Existing profiling projects keep their original workflow. Project mode is saved in the project and workflow JSON.
 
 ## Seven steps
 

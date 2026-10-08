@@ -7,6 +7,7 @@ tests=functiontests(localfunctions);
 end
 function testSaveAndPreserveUnknownFields(tc)
 record=struct('name',"Old name",'user',"Old user",'printing',struct('printer',"Old printer",'customSetting',42));
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
 t=timer('ExecutionMode','fixedSpacing','Period',0.2,'TimerFcn',@saveDialog);
 cleanup=onCleanup(@()stopTimer(t));start(t);
 d=inkprof.projectDetailsDialog(record);
@@ -21,6 +22,7 @@ verifyEqual(tc,d.Printing.paperSurface,"Matte");verifyEqual(tc,d.Printing.custom
 verifyEqual(tc,d.Printing.settings,"Quality: high"+newline+"No colour correction");
 end
 function testCancelLegacyRecord(tc)
+dialogDeadline=inkprofTestDialogDeadline(45); %#ok<NASGU>
 t=timer('ExecutionMode','fixedSpacing','Period',0.2,'TimerFcn',@cancelDialog);
 cleanup=onCleanup(@()stopTimer(t));start(t);
 d=inkprof.projectDetailsDialog(struct('name',"Legacy project"));verifyEmpty(tc,d);
@@ -53,4 +55,12 @@ end
 function stopTimer(t)
 stop(t);delete(t);
 f=findall(groot,'Tag','projectDetailsDialog');delete(f);
+end
+
+function teardown(~)
+deadlines=timerfindall('Name','InkProfTestDeadline');if ~isempty(deadlines),stop(deadlines);delete(deadlines);end
+if isappdata(groot,'InkProfTestDialogExpired')
+ expired=getappdata(groot,'InkProfTestDialogExpired');rmappdata(groot,'InkProfTestDialogExpired');
+ assert(~expired,'inkprof:TestDialogTimeout','Dialog interaction did not finish before its deadline.');
+end
 end
