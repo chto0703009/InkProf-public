@@ -1,104 +1,104 @@
-# InkProf – standard för utskrift av mål
+# InkProf – target print standard
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-## Varning: externa utskrifter utan kontrastmarkörer
+## Warning: external prints without contrast markers
 
-**Mål som skrivits ut utan kontrastmarkörer mellan patcharna kan ge problem vid radmätning med chartread**, särskilt när intilliggande patchar har snarlika färger. Det kan exempelvis ge fel om för få eller för många patchar. En korrekt importerad patchdefinition garanterar inte att det befintliga arket går att läsa tillförlitligt.
+**Targets printed without contrast markers between the patches can cause problems in row measurement with chartread**, particularly when adjacent patches have similar colours. This can, for example, produce errors if too few or too many patches are detected. A correctly imported patch definition does not guarantee that the existing sheet can be read reliably.
 
-**Rekommenderat arbetsflöde:** importera patchdefinitionerna som TI1/TI2 i första hand, eller generell CGATS från ett annat program, och låt InkProf generera en ny TIFF16-utskrift med kontrastmarkörer och matchande TI2/JSON. Använd sedan just det nya utskriftspaketets TI2 vid mätningen. Kontrastmarkörer minskar risken för segmenteringsproblem men garanterar inte felfria svep.
+**Recommended workflow:** import the patch definitions as TI1/TI2 in the first instance, or as generic CGATS from another program, and let InkProf generate a new TIFF16 print with contrast markers and matching TI2/JSON. Then use the TI2 of that new print package for the measurement. Contrast markers reduce the risk of segmentation problems but do not guarantee error-free sweeps.
 
-En import eller omordning i programmet ändrar inte ett redan utskrivet ark. Om det befintliga arket mäts i ett annat program kan dess mätfil importeras separat med bevarad patchkoppling.
+An import or reordering in the program does not change a sheet that has already been printed. If the existing sheet is measured in another program, its measurement file can be imported separately with the patch linkage preserved.
 
 
-Fastställd: 2026-09-26. Gäller nya mål från både den generella Argyll-layouten och InkProfs återanvändbara sidmall. Befintliga paket ändras inte retroaktivt.
+Established: 2026-09-26. Applies to new targets from both the general Argyll layout and InkProf's reusable page template. Existing packages are not changed retroactively.
 
-## Patchdefinitioner, egna utskrifter och externa mätningar
+## Patch definitions, own prints and external measurements
 
-InkProf styr layoutstandarden för sina egna utskrifter. Import ska bevara filens patchdefinition, ursprungliga layout och mätkoppling. Först när användaren skapar en ny utskrift från exempelvis en RGB-PXF skapas en separat InkProf-layout med matchande JSON och mätunderlag. Originalets layout och tidigare mätningar får inte skrivas över eller omtolkas.
+InkProf controls the layout standard for its own prints. An import must preserve the file's patch definition, original layout and measurement linkage. Only when the user creates a new print from, for example, an RGB PXF is a separate InkProf layout created, with matching JSON and measurement data. The original's layout and earlier measurements must not be overwritten or reinterpreted.
 
-**Kontrastmarkörer ska vara standard för nya mål avsedda för radmätning**, även vid senare mätning i i1Profiler. De ingår i layouten och det kompatibla mätunderlaget men räknas inte som källpatchar eller profilunderlag. Mottagarens stöd för layouten måste verifieras.
+**Contrast markers shall be the default for new targets intended for row measurement**, also when measured later in i1Profiler. They are part of the layout and the compatible measurement data but are not counted as source patches or profile data. The recipient's support for the layout must be verified.
 
-Redan uppmätta data, exempelvis en stödd MXF, ska kunna importeras och analyseras oberoende av vilket program som skapade utskriften och om kontrastmarkörer användes. Patchkoppling, RGB-värden, spektra, enheter och mätvillkor ska kontrolleras och bevaras.
+Data that has already been measured, for example a supported MXF, shall be importable and analysable regardless of which program created the print and whether contrast markers were used. Patch linkage, RGB values, spectra, units and measurement conditions shall be checked and preserved.
 
-Ett redan utskrivet externt mål utan kontrastmarkörer kan vara känsligare att radmäta med chartread. Mät då vid behov i ursprungsprogrammet och importera resultatet, eller skapa en ny InkProf-utskrift från patchdefinitionen. En ny TI2 kan inte lägga kontrastmarkörer på ett befintligt ark.
+An external target that has already been printed without contrast markers can be more sensitive to row measurement with chartread. In that case, measure in the originating program if needed and import the result, or create a new InkProf print from the patch definition. A new TI2 cannot add contrast markers to an existing sheet.
 
-Se [specifikation och implementationsstatus: patchdefinition, layout och mätresultat](../decisions/008-target-layout-measurement-separation.md).
+See [specification and implementation status: patch definition, layout and measurement results](../decisions/008-target-layout-measurement-separation.md).
 
-Alla format i projektets formatspecifikation ska kunna hanteras efter sitt innehåll, även om deras mål inte följer denna utskriftsstandard. Tillgängliga uppgifter om hur arket såg ut vid mätningen ska bevaras. Saknad information och ännu ej stödda formatvarianter ska redovisas uttryckligen.
+All formats in the project's format specification shall be handled according to their content, even if their targets do not follow this print standard. Available information about how the sheet looked at the time of measurement shall be preserved. Missing information and format variants not yet supported shall be reported explicitly.
 
-TIFF-import och instrumentets läsning av en utskrift är skilda steg. Snarlika grannpatchar kan försvåra fysisk radmätning. Scrambling kan minska problemet men garanterar inte grannkontrast; det kräver en ny utskrift med exakt samma permutation i JSON och mätunderlag. Kontrastmarkörer behålls. En ensam TIFF får inte antas innehålla all patchidentitet eller mätmetadata.
+TIFF import and the instrument's reading of a print are separate steps. Neighbouring patches that are very similar can make physical row measurement more difficult. Scrambling can reduce the problem but does not guarantee neighbour contrast; it requires a new print with exactly the same permutation in the JSON and measurement data. Contrast markers are retained. A TIFF on its own must not be assumed to contain all patch identity or measurement metadata.
 
-## Rubrik och sidfot
+## Header and footer
 
-| Del | Text och placering |
+| Part | Text and placement |
 |---|---|
-| Rubrik | **InkProf Quality Profiling RGB printer**, centrerat överst, **20 punkter**. |
-| Datum och tid | Nere till vänster, `ÅÅÅÅ-MM-DD HH:mm`. Avser filens generering, i datorns lokala tid. Samma tid på samtliga sidor i paketet. |
-| Targetinformation | Centrerat ovanför filsökvägen: källfilnamn, metod när den är känd, patchantal och en kort geometrisk nätsammanfattning från JSON-fältet `targetInfo`. |
-| Målets fil | Centrerat längst ned: fullständig sökväg och TIFF-filnamn inklusive filändelse för aktuell sida. |
-| Sidnummer | Nere till höger, `1 (3)`, `2 (3)`, `3 (3)`: aktuell sida följd av totalt antal sidor inom parentes. En sida märks `1 (1)`. |
+| Header | **InkProf Quality Profiling RGB printer**, centred at the top, **20 points**. |
+| Date and time | Bottom left, `YYYY-MM-DD HH:mm`. Refers to the generation of the file, in the computer's local time. The same time on all pages in the package. |
+| Target information | Centred above the file path: source file name, method when known, patch count and a short geometric grid summary from the JSON field `targetInfo`. |
+| Target file | Centred at the very bottom: full path and TIFF file name including extension for the current page. |
+| Page number | Bottom right, `1 (3)`, `2 (3)`, `3 (3)`: current page followed by the total number of pages in parentheses. A single page is labelled `1 (1)`. |
 
-Hela den slutliga sökvägen visas, inklusive TIFF-filnamnet, aldrig den tillfälliga byggmappens namn. Texten centreras och radbryts vid behov till två rader, normalt i 9 punkter och minst 6 punkter. Om hela sökvägen inte ryms avbryts genereringen tydligt utan trunkering. Vid flytt efter generering behålls den ursprungliga sökvägen i bilden.
+The complete final path is shown, including the TIFF file name, never the name of the temporary build folder. The text is centred and wrapped to two lines if necessary, normally at 9 points and at least 6 points. If the complete path does not fit, generation is aborted with a clear message, without truncation. If the file is moved after generation, the original path is retained in the image.
 
-Nuvarande rendering placerar rubrikens textruta centrerad omkring 9 mm från överkanten. Från 2026-09-28 centreras helsidiga måls sidfot 12 mm från underkanten, med 8 mm sidmarginal. Detta ger minst cirka 8 mm vit yta under även en tvåradig sökväg. Tidigare 3,5 mm gav klippt datumtext på användarens utskrift. Skrivarens verkliga utskrivbara yta behöver fortfarande kontrolleras. Sidfoten använder 9 punkter. Punktstorleken räknas om efter TIFF-filens upplösning. Rubrik och sidfot ska ligga i vit marginal utan att överlappa patchar eller andra markeringar.
+The current rendering places the header text box centred about 9 mm from the top edge. From 2026-09-28, the footer of full-page targets is centred 12 mm from the bottom edge, with an 8 mm side margin. This gives at least about 8 mm of white space below even a two-line path. The earlier 3.5 mm gave clipped date text on the user's print. The printer's actual printable area still needs to be checked. The footer uses 9 points. The point size is recalculated according to the TIFF file's resolution. The header and footer shall lie in the white margin without overlapping patches or other markings.
 
-## Rader, kolumner och mätbana
+## Rows, columns and measurement path
 
-- Kolumnbokstäver står **ovanför patcharna**, från vänster till höger.
-- Rader numreras uppifrån och ned. Den återanvändbara 29 × 20-mallen fortsätter radnumreringen mellan sidorna: 1–20, 21–40 och så vidare.
-- Radnummer står till vänster, nära radens överkant. Radnumrens nominella texthöjd är 2 mm (tidigare 1,2 mm). Numren är mellangrå (RGB16: 32768, 32768, 32768) för bättre läsbarhet. I Argyll-layouten står de normalt 8 mm från vänster sidkant, närmare kanten om marginalen kräver det. Den fasta 29 × 20-mallen behåller sin placering 1,25 mm från kanten. Numren ligger nära radens överkant för att lämna den centrala mätbanan fri från text. Läsbarheten behöver bedömas på utskrift.
-- Instrumentet förs längs radens mitt, med start och slut på vitt papper utanför patchområdet.
-- Radgränser markeras med tydliga, heldragna grå stödstreck på **båda sidor** om patchfältet, i båda renderingsvägarna. Strecken markerar radens övre och undre kant, inte svepets mittlinje. Standard: 0,4 mm tjocklek, upp till 6 mm längd, RGB-grå 35 % av fullt vitt. Minst 6 mm lämnas vitt mellan streck och patch-/kontrastfält. Vid smala marginaler kortas strecken symmetriskt; om inte ens 1 mm ryms ges ett tydligt layoutfel. Mått och positioner sparas i `page-placement.json` respektive mallens layout-JSON. Äldre utskrifter och målpaket ändras inte.
-- Misstanken att text eller markeringar bidrog till tidigare felläsningar är inte bevisad. Layoutkontroll ersätter inte fysisk mätverifiering.
+- Column letters are placed **above the patches**, from left to right.
+- Rows are numbered from top to bottom. The reusable 29 × 20 template continues the row numbering between pages: 1–20, 21–40 and so on.
+- Row numbers are placed on the left, near the top edge of the row. The nominal text height of the row numbers is 2 mm (previously 1.2 mm). The numbers are mid-grey (RGB16: 32768, 32768, 32768) for better legibility. In the Argyll layout they are normally placed 8 mm from the left page edge, closer to the edge if the margin requires it. The fixed 29 × 20 template retains its placement 1.25 mm from the edge. The numbers are placed near the top edge of the row to keep the central measurement path free of text. Legibility needs to be assessed on a print.
+- The instrument is moved along the middle of the row, starting and ending on white paper outside the patch area.
+- Row boundaries are marked with clear, solid grey guide lines on **both sides** of the patch field, in both rendering paths. The lines mark the upper and lower edge of the row, not the centre line of the sweep. Standard: 0.4 mm thickness, up to 6 mm length, RGB grey at 35 % of full white. At least 6 mm is left white between the line and the patch/contrast field. With narrow margins the lines are shortened symmetrically; if not even 1 mm fits, a clear layout error is raised. Dimensions and positions are saved in `page-placement.json` and in the template's layout JSON, respectively. Older prints and target packages are not changed.
+- The suspicion that text or markings contributed to earlier misreads is not proven. A layout check does not replace physical measurement verification.
 
-Mallen visar kolumner efter Z som 2A, 2B och 2C; Argylls TI2 kan beteckna motsvarande kolumner AA, AB och AC. Kopplingen ska bevaras i layoutbeskrivningen.
+The template shows columns after Z as 2A, 2B and 2C; Argyll's TI2 may designate the corresponding columns AA, AB and AC. The mapping shall be preserved in the layout description.
 
-## Centrering på sidan
+## Centring on the page
 
-Målområdet ska vara centrerat horisontellt och vertikalt i den tillgängliga ytan mellan rubrik/kolumnetiketter och sidfot. Centreringen omfattar patcharna och deras kontrastfält. Flytten görs i hela pixlar utan omskalning; positionsbeskrivningen i JSON uppdateras samtidigt. Argyll-renderingen reserverar 20 mm upptill och 22 mm nedtill, eller 30 mm nedtill för mål smalare än 240 mm (inklusive A5 i båda orienteringarna). Argylls sidkapacitet minskas i motsvarande grad; patchar skalas inte. Sidfotens mått sparas i target-JSON under `printSettings`. TI2 behåller patchidentitet, radordning och RGB-värden; den absoluta sidplaceringen lagras i layout-JSON och `page-placement.json`. Äldre paket utan placeringsfil behåller sina ursprungliga koordinater.
+The target area shall be centred horizontally and vertically in the available area between the header/column labels and the footer. The centring includes the patches and their contrast fields. The shift is made in whole pixels without rescaling; the position description in the JSON is updated at the same time. The Argyll rendering reserves 20 mm at the top and 22 mm at the bottom, or 30 mm at the bottom for targets narrower than 240 mm (including A5 in both orientations). Argyll's page capacity is reduced correspondingly; patches are not scaled. The footer dimensions are saved in the target JSON under `printSettings`. TI2 retains patch identity, row order and RGB values; the absolute page placement is stored in the layout JSON and `page-placement.json`. Older packages without a placement file retain their original coordinates.
 
-I i1Pro 2-provet 2026-09-26 berodde första radens omsvep enligt användaren på att arket satt för långt till höger i släden. Efter korrigerad placering accepterades alla sju rader. Centrering ska ge utrymme för start och avslut på papper; omsvepet ska inte tillskrivas patchigenkänningen.
+In the i1Pro 2 test on 2026-09-26, the overrun on the first row was, according to the user, caused by the sheet sitting too far to the right in the slide. After the placement was corrected, all seven rows were accepted. Centring shall leave room for starting and ending on paper; the overrun shall not be attributed to patch recognition.
 
-Den äldre beskurna 263 × 195 mm-bilden behåller 3,5 mm sidfotsavstånd inom bilden och måste placeras centrerad innanför papperets utskrivbara marginaler. Den är inte en helsidig A4-rendering.
+The older cropped 263 × 195 mm image retains a 3.5 mm footer distance within the image and must be placed centred within the paper's printable margins. It is not a full-page A4 rendering.
 
-29 × 20-mallen har fortsatt sin fasta geometri; generell automatisk centrering är införd i Argyll-renderingen.
+The 29 × 20 template has retained its fixed geometry; general automatic centring has been introduced in the Argyll rendering.
 
-## Bildformat, storlek och utskrift
+## Image format, size and printing
 
-- Utskriftsfilen är **RGB TIFF16**, 16 bitar per kanal, utan inbäddad ICC-profil. CMYK-target avvisas som fel färgformat.
-- Normal upplösning är 300 ppi. Upplösning och fysiska mått ska anges korrekt i TIFF-filen.
-- Målets totala bildyta, inklusive marginaler, begränsas av projektets **Target paper**-inställningar i JSON. Startvärdet 320 × 370 mm gäller Christers mätsläde och kan ändras; se [pappersförslag](target-paper-planning.md).
-- Liggande A4 är **297 × 210 mm**. Måtten avrundas till hela pixlar vid vald upplösning. Den återanvändbara sidmallen är **263 × 195 mm** och ska inte beskrivas som en fullstor A4-bild.
-- Stående A3 kräver att projektets längdgräns tillåter 420 mm. Med mindre mätsläde väljs ett delat ark eller annat förslag. TIFF16-dialogens manuella startformat är liggande A4 (297 × 210 mm).
-- Skriv ut i **100 % faktisk storlek**, utan anpassning till sida och utan färgomvandling i utskriftsflödet. En profilfri fil i sig garanterar inte att utskriftsprogrammet undviker färgomvandling.
-- Förhandsvisningsbilder är endast för skärmvisning; skriv ut TIFF16-filen.
+- The print file is **RGB TIFF16**, 16 bits per channel, with no embedded ICC profile for base/refinement targets. C2 verification TIFFs embed the printer ICC as an identifying tag, without another conversion. CMYK targets are rejected as the wrong colour format.
+- Normal resolution is 300 ppi. Resolution and physical dimensions shall be stated correctly in the TIFF file.
+- The target's total image area, including margins, is limited by the project's **Target paper** settings in JSON. The starting value 320 × 370 mm applies to Christer's measurement slide and can be changed; see [paper proposals](target-paper-planning.md).
+- Landscape A4 is **297 × 210 mm**. The dimensions are rounded to whole pixels at the chosen resolution. The reusable page template is **263 × 195 mm** and shall not be described as a full-size A4 image.
+- Portrait A3 requires the project's length limit to allow 420 mm. With a smaller measurement slide, a split sheet or another proposal is chosen. The TIFF16 dialog's manual starting format is landscape A4 (297 × 210 mm).
+- Print at **100 % actual size**, without fit-to-page and without colour conversion in the printing workflow. A profile-free file does not in itself guarantee that the printing program avoids colour conversion.
+- Preview images are for on-screen viewing only; print the TIFF16 file.
 
-Patchmått, kontrastfält och antal rader bestäms av den valda layouten och ska dokumenteras i paketet. De får inte ändras genom skalning vid utskrift. Nuvarande sidmall har 8 × 8 mm patchar; kontrastprovet för tidigare rader 13–17 har 10 × 8 mm patchar och 1 mm kontrastfält. Dessa är olika layouter, inte universella patchmått.
+Patch dimensions, contrast fields and the number of rows are determined by the chosen layout and shall be documented in the package. They must not be changed by scaling when printing. The current page template has 8 × 8 mm patches; the contrast test for the earlier rows 13–17 has 10 × 8 mm patches and 1 mm contrast fields. These are different layouts, not universal patch dimensions.
 
-Sedan 2026-10-03 har smala mål en separat sidfotslayout: källbeskrivningen centreras 27 mm, filsökvägen 19 mm och datum/sidnummer 10 mm från nederkanten. Sökvägen kan radbrytas till högst fyra rader inom 12 mm. Nedersta 8 mm hålls vita. Pappersförslagen räknar med det större sidfotsutrymmet. Skapa ett nytt TIFF16-paket för att få den nya layouten; befintliga TIFF-filer och mätunderlag ändras inte. Använd det nya paketets matchande TI2/JSON när den nya utskriften mäts.
+Since 2026-10-03, narrow targets have a separate footer layout: the source description is centred 27 mm, the file path 19 mm and the date/page number 10 mm from the bottom edge. The path can be wrapped to at most four lines within 12 mm. The bottom 8 mm is kept white. The paper proposals take the larger footer space into account. Create a new TIFF16 package to get the new layout; existing TIFF files and measurement data are not changed. Use the new package's matching TI2/JSON when the new print is measured.
 
-## Mätunderlag och spårbarhet
+## Measurement data and traceability
 
-Varje utskrift ska ha en motsvarande definition av patcharnas RGB-värden, identitet, sida och position. Intern beskrivning är JSON; Argyll-utbytet använder TI1 för patchdefinition, TI2 för utskriftslayout och TI3 för senare mätresultat.
+Every print shall have a corresponding definition of the patches' RGB values, identity, page and position. The internal description is JSON; the Argyll exchange uses TI1 for patch definition, TI2 for print layout and TI3 for later measurement results.
 
-Randomisering ska återspeglas i TI2 och JSON. Utfyllnad ska skiljas från källpatchar. Använd alltid mätunderlaget som hör till den faktiskt utskrivna layouten; en importerad patchlista innebär inte att ursprungsprogrammets layout har återskapats.
+Randomisation shall be reflected in TI2 and JSON. Padding shall be distinguished from source patches. Always use the measurement data that belongs to the layout actually printed; an imported patch list does not mean that the originating program's layout has been recreated.
 
-Paketkontrollen ska kontrollera patchkoppling, RGB16-pixelvärden, geometri, upplösning och filhashar. En ändring av rubrik eller marginaler får inte ändra patcharnas värden eller storlek. Flyttas patchar måste positionsbeskrivningen uppdateras. Filkontroll och fysisk läsbarhet ska redovisas separat.
+The package check shall verify patch linkage, RGB16 pixel values, geometry, resolution and file hashes. A change to the header or margins must not change the patches' values or size. If patches are moved, the position description must be updated. File checks and physical readability shall be reported separately.
 
-Dokumentera skrivare, papper, utskriftsprogram/drivrutin, medieläge och kvalitetsinställningar vid utskrift. Datumet i sidfoten är genereringstid; faktisk utskriftstid och mättid registreras separat vid behov.
+Document the printer, paper, printing program/driver, media mode and quality settings used when printing. The date in the footer is the generation time; the actual print time and measurement time are recorded separately when needed.
 
 ## Implementation
 
-Projektets generella targetflöde använder kontrastmarkörer; kompletteringsmål använder svart/vitt. Äldre createTiff16-mallar har annan layout och ska inte förväxlas med nuvarande appflöde. MXF-import finns för de dokumenterade formatvarianterna.
+The project's general target workflow uses contrast markers; supplementary targets use black/white. Older createTiff16 templates have a different layout and shall not be confused with the current app workflow. MXF import exists for the documented format variants.
 
-Centrerad fullständig TIFF-sökväg är implementerad i båda renderingsvägarna, tillsammans med rubrik, datum/tid och sidnummer.
+A centred complete TIFF path is implemented in both rendering paths, together with the header, date/time and page number.
 
-Standarden används av `inkprof.createTarget` och `inkprof.createTiff16`. Gemensam rubrik och sidfot renderas av `inkprof.internal.drawPrintFurniture` med Java2D i MATLAB med JVM. Patchdata genomgår ingen färgomvandling i textrenderingen.
+The standard is used by `inkprof.createTarget` and `inkprof.createTiff16`. The shared header and footer are rendered by `inkprof.internal.drawPrintFurniture` using Java2D in MATLAB with JVM. Patch data undergo no colour conversion in the text rendering.
 
-Se [generera mål](target-generation.md) och [mäta mål](chart-measurement.md) för arbetsflöden.
+See [generate targets](target-generation.md) and [measure targets](chart-measurement.md) for workflows.
 
-Detaljerad struktur och provenance: [targetInfo i JSON och TIFF](target-metadata.md).
+Detailed structure and provenance: [targetInfo in JSON and TIFF](target-metadata.md).
 
 ## Printer-applied coating
 

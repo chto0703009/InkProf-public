@@ -14,10 +14,10 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 ROOT=Path(__file__).resolve().parent
-LANG=sys.argv[2] if len(sys.argv)>2 else 'sv'
+LANG=sys.argv[2] if len(sys.argv)>2 else 'en'
 if LANG not in ('sv','en'):raise ValueError('Language must be sv or en.')
-def local(sv,en):return en if LANG=='en' else sv
-OUT=Path(sys.argv[1]) if len(sys.argv)>1 else Path('output/pdf/InkProf-user-handbook-English.pdf' if LANG=='en' else 'output/pdf/InkProf-anvandarhandbok.pdf')
+def local(sv,en):return sv if LANG=='sv' else en
+OUT=Path(sys.argv[1]) if len(sys.argv)>1 else ROOT.parent/('InkProf-anvandarhandbok.pdf' if LANG=='sv' else 'InkProf-user-handbook-English.pdf')
 OUT.parent.mkdir(parents=True,exist_ok=True)
 fontdir=Path(reportlab.__file__).parent/'fonts'
 for name,file in [('Vera','Vera.ttf'),('VeraBold','VeraBd.ttf')]: pdfmetrics.registerFont(TTFont(name,str(fontdir/file)))
@@ -33,11 +33,11 @@ class Pages(canvas.Canvas):
   n=len(self.states);ann=self._annotationCount
   for st in self.states:
    self.__dict__.update(st);self._annotationCount=ann
-   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf Quality Profiling RGB printer | 1.0.0-rc.1')
+   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf Quality Profiling RGB printer | 1.0.0-rc.2')
    self.setFont('Vera',7.7);self.setFillColor(MUTED);self.drawCentredString(105*mm,277.5*mm,'Christer Törnkvist  |  christer@borgasundsfotografiska.se')
    self.setStrokeColor(LINE);self.setLineWidth(.6)
    self.line(18*mm,273.5*mm,192*mm,273.5*mm);self.line(18*mm,22*mm,192*mm,22*mm)
-   self.setFont('Vera',8);self.drawString(18*mm,16*mm,'2026-10-03');self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber} ({n})')
+   self.setFont('Vera',8);self.drawString(18*mm,16*mm,'2026-10-08');self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber} ({n})')
    self.setFillColor(TEAL);self.drawCentredString(105*mm,11*mm,'christer@borgasundsfotografiska.se')
    url='https://github.com/chto0703009/InkProf-public';self.setFont('Vera',7);self.drawCentredString(105*mm,6*mm,url);self.linkURL(url,(45*mm,4*mm,165*mm,9*mm),relative=0)
    ann=self._annotationCount;super().showPage()
@@ -52,15 +52,15 @@ class Diagram(Flowable):
   def box(x,y,w,h,txt,bg=PALE):
    c.setFillColor(bg);c.setStrokeColor(LINE);c.roundRect(x*mm,y*mm,w*mm,h*mm,2*mm,fill=1,stroke=1)
    q=p(txt,'cell');qw,qh=q.wrap((w-6)*mm,h*mm);q.drawOn(c,(x+3)*mm,(y+h)*mm-qh-3*mm)
-  box(0,43,174,14,local('<b>Projektverktyg</b>  |  namn, inställningar, logg, historik och rapport','<b>Project tools</b>  |  name, settings, log, history and report'))
+  box(0,43,174,14,local('<b>Projektverktyg</b> | namn, inställningar, logg, historik och rapport','<b>Project tools</b> | name, settings, log, history and report'))
   box(0,9,63,31,local('<b>Vänster: steg 1-19</b><br/>Välj rad.<br/>Läs statusen.','<b>Left: steps 1-19</b><br/>Select a row.<br/>Read the status.'))
   box(66,9,108,31,local('<b>Höger: valt steg</b><br/>Beskrivning och sparade resultat.<br/>Kör steget eller öppna resultatet.','<b>Right: selected step</b><br/>Description and saved results.<br/>Run the step or open its result.'))
-  c.setFillColor(MUTED);c.setFont('Vera',7.5);c.drawString(0,1*mm,local('Schematisk läshjälp, inte en skärmbild. Status och aktivitet visas också i appen.','Schematic guide, not a screenshot. The app also displays status and activity.'))
+  c.setFillColor(MUTED);c.setFont('Vera',7.5);c.drawString(0,1*mm,local('Schematisk läshjälp, inte skärmbild. Status och aktivitet visas också i appen.','Schematic guide, not a screenshot. The app also displays status and activity.'))
 def table(rows):
  n=len(rows[0]);widths=([15,81,78] if n==3 else [51,123]);t=Table([[p(escape(v),'cell') for v in r] for r in rows],colWidths=[w*mm for w in widths],repeatRows=1,hAlign='LEFT')
  t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),PALE),('VALIGN',(0,0),(-1,-1),'TOP'),('LINEBELOW',(0,0),(-1,-1),.4,LINE),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]));return t
 story=[]
-for i,page in enumerate(json.loads((ROOT/('content-en.json' if LANG=='en' else 'content.json')).read_text())):
+for i,page in enumerate(json.loads((ROOT/f'content-{LANG}.json').read_text())):
  if i:story.append(PageBreak())
  story.extend([p(escape(page['tag']),'tag'),p(escape(page['title']),'title')])
  if page.get('lead'):story.append(p(escape(page['lead']),'lead'))
@@ -70,6 +70,6 @@ for i,page in enumerate(json.loads((ROOT/('content-en.json' if LANG=='en' else '
  if page.get('callout'):
   t=Table([[p(escape(page['callout']))]],colWidths=[174*mm]);t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),PALE),('BOX',(0,0),(-1,-1),.5,LINE),('LEFTPADDING',(0,0),(-1,-1),11),('RIGHTPADDING',(0,0),(-1,-1),11),('TOPPADDING',(0,0),(-1,-1),9),('BOTTOMPADDING',(0,0),(-1,-1),6)]));story.extend([Spacer(1,4*mm),t])
  for label,url in page.get('links',[]):story.append(p(f'<link href="{url}" color="#007F83">{escape(label)}</link>','small'))
-doc=SimpleDocTemplate(str(OUT),pagesize=(210*mm,297*mm),leftMargin=18*mm,rightMargin=18*mm,topMargin=32*mm,bottomMargin=29*mm,title=local('InkProf - Användarhandbok','InkProf - User Handbook'),author='Christer Törnkvist',subject=local('Appens fönster, arbetssteg, mätningar, iterationer och mätcertifikat','App windows, workflow steps, measurements, iterations and measurement certificates'))
+doc=SimpleDocTemplate(str(OUT),pagesize=(210*mm,297*mm),leftMargin=18*mm,rightMargin=18*mm,topMargin=32*mm,bottomMargin=29*mm,title=local('InkProf - Användarhandbok','InkProf - User Handbook'),author='Christer Törnkvist',subject='App windows, workflow steps, measurements, iterations and measurement certificates')
 doc.build(story,canvasmaker=Pages)
 print(OUT)

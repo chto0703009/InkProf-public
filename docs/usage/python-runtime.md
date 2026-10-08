@@ -1,30 +1,32 @@
-# Lokal och valfri Python-miljö
+# Local and optional Python environment
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-Python behövs inte för targetgenerering i MATLAB. Python används av den implementerade chartread-bryggan, spektralanalysen, profileringen och rapporterna.
+Python is not needed for target generation in MATLAB. Python is used by the chartread bridge, spectral analysis, profiling and reports.
 
-## Skapa miljön på varje dator
+## Create the environment on each computer
 
-Utgå från InkProfs rotmapp. På macOS/Linux:
+Start from InkProf's root folder. On macOS/Linux:
 
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
 ```
 
-På Windows:
+On Windows:
 
 ```powershell
 py -3 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements-report.txt
 ```
 
-Den Python som används för att skapa miljön måste vara 3.11–3.13 för hela analys- och rapportflödet. Välj vid behov den installerade Python-filens fullständiga sökväg. Kopiera aldrig `.venv` eller `local-config` mellan datorer. Båda är ignorerade av Git. `requirements-report.txt` inkluderar analys- och rapportberoenden med versionskrav. Granskade beroendeversioner och licenser dokumenteras i `licenses/inventory.json`.
+The Python used to create the environment must be 3.11–3.13 for the full analysis and report workflow (the locked packages in `requirements-analysis.txt` and `requirements-report.txt`). `inkprof.checkPython` only enforces the bridge minimum, Python 3.10 or later, so a 3.10 environment can measure but is not qualified for analysis and reports. If needed, give the full path of the installed Python executable.
 
-## Upptäckt och kontroll
+Never copy `.venv` or `local-config` between computers; both are ignored by Git. `requirements-report.txt` includes the analysis and report dependencies with version requirements. Reviewed dependency versions and licences are documented in `licenses/inventory.json`.
 
-`setupInkProf()` hittar `.venv/bin/python` eller `.venv/Scripts/python.exe` relativt projektroten. Den kör inte Python om det inte uttryckligen begärs och fungerar även utan Python.
+## Discovery and checking
+
+`setupInkProf()` finds `.venv/bin/python` or `.venv/Scripts/python.exe` relative to InkProf's root folder. It does not run Python unless explicitly asked to, and it also works without Python.
 
 ```matlab
 paths=setupInkProf();
@@ -32,50 +34,58 @@ disp(paths.PythonExecutable);
 inkprof.checkPython();
 ```
 
-En alternativ installation kan väljas och sparas lokalt:
+An alternative installation can be chosen and saved locally:
 
 ```matlab
-paths=setupInkProf(PythonExecutable="/full/sokvag/till/python");
-% Windows exempel: PythonExecutable="C:\Tools\Python\python.exe"
+paths=setupInkProf(PythonExecutable="/full/path/to/python");
+% Windows example: PythonExecutable="C:\Tools\Python\python.exe"
 ```
 
-Explicit val kontrolleras innan det sparas. Prioriteten är explicit argument, lokal inställning, därefter projektets `.venv`. Ingen automatisk reservväg via PATH används vid körning. En ogiltig lokal inställning ger ett tydligt fel när Python behövs; byt den med ett nytt explicit val. Relativa konfigurationssökvägar tolkas från projektroten.
+An explicit choice is checked before it is saved. The priority is:
 
-För att återgå till projektmiljön kan man ange `PythonExecutable=".venv/bin/python"` (Windows: `.venv\Scripts\python.exe`). Automatisk upptäckt sparar inte en absolut `.venv`-sökväg. `setupInkProf(CheckPython=true)` kontrollerar den aktuella miljön utan att kräva någon terminalaktivering.
+1. explicit argument,
+2. local setting,
+3. the `.venv` in InkProf's root folder.
 
-## Anropa bryggkod
+No automatic fallback via PATH is used at run time. An invalid local setting gives a clear error when Python is needed; replace it with a new explicit choice. Relative configuration paths are resolved from InkProf's root folder.
+
+To return to the project environment, give `PythonExecutable=".venv/bin/python"` (Windows: `.venv\Scripts\python.exe`). Automatic discovery does not save an absolute `.venv` path. `setupInkProf(CheckPython=true)` checks the current environment without requiring any terminal activation.
+
+## Calling bridge code
 
 ```matlab
-result=inkprof.runPython("bridge/script.py",["--input","fil med blanksteg.json"], ...
+result=inkprof.runPython("bridge/script.py",["--input","file with spaces.json"], ...
     RequiredModules=["json"]);
 ```
 
-Anropet använder en fullständig executable-sökväg och separata processargument utan skal. Kontrollen verifierar Python-version och de moduler den aktuella bryggfunktionen kräver. Den laddar inte Python i MATLAB via `pyenv`. Sökvägar med blanksteg fungerar och terminalens aktivering av en annan miljö påverkar inte valet. Körningen har timeout och rapporterar fel från processen.
+- The call uses a full executable path and separate process arguments, without a shell.
+- The check verifies the Python version and the modules that the bridge function requires.
+- Python is not loaded into MATLAB via `pyenv`.
+- Paths with spaces work, and a terminal's activation of another environment does not affect the choice.
+- The run has a timeout and reports errors from the process.
 
-## ArgyllCMS på olika datorer
+## ArgyllCMS on different computers
 
-ArgyllCMS använder också lokal konfiguration i `local-config/settings.json`.
-Prioriteten är explicit ArgyllBin, sparat lokalt val, ARGYLL_BIN och därefter
-automatisk upptäckt. Relativa val tolkas från InkProfs programmapp.
-Automatisk upptäckt sparas aldrig som en fast sökväg.
+ArgyllCMS also uses the local configuration in `local-config/settings.json`. The priority is:
 
-På Apple Silicon söker appen Homebrew under `/opt/homebrew`; på Intel Mac
-under `/usr/local`. Både `opt/argyll-cms/bin` och `bin` kontrolleras, även om
-MATLAB startats från Finder utan Homebrew i PATH. Även HOMEBREW_PREFIX och
-PATH stöds. Mapparna måste innehålla targen och printtarg; setup kontrollerar
-verktygens versionssvar. Andra operationer kontrollerar sina respektive verktyg.
+1. explicit ArgyllBin,
+2. saved local choice,
+3. ARGYLL_BIN,
+4. automatic discovery.
+
+Relative choices are resolved from InkProf's program folder. Automatic discovery is never saved as a fixed path.
+
+On Apple Silicon the app looks for Homebrew under `/opt/homebrew`; on an Intel Mac under `/usr/local`. Both `opt/argyll-cms/bin` and `bin` are checked, even if MATLAB was started from the Finder without Homebrew in PATH. HOMEBREW_PREFIX and PATH are also supported. The folders must contain targen and printtarg, and setup checks the tools' version responses. Other operations check their own tools.
 
 ```matlab
-setupInkProf();                       % lokal upptäckt/konfiguration
-setupInkProf(ArgyllBin="auto");       % ta bort sparad överstyrning
-setupInkProf(ArgyllBin="/valfri/Argyll/bin"); % validera och spara lokalt
+setupInkProf();                       % local discovery/configuration
+setupInkProf(ArgyllBin="auto");       % remove a saved override
+setupInkProf(ArgyllBin="/any/Argyll/bin"); % validate and save locally
 ```
 
-En otillgänglig äldre sparad sökväg utan ursprungsmarkering ger en varning
-och ny upptäckt. Ett nytt uttryckligt men ogiltigt val ger fel och ersätts inte
-med en annan installation. Installera ArgyllCMS på varje dator; kopiera bara
-projektmappen, inte local-config eller Python-miljön mellan datorerna.
-Homebrew-installation: `brew install argyll-cms`.
+An unavailable older saved path without a source marker gives a warning, and discovery runs again. A new explicit but invalid choice gives an error and is not replaced by another installation.
 
-Källor: https://docs.brew.sh/Installation och
+Install ArgyllCMS on each computer. Copy only the project folder between computers, not local-config or the Python environment. Homebrew installation: `brew install argyll-cms`.
+
+Sources: https://docs.brew.sh/Installation and
 https://formulae.brew.sh/formula/argyll-cms

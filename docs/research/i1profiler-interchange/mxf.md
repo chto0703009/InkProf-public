@@ -2,117 +2,117 @@
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Aktuell status: se [acceptans 2026-09-27](acceptance-20260927.md).
-Daterade uppgifter om väntande importprov nedan beskriver tidigare felsökning.
+Current status: see [acceptance 2026-09-27](acceptance-20260927.md).
+Dated statements below about pending import tests describe earlier troubleshooting.
 
-Datum: 2026-09-25. Status: preliminärt läs-/skrivkontrakt för InkProf.
+Date: 2026-09-25. Status: preliminary read/write contract for InkProf.
 
-Tre [verkliga MXF-referensfall](mxf-examples-inspection.md) är nu granskade: CMYK med enbart Lab samt två RGB-filer med spektra för M0/M1/M2. De ger konkreta positionsnycklar via `TagCollection Name="Location"`; XML-objekt-ID och `SampleID` kan inte ensamma antas koppla mätning till target.
+Three [real MXF reference cases](mxf-examples-inspection.md) have now been reviewed: CMYK with Lab only and two RGB files with spectra for M0/M1/M2. They give concrete position keys via `TagCollection Name="Location"`; XML object ID and `SampleID` cannot alone be assumed to link measurement to target.
 
-## Källbelagd roll
+## Source-backed role
 
-`.mxf` betecknar här i1Profilers mätformat, inte videoformatet med samma ändelse. X-Rite listar det som Measurements. [S5] I CxF3-varianten kopplas targetets enhetsvärden till mätresultat. [S4] Se [gemensamma regler och källor](README.md).
+`.mxf` here denotes i1Profiler's measurement format, not the video format with the same extension. X-Rite lists it as Measurements. [S5] In the CxF3 variant, the target's device values are linked to measurement results. [S4] See [common rules and sources](README.md).
 
-## Föreslagen betydelse i InkProf
+## Proposed meaning in InkProf
 
-MXF är huvudkandidaten för att importera ett komplett profileringsunderlag från i1Profiler. Fullständigheten ska dock kontrolleras i varje fil: spektra, mätvillkor, layout och instrumentmetadata får inte antas finnas bara utifrån filändelsen.
+MXF is the main candidate for importing a complete profiling basis from i1Profiler. Completeness must however be checked in each file: spectra, measurement conditions, layout and instrument metadata must not be assumed to be present merely because of the file extension.
 
-## Konkret läskarta från granskad ChromIQ-kod
+## Concrete reading map from reviewed ChromIQ code
 
 ```text
 Resources / ObjectCollection / Object
-  targetobjekt: DeviceColorValues / ColorRGB / R, G, B
-  mätobjekt:   ColorValues / ReflectanceSpectrum
+  target objects:      DeviceColorValues / ColorRGB / R, G, B
+  measurement objects: ColorValues / ReflectanceSpectrum
 ```
 
-Den granskade konverteraren söker objektgrupper med beteckningar som `Target` och `M0_Measurement`, `M1_Measurement` eller `M2_Measurement`. Dessa beteckningar och kopplingen efter listordning är observationer av en stödd variant, inte universella CxF-regler.
+The reviewed converter searches for object groups with designations such as `Target` and `M0_Measurement`, `M1_Measurement` or `M2_Measurement`. These designations and the linking by list order are observations of a supported variant, not universal CxF rules.
 
-## Importkrav
+## Import requirements
 
-- Fastställ entydig koppling mellan target och mätning. Använd explicita referenser där de finns. Ordning kräver ett verifierat ordningskontrakt; lika antal objekt är inte tillräckligt bevis.
-- Behåll samtliga mätvillkor och upprepningar. Välj inte tyst den första gruppen.
-- Läs våglängdsinformation från spektrum och tillhörande specifikation. Anta inte alltid 380 nm start eller 10 nm intervall.
-- Bevara både spektra och befintlig kolorimetri. Dokumentera om XYZ/Lab senare räknas om och med vilka villkor.
-- Bevara okänd metadata utan att kalla den verifierad. Rätta inte misstänkta skalor genom gissning.
+- Establish an unambiguous link between target and measurement. Use explicit references where they exist. Order requires a verified ordering contract; an equal number of objects is not sufficient proof.
+- Keep all measurement conditions and repetitions. Do not silently select the first group.
+- Read wavelength information from the spectrum and the associated specification. Do not always assume 380 nm start or 10 nm interval.
+- Preserve both spectra and existing colorimetry. Document whether XYZ/Lab is later recalculated and under what conditions.
+- Preserve unknown metadata without calling it verified. Do not correct suspected scales by guessing.
 
-## Exportkrav
+## Export requirements
 
-InkProf måste ha matchade styrvärden och mätningar för det valda targetet. Vald i1Profiler-version, XML-variant, färgspecifikationer och eventuella privata resurser ska vara verifierade med en referensfil och ett importprov.
+InkProf must have matched control values and measurements for the chosen target. The chosen i1Profiler version, XML variant, colour specifications and any private resources must be verified with a reference file and an import test.
 
-Om endast Lab/XYZ finns får spektra inte konstrueras som om de vore uppmätta. Om spektra finns bör de ingå i den stödda exportvarianten; eventuell reducering till kolorimetri ska tydligt rapporteras. Omsampling och avrundning ska redovisas numeriskt.
+If only Lab/XYZ exists, spectra must not be constructed as if they were measured. If spectra exist, they should be included in the supported export variant; any reduction to colorimetry must be clearly reported. Resampling and rounding must be reported numerically.
 
-## Utbyte med TI3 och ChromIQ
+## Interchange with TI3 and ChromIQ
 
-MXF → TI3 ska behålla styrvärden, mätkopplingar och tillgängliga spektra. Om flera mätvillkor måste delas i flera TI3-filer ska ett manifest koppla filerna till originalet.
+MXF → TI3 must keep control values, measurement links and available spectra. If several measurement conditions must be split into several TI3 files, a manifest must link the files to the original.
 
-Den lokalt granskade ChromIQ-funktionen `cxf_measurement_to_ti3` skriver bara RGB och härledd XYZ, inte spektrala kolumner. Dess resultat är därför otillräckligt för en spektral återexport till MXF. Läs original-MXF i InkProf eller använd en annan verifierad konverteringsväg. Se kodrevision och detaljer i [översikten](README.md#kodobservationer-i-lokal-chromiq).
+The locally reviewed ChromIQ function `cxf_measurement_to_ti3` writes only RGB and derived XYZ, not spectral columns. Its result is therefore insufficient for a spectral re-export to MXF. Read the original MXF in InkProf or use another verified conversion path. See code revision and details in the [overview](README.md#code-observations-in-local-chromiq).
 
-## Verifieringsfall
+## Verification cases
 
-Prova flera mätvillkor, upprepade patchar, olika våglängdsintervall och en avsiktligt omordnad mätlista. Felaktig koppling ska upptäckas. Jämför spektra och metadata efter en full läs-/skrivcykel, inte bara beräknad ΔE.
+Test several measurement conditions, repeated patches, different wavelength intervals and a deliberately reordered measurement list. Incorrect linking must be detected. Compare spectra and metadata after a full read/write cycle, not just calculated ΔE.
 
-## Praktisk granskning av i1Profiler 3.8.5
+## Practical review of i1Profiler 3.8.5
 
-Se [verifieringsrapporten](ui-verification-3.8.5.md) för observerade menyval, utförd MXF-import, spektral CGATS-export och TIFF-export. Rapporten skiljer utförda prov från återstående format- och layoutverifiering.
+See the [verification report](ui-verification-3.8.5.md) for observed menu choices, the performed MXF import, spectral CGATS export and TIFF export. The report distinguishes performed tests from remaining format and layout verification.
 
-## Första spektrala exportkandidaten (2026-09-27)
+## First spectral export candidate (2026-09-27)
 
-`exchange/export_mxf.py` skapar en M0-kandidat från en komplett kanonisk
-mät-JSON och en verklig Prism/CxF3-referensfil med samma targetordning.
-RGB jämförs position för position före export; lika färger används inte som
-unik nyckel. Target och mätobjekt får samma Page/Column/Row från chart.json.
-Utfyllnadsrutor utelämnas. M1/M2 från referensen tas bort, spektra divideras
-med 100 utan omsampling, och de ursprungliga XYZ-värdena följer med i JSON-
-rapporten. Filens färgimetri beräknas av mottagaren från spektra.
+`exchange/export_mxf.py` creates an M0 candidate from a complete canonical
+measurement JSON and a real Prism/CxF3 reference file with the same target order.
+RGB is compared position by position before export; equal colours are not used as a
+unique key. Target and measurement objects get the same Page/Column/Row from chart.json.
+Padding cells are omitted. M1/M2 from the reference are removed, spectra are divided
+by 100 without resampling, and the original XYZ values accompany the JSON
+report. The file's colorimetry is calculated by the recipient from the spectra.
 
-Detta är en begränsad adapter för den observerade 380–730 nm/10 nm,
-XRGA, RGB, M0-varianten. Privata Prism-attribut kommer delvis från referensen
-och är kompatibilitetshjälp, inte verifierad information om papper/utskrift.
-Privata profilinställningar tas bort. Återläsning kontrollerar alla RGB-värden,
-positionskopplingar och spektra. Import i mottagarprogrammet återstår.
+This is a limited adapter for the observed 380–730 nm/10 nm,
+XRGA, RGB, M0 variant. Private Prism attributes come partly from the reference
+and are compatibility aids, not verified information about paper/print.
+Private profile settings are removed. Re-reading checks all RGB values,
+position links and spectra. Import in the recipient program remains to be done.
 
-Första filen använder den kompletta 575-mätningen från 09:58. Separata
-kontrollmätningar av rad 19 och raderna 1–3 har inte automatiskt slagits in.
+The first file uses the complete 575 measurement from 09:58. Separate
+control measurements of row 19 and rows 1–3 have not been merged in automatically.
 
-### Importfel och serialisering v2
+### Import error and serialisation v2
 
-Första kandidaten avvisades av mottagaren med `Error reading CxF version
-information` (användarens skärmbild 2026-09-27 11:34). ElementTree hade ändrat
-XML-deklarationen och namnrymdsserialiseringen, och exportören hade tagit bort
-PrismAppName/PrismAppVersion. V2 bevarar referensens yttre XML, versionstaggar
-och privata prefix, medan Creator fortfarande anger InkProf. Versionstaggarna
-är kompatibilitetsmarkörer för dialekten, inte ett påstående att filen skapats
-av i1Profiler. Samtliga RGB och spektra är identiska med första kandidaten.
-Vilken enskild skillnad som utlöste felet är inte isolerad. V2 kräver nytt
-importprov; XML-korrekthet ensam är inte mottagarverifiering.
+The first candidate was rejected by the recipient with `Error reading CxF version
+information` (the user's screenshot 2026-09-27 11:34). ElementTree had changed the
+XML declaration and namespace serialisation, and the exporter had removed
+PrismAppName/PrismAppVersion. V2 preserves the reference's outer XML, version tags
+and private prefixes, while Creator still states InkProf. The version tags
+are compatibility markers for the dialect, not a claim that the file was created
+by i1Profiler. All RGB and spectra are identical to the first candidate.
+Which single difference triggered the error has not been isolated. V2 requires a new
+import test; XML correctness alone is not recipient verification.
 
-## RGB och senare val av papperstyp (2026-09-27)
+## RGB and later choice of paper type (2026-09-27)
 
-InkProf arbetar med RGB-target. RGB är därför fast färgformat i detta flöde,
-inte ett användarval mellan RGB och CMYK. CMYK-indata ska avvisas med ett
-begripligt fel om fel färgformat.
+InkProf works with RGB targets. RGB is therefore a fixed colour format in this flow,
+not a user choice between RGB and CMYK. CMYK input must be rejected with an
+understandable error about the wrong colour format.
 
-Valet **Glossy/Matte** under Paper Information kan införas i ett senare steg.
-Det behöver inte avgöras för den nuvarande formatverifieringen. Vid import
-ska ett befintligt pappersval bevaras i intern JSON och kunna följa med vid
-export. Saknad uppgift ska lämnas okänd tills användaren anger den; en
-referensfils standardvärde får inte beskrivas som verifierat utskriftspapper.
-Ett senare användarval ska hållas åtskilt från det importerade originalvärdet
-så att ursprung och ändring kan följas.
+The **Glossy/Matte** choice under Paper Information can be introduced in a later step.
+It does not need to be decided for the current format verification. On import,
+an existing paper choice must be preserved in internal JSON and be able to accompany
+the export. A missing value must be left unknown until the user specifies it; a
+reference file's default value must not be described as verified print paper.
+A later user choice must be kept separate from the imported original value
+so that origin and change can be followed.
 
-Den fungerande referensfilen och den avvisade MXF-v2-exporten anger båda
-`ColorSpace="RGB"` och `Paper="Glossy"`. Dessa två fält förklarar därför inte
-skillnaden i importresultat. Hur Glossy/Matte påverkar mottagarens
-profilberäkning är ännu inte verifierat. Valet ska inte tolkas som M0/M1/M2
-eller användas för att ändra redan uppmätta spektra.
+The working reference file and the rejected MXF v2 export both state
+`ColorSpace="RGB"` and `Paper="Glossy"`. These two fields therefore do not explain
+the difference in import result. How Glossy/Matte affects the recipient's
+profile calculation has not yet been verified. The choice must not be interpreted as M0/M1/M2
+or used to change already measured spectra.
 
-## Implementerad mätimport (2026-09-27)
+## Implemented measurement import (2026-09-27)
 
-`inkprof.importMeasurement()` tar TI3 eller MXF och öppnar samma färgkarta
-som interna mätningar. Den spektrala MXF-adaptern använder explicita
-positionsnycklar, bevarar original och metadata samt skapar en normaliserad
-TI3 och mät-JSON. En accepterad punktommätning ger en ny TI3/JSON-revision;
-original-MXF ändras inte. Se [användning och begränsningar](../../usage/measurement-file-import.md).
+`inkprof.importMeasurement()` takes TI3 or MXF and opens the same colour chart
+as internal measurements. The spectral MXF adapter uses explicit
+position keys, preserves original and metadata, and creates a normalised
+TI3 and measurement JSON. An accepted spot re-measurement gives a new TI3/JSON revision;
+the original MXF is not changed. See [usage and limitations](../../usage/measurement-file-import.md).
 
 ## 2026-09-29: iteration 2, 911 patches and integer RGB compatibility
 

@@ -6,12 +6,21 @@
 Uses the existing interactive comparison viewer and a vector PDF projection.
 """
 import hashlib
-import html
 import json
 import math
 from pathlib import Path
 from reportlab.graphics.shapes import Drawing, Circle, Line, String
 from reportlab.lib import colors
+
+
+class ComparisonGroups(list):
+    pass
+
+
+def iteration_labels(groups, language):
+    values=getattr(groups,'iterations',(None,None))
+    fallback=('previous profile','current profile') if language!='sv' else ('föregående profil','aktuell profil')
+    return [f'Iteration {v}' if v is not None else fallback[i] for i,v in enumerate(values)]
 
 
 def load(folder, report):
@@ -31,7 +40,9 @@ def load(folder, report):
         for point in group:
             if len(point) != 3 or not all(isinstance(v, (float, int)) and math.isfinite(v) for v in point):
                 raise ValueError('Invalid Lab sample in comparison figure')
-    return groups
+    result=ComparisonGroups(groups)
+    result.iterations=(comparison.get('previousIteration'),comparison.get('currentIteration'))
+    return result
 
 
 def interactive(groups, language='sv'):
@@ -45,34 +56,21 @@ def interactive(groups, language='sv'):
     labels = dict(previous='föregående', current='aktuell', visible='Synliga provpunkter',
                   sparse='Provpunkter inom L*-intervallet; ett glest snitt betyder inte att utskrivbara färger saknas.',
                   all='Alla ljushetsnivåer visas.', rotate='3D Lab - dra för att rotera; L* ökar uppåt') if swedish else {}
+    previous,current=iteration_labels(groups,language)
+    labels.update(previous=previous,current=current)
     script = Path(__file__).with_name('profile_comparison_view.js').read_text(encoding='utf-8')
     return controls+'<script>(()=>{const groups='+json.dumps(groups,allow_nan=False)+';const viewLabels='+json.dumps(labels,ensure_ascii=False)+';\n'+script+'\n})();</script>'
 
 
 def pdf_drawing(groups, language='sv'):
-    """Orthographic Lab projection with three labelled axes; not a gamut surface."""
-    w,h=480,320
-    drawing=Drawing(w,h)
-    angle=.6
-    def raw(point):
-        light,a,b=point
-        return (a*math.cos(angle)-b*math.sin(angle),light*1.5+(a*math.sin(angle)+b*math.cos(angle))*.35)
-    axis_points=[[0,0,0],[100,0,0],[0,110,0],[0,0,110]]
-    points=[raw(p) for g in groups for p in g]+[raw(p) for p in axis_points]
-    xs,ys=zip(*points);lo_x,hi_x=min(xs),max(xs);lo_y,hi_y=min(ys),max(ys)
-    scale=min((w-90)/max(1,hi_x-lo_x),(h-70)/max(1,hi_y-lo_y))
-    def project(point):
-        x,y=raw(point)
-        return 45+(x-lo_x)*scale,35+(y-lo_y)*scale
-    origin=project(axis_points[0])
-    for point,label in zip(axis_points[1:],['L*','a*','b*']):
-        end=project(point)
-        drawing.add(Line(*origin,*end,strokeColor=colors.HexColor('#667784'),strokeWidth=.6))
-        drawing.add(String(end[0]+3,end[1]+3,label,fontSize=9))
+    """Matched profile predictions in the a*/b* plane, L*=50 +/-5."""
+    from lab_views import plane
+    extent=max([20]+[abs(v) for g in groups for p in g for v in p[1:]])
+    drawing,project=plane(extent,'Profile predictions | L* = 50 +/- 5')
     for group,colour in zip(groups,['#216bb0','#d67520']):
-        for point in sorted(group,key=lambda p:p[0]):
-            x,y=project(point)
-            drawing.add(Circle(x,y,1.5,fillColor=colors.HexColor(colour),strokeColor=None,fillOpacity=.55))
-    legend='Blå: föregående profil. Orange: aktuell profil.' if language=='sv' else 'Blue: previous profile. Orange: current profile.'
-    drawing.add(String(12,8,legend,fontName='Helvetica',fontSize=9))
+        for point in group:
+            if abs(point[0]-50)<=5:
+                x,y=project(point[1],point[2]);drawing.add(Circle(x,y,1.8,fillColor=colors.HexColor(colour),strokeColor=None))
+    previous,current=iteration_labels(groups,language)
+    drawing.add(String(12,6,f'Blue: {previous}. Orange: {current}. Predictions, not measurements.',fontSize=9))
     return drawing

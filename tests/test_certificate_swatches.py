@@ -10,7 +10,7 @@ class SwatchTests(unittest.TestCase):
  def test_lab_and_missing(self):
   self.assertEqual(lab_hex([0,0,0]),'#000000')
   self.assertEqual(lab_hex([100,0,0]),'#FFFFFF')
-  self.assertIn('saknas',html_chips({'hex':'#777777'}))
+  self.assertIn('unavailable',html_chips({'hex':'#777777'}))
  def test_legacy_recovery_and_integrity(self):
   with tempfile.TemporaryDirectory() as d:
    p=Path(d)/'c3.json'

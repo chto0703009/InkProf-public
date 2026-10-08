@@ -1,33 +1,46 @@
-# Organisering av lokala projektdata
+# Organizing local project data
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-`projects/` är lokalt och ignoreras av Git. Kod och dokumentation hör hemma i `src/`, `bridge/`, `tests/`, `examples/` och `docs/`.
+`projects/` is local and ignored by Git. Code and documentation belong in `src/`, `analysis/`, `profiles/`, `bridge/`, `tools/`, `tests/`, `examples/` and `docs/`.
 
-## Kategorier
+## Categories
 
-| Mapp | Innehåll |
+| Folder | Contents |
 |---|---|
-| `01-source-files/` | Ursprungliga patchdefinitioner och referensbilder. |
-| `02-rgb-designs/` | Sparade RGB-nät och tillhörande TI1/JSON; äldre kombinerade paket hålls tillsammans med sin definition. |
-| `03-print-targets/` | Utskriftspaket med TIFF, layout och matchande mätunderlag. |
-| `04-measurements/` | Sparade mätomgångar och importerade mätningar, även ofullständiga försök. |
-| `90-archive/` | Äldre nät- och layoutförsök, utan antagande om att de är godkända. |
+| `01-source-files/` | Original patch definitions and reference images. |
+| `02-rgb-designs/` | Saved RGB grids with their TI1/JSON; older combined packages are kept together with their definition. |
+| `03-print-targets/` | Print packages with TIFF, layout and the matching measurement files. |
+| `04-measurements/` | Saved measurement sessions and imported measurements, including incomplete attempts. |
+| `90-archive/` | Older grid and layout attempts, with no assumption that they are approved. |
 
-Ett sammanhörande paket flyttas som en enhet. Källfil, design-JSON och ett äldre relativt refererat `*-files`-paket ska inte spridas i olika mappar. Sidantal och filnamn räcker inte för att avgöra vilket mätunderlag som matchar en fysisk utskrift.
+A package that belongs together is moved as a unit. A source file, its design JSON and an older relatively referenced `*-files` package must not be spread across different folders. The page count and file names are not enough to decide which measurement files match a physical print.
 
-## Genomförd lokal organisering 2026-09-26
+## Local reorganization carried out 2026-09-26
 
-79 poster organiserades. Samtliga 903 innehållsfiler kontrollerades med storlek och SHA-256 före/efter flytten. Inget mät- eller targetinnehåll raderades eller ändrades. Existerande absoluta sökvägar bevaras genom relativa symboliska länkar på de gamla platserna. Länkarna är dolda i Finder men kan visas med Cmd+Shift+punkt. De är inte extra kopior av innehållet.
+- 79 entries were organized.
+- All 903 content files were checked by size and SHA-256 before and after the move.
+- No measurement or target content was deleted or changed.
 
-`projects/README.md` är lokal innehållsförteckning och `projects/organization-map.json` anger tidigare och nuvarande plats. Flyttplan och hashverifiering finns i `work/cleanup-20260926/`. Nya filer som skapas senare ingår inte automatiskt i den daterade inventeringen.
+Existing absolute paths are preserved by relative symbolic links in the old locations. The links are hidden in Finder but can be shown with Cmd+Shift+period. They are not extra copies of the content.
 
-Gamla metadata och TIFF-sidfötter behåller sina ursprungliga sökvägar. En ny utskrift ska genereras om sidfoten ska visa en ny sökväg; den gamla TIFF-filen får inte ändras tyst. Vid säkerhetskopiering behövs hela kategoriinnehållet. Om gamla kommandon ska fortsätta fungera behöver även kompatibilitetslänkar bevaras. Synkverktygs symlinkhantering är ett separat lokalt val.
+`projects/README.md` is the local table of contents, and `projects/organization-map.json` gives the previous and current location of each entry. The move plan and hash verification are in `work/cleanup-20260926/`. Files created later are not automatically included in this dated inventory.
 
-FreeFileSync-jobb (`*.ffs_gui`, `*.ffs_batch`) och dess databas-/låsfiler ignoreras av Git. De är datorspecifika och tas inte bort vid kodstädning.
+Old metadata and TIFF footers keep their original paths. If a footer should show a new path, a new print must be generated; the old TIFF file must not be changed silently.
 
-## Städning av huvudmappen 2026-10-03
+A backup needs the whole category content. If old commands are to keep working, the compatibility links must be preserved as well. How a sync tool handles symlinks is a separate local choice.
 
-Äldre lokalt utvecklingsmaterial har flyttats till ett daterat arkiv utanför kodrepot: provkörningarna i `work/`, en äldre guide-PDF i roten, testbilden `MatrixLarge.jpg` och referensfilen `CGATS Chart 575 Patches.txt`. Arkivet innehåller en filförteckning med SHA-256; innehållet verifierades efter flytten. Den aktuella guiden finns under `docs/usage/`.
+FreeFileSync jobs (`*.ffs_gui`, `*.ffs_batch`) and their database and lock files are ignored by Git. They are machine-specific and are not removed during code clean-up.
 
-Hänvisningar till `work/` i äldre forsknings- och provningsanteckningar avser historiska lokala arbetsfiler, inte filer som behövs för att köra appen. Arkivet distribueras inte med det publika repot. Mätprojekten i `projects/`, aktuell kod, testunderlag, lokala inställningar och Pythonmiljön berörs inte av denna städning.
+## Clean-up of the main folder 2026-10-03
+
+Older local development material has been moved to a dated archive outside the code repository:
+
+- the trial runs in `work/`,
+- an older guide PDF in the root,
+- the test image `MatrixLarge.jpg`,
+- the reference file `CGATS Chart 575 Patches.txt`.
+
+The archive contains a file list with SHA-256, and the content was verified after the move. The current guide is in `docs/usage/`.
+
+References to `work/` in older research and testing notes refer to historical local working files, not to files needed to run the app. The archive is not distributed with the public repository. This clean-up did not touch the measurement projects in `projects/`, the current code, test data, local settings or the Python environment.

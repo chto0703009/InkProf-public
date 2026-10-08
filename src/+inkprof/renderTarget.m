@@ -74,7 +74,7 @@ fig.Visible='on';drawnow;focus(fig);
     function browse(~,~)
         if options.OutputFolder~="",return;end
         fig.WindowStyle='normal';restore=onCleanup(@restoreFocus);
-        [file,folder]=uigetfile({'*.ti1;*.ti2;*.pxf;*.txf;*.cgats;*.txt;*.cxf','RGB patch definitions';'*.*','All files'},'Select RGB patch definition',char(paths.Projects));
+        [file,folder]=inkprof.internal.withFocus(fig,@uigetfile,{'*.ti1;*.ti2;*.pxf;*.txf;*.cgats;*.txt;*.cxf','RGB patch definitions';'*.*','All files'},'Select RGB patch definition',char(paths.Projects));
         clear restore
         if isequal(file,0),return;end
         input.Value=fullfile(folder,file);sourceChanged([],[]);
@@ -99,8 +99,10 @@ fig.Visible='on';drawnow;focus(fig);
         status.Text='Calculating the actual print layout and rendering a temporary preview…';drawnow;
         try
             assert(isfile(input.Value),'inkprof:Input','Select an existing RGB patch definition first.');
+            tiffClock=startClock("Calculating the actual print layout and rendering a temporary preview…");
             m=inkprof.createTarget(temporary,Source=string(input.Value),RGBScale=scale.Value, ...
                 PaperLayout=layoutChoice,PaperSizeMm=[width.Value height.Value],DPI=dpi.Value,SpacerMode="colored",Randomize=shuffle.Value,Seed=seed.Value,Continue=@keepGoing);
+            clear tiffClock
             previews=inkprof.internal.previewFiles(m);
             images=cell(1,numel(previews));
             for k=1:numel(previews),images{k}=imread(fullfile(temporary,previews(k)));end
@@ -109,6 +111,7 @@ fig.Visible='on';drawnow;focus(fig);
             pageCount.Text=sprintf('Pages: %d | Use the arrows below the preview',m.pageCount);
             status.Text='Not saved. Page count uses the actual layout at your selected DPI. Temporary footer path is replaced with the final path when saving.';
         catch err
+            clear tiffClock
             if strcmp(err.identifier,'inkprof:Cancelled'),delete(fig);return;end
             pageCount.Text='Pages: calculation failed';fig.UserData.pageCount=[];
             status.Text=string(err.message);uialert(fig,err.message,'TIFF16 preview');
@@ -127,7 +130,7 @@ fig.Visible='on';drawnow;focus(fig);
             base=paths.Projects;project=inkprof.internal.findProject(string(input.Value));
             if project~="",base=fullfile(project,'targets');end
             if options.OutputFolder==""
-                [file,folder]=uiputfile({'*','Target package folder name'},'Save new TIFF16 package (choose a new name)',fullfile(base,suggested));
+                [file,folder]=inkprof.internal.withFocus(fig,@uiputfile,{'*','Target package folder name'},'Save new TIFF16 package (choose a new name)',fullfile(base,suggested));
             else
                 [folder,file]=fileparts(options.OutputFolder);
             end
@@ -136,11 +139,14 @@ fig.Visible='on';drawnow;focus(fig);
             destination=fullfile(folder,file);
             controls=findall(fig,'-property','Enable');set(controls,'Enable','off');cancel.Enable='on';
             fig.UserData.busy=true;status.Text='Generating TIFF16 pages, matching TI2 and JSON; checking patch pixels…';drawnow;
+            tiffClock=startClock("Generating TIFF16 pages, matching TI2 and JSON; checking patch pixels…");
             m=inkprof.createTarget(destination,Source=string(input.Value),RGBScale=scale.Value, ...
                 PaperLayout=layoutChoice,PaperSizeMm=[width.Value height.Value],DPI=dpi.Value,SpacerMode="colored",Randomize=shuffle.Value,Seed=seed.Value,Continue=@keepGoing);
+            clear tiffClock
             resultWindow=inkprof.showPrintResult(destination);
             delete(fig);focus(resultWindow);return;
         catch err
+            clear tiffClock
             if strcmp(err.identifier,'inkprof:Cancelled'),delete(fig);return;end
             status.Text=string(err.message);uialert(fig,err.message,'TIFF16 target');
         end
@@ -150,6 +156,36 @@ fig.Visible='on';drawnow;focus(fig);
     end
     function restoreFocus()
         if isvalid(fig),fig.WindowStyle='alwaysontop';drawnow;focus(fig);end
+    end
+    function guard=startClock(label)
+        % Elapsed-time clock for long renders. It appears after 2 s, so small
+        % targets do not flash a dialog, and updates once per second.
+        clockStarted=tic;clockDialog=[];
+        clockTimer=timer('ExecutionMode','fixedSpacing','Period',1,'StartDelay',2,'BusyMode','drop', ...
+            'Tag','InkProfTiffClock','TimerFcn',@tick);
+        start(clockTimer);guard=onCleanup(@stopClock);
+        function tick(~,~)
+            if ~isvalid(fig),stopClock();return;end
+            clockSeconds=floor(toc(clockStarted));clockText=sprintf('Working — elapsed %d min %02d sec',floor(clockSeconds/60),mod(clockSeconds,60));
+            clockMessage=sprintf('%s\n%s. Please wait.',label,clockText);
+            try
+                if isempty(clockDialog)||~isvalid(clockDialog)
+                    clockDialog=uiprogressdlg(fig,'Title','TIFF16 target','Message',clockMessage,'Indeterminate','on', ...
+                        'Cancelable','on','CancelText','Cancel');
+                elseif clockDialog.CancelRequested
+                    fig.UserData.cancelled=true;clockDialog.Message=sprintf('Cancelling at the next safe checkpoint…\n\n%s.',clockText);
+                else
+                    clockDialog.Message=clockMessage;
+                end
+                status.Text=label+" ("+clockText+")";drawnow limitrate
+            catch
+                % The clock is feedback only; never interrupt rendering.
+            end
+        end
+        function stopClock()
+            if isvalid(clockTimer),stop(clockTimer);delete(clockTimer);end
+            if ~isempty(clockDialog)&&isvalid(clockDialog),close(clockDialog);end
+        end
     end
     function yes=keepGoing()
         drawnow;yes=~fig.UserData.cancelled;

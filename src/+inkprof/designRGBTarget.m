@@ -3,10 +3,17 @@
 % InkProf is free software under GNU GPL version 3 or later.
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function design=designRGBTarget(options)
-%DESIGNRGBTARGET FEM-inspired RGB refinement or Argyll OFPS, before layout.
+%DESIGNRGBTARGET FEM-inspired RGB refinement or Argyll targen placement, before layout.
+% Argyll methods: see inkprof.internal.targetMethods. PreconditionProfile is an
+% existing RGB output ICC passed to targen -c; it steers perceptual placement
+% (OFPS adaptation and the perceptual-space methods) and is recorded by hash.
 arguments
     options.Name (1,1) string = "RGB target"
-    options.Method (1,1) string {mustBeMember(options.Method,["mesh","argyll"])} = "mesh"
+    options.Method (1,1) string {mustBeMember(options.Method,["mesh","argyll","argyll-incremental","argyll-quasi","argyll-perceptual-quasi","argyll-bcc","argyll-perceptual-bcc","argyll-random","argyll-perceptual-random"])} = "mesh"
+    options.PreconditionProfile (1,1) string = ""
+    options.Optimized (1,1) logical = false
+    options.Adaptation (1,1) double = NaN
+    options.NeutralEmphasis (1,1) double = NaN
     options.Refinement (1,1) string {mustBeMember(options.Refinement,["interior","edge"])} = "interior"
     options.InteriorPlacement (1,1) string {mustBeMember(options.InteriorPlacement,["circumcenter","centroid","contained-circumcenter"])} = "centroid"
     options.Levels (1,1) double {mustBeInteger,mustBeGreaterThanOrEqual(options.Levels,2)} = 5
@@ -24,8 +31,23 @@ end
 assert(strlength(strtrim(options.Name))>0,'inkprof:Design','Enter a target name.');
 assert(options.GraySteps~=1,'inkprof:Design','Gray steps must be zero or at least two.');
 assert(options.GapRatio==0||options.GapRatio>1,'inkprof:Design','Gap ratio must be zero (off) or greater than one.');
+isMesh=options.Method=="mesh";
+catalogue=inkprof.internal.targetMethods();spec=catalogue([catalogue.id]==options.Method);
+assert(isMesh||(isnan(options.Adaptation)||(options.Adaptation>=0&&options.Adaptation<=1)),'inkprof:Design','Adaptation (-A) must be 0..1.');
+assert(isMesh||(isnan(options.NeutralEmphasis)||(options.NeutralEmphasis>=0&&options.NeutralEmphasis<=1)),'inkprof:Design','Neutral emphasis (-N) must be 0..1.');
+assert(~isMesh||(options.PreconditionProfile==""&&~options.Optimized&&isnan(options.Adaptation)&&isnan(options.NeutralEmphasis)), ...
+    'inkprof:Design','Pre-conditioning profile and targen options apply to Argyll methods only.');
+precondition=struct;warnings=strings(0,1);
+if options.PreconditionProfile~=""
+    precondition=inkprof.internal.inspectPreconditionProfile(options.PreconditionProfile);
+elseif ~isMesh&&spec.perceptual&&options.Method~="argyll"
+    warnings(end+1)="Perceptual placement without a pre-conditioning profile uses Argyll's default device model, which assumes a saturated high-contrast device; results can be odd.";
+end
+if ~isMesh&&options.PreconditionProfile==""&&~isnan(options.Adaptation)&&options.Adaptation>0.1
+    warnings(end+1)="OFPS adaptation above 0.1 without a pre-conditioning profile relies on Argyll's default device model.";
+end
 budget=options.MaxPoints-options.ControlCount-options.RepeatCount;
-if options.Method=="mesh"
+if isMesh
     levels=linspace(0,1,options.Levels);
     grayLevels=linspace(0,1,options.GraySteps);
     extraGray=options.GraySteps-numel(intersect(levels,grayLevels));
@@ -39,7 +61,7 @@ checkBudget(options,required,reason);
 notify=options.Progress;
 assert(notify(struct('count',0,'maxEdge',NaN)),'inkprof:Cancelled','Generation cancelled.');
 log=struct;history=zeros(0,5);parents=zeros(0,2);
-if options.Method=="mesh"
+if isMesh
     axis=linspace(0,1,options.Levels);[r,g,b]=ndgrid(axis,axis,axis);rgb=[r(:) g(:) b(:)];
     if options.GraySteps>0
         rgb=unique([rgb;repmat(linspace(0,1,options.GraySteps)',1,3)],'rows','stable');
@@ -50,9 +72,27 @@ else
     w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
     bin=inkprof.internal.argyllBin(options.ArgyllBin);suffix="";if ispc,suffix=".exe";end
     exe=fullfile(bin,"targen"+suffix);
-    args=["-d2","-e1","-B1","-g"+options.GraySteps,"-m2","-f"+budget,"design"];
-    if options.ShadowEmphasis>1,args=[args(1:end-1),"-A1","-V"+options.ShadowEmphasis,args(end)];end
-    log=inkprof.internal.runTool(exe,args,w,300);
+    args=["-d2","-e1","-B1","-g"+options.GraySteps,"-m2"];
+    if options.Optimized,args(end+1)="-G";end
+    if spec.flag~="",args(end+1)=spec.flag;end
+    if options.PreconditionProfile~=""
+        [compatible,conversion]=inkprof.internal.iccV2Compatibility(precondition.path,fullfile(w,'v2-conversion'),ArgyllBin=options.ArgyllBin);
+        copyfile(compatible,fullfile(w,'precondition.icc'));
+        expected=precondition.sha256;
+        if conversion.converted
+            expected=string(conversion.convertedSHA256);precondition.conversion=conversion;
+            warnings(end+1)="ICC v4: using the shared approximate v2 compatibility copy; original preserved. See preconditioning.conversion for numerical differences.";
+        end
+        assert(inkprof.internal.sha256(fullfile(w,'precondition.icc'))==expected,'inkprof:Integrity','Pre-conditioning profile changed while copying.');
+        args=[args,"-c","precondition.icc"];
+    end
+    adaptation=options.Adaptation;
+    if isnan(adaptation)&&options.ShadowEmphasis>1,adaptation=1;end % previous shadow default (-A1)
+    if ~isnan(adaptation),args(end+1)="-A"+string(sprintf('%.6g',adaptation));end
+    if ~isnan(options.NeutralEmphasis),args(end+1)="-N"+string(sprintf('%.6g',options.NeutralEmphasis));end
+    if options.ShadowEmphasis>1,args(end+1)="-V"+options.ShadowEmphasis;end
+    args=[args,"-f"+budget,"design"];
+    log=inkprof.internal.runTool(exe,args,w,600);
     versionInfo=inkprof.internal.runTool(exe,"-?",w,30,true);log.version=versionInfo.output;
     target=inkprof.importTarget(fullfile(w,'design.ti1'));
     rgb=unique(target.rgbPercent/100,'rows','stable');
@@ -61,7 +101,7 @@ else
 end
 assert(notify(struct('count',size(rgb,1),'maxEdge',NaN)),'inkprof:Cancelled','Generation cancelled.');
 initialRGB=rgb;
-interior=options.Method=="mesh" && options.Refinement=="interior";
+interior=isMesh && options.Refinement=="interior";
 parentTetrahedra=zeros(size(rgb,1),4);insertionKinds=repmat("initial",size(rgb,1),1);
 historyColumns=["fitCount","splitEdgeLength","newMaxEdgeLength","parent1","parent2"];
 if interior,history=zeros(0,7);historyColumns=["fitCount","candidateGapBefore","candidateGapAfter","parent1","parent2","parent3","parent4"];end
@@ -76,11 +116,11 @@ if numel(refinementDistances)>1
     gap.upperDistance=refinementDistances(gap.rank);gap.lowerDistance=refinementDistances(gap.rank+1);
 end
 threshold=options.MaxEdge;
-if options.Method=="mesh" && options.GapRatio>1 && gap.ratio>=options.GapRatio
+if isMesh && options.GapRatio>1 && gap.ratio>=options.GapRatio
     gap.applied=true;threshold=max(threshold,gap.lowerDistance);
 end
 reason="point limit";
-if options.Method=="mesh" && options.Refine
+if isMesh && options.Refine
     while size(rgb,1)<budget
         if threshold>0 && refinementDistances(1)<=threshold+1e-12,reason="distance threshold";break;end
         before=refinementDistances(1);
@@ -102,7 +142,7 @@ if options.Method=="mesh" && options.Refine
         end
         assert(notify(struct('count',size(rgb,1),'maxEdge',refinementDistances(1))),'inkprof:Cancelled','Generation cancelled.');
     end
-elseif options.Method=="mesh"
+elseif isMesh
     reason="base preview";
 else
     reason="Argyll generation complete";
@@ -138,12 +178,14 @@ design=struct('schemaVersion',1,'documentType',"inkprof.rgb-design", ...
     'candidatePoints',candidates,'candidateKinds',candidateKinds,'insertionKinds',insertionKinds,'initialRefinementDistances',initialRefinementDistances,'sortedRefinementDistances',refinementDistances,'coverage',coverage, ...
     'gap',gap,'effectiveThreshold',threshold,'stopReason',reason,'argyllRun',log, ...
     'controlMethod',"Unscrambled radical inverses, bases 2/3/5; disjoint from fitting set", ...
-    'colorimetry',"None: device RGB geometry only. Control roles must be excluded from future profile fitting.");
+    'colorimetry',"None: device RGB geometry only. Control roles must be excluded from future profile fitting.", ...
+    'methodLabel',spec.label,'preconditioning',precondition,'warnings',warnings);
 generation=struct('algorithmVersion',"2.1",'method',options.Method,'name',options.Name,'settings',settings, ...
     'initialLevels',options.Levels,'iterations',size(history,1),'stopReason',reason, ...
     'history',history,'historyColumns',historyColumns,'initialRGB',initialRGB,'parentEdges',parents, ...
-    'parentTetrahedra',parentTetrahedra,'insertionKinds',insertionKinds,'interiorPlacement',options.InteriorPlacement,'refinement',options.Refinement,'coverage',coverage,'gap',gap,'argyllRun',log);
-if options.Method=="argyll",generation=rmfield(generation,{'initialLevels','iterations'});end
+    'parentTetrahedra',parentTetrahedra,'insertionKinds',insertionKinds,'interiorPlacement',options.InteriorPlacement,'refinement',options.Refinement,'coverage',coverage,'gap',gap,'argyllRun',log, ...
+    'preconditioning',precondition);
+if ~isMesh,generation=rmfield(generation,{'initialLevels','iterations'});end
 design.targetInfo=inkprof.internal.targetInfo(allRGB,"",generation,(1:fitCount)');
 end
 function v=radicalInverse(index,base)

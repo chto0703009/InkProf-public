@@ -1,10 +1,9 @@
-# InkProf v1.0.0RC1 — public release candidate
+# InkProf v1.0.0-rc.2 — public release candidate
 
 **InkProf - When colours have to be right**
 
-Public prerelease: **[v1.0.0RC1](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0RC1)**. Internal version: **1.0.0-rc.1**. This is a release candidate for testing, not the stable v1.0.0. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
+Public prerelease: **[v1.0.0-rc.2](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.2)**. Internal version: **1.0.0-rc.2**. This is a release candidate for testing, not the stable v1.0.0. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
 
-[Swedish description / Svenska](README.sv.md)
 
 For photographers, the carefully crafted image should reach paper with its intended colours, tones and expression. A smooth workflow builds confidence and satisfaction for photographers, printing businesses and clients. Calibration and verification can reduce reprints, save time, paper and ink, and improve consistency.
 
@@ -23,15 +22,15 @@ The app saves TIFF16 targets for separate printing. Measurement is started in th
 This is a **source release**, not a standalone executable. Install MATLAB, Python and ArgyllCMS separately.
 
 - Tested on macOS with MATLAB R2025b (base MATLAB; no mandatory add-on toolboxes).
-- Python 3.11-3.13 for analysis and reports; tested with 3.13.
+- Python 3.10 or later for measurement (the startup check requires at least 3.10); 3.11–3.13 for analysis and reports (`requirements-analysis.txt`, `requirements-report.txt`); tested with 3.13.
 - ArgyllCMS 3.5.0 was used in development. InkProf discovers Homebrew installations on Apple Silicon and Intel, including when MATLAB is launched without Homebrew on PATH. An explicit local override remains available; `setupInkProf(ArgyllBin="auto")` resets it. Automatic discovery is not saved as a fixed machine path.
 - Instrument measurement uses a POSIX bridge. Windows instrument operation has not been qualified.
-- The project app uses English labels, dialogs and workflow guidance. Swedish and English PDF documentation is included.
+- The project app uses English labels, dialogs and workflow guidance. Matching Swedish and English user handbooks are included.
 
 Clone the tagged release candidate:
 
 ```sh
-git clone --branch v1.0.0RC1 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.0.0-rc.2 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
@@ -53,14 +52,14 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [2026-10-07 update](docs/releases/2026-10-07-workflow-update.md) for the latest workflow changes.
+
+- [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
 
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Swedish presentation (PDF)](docs/usage/InkProf-presentation.pdf)
-- [Swedish MATLAB guide (PDF)](docs/usage/InkProf-profileringskedja-MATLAB-guide.pdf)
-- [Project app, step guards and recovery (Swedish)](docs/usage/project-workflow-app.txt)
-- [Release notes](docs/releases/v1.0.0.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.0.0.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 
@@ -68,7 +67,7 @@ The guides describe callable operations as well as the project workflow. Histori
 
 **New project** collects the project name, user, printer, paper, Glossy/Matte surface, ink set, driver/RIP, media setting, print quality, printing application, colour management, drying time and additional settings. **Project details** edits the same shared definition later. B1, B2, C3 and final reports use this definition; printing fields in B2 are read-only.
 
-Renaming a project also renames its folder, while retaining its ID, relative references and original evidence. Existing destination folders are never overwritten. When a folder was renamed outside InkProf, opening it prompts you to adopt the folder name as the project name, restore the saved folder name, or cancel. Decisions (including cancellation and failure) are recorded in `folderNameHistory`, workflow JSON and the result log. Moving to a different parent directory or computer with the same folder name does not trigger this prompt. Changed printing declarations invalidate B1 and subsequent profiling stages; measurements are preserved. Name/user corrections require a new final report. Historical files and change logs are retained.
+Renaming a project also renames its folder, while retaining its ID, relative references and original evidence. Existing destination folders are never overwritten. When a folder was renamed outside InkProf, opening it prompts you to adopt the folder name as the project name, restore the saved folder name, or cancel. Decisions (including cancellation and failure) are recorded in `folderNameHistory`, workflow JSON and the result log. Moving to a different parent directory or computer with the same folder name does not trigger this prompt. Changed physical printing declarations invalidate B1 and subsequent profiling stages; measurements are preserved. Changing only FWA/OBA compensation preserves B1 and invalidates B2 and later profile results. Name/user corrections require a new final report. Historical files and change logs are retained.
 
 To move between computers, finish active operations, close the project and copy the **entire project folder**, including hidden files. Open it on the destination computer with **Open project**. The app verifies registered files against SHA-256 checksums before opening; **Verify project** repeats the read-only check. Missing/changed files or active lock files block opening. Install InkProf, MATLAB, Python dependencies and ArgyllCMS separately on the destination and configure local runtime paths there. Do not copy the application `.venv` or `local-config`. External exports are separate; project copies are included. Recorded drying hours are documentation, not proof that a print has dried.
 
@@ -120,7 +119,7 @@ The final profiling report is now a **measurement certificate** with project and
 
 ## Current project settings and refinement
 
-Project details is the single source for printer, paper finish, dye/pigment ink type, printer coating, drying time, profiling settings and paper/sled dimensions. Matte paper can use additional shadow sampling: up to 48 extra dark fitting patches per iteration, editable dark emphasis and denser shadow tables. See [matte shadows](docs/usage/matte-shadow-profiling.md).
+Project details is the single source for printer, paper finish, dye/pigment ink type, printer coating, drying time, profiling settings and paper/sled dimensions. Matte paper can use additional shadow sampling: by default up to 48 extra dark fitting patches per iteration (editable, 0–256), editable dark emphasis and denser shadow tables. See [matte shadows](docs/usage/matte-shadow-profiling.md).
 
 Image-guided refinement honours the embedded ICC; missing profiles trigger an sRGB warning. Candidate filtering defaults to estimated ΔE00 > 5. Unmeasured C2 patches can join the refinement target and are then used as fitting data for the next profile, with controls retained. They no longer constitute independent verification of that next profile.
 

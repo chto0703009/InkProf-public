@@ -23,6 +23,7 @@ for k=1:7
 end
 help=uilabel(panel,'Text','Spacing excludes device RGB already measured or proposed. Radius 0 samples image colours only; a positive radius also permits nearby probes. Controls are added separately.','WordWrap','on');help.Layout.Column=[1 2];
 uibutton(g,'Text','Cancel','ButtonPushedFcn',@cancel);uibutton(g,'Text','Propose patches','ButtonPushedFcn',@accept);
+topGuard=inkprof.internal.lowerTopWindows(f); %#ok<NASGU> keep the dialog above always-on-top windows
 preview([],[]);if isgraphics(f),uiwait(f);end
 if isgraphics(f),delete(f);end
  function cancel(~,~)

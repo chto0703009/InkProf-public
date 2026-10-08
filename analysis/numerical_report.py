@@ -15,11 +15,10 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, 
 from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-import reportlab
 from certificate_standards import content, appendix_lines, pdf_table, table_html
 
 
-def create(folder, language="sv"):
+def create(folder, language="en"):
     folder = Path(folder)
     r = json.loads((folder / 'final-report.json').read_text(encoding='utf-8'))
     from certificate_figure import load, interactive, pdf_drawing
@@ -27,63 +26,67 @@ def create(folder, language="sv"):
     import gamut_surface
     gamut = gamut_surface.load(folder, r)
     gamut_title = "ICC gamut - CIELAB D50"
-    figure_title = 'Profiljämförelse - 2D och 3D i CIELAB'
-    sections = [('InkProf - mätcertifikat', ['Certifikat-ID: '+r.get('certificateId', 'Ej angivet'), r.get('certificateScope', ''), r['scopeStatement'],
-        f"Projekt: {r['project']['name']} | Iteration {r['iteration']}",
-        'Aktuell profil: numeriskt kontrollerad. Tidigare utskriftsmätningar redovisas separat som historiskt underlag.']),
-        ('Beslut och avsedd användning', [r['decision']['notes']]),
-        ('Sparad ICC-profil', [r['profile']['file'], 'SHA-256: '+r['profile']['sha256']]),
-        ('Projekt och utskriftsinställningar', [f'{label}: {r["printing"].get(key, "Ej angivet")}' for key, label in [('printer','Skrivare'),('paper','Papper'),('paperSurface','Yta'),('ink','Bläck'),('inkType','Bläcktyp (dye / pigment)'),('shadowMode','Skuggläge (auto-matte gäller endast matt papper)'),('shadowPatchEmphasis','Viktning av mörka patchar'),('shadowGridEmphasis','Modellens skuggviktning'),('shadowExtraPatches','Extra skuggpatchar per iteration (begärt antal)'),('printerCoating','Coating från skrivaren'),('coatingSettings','Coating – produkt och inställningar'),('media','Mediainställning'),('driver','Drivrutin'),('quality','Utskriftskvalitet'),('printPath','Utskriftsprogram'),('colorManagement','Färghantering'),('dryingHours','Torktid (timmar)'),('fwaCompensation','Kompensation för optiska vitmedel'),('settings','Övriga inställningar')]])]
-    sections[3][1].insert(0, 'Projekt-ID: '+str(r['project']['id']))
-    sections[3][1].insert(1, 'Ansvarig användare: '+r['reportUser'])
+    figure_title = 'Profile comparison - 2D and 3D in CIELAB'
+    sections = [('InkProf - Measurement certificate', ['Certificate ID: '+r.get('certificateId', 'Not specified'), r.get('certificateScope', ''), r['scopeStatement'],
+        f"Project: {r['project']['name']} | Iteration {r['iteration']}",
+        'Current profile: numerically checked. Previous print measurements are reported separately as historical evidence.']),
+        ('Decision and intended use', [r['decision']['notes']]),
+        ('Saved ICC profile', [r['profile']['file'], 'SHA-256: '+r['profile']['sha256']]),
+        ('Project and printing settings', [f'{label}: {r["printing"].get(key, "Not specified")}' for key, label in [('printer','Printer'),('paper','Paper'),('paperSurface','Surface'),('ink','Ink'),('inkType','Ink type (dye / pigment)'),('shadowMode','Shadow mode (auto-matte applies only to matte paper)'),('shadowPatchEmphasis','Dark patch weighting'),('shadowGridEmphasis','Model shadow emphasis'),('shadowExtraPatches','Extra shadow patches per iteration (requested count)'),('printerCoating','Printer coating'),('coatingSettings','Coating - product and settings'),('media','Media setting'),('driver','Driver'),('quality','Print quality'),('printPath','Printing application'),('colorManagement','Colour management'),('dryingHours','Drying time (hours)'),('fwaCompensation','Optical brightener compensation'),('settings','Other settings')]])]
+    sections[3][1].insert(0, 'Project ID: '+str(r['project']['id']))
+    sections[3][1].insert(1, 'Responsible user: '+r['reportUser'])
     if r.get('deliveryProfile'):
         from delivery_report import details
-        sections[2] = ('Kontrollerad ICC-kandidat (projektoriginal)', sections[2][1])
-        sections.insert(3, ('Levererad ICC-profil', details(r['deliveryProfile'])))
+        sections[2] = ('Checked ICC candidate (project original)', sections[2][1])
+        sections.insert(3, ('Delivered ICC profile', details(r['deliveryProfile'])))
     evidence = r.get('decisionEvidence', {})
     fit = evidence.get('trainingFit', {})
     def stats(values):
         return ' | '.join(label+': '+format(values[key], '.4f') for key, label in
-                         [('mean', 'Medel'), ('p95', '95:e percentil'), ('max', 'Max')] if key in values)
-    decision_lines = ['Endast underlag för användarens beslut att avsluta iterationen; inte belägg för förbättrad utskriftsnoggrannhet.']
-    for key, label in [('previous', 'Föregående iteration'), ('current', 'Aktuell iteration')]:
+                         [('mean', 'Mean'), ('p95', '95th percentile'), ('max', 'Max')] if key in values)
+    decision_lines = ['Evidence for the user decision to end the iteration only; not evidence of improved print accuracy.']
+    for key, label in [('previous', 'Previous iteration'), ('current', 'Current iteration')]:
         if key in fit:
-            decision_lines.append(label+' - anpassningsfel (Delta E00): '+stats(fit[key])+f" | Antal patchar: {fit[key].get('count', 'ej angivet')}")
+            decision_lines.append(label+' - fit error (Delta E00): '+stats(fit[key])+f" | Patch count: {fit[key].get('count', 'not specified')}")
     if fit.get('previous') and fit.get('current'):
         delta = {k: fit['current'][k]-fit['previous'][k] for k in ('mean', 'p95', 'max') if k in fit['current'] and k in fit['previous']}
-        decision_lines.append('Förändring av anpassningsfel, aktuell minus föregående: '+stats(delta))
-        decision_lines.append('Positiv förändring betyder högre anpassningsfel; negativ betyder lägre. Två iterationer räcker inte för att fastställa generell konvergens eller divergens.')
+        decision_lines.append('Change in fit error, current minus previous: '+stats(delta))
+        decision_lines.append('A positive change means higher fit error; negative means lower. Two iterations do not establish general convergence or divergence.')
     if fit.get('caveat'):
         decision_lines.append(fit['caveat'])
     comparison = evidence.get('comparison', {})
     if comparison:
-        decision_lines += [f"Profiljämförelse: iteration {comparison['previousIteration']} mot {comparison['currentIteration']}",
-            'Skillnad mellan profilerna vid samma RGB (Delta E00): '+stats(comparison['sameRGBDeltaE00']),
-            'Skillnad i RGB-val vid samma Lab (procentenheter): '+stats(comparison['sameLabRGBChangePercentagePoints']),
-            'Dessa värden beskriver skillnader mellan ICC-beräkningar, inte fel mot en uppmätt kontrollutskrift.']
+        decision_lines += [f"Profile comparison: iteration {comparison['previousIteration']} vs {comparison['currentIteration']}",
+            'Previous profile prediction vs current profile prediction (Delta E00, same RGB): '+stats(comparison['sameRGBDeltaE00']),
+            'RGB selection difference for the same Lab (percentage points): '+stats(comparison['sameLabRGBChangePercentagePoints']),
+            'These values describe differences between ICC calculations, not errors against a measured verification print.']
     else:
-        decision_lines.append('Ingen aktuell profiljämförelse bifogad. Kör steg 18 före export om den ska ingå.')
-    sections.insert(2, ('Jämförelse som beslutsunderlag', decision_lines))
+        decision_lines.append('No current profile comparison attached. Run step 18 before export to include it.')
+    sections.insert(2, ('Comparison evidence for the decision', decision_lines))
     for key, source in r['sources'].items():
         data = json.loads((folder / source['file']).read_text(encoding='utf-8'))
-        lines = [f"Underlag: {source['file']}", 'SHA-256: '+source['sha256']]
+        lines = [f"Evidence: {source['file']}", 'SHA-256: '+source['sha256']]
         if 'summary' in data:
-            lines.append('Anpassningsfel (Delta E00): '+stats(data['summary']))
+            lines.append('Fit error (Delta E00): '+stats(data['summary']))
         if 'roundtripDeltaE00' in data:
-            lines.append('Numeriskt framåt-/återfel (Delta E00): '+stats(data['roundtripDeltaE00']))
+            lines.append('Numerical round-trip error (Delta E00): '+stats(data['roundtripDeltaE00']))
         if 'allNegativeControlsDetected' in data:
-            lines.append('Alla avsiktliga fel i kontrollproven upptäckta: '+('Ja' if data['allNegativeControlsDetected'] else 'Nej'))
+            lines.append('All deliberate negative controls detected: '+('Yes' if data['allNegativeControlsDetected'] else 'No'))
         if 'grossFailureAlerts' in data:
-            lines.append('Allvarliga numeriska varningar: '+(str(data['grossFailureAlerts']) if data['grossFailureAlerts'] else 'Inga'))
-        sections.append(('Numeriskt underlag: '+key, lines))
+            lines.append('Gross numerical alerts: '+(str(data['grossFailureAlerts']) if data['grossFailureAlerts'] else 'None'))
+        sections.append(('Numerical evidence: '+key, lines))
+    if r.get('regularization'):
+        sections.append(('Regularization - method, inputs and results', r['regularization']['summaryText'].splitlines()))
     if r.get('shadow'):
-        sections.append(('Skugganpassning i sparat profilrecept', [r['shadow']['summaryText']]))
+        sections.append(('Shadow processing in saved profile recipe', [r['shadow']['summaryText']]))
     if r.get('fwa'):
-        sections.append(('FWA/OBA - val och resultat', [r['fwa']['summaryText']]))
+        sections.append(('FWA/OBA - settings and results', [r['fwa']['summaryText']]))
     if figure_groups is not None:
-        sections.append((figure_title, ['Blå: föregående profil. Orange: aktuell profil. Gemensamma RGB-provpunkter, beräknade i CIELAB D50; inte uppmätta färgomfångsgränser.', 'HTML startar i 2D vid L*=50 med halvbredd 5. Ändra L* för att se andra snitt. Avmarkera 2D och dra i figuren för att rotera 3D-vyn. PDF visar en fast 3D-vy.']))
+        sections.append((figure_title, ['Blue: previous profile. Orange: current profile. Shared RGB samples predicted in CIELAB D50; not measured gamut boundaries.', 'HTML starts in 2D at L*=50 with half-width 5. Change L* to view other slices. Clear 2D and drag to rotate the 3D view. PDF shows an a*/b* slice at L* = 50 +/- 5.']))
     historical = r.get('historicalCertificate', {})
     historical_patches = []
+    historical_measured = None
+    measured_title = "Previous measured print colours - historical evidence"
     measurement_explanations = []
     if historical:
         import hashlib
@@ -91,86 +94,92 @@ def create(folder, language="sv"):
         if hashlib.sha256(source.read_bytes()).hexdigest() != historical['sha256']:
             raise ValueError('Historical certificate checksum mismatch')
         old = json.loads(source.read_text(encoding='utf-8'))
+        from lab_views import measured_data
+        historical_measured = measured_data(old,source.parent)
+        if historical_measured:
+            sections.append((measured_title,['Actual measured points for iteration '+str(historical['iteration'])+'; not verification of the current ICC. PDF: L* = 50 +/- 5. HTML: 2D or 3D.']))
         lines = [historical['scope'], 'Iteration: '+str(historical['iteration']),
-                 'Tidigare ICC SHA-256: '+historical['profileSHA256'],
-                 'Tidigare certifikat-ID: '+old.get('certificateId', 'Ej angivet')]
+                 'Previous ICC SHA-256: '+historical['profileSHA256'],
+                 'Previous certificate ID: '+old.get('certificateId', 'Not specified')]
         for key, identity in old.get('instruments', {}).items():
-            label = 'Profileringsmätning' if key == 'measurement' else 'Kontrollmätning'
-            lines.append(label+' - spektrometer: '+str(identity.get('model', 'Ej angivet'))+
-                         '; serienummer: '+str(identity.get('serialNumber', 'Ej angivet')))
+            label = 'Profiling measurement' if key == 'measurement' else 'Verification measurement'
+            lines.append(label+' - spectrometer: '+str(identity.get('model', 'Not specified'))+
+                         '; serial number: '+str(identity.get('serialNumber', 'Not specified')))
         for key, result in old.get('results', {}).items():
             if key == 'c3_report' and result.get('summary'):
-                lines.append('Tidigare kontrollutskrift (Delta E00): '+stats(result['summary']))
-        lines.append('Det fullständiga tidigare mätcertifikatet medföljer i mappen previous-certificate.')
-        sections.append(('Tidigare utskriftsmätningar - historiskt underlag', lines))
+                lines.append('Previous verification print (Delta E00): '+stats(result['summary']))
+        lines.append('The complete previous certificate is included in the previous-certificate folder in its original language.')
+        sections.append(('Previous print measurements - historical evidence', lines))
         outliers = old.get('patchOutliers', {})
         historical_patches = outliers.get('patches', [])
         if isinstance(historical_patches, dict):
             historical_patches = [historical_patches]
         historical_patches = enrich(historical_patches, old, source.parent)
-        measurement_explanations = [outliers.get('basis',''), 'Börvärde, profilens uppskattning och uppmätt D50-Lab omräknas till sRGB med Bradford-anpassning till D65. Färger utanför sRGB klipps. Rutorna är skärmförhandsvisningar; ΔE00 beräknas från ursprungliga Lab-värden. Saknas anger att underlag för färgrutan inte finns.']
+        measurement_explanations = [outliers.get('basis',''), 'Desired, predicted and measured D50 Lab are converted to sRGB using Bradford adaptation to D65. Colours outside sRGB are clipped. Swatches are screen previews; Delta E00 uses original Lab values. Unavailable means no evidence for the swatch.']
         if historical_patches:
-            sections.append(('Sista mätresultat - färgprov och Delta E00',
-                ['Gäller iteration '+str(historical['iteration'])+'. Dessa avvikelser är inte uppmätta för aktuell profil.',
-                 'Börvärde, profilens uppskattning och uppmätt färg visas som sRGB. ΔE00 gäller uppmätt mot börvärde (över 5). Se bilaga A för urval och färgvisning.']))
-    reference_title = content(r)['title']
-    sections.append((reference_title, [content(r)['caption']]))
+            sections.append(('Latest measured print - colour swatches and Delta E00',
+                ['Applies to iteration '+str(historical['iteration'])+'. These deviations were not measured for the current profile.',
+                 'Desired colour, profile prediction and measured colour are shown as sRGB previews. Delta E00 compares measurement with desired colour (above 5). See Appendix A for selection and colour display.']))
+    reference_title = content(r, "en")['title']
+    sections.append((reference_title, [content(r, "en")['caption']]))
     sections.append((gamut_title, [gamut_surface.caption(language) if gamut else "Gamut unavailable: "+r.get('gamut', {}).get('reason', 'No surface saved.'), "ICC SHA-256: "+r['profile']['sha256']]))
     explanatory = [
-        'Tidigare iterationers utskriftsmätningar används inte som verifiering av denna ICC. Små skillnader mellan profiler bevisar inte att utskriftsresultatet är oförändrat.',
-        'Skrivare, papper och bläck begränsar det möjliga färgomfånget och resultatet. Numeriska kontroller ersätter inte en separat utskrift och mätning.',
-        'Underlagsfilerna medföljer rapporten. Verifieringsstatus och användarens beslut finns i final-report.json.']
-    sections.append(('Underskrift', [r['scopeStatement'],
-        'Med min underskrift bekräftar jag att jag granskat mätcertifikatets förutsättningar, resultat, angivna omfattning och dokumenterade beslut.',
-        'Ort och datum: ____________________________________',
-        'Underskrift: ______________________________________',
-        'Namnförtydligande: _________________________________',
-        'Organisation / roll: ______________________________']))
-    sections.append((content(r)['appendixTitle'], appendix_lines(r) + measurement_explanations + explanatory))
+        'Print measurements from previous iterations do not verify this ICC. Small differences between profiles do not prove unchanged print results.',
+        'Printer, paper and ink limit the attainable gamut and result. Numerical checks do not replace a separate print and measurement.',
+        'Evidence files accompany the report. Verification status and the user decision are stored in final-report.json.']
+    sections.append(('Signature', [r['scopeStatement'],
+        'By signing I confirm review of this certificate, its conditions, results, stated scope and documented decision.',
+        'Place and date: ____________________________________',
+        'Signature: ______________________________________',
+        'Printed name: _________________________________',
+        'Organisation / role: ______________________________']))
+    sections.append((content(r, "en")['appendixTitle'], appendix_lines(r, "en") + measurement_explanations + explanatory))
     legal = r.get('legalAppendix', {})
     if legal:
-        sections.append(('Bilaga B - Juridiska villkor', [
+        sections.append(('Appendix B - Legal terms', [
             title+': '+legal[key] for key, title in [
-                ('reproductionLiability', 'Ansvar för utrustningens och materialens begränsningar'),
-                ('clientPrintResponsibility', 'Beställarens utskrifter och uppgifter'),
-                ('warrantyNotice', 'Garanti och ansvar'),
-                ('licensingNotice', 'Licenser och tredjepartsrättigheter')] if legal.get(key)]))
-    project_section = next(section for section in sections if section[0] == 'Projekt och utskriftsinställningar')
+                ('reproductionLiability', 'Responsibility for equipment and material limitations'),
+                ('clientPrintResponsibility', 'Client prints and information'),
+                ('warrantyNotice', 'Warranty and liability'),
+                ('licensingNotice', 'Licences and third-party rights')] if legal.get(key)]))
+    project_section = next(section for section in sections if section[0] == 'Project and printing settings')
     sections.remove(project_section)
     sections.insert(1, project_section)
-    text = '\n\n'.join(title+'\n'+'\n'.join(lines + [': '.join(row) for row in content(r)['rows']] if title == reference_title else lines) for title, lines in sections)
+    text = '\n\n'.join(title+'\n'+'\n'.join(lines + [': '.join(row) for row in content(r, "en")['rows']] if title == reference_title else lines) for title, lines in sections)
     (folder / 'final-report.txt').write_text(text, encoding='utf-8')
     # Each HTML section is a page with an explicit footer, also when printed.
     pages = []
     for i, (title, lines) in enumerate(sections, 1):
         body = ''.join('<p>'+html.escape(str(line))+'</p>' for line in lines)
         if title == reference_title:
-            body = table_html(r).replace('<h2>'+html.escape(reference_title)+'</h2>', '')
-        if title == content(r)['appendixTitle']:
+            body = table_html(r, "en").replace('<h2>'+html.escape(reference_title)+'</h2>', '')
+        if title == content(r, "en")['appendixTitle']:
             from certificate_standards import reference
             url = reference(r)['sourceURL']
-            body = body.replace(html.escape(url), '<a href="'+html.escape(url, quote=True)+'">MediaStandard Print 2018, tabell 30, sida 50</a>')
+            body = body.replace(html.escape(url), '<a href="'+html.escape(url, quote=True)+'">MediaStandard Print 2018, table 30, page 50</a>')
+        if title == measured_title and historical_measured:
+            from lab_views import interactive as measured_view
+            body += measured_view(historical_measured)
         if title == gamut_title:
             body += gamut_surface.interactive(gamut, language)
         if title == figure_title:
             body += interactive(figure_groups, language)
-        if title == 'Sista mätresultat - färgprov och Delta E00':
+        if title == 'Latest measured print - colour swatches and Delta E00':
             body += '<div class="patches">'+''.join(
                 '<div class="patch">'+html_chips(p)+'<p>'+html.escape(
                     'ID '+str(p['sampleId'])+' | '+str(p['coordinate'])+' | Delta E00 '+format(p['deltaE00'],'.4f')+' | '+p['hex'])+'</p></div>'
                 for p in historical_patches)+'</div>'
-        if title == 'Tidigare utskriftsmätningar - historiskt underlag':
-            body += "<p><a href='previous-certificate/final-report.html'>Tidigare mätcertifikat (HTML)</a> | <a href='previous-certificate/final-report.pdf'>PDF</a></p>"
+        if title == 'Previous print measurements - historical evidence':
+            body += "<p><a href='previous-certificate/final-report.html'>Previous certificate (HTML)</a> | <a href='previous-certificate/final-report.pdf'>PDF</a></p>"
         pages.append(f"<article><header>{html.escape(r['pageHeader'])}</header><h1>{html.escape(title)}</h1>{body}"
                      f"<footer>{html.escape(r['reportDate'])} | {html.escape(r['reportUser'])} | {i} ({len(sections)})</footer></article>")
     delivery_link = ''
     if r.get('deliveryProfile'):
         from urllib.parse import quote
-        delivery_link = "<a href='"+quote(r['deliveryProfile']['file'])+"'>Namngiven leveransprofil</a> | "
+        delivery_link = "<a href='"+quote(r['deliveryProfile']['file'])+"'>Named delivery profile</a> | "
     links = ''.join(f"<li><a href='{html.escape(s['file'], quote=True)}'>{html.escape(k)}</a></li>" for k, s in r['sources'].items())
-    document = "<!doctype html><html lang='sv'><meta charset='utf-8'><title>InkProf - mätcertifikat</title><style>body{font:16px system-ui;background:#eef2f4;color:#19303c}article{background:white;max-width:850px;margin:24px auto;padding:35px;overflow-wrap:anywhere}header,footer{font-size:13px;color:#52656e}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:15px}h1{font-size:24px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:8px;border-bottom:1px solid #ccd8de;text-align:left}.patches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.patch{border:1px solid #ccc;padding:5px;font-size:12px;break-inside:avoid}@media print{article{break-after:page;margin:0}}</style>"+''.join(pages)+"<nav>"+delivery_link+"<a href='final-report.pdf'>PDF</a> | <a href='final-report.json'>JSON</a> | <a href='profile.icc'>ICC</a><ul>"+links+'</ul></nav></html>'
+    document = "<!doctype html><html lang='en'><meta charset='utf-8'><title>InkProf - Measurement certificate</title><style>body{font:16px system-ui;background:#eef2f4;color:#19303c}article{background:white;max-width:850px;margin:24px auto;padding:35px;overflow-wrap:anywhere}header,footer{font-size:13px;color:#52656e}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:15px}h1{font-size:24px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:8px;border-bottom:1px solid #ccd8de;text-align:left}.patches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.patch{border:1px solid #ccc;padding:5px;font-size:12px;break-inside:avoid}@media print{article{break-after:page;margin:0}}</style>"+''.join(pages)+"<nav>"+delivery_link+"<a href='final-report.pdf'>PDF</a> | <a href='final-report.json'>JSON</a> | <a href='profile.icc'>ICC</a><ul>"+links+'</ul></nav></html>'
     (folder / 'final-report.html').write_text(document, encoding='utf-8')
-    fonts = Path(reportlab.__file__).parent / 'fonts'
     for name in ['Report', 'ReportBold']:
         pdfmetrics.registerFont(TTFont(name, str(Path(__file__).resolve().parents[1]/'resources/fonts/DejaVuSans.ttf')))
     styles = getSampleStyleSheet()
@@ -183,24 +192,27 @@ def create(folder, language="sv"):
     for title, lines in sections:
         section_start = len(story)
         if title == reference_title:
-            story += pdf_table(r, styles)
+            story += pdf_table(r, styles, "en")
             continue
-        if title in (gamut_title, figure_title, 'Sista mätresultat - färgprov och Delta E00', 'Underskrift', 'Bilaga B - Juridiska villkor', content(r)['appendixTitle']):
+        if title in (gamut_title, figure_title, measured_title, 'Latest measured print - colour swatches and Delta E00', 'Signature', 'Appendix B - Legal terms', content(r, "en")['appendixTitle']):
             story.append(PageBreak())
-        story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - mätcertifikat', 'Underskrift', 'Bilaga B - Juridiska villkor', content(r)['appendixTitle']) else styles['Heading2']))
+        story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - Measurement certificate', 'Signature', 'Appendix B - Legal terms', content(r, "en")['appendixTitle']) else styles['Heading2']))
         for line in lines:
             body = html.escape(str(line)).replace('\n', '<br/>')
             story.append(Paragraph(body, styles['ReportBody']))
-            if title == 'Underskrift':
+            if title == 'Signature':
                 story.append(Spacer(1, 8*mm))
 
         if title == gamut_title and gamut:
             story.append(gamut_surface.pdf_drawing(gamut, language))
         if title == figure_title:
             story.append(pdf_drawing(figure_groups, language))
-        if title in ('Sparad ICC-profil', 'Levererad ICC-profil', 'Kontrollerad ICC-kandidat (projektoriginal)'):
+        if title == measured_title and historical_measured:
+            from lab_views import point_drawing
+            story.append(point_drawing(historical_measured['vertices'],historical_measured['rgb']))
+        if title in ('Saved ICC profile', 'Delivered ICC profile', 'Checked ICC candidate (project original)'):
             story[section_start:] = [KeepTogether(story[section_start:])]
-        if title == 'Sista mätresultat - färgprov och Delta E00':
+        if title == 'Latest measured print - colour swatches and Delta E00':
             cards=[]
             for patch in historical_patches:
                 swatch=pdf_chips(patch)
@@ -243,7 +255,7 @@ def create(folder, language="sv"):
 
     SimpleDocTemplate(str(folder / 'final-report.pdf'), pagesize=(210*mm, 297*mm),
         leftMargin=18*mm, rightMargin=18*mm, topMargin=28*mm, bottomMargin=28*mm,
-        title='InkProf - mätcertifikat', author=r['reportUser']).build(story, canvasmaker=NumberedCanvas)
+        title='InkProf - Measurement certificate', author=r['reportUser']).build(story, canvasmaker=NumberedCanvas)
 
 
 if __name__ == '__main__':

@@ -1,112 +1,112 @@
-# Chartinläsning och interaktiv radmätning
+# Chart reading and interactive row measurement
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-## Varning: externa utskrifter utan kontrastmarkörer
+## Warning: external prints without contrast markers
 
-**Mål som skrivits ut utan kontrastmarkörer mellan patcharna kan ge problem vid radmätning med chartread**, särskilt när intilliggande patchar har snarlika färger. Det kan exempelvis ge fel om för få eller för många patchar. En korrekt importerad patchdefinition garanterar inte att det befintliga arket går att läsa tillförlitligt.
+**Targets printed without contrast markers between the patches can cause problems in row measurement with chartread**, particularly when adjacent patches have similar colours. This can, for example, produce errors if too few or too many patches are detected. A correctly imported patch definition does not guarantee that the existing sheet can be read reliably.
 
-**Rekommenderat arbetsflöde:** importera patchdefinitionerna som TI1/TI2 i första hand, eller generell CGATS från ett annat program, och låt InkProf generera en ny TIFF16-utskrift med kontrastmarkörer och matchande TI2/JSON. Använd sedan just det nya utskriftspaketets TI2 vid mätningen. Kontrastmarkörer minskar risken för segmenteringsproblem men garanterar inte felfria svep.
+**Recommended workflow:** import the patch definitions as TI1/TI2 in the first instance, or as generic CGATS from another program, and let InkProf generate a new TIFF16 print with contrast markers and matching TI2/JSON. Then use the TI2 of that new print package for the measurement. Contrast markers reduce the risk of segmentation problems but do not guarantee error-free sweeps.
 
-En import eller omordning i programmet ändrar inte ett redan utskrivet ark. Om det befintliga arket mäts i ett annat program kan dess mätfil importeras separat med bevarad patchkoppling.
+An import or reordering in the program does not change a sheet that has already been printed. If the existing sheet is measured in another program, its measurement file can be imported separately with the patch linkage preserved.
 
 
-Status 2026-09-26: Terminal-flödet och MATLAB-bryggan har läst ett sjuraders kontrastmål med i1Pro 2 och importerat alla 143 källpatchar. Den nya modala dialogen är testad med simulerad process och syntetiska mätdata; grundflödet är också fysiskt provat framåt med i1Pro 2. Parläget med medelvärdesbildning återstår att prova fysiskt. Den interaktiva PTY-bryggan använder POSIX. InkProf är endast testat på macOS; Linux är inte testat och Windows väntar på en separat konsoladapter.
+Status 2026-09-26: The Terminal workflow and the MATLAB bridge have read a seven-row contrast target with the i1Pro 2 and imported all 143 source patches. The new modal dialog has been tested with a simulated process and synthetic measurement data; the basic forward flow has also been physically tested with the i1Pro 2. The paired mode with averaging remains to be tested physically. The interactive PTY bridge uses POSIX. InkProf has been tested on macOS only; Linux is untested and Windows is waiting for a separate console adapter.
 
-## Mätvariation, medelvärde och hanteringskontroll
+## Measurement variation, averaging and handling check
 
-Beslutad arbetsprincip 2026-09-29. Vid korrekt kalibrering, placering och avläsning med i1Pro 2 utgår vi tills vidare från att instrumentets brusbidrag är mindre än utskriftens variation. Detta är ett arbetsantagande utifrån användarens erfarenhet, inte ett här fastställt instrumentvärde. Instrumentbidraget behöver därför inte styra den aktuella profiliterationen, men antagandet ska kunna omprövas vid systematiska avvikelser eller bristande repeterbarhet.
+Working principle decided 2026-09-29. With correct calibration, placement and reading with the i1Pro 2, we assume for the time being that the instrument's noise contribution is smaller than the print's variation. This is a working assumption based on the user's experience, not an instrument value established here. The instrument contribution therefore need not govern the current profiling iteration, but the assumption shall be open to reconsideration in the event of systematic deviations or poor repeatability.
 
-**Kontroll ska föregå medelvärdesbildning:**
+**Checking shall precede averaging:**
 
-1. Kontrollera patchidentitet, position, mätvillkor och fullständighet för varje avläsning. Jämför upprepningarnas färgvärden innan ett medelresultat accepteras.
-2. Vid stor skillnad: markera för granskning eller ommätning. Ett medelvärde får inte dölja fel placering, fel rad, fel patch eller misslyckat svep. En stor skillnad är en varningssignal, inte ensam bevisning för ett hanteringsfel; även utskriftsvariation kan bidra.
-3. För godkända upprepningar med samma mätvillkor och våglängdsgrid används ett lika viktat **medelspektrum**. XYZ och Lab beräknas därefter från medelspektrumet med dokumenterad illuminant och observatör. Medelvärde av Lab eller ΔE00 ersätter inte denna spektrala beräkning.
-4. Bevara de enskilda spektra, patchkopplingar, jämförelser, varningar och accepterade/uteslutna avläsningar i JSON, tillsammans med hur medelvärdet bildades. En accepterad ommätning ska inte radera tidigare evidens.
+1. Check patch identity, position, measurement conditions and completeness for each reading. Compare the colour values of the repeats before an average result is accepted.
+2. In the event of a large difference: flag for review or remeasurement. An average must not hide wrong placement, the wrong row, the wrong patch or a failed sweep. A large difference is a warning signal, not on its own proof of a handling error; print variation can also contribute.
+3. For accepted repeats with the same measurement conditions and wavelength grid, an equally weighted **mean spectrum** is used. XYZ and Lab are then calculated from the mean spectrum with a documented illuminant and observer. An average of Lab or ΔE00 does not replace this spectral calculation.
+4. Preserve the individual spectra, patch linkages, comparisons, warnings and accepted/excluded readings in JSON, together with how the average was formed. An accepted remeasurement shall not erase earlier evidence.
 
-Upprepade mätningar av samma fysiska patch beskriver främst avläsningens repeterbarhet. Separata tryckta patchar med samma RGB innehåller dessutom positions- och utskriftsvariation. Båda är användbara men ska hållas isär i metadata. Samma RGB från olika utskriftstillfällen får inte automatiskt slås ihop utan kontroll av papper, inställningar och eventuell drift.
+Repeated measurements of the same physical patch mainly describe the repeatability of the reading. Separately printed patches with the same RGB additionally contain position and print variation. Both are useful but shall be kept apart in the metadata. The same RGB from different print occasions must not be automatically merged without checking paper, settings and any drift.
 
-I den senaste C2-mätningen var medelavståndet mellan tolv par separat tryckta upprepningar **0,37 ΔE00**, maximalt **0,68**. Detta kan användas som observerad variationsnivå för utskrifts- och mätkedjan. Det är **inte** en standardavvikelse, en statistisk konfidensgräns eller en universell tolerans. Värdet ska inte subtraheras från varje färgfel och ersätter inte den konfigurerbara varningsgränsen för upprepningar.
+In the latest C2 measurement, the mean distance between twelve pairs of separately printed repeats was **0.37 ΔE00**, with a maximum of **0.68**. This can be used as an observed variation level for the print and measurement chain. It is **not** a standard deviation, a statistical confidence limit or a universal tolerance. The value shall not be subtracted from every colour error and does not replace the configurable warning limit for repeats.
 
-Små skillnader mellan iterationer, exempelvis 0,6 mot 0,7 ΔE00, används som diagnostisk information och ska inte ensamma avgöra profilval när båda resultaten är praktiskt tillräckliga. Prioritera stora, återkommande lokala modellavvikelser. Se även [verifieringsåterkoppling](verification-feedback.md).
+Small differences between iterations, for example 0.6 versus 0.7 ΔE00, are used as diagnostic information and shall not alone decide the choice of profile when both results are practically sufficient. Prioritise large, recurring local model deviations. See also [verification feedback](verification-feedback.md).
 
-Detta avsnitt dokumenterar arbetsprincipen; tillägget ändrar inte mätkoden. Befintlig parmedelvärdesbildning och varningar ska inte tolkas som att automatisk uteslutning av felaktiga avläsningar eller separation av skrivar- och instrumentbrus redan är implementerad.
+This section documents the working principle; the addition does not change the measurement code. Existing paired averaging and warnings shall not be interpreted to mean that automatic exclusion of faulty readings or separation of printer and instrument noise is already implemented.
 
-## Modal mätdialog i MATLAB
+## Modal measurement dialog in MATLAB
 
-Gränssnittsspråk: engelska i mätdialog, resultatkarta, knapptexter och bekräftelser. Argylls originalmeddelanden visas oförändrade. Operativsystemets filväljare och MATLABs egna systemfel följer datorns/MATLABs språk.
+Interface language: English in the measurement dialog, result map, button texts and confirmations. Argyll's original messages are shown unchanged. The operating system's file chooser and MATLAB's own system errors follow the computer's/MATLAB's language.
 
 ```matlab
 setupInkProf();
 dialog=inkprof.measureChart();
 ```
 
-Välj målfil (TI2) i fönstret och ange inställningarna innan **Start measurement**. Ingen instrumentprocess startas när fönstret öppnas. En ny sessionsmapp skapas vid start; sparade mätningar skrivs inte över. En känd målfil kan också förväljas:
+Choose the target file (TI2) in the window and enter the settings before **Start measurement**. No instrument process is started when the window opens. A new session folder is created at start; saved measurements are not overwritten. A known target file can also be preselected:
 
 ```matlab
 dialog=inkprof.measureChart(fullfile(paths.Projects,'mitt-target','target.ti2'));
 ```
 
-### Tre mätlägen
+### Three measurement modes
 
-Dialogen har exakt tre val under **Scan mode**:
+The dialog has exactly three choices under **Scan mode**:
 
-1. **Single direction** (`ScanMode="single"`): en avläsning per rad, vänster till höger. Använder chartread `-B`.
-2. **Alternate rows** (`ScanMode="alternating"`, förvalt): rad 1 framåt, rad 2 tillbaka, rad 3 framåt osv. En avläsning per rad. Använder chartread `-b` för riktningsigenkänning. Den visade riktningen är vägledning; sensorrörelsen kontrolleras inte separat.
-3. **Forward + reverse average** (`ScanMode="paired"`): samma fysiska rad läses först framåt och sedan tillbaka. Därefter fortsätter nästa fysiska rad. Båda avläsningarna bevaras och medelvärdesbildas patch för patch.
+1. **Single direction** (`ScanMode="single"`): one reading per row, left to right. Uses chartread `-B`.
+2. **Alternate rows** (`ScanMode="alternating"`, default): row 1 forward, row 2 back, row 3 forward and so on. One reading per row. Uses chartread `-b` for direction recognition. The displayed direction is guidance; the sensor movement is not separately checked.
+3. **Forward + reverse average** (`ScanMode="paired"`): the same physical row is read first forward and then back. Then the next physical row follows. Both readings are preserved and averaged patch by patch.
 
-I läge 3 blir sju fysiska rader fjorton logiska chartread-pass. Den ursprungliga `chart.json` och `source.ti2` bevaras. En separat `paired/`-session innehåller det dubblerade underlaget. Returpassets RGB, identitetskoppling och förväntade XYZ ligger i omvänd fysisk ordning; chartread använder `-B` eftersom riktningen redan uttrycks i underlaget. Dialogen visar den fysiska raden och fasen, exempelvis **Page 1 · Row 1 · FORWARD scan (1/2)** och **REVERSE scan (2/2)**. Ingen ny utskrift behövs. Argylls rålogg använder de logiska passnumren.
+In mode 3, seven physical rows become fourteen logical chartread passes. The original `chart.json` and `source.ti2` are preserved. A separate `paired/` session contains the doubled data. The return pass's RGB, identity linkage and expected XYZ are in reverse physical order; chartread uses `-B` because the direction is already expressed in the data. The dialog shows the physical row and phase, for example **Page 1 · Row 1 · FORWARD scan (1/2)** and **REVERSE scan (2/2)**. No new print is needed. Argyll's raw log uses the logical pass numbers.
 
-`paired-plan.json` kopplar varje runtime-position till originalets patchindex, sida, rad och svep. De ursprungliga avläsningarna sparas i `paired/chart.ti3` och separata mät-JSON-filer. Den fysiska riktningen är instruerad, inte oberoende verifierad av en rörelsesensor. Fel rad/riktning kan därför fortfarande kräva omläsning vid chartreads varning.
+`paired-plan.json` links each runtime position to the original's patch index, page, row and sweep. The original readings are saved in `paired/chart.ti3` and separate measurement JSON files. The physical direction is instructed, not independently verified by a motion sensor. A wrong row/direction may therefore still require a reread on a chartread warning.
 
-Efter fullständig mätning skapas `chart-mean.ti3` och en mät-JSON för originalmålet. Varje spektralband medelvärdesbildas med vikterna 0,5 och 0,5. XYZ medelvärdesbildas linjärt under samma mätvillkor; det motsvarar medelvärdet före samma linjära spektralintegration. Lab medelvärdesbildas inte; detta flöde kräver XYZ och spektra. Originaldata och parens index sparas även i `pairedReadings`, tillsammans med spektral RMS-skillnad per patch i ursprungliga TI3-enheter. Stora skillnader visas som numeriska jämförelsedata; ingen universell godkännandegräns antas. Ett ofullständigt par får inte bli ett komplett medelresultat.
+After complete measurement, `chart-mean.ti3` and a measurement JSON for the original target are created. Each spectral band is averaged with the weights 0.5 and 0.5. XYZ is averaged linearly under the same measurement conditions; this corresponds to the average before the same linear spectral integration. Lab is not averaged; this workflow requires XYZ and spectra. Original data and the pairs' indices are also saved in `pairedReadings`, together with the spectral RMS difference per patch in the original TI3 units. Large differences are shown as numerical comparison data; no universal acceptance limit is assumed. An incomplete pair must not become a complete average result.
 
-Vanlig omläsning ersätter fortfarande det valda logiska passet. Den andra halvan av paret är en separat post och skrivs inte över. Tidigare sparade mätningar och den ursprungliga layouten förblir oförändrade. Parläget är numeriskt och dialogmässigt simuleringsprovat; fysisk verifiering med i1Pro 2 återstår. För närvarande kräver det kompletta TI2-rader i vänster–högerordning, med nummer för rader och bokstäver för kolumner.
+An ordinary reread still replaces the selected logical pass. The other half of the pair is a separate entry and is not overwritten. Earlier saved measurements and the original layout remain unchanged. The paired mode has been tested numerically and by dialog simulation; physical verification with the i1Pro 2 remains. At present it requires complete TI2 rows (columns A onward exactly once per row), with numbers for rows and letters for columns; the order of the entries in the file may differ (see *Randomised targets* below).
 
-Övriga inställningar:
+Other settings:
 
-- **Scan tolerance:** skickar `-T`; förvalt 1. Avser konsistens inom patchen.
-- **Instrument port:** 0 väljer chartreads standard, ett positivt nummer skickas som `-c`.
-- Mätläge, tolerans, port och målfil låses vid start. Mätläge och faktiska chartread-argument sparas.
+- **Scan tolerance:** sends `-T`; default 1. Refers to consistency within the patch.
+- **Instrument port:** 0 selects chartread's default, a positive number is sent as `-c`.
+- Measurement mode, tolerance, port and target file are locked at start. The measurement mode and the actual chartread arguments are saved.
 
-### Resultatkarta efter sparning
+### Result map after saving
 
-Efter lyckad sparning och import öppnas automatiskt ett separat resultatfönster. Varje ruta visar kolumnbokstav och radnummer, exempelvis A1, B1 eller U7. Sidval finns för flersidiga mål. Klick på en ruta visar dess SAMPLE_LOC, patch-ID, RGB-styrvärden och tillgängliga uppmätta XYZ/Lab- och spektralvärden. Utfyllnad markeras separat; saknade mätningar markeras som saknade.
+After successful saving and import, a separate result window opens automatically. Each square shows the column letter and row number, for example A1, B1 or U7. Page selection is available for multi-page targets. Clicking a square shows its SAMPLE_LOC, patch ID, RGB control values and available measured XYZ/Lab and spectral values. Padding is marked separately; missing measurements are marked as missing.
 
-Rutornas färger kommer från målfilens RGB-värden och är en skärmförhandsvisning, inte en kolorimetrisk rendering av uppmätt XYZ eller ett mått på färgnoggrannheten. Mätvärdena visas separat och behåller TI3-skalan. Kartan är schematisk i rad-/kolumnordning, inte en utskriftsfil med fysiska patchmått och kontrastfält.
+The colours of the squares come from the target file's RGB values and are an on-screen preview, not a colorimetric rendering of measured XYZ or a measure of colour accuracy. The measured values are shown separately and retain the TI3 scale. The map is schematic in row/column order, not a print file with physical patch dimensions and contrast fields.
 
-Den valda rutans värden visas tydligt ovanför mätdetaljerna: **Measured Lab** när ändliga Lab-värden finns direkt i mätdata, annars **Target RGB (%) — indication only**. RGB är målfilens styrvärden på skalan 0–100, inte uppmätt färg. Ingen dold omräkning av spektrum görs. Spektrum kan integreras till XYZ och Lab utan ICC-profil, men då måste illuminant, standardobservatör och referensvit vara definierade; detta är inte en del av förhandsvisningen.
+The selected square's values are shown clearly above the measurement details: **Measured Lab** when finite Lab values are present directly in the measurement data, otherwise **Target RGB (%) — indication only**. RGB is the target file's control values on the scale 0–100, not measured colour. No hidden conversion of the spectrum is made. A spectrum can be integrated to XYZ and Lab without an ICC profile, but then the illuminant, standard observer and reference white must be defined; this is not part of the preview.
 
-En sparad mätning kan öppnas igen med `inkprof.previewMeasurement(sessionFolder)`. Då väljs den senaste sparade mät-JSON-filen i sessionen. Om resultatfönstret inte kan visas finns den sparade mätningen ändå kvar; ett visningsfel klassas inte som ett mätfel.
+A saved measurement can be reopened with `inkprof.previewMeasurement(sessionFolder)`. The latest saved measurement JSON in the session is then selected. If the result window cannot be shown, the saved measurement still remains; a display error is not classified as a measurement error.
 
-### Mätdialogen
+### The measurement dialog
 
-Logg och instrumentfrågor uppdateras automatiskt. Ingen manuell `poll` eller `sendKey` behövs. För en redan förberedd, ny session används `inkprof.MeasurementDialog(sessionFolder)`.
+The log and instrument prompts are updated automatically. No manual `poll` or `sendKey` is needed. For an already prepared, new session, `inkprof.MeasurementDialog(sessionFolder)` is used.
 
-- **Kalibrera:** placera instrumentet på vitreferensen och välj knappen när den blir aktiv.
-- **Starta svep:** använd instrumentknappen eller dialogknappen; skicka inte en extra start medan instrumentet arbetar.
-- **Läs om / försök igen:** används efter felmeddelande. Invänta ny radprompt innan nästa svep.
-- **Föregående rad / Nästa rad / Nästa olästa:** väljer rad, startar inte svepet. För omläsning av en redan läst rad: välj den och svep igen.
-- **Godkänn avvikelsen:** aktiveras endast vid varning om oväntat färgsvar och kräver bekräftelse. Omläsning är förstahandsvalet.
-- **Spara och avsluta:** aktiveras när chartread rapporterar att alla rader är lästa. Import sker först efter lyckat processavslut och kontroll av att definitionen är oförändrad. Resultatet finns i `dialog.Result` och som mät-JSON i `dialog.Folder`.
-- **Öppna resultatmapp:** visar mätfilerna i datorns filhanterare.
-- **Stäng / avbryt:** begär bekräftelse om mätningen pågår; osparade avläsningar kan då gå förlorade. Fönstrets stängknapp har samma beteende.
+- **Calibrate:** place the instrument on the white reference and select the button when it becomes active.
+- **Scanning a row:** there is no start button in the dialog; use the instrument button (see *Starting a strip scan* below) and do not trigger an extra scan while the instrument is working.
+- **Reread / retry:** used after an error message. Wait for a new row prompt before the next sweep.
+- **Previous row / Next row / Next unread:** selects a row, does not start the sweep. To reread an already read row: select it and sweep again.
+- **Accept reading:** is activated only on a warning about an unexpected colour response and requires confirmation. Rereading is the first choice.
+- **Save and finish:** is activated when chartread reports that all rows have been read. Import takes place only after successful process exit and a check that the definition is unchanged. The result is in `dialog.Result` and as measurement JSON in `dialog.Folder`.
+- **Open results folder:** shows the measurement files in the computer's file manager.
+- **Close / cancel:** asks for confirmation if the measurement is in progress; unsaved readings may then be lost. The window's close button behaves the same way.
 
-Dialogen är begränsad till nya sessioner och fullständig sparning. Återupptagning/delmätning finns kvar i Terminal-flödet. Okända eller ofullständiga instrumentfrågor visas i loggen utan automatiska tangenttryckningar. En komplett import bekräftar patchtäckning, inte färgnoggrannhet. Det modala flödet har provats fysiskt med i1Pro 2 framåt; parläget med medelvärdesbildning återstår att prova med instrumentet.
+The dialog is limited to new sessions and complete saving. Resuming/partial measurement remains in the Terminal workflow. Unknown or incomplete instrument prompts are shown in the log without automatic keypresses. A complete import confirms patch coverage, not colour accuracy. The modal workflow has been tested physically with the i1Pro 2 forward; the paired mode with averaging remains to be tested with the instrument.
 
-## JSON är intern modell
+## JSON is the internal model
 
-InkProf använder **JSON internt**. TI2 och TI3 är adaptrar för kommunikationen med ArgyllCMS, inte den interna projektmodellen:
+InkProf uses **JSON internally**. TI2 and TI3 are adapters for communication with ArgyllCMS, not the internal project model:
 
 ```text
-Godkänd TI2 från utskriftspaketet → chart.json
-chart.json → temporärt/återskapat chart.ti2 → chartread
-chartread → chart.ti3 → validerad measurement-*.json
+Approved TI2 from the print package → chart.json
+chart.json → temporary/recreated chart.ti2 → chartread
+chartread → chart.ti3 → validated measurement-*.json
 ```
 
-`prepareChart` är första importadaptern till mätsteget. Den accepterar CTI2 med RGB-värden, unika patchpositioner och konsekventa rad-/sidantal. PXF, TI1 och RGB-CGATS ska först användas till att skapa ett TIFF/TI2-paket. En patchlista ensam anger inte den fysiska karta som ska mätas. ”Godkänd” betyder här validerad filstruktur och patchkoppling, inte att papper eller instrument har verifierats.
+`prepareChart` is the first import adapter to the measurement step. It accepts CTI2 with RGB values, unique patch positions and consistent row/page counts. PXF, TI1 and RGB CGATS shall first be used to create a TIFF/TI2 package. A patch list alone does not specify the physical chart to be measured. "Approved" here means validated file structure and patch linkage, not that paper or instrument have been verified.
 
-## Förbered en session
+## Prepare a session
 
 ```matlab
 paths=setupInkProf();
@@ -115,142 +115,142 @@ chart=inkprof.prepareChart( ...
     fullfile(paths.Projects,'mitt-target.ti2'),sessionFolder);
 ```
 
-För ett generellt `createTarget`-paket ligger underlaget i paketmappens `target.ti2`. För `createTiff16` har TI2 samma basnamn som första TIFF-filen. Välj alltid underlaget från den faktiska utskriften.
+For a general `createTarget` package, the data is in the package folder's `target.ti2`. For `createTiff16`, the TI2 has the same base name as the first TIFF file. Always choose the data from the actual print.
 
-Sessionen innehåller `chart.json` och en oförändrad `source.ti2` som proveniens. Den importerade filen behövs inte på sin gamla plats. JSON innehåller patch-ID, SAMPLE_LOC, RGB i procent, utfyllnadsmarkering, rad-/sidparametrar och ursprungliga hjälptabeller/metadata. Dessa bevarar exempelvis kalibreringsdata. Rektanglar i millimeter kan inte härledas generellt från TI2 och påstås därför inte finnas i denna adapter.
+The session contains `chart.json` and an unchanged `source.ti2` as provenance. The imported file is not needed in its old location. The JSON contains patch ID, SAMPLE_LOC, RGB in percent, padding marker, row/page parameters and original helper tables/metadata. These preserve, for example, calibration data. Rectangles in millimetres cannot be derived generally from TI2 and are therefore not claimed to exist in this adapter.
 
-Separat utbyte kan göras med `inkprof.exportChartTi2(chartJson,outputPath)`. Inga befintliga utdata skrivs över.
+Separate exchange can be done with `inkprof.exportChartTi2(chartJson,outputPath)`. No existing output is overwritten.
 
-## Rekommenderat: mät i ett separat terminalfönster
+## Recommended: measure in a separate terminal window
 
-Uppdaterat 2026-09-26: Python äger nu hela den interaktiva mätsessionen. MATLAB öppnar ett terminalfönster på macOS; chartread får terminalens in-/utmatning direkt. Inga `poll()` eller `sendKey()` behövs i detta flöde. Kalibreringsbesked, mätresultat och varningar visas automatiskt. Return och andra tangenter skrivs i **terminalfönstret**, inte i MATLAB.
+Updated 2026-09-26: Python now owns the entire interactive measurement session. MATLAB opens a terminal window on macOS; chartread gets the terminal's input/output directly. No `poll()` or `sendKey()` is needed in this workflow. Calibration messages, measurement results and warnings are shown automatically. Return and other keys are typed in the **terminal window**, not in MATLAB.
 
-Stoppa först en eventuell äldre `ChartReadSession` med `s.stop()` och kontrollera att den avslutats. Bara en instrumentprocess ska köras.
+First stop any older `ChartReadSession` with `s.stop()` and check that it has ended. Only one instrument process should run.
 
 ```matlab
 run=inkprof.startMeasurement(sessionFolder);
 ```
 
-Kalibrera och mät enligt chartreads dialog. Vid radprompten används instrumentets knapp för mätning. Skicka inte också en extra tangent som startar nästa mätning.
+Calibrate and measure according to chartread's dialog. At the row prompt, use the instrument's button for measurement. Do not also send an extra key that starts the next measurement.
 
-### Ommätning av en rad
+### Remeasuring a row
 
-Chartread har redan detta stöd. Vid radprompten: använd `b` för föregående rad och `f` för nästa rad tills rätt radnummer visas, och läs den raden igen. `n` väljer nästa olästa rad. Tangenternas betydelse är beroende av den aktuella dialogen: vid en varning kan Return godkänna en misstänkt mätning. Följ därför alltid texten som visas.
+Chartread already has this support. At the row prompt: use `b` for the previous row and `f` for the next row until the right row number is shown, and read that row again. `n` selects the next unread row. The meaning of the keys depends on the current dialog: on a warning, Return can accept a suspect measurement. Always follow the text shown.
 
-För att avsluta med sparning väljer du `d` vid radprompten och följer eventuella följdfrågor. Spara även en delvis uppmätt karta innan du avslutar om du vill fortsätta senare. `q`/Esc eller att stänga terminalen kan förlora osparade avläsningar.
+To exit with saving, choose `d` at the row prompt and follow any follow-up questions. Also save a partially measured chart before exiting if you want to continue later. `q`/Esc or closing the terminal can lose unsaved readings.
 
-Efter att Python rapporterat `saved_unvalidated`, gå tillbaka till MATLAB:
+After Python has reported `saved_unvalidated`, go back to MATLAB:
 
 ```matlab
 result=inkprof.finishMeasurement(run);
 disp(result.complete);
 ```
 
-MATLAB kontrollerar chart- och resultathash, kopplar patchar och sparar mätdata i intern JSON. `complete=false` betyder att alla källpatchar ännu inte finns. Ett framgångsrikt processavslut innebär inte i sig en fullständig eller kvalitetsgodkänd mätning.
+MATLAB checks the chart and result hashes, links patches and saves measurement data in internal JSON. `complete=false` means that not all source patches are present yet. A successful process exit does not in itself mean a complete or quality-approved measurement.
 
-För att fortsätta en sparad session eller mäta om rader i en färdig karta:
+To continue a saved session or remeasure rows in a finished chart:
 
 ```matlab
 run=inkprof.startMeasurement(sessionFolder,Resume=true);
-% Mät och spara i terminalen.
+% Measure and save in the terminal.
 result=inkprof.finishMeasurement(run);
 ```
 
-Resume skickar `-r` till chartread och kräver samma chart-JSON som tidigare. Föregående TI3 kopieras till `before-<runId>.ti3` innan chartread startas. Ett ändrat resultat kopieras till `result-<runId>.ti3`. MATLAB importerar den körningens snapshot, inte en eventuell gammal TI3. Inom en pågående chartread-körning ersätter en radomläsning radens värden; mellanliggande avläsningar som aldrig sparats kan inte återställas av InkProf. Full revisionshantering med användarval är fortfarande en senare funktion.
+Resume sends `-r` to chartread and requires the same chart JSON as before. The previous TI3 is copied to `before-<runId>.ti3` before chartread starts. A changed result is copied to `result-<runId>.ti3`. MATLAB imports that run's snapshot, not any old TI3. Within an ongoing chartread run, a row reread replaces the row's values; intermediate readings that were never saved cannot be restored by InkProf. Full revision management with user choice is still a later feature. (Note 2026-10-08: saved revisions can now be chosen with `inkprof.selectMeasurementRevision` and the workflow step **3. Measure / select measurement revision**.)
 
-Varje körning har `terminal-run-<runId>.json` med status, argument, version, hash och resultatväg. Tillstånden är `ready`, `running`, `saved_unvalidated`, `no_new_result`, `failed` eller `interrupted`. Oförändrad TI3 vid Resume räknas inte som ett nytt mätresultat. Om terminalen avbryts hårt kan status bli kvar som `running`; ingen automatisk import sker då.
+Each run has `terminal-run-<runId>.json` with status, arguments, version, hash and result path. The states are `ready`, `running`, `saved_unvalidated`, `no_new_result`, `failed` or `interrupted`. An unchanged TI3 on Resume does not count as a new measurement result. If the terminal is hard-aborted, the status may remain `running`; no automatic import then takes place.
 
-För stabil, direkt terminalkontakt fångar denna version **inte rå dialogtext till en separat transkriptfil**. Dialogen finns i terminalfönstret; körningsmetadata och TI3-snapshots sparas. Äldre bryggans transkript gäller bara den äldre vägen.
+For stable, direct terminal contact, this version **does not capture raw dialog text to a separate transcript file**. The dialog is in the terminal window; run metadata and TI3 snapshots are saved. The older bridge's transcript applies only to the older path.
 
-På Linux: använd `OpenTerminal=false` och kör den returnerade `.command`-filen från en egen terminal. Automatisk terminalöppning är implementerad för macOS; Windows återstår. Lokala sökvägar i startfilen genereras på aktuell dator och ska inte versionshanteras som portabla inställningar.
+On Linux: use `OpenTerminal=false` and run the returned `.command` file from your own terminal. Automatic terminal opening is implemented for macOS; Windows remains. Local paths in the start file are generated on the current computer and shall not be version-controlled as portable settings.
 
 ```matlab
 run=inkprof.startMeasurement(sessionFolder,OpenTerminal=false);
 disp(run.launcher);
 ```
 
-Python-test har verifierat terminalanslutning, numerisk TI2, sparning, Resume, tidigare resultat, ändrat chart och avvisning av körning utan terminal med en simulerad process. MATLAB-test täcker startförberedelse, resultatimport och manipulerad resultathash. Det är inte fysisk kvalificering av den nya mätvägen. Radigenkänningsproblemen för den utskrivna 575-kartan återstår att undersöka med riktig chartread.
+Python tests have verified terminal connection, numeric TI2, saving, Resume, previous results, changed chart and rejection of a run without a terminal, using a simulated process. MATLAB tests cover start preparation, result import and a manipulated result hash. This is not physical qualification of the new measurement path. The row recognition problems for the printed 575 chart remain to be investigated with a real chartread.
 
-## Äldre gränssnitt: ChartReadSession (felsökning)
+## Older interface: ChartReadSession (troubleshooting)
 
-Skapa den lokala Python-miljön enligt [Python-anvisningen](python-runtime.md). Ingen extern Python-modul behövs. Stäng andra program som använder spektrometern innan start.
+Create the local Python environment according to the [Python instructions](python-runtime.md). No external Python module is needed. Close other programs that use the spectrometer before starting.
 
 ```matlab
 s=inkprof.ChartReadSession(sessionFolder);
 events=s.poll(10);
 ```
 
-`poll(10)` väntar upp till tio sekunder på nästa händelse. `poll()` läser direkt tillgängliga JSON-händelser och visar Argylls råa dialogtext. Anropa den löpande för att se kalibrerings- och mätningsinstruktioner. MATLAB-kommandoprompten förblir tillgänglig medan processen körs. Denna första version har ännu inget grafiskt mätfönster och tolkar inte fri konsoltext som garanterade tillstånd.
+`poll(10)` waits up to ten seconds for the next event. `poll()` reads immediately available JSON events and shows Argyll's raw dialog text. Call it continuously to see calibration and measurement instructions. The MATLAB command prompt remains available while the process runs. This first version has no graphical measurement window yet and does not interpret free console text as guaranteed states.
 
-Svara endast enligt den aktuella chartread-dialogen:
+Respond only according to the current chartread dialog:
 
 ```matlab
-s.sendKey(char(13));  % Return när dialogen efterfrågar det
+s.sendKey(char(13));  % Return when the dialog asks for it
 s.poll();
-% s.sendKey('d');     % endast när chartread erbjuder avslut med sparning
+% s.sendKey('d');     % only when chartread offers exit with saving
 ```
 
-Spektral sparning är chartreads standard; bryggan skickar inte `-n`. Den skickar inte heller automatiska kalibreringssvar eller kommandon som godkänner varningar. Instrumentport kan väljas med `Port=1` osv. om Argylls aktuella instrumentlista kräver det; listan och instrumentanslutningen måste kontrolleras lokalt. Specifik filter-/mätvillkorskonfiguration är ännu inte införd i API:t.
+Spectral saving is chartread's default; the bridge does not send `-n`. Nor does it send automatic calibration responses or commands that accept warnings. The instrument port can be chosen with `Port=1` etc. if Argyll's current instrument list requires it; the list and the instrument connection must be checked locally. Specific filter/measurement condition configuration has not yet been introduced in the API.
 
-`stop()` avbryter processen och kan förlora osparade avläsningar. Att rensa sessionsobjektet stänger kontrollkanalen och avslutar barnprocessen. Ett avslut eller en befintlig TI3 rapporteras **inte** som en validerad, komplett mätning.
+`stop()` aborts the process and can lose unsaved readings. Clearing the session object closes the control channel and ends the child process. An exit or an existing TI3 is **not** reported as a validated, complete measurement.
 
-## Resultat och återupptagning
+## Results and resuming
 
-När chartread avslutats och sparat TI3:
+When chartread has finished and saved the TI3:
 
 ```matlab
 result=inkprof.importChartMeasurement(sessionFolder);
 disp(result.complete);
 ```
 
-Importen kontrollerar CTI3, RGB, patchidentiteter och styrvärden mot JSON. Den sparar en ny JSON-snapshot och en kopia av TI3 utan att skriva över föregående resultat. `complete` avser täckning av källpatcharna. Ofullständiga resultat sparas med `complete=false`. Anonyma paddingrader med ID 0 räknas inte som källpatchar. Spektra och metadata bevaras; inga saknade spektra eller mätvillkor hittas på och ingen spektral skala normaliseras automatiskt.
+The import checks CTI3, RGB, patch identities and control values against the JSON. It saves a new JSON snapshot and a copy of the TI3 without overwriting the previous result. `complete` refers to coverage of the source patches. Incomplete results are saved with `complete=false`. Anonymous padding rows with ID 0 are not counted as source patches. Spectra and metadata are preserved; no missing spectra or measurement conditions are invented and no spectral scale is normalised automatically.
 
 ```matlab
 s=inkprof.ChartReadSession(sessionFolder,Resume=true);
 ```
 
-Resume kräver tidigare TI3 och samma JSON-checksumma som föregående körning. Den tidigare TI3-filen säkerhetskopieras före körning. En sessionslåsning hindrar två bryggor från att använda samma session samtidigt. Använd bara en aktiv instrumentanslutning även när olika sessioner finns.
+Resume requires the previous TI3 and the same JSON checksum as the previous run. The previous TI3 file is backed up before the run. A session lock prevents two bridges from using the same session at the same time. Use only one active instrument connection even when different sessions exist.
 
-Varje körning sparar argument, verktygets versionsutskrift, rå dialoglogg och en checksumma som kopplar den genererade TI2-filen till intern JSON. Utan uttryckligt Resume avvisas start om TI3 redan finns.
+Each run saves arguments, the tool's version output, raw dialog log and a checksum linking the generated TI2 file to the internal JSON. Without an explicit Resume, start is rejected if a TI3 already exists.
 
-## Verifiering och begränsningar
+## Verification and limitations
 
-- MATLAB-test: JSON-import, TI2-återexport med både MATLAB- och Python-adapter, partiell/fullständig syntetisk TI3, fel RGB och styrning av en simulerad barnprocess.
-- Python-test: PTY-dialog, enskilda tangentkommandon, avslut och skydd mot att skriva över befintlig TI3.
-- Praktiskt grundprov med i1Pro 2 har genomförts: kalibrering och sju rader med 143 källpatchar, XYZ och spektra, via Terminal och MATLAB-bryggan/dialogen. Kopplingen till TI2 har kontrollerats. Det nya läget med två svep och medelvärde, samt robusthet vid radomläsning, kabelavbrott och återupptagning, kräver fortsatt fysisk verifiering.
-- Använd inte syntetiska testresultat som instrumentmätningar.
+- MATLAB tests: JSON import, TI2 re-export with both the MATLAB and Python adapters, partial/complete synthetic TI3, wrong RGB and control of a simulated child process.
+- Python tests: PTY dialog, individual key commands, exit and protection against overwriting an existing TI3.
+- A practical basic test with the i1Pro 2 has been carried out: calibration and seven rows with 143 source patches, XYZ and spectra, via Terminal and the MATLAB bridge/dialog. The linkage to TI2 has been checked. The new mode with two sweeps and averaging, as well as robustness during row rereads, cable interruptions and resuming, still requires physical verification.
+- Do not use synthetic test results as instrument measurements.
 
-Källor: [chartread](https://www.argyllcms.com/doc/chartread.html), [TI3](https://www.argyllcms.com/doc/ti3_format.html). Lokal hjälp verifierad för ArgyllCMS 3.5.0.
+Sources: [chartread](https://www.argyllcms.com/doc/chartread.html), [TI3](https://www.argyllcms.com/doc/ti3_format.html). Local help verified for ArgyllCMS 3.5.0.
 
-## Egen punktomläsning och självständighet
+## Own spot reread and independence
 
-InkProf har inget körberoende till SpectraLab eller Camera-41. Separat punktomläsning är implementerad med Argyll `spotread`, stabil patchkoppling, bevarade original och accepterade sparade revisioner. Granska och spara kandidaten; att mäta en gång till ersätter inte automatiskt den använda revisionen. Chartreads radomläsning och återupptagning är ett annat flöde och kräver fysisk verifiering. Se [beslut 007](../decisions/007-independent-inkprof.md).
+InkProf has no runtime dependency on SpectraLab or Camera-41. Separate spot reread is implemented with Argyll `spotread`, stable patch linkage, preserved originals and accepted saved revisions. Review and save the candidate; measuring once more does not automatically replace the revision in use. Chartread's row reread and resuming is a different workflow and requires physical verification. See [decision 007](../decisions/007-independent-inkprof.md).
 
-## Rättning efter första startprov, 2026-09-26
+## Correction after the first start test, 2026-09-26
 
-Python-adaptern satte felaktigt citattecken runt numeriska TI2-data. Argyll avvisade då RGB_R som text. Adaptern skriver nu numeriska data utan citattecken och bevarar citattecken för identiteter. Det verkliga 575-chartet har därefter passerat Argyll 3.5.0:s inläsning i externt XYZ-inmatningsläge, utan instrumentmätning. Start och avslut visas nu av MATLAB-kontrollen. Ursprungliga PXF/TIFF/TI2/layout-filer har inte ändrats.
+The Python adapter incorrectly put quotation marks around numeric TI2 data. Argyll then rejected RGB_R as text. The adapter now writes numeric data without quotation marks and preserves quotation marks for identities. The real 575 chart has since passed Argyll 3.5.0's reading in external XYZ input mode, without instrument measurement. Start and exit are now shown by the MATLAB control. Original PXF/TIFF/TI2/layout files have not been changed.
 
-## Tolerans och läsriktning
+## Tolerance and reading direction
 
-`startMeasurement(...,ScanTolerance=1.5,Direction="forward")` skickar `-T 1.5 -B`. Standard är tolerans 1 och `Direction="auto"`. `Direction="both"` skickar `-b` och aktiverar tvåvägsigenkänning även för icke-randomiserade kartor. `forward` kräver framåtriktning i targetets patchordning. Auto följer Argylls val, vilket normalt stänger av tvåvägsigenkänning för icke-randomiserade target. Igenkänningen använder förväntade färgvärden och kan välja fel riktning om dessa är olämpliga.
+`startMeasurement(...,ScanTolerance=1.5,Direction="forward")` sends `-T 1.5 -B`. The default is tolerance 1 and `Direction="auto"`. `Direction="both"` sends `-b` and activates two-way recognition even for non-randomised charts. `forward` requires forward direction in the target's patch order. Auto follows Argyll's choice, which normally turns off two-way recognition for non-randomised targets. The recognition uses expected colour values and can choose the wrong direction if these are unsuitable.
 
-Toleransvärdet skalar kontrollen av variation inom en patch; det är inte en direkt inställning av patchgränsens känslighet. Testa en parameter åt gången, utan att undertrycka varningar. Argument och inställningar sparas i körningsmanifestet.
+The tolerance value scales the check of variation within a patch; it is not a direct setting of the patch boundary's sensitivity. Test one parameter at a time, without suppressing warnings. Arguments and settings are saved in the run manifest.
 
-Ett separat underlag för den befintliga 575-utskriftens rader 13-17 har skapats i `projects/test-575-rad13-17-T1p5`. Det innehåller 145 positioner, varav 143 källpatchar och två utfyllnader. Ordning, värden och radnamn bevaras; radintervallet i TI2-indexmönstret och antalet rader ändras till delmängden. Originalutskrift och tidigare mätning ändras inte. Ingen ny utskrift behövs. Första provet använder `ScanTolerance=1.5,Direction="forward"`. Fysisk förbättring är ännu inte verifierad.
+A separate data set for rows 13-17 of the existing 575 print has been created in `projects/test-575-rad13-17-T1p5`. It contains 145 positions, of which 143 are source patches and two are padding. Order, values and row names are preserved; the row range in the TI2 index pattern and the number of rows are changed to the subset. The original print and earlier measurement are not changed. No new print is needed. The first test uses `ScanTolerance=1.5,Direction="forward"`. Physical improvement has not yet been verified.
 
-## Mätvillkor: M0, M1 och M2
+## Measurement conditions: M0, M1 and M2
 
-Se även [optiska vitmedel, OBA/FWA och OBC](optical-brighteners.md) för skillnaden mellan mätvillkor, D50-beräkning och fluorescenskompensation.
+See also [optical brighteners, OBA/FWA and OBC](optical-brighteners.md) for the difference between measurement conditions, D50 calculation and fluorescence compensation.
 
-Dialogen skiljer på läsriktning och mätvillkor. För det nuvarande i1Pro 2-flödet är valet **M0 – i1Pro 2 without UV filter** förvalt. Alternativet **Instrument default – unspecified** lämnar M-villkoret ospecificerat. M1/M2 visas som en begränsning, inte som tillgängliga direkta mätlägen.
+The dialog distinguishes between reading direction and measurement condition. For the current i1Pro 2 workflow, the choice **M0 – i1Pro 2 without UV filter** is the default. The alternative **Instrument default – unspecified** leaves the M condition unspecified. M1/M2 are shown as a limitation, not as available direct measurement modes.
 
-Argylls dokumentation anger att i1Pro 2:s UV-mätläge inte stöds. FWA-kompensation kan användas för beräkning under andra villkor, men det är ett separat bearbetningssteg och får inte märkas som en direkt M1/M2-avläsning. Generella `chartread -F`-alternativ bevisar inte att ett visst instrument stöder dem. InkProf skickar därför inget `-F`-kommando i detta i1Pro 2-flöde och gör ingen FWA-beräkning.
+Argyll's documentation states that the i1Pro 2's UV measurement mode is not supported. FWA compensation can be used for calculation under other conditions, but it is a separate processing step and must not be labelled as a direct M1/M2 reading. General `chartread -F` options do not prove that a particular instrument supports them. InkProf therefore sends no `-F` command in this i1Pro 2 workflow and performs no FWA calculation during measurement. (Note 2026-10-08: optional D50 FWA compensation of M0 spectra is now available at profile building; see [optical brighteners](optical-brighteners.md).)
 
-Inställningarna sparas i `measurement-settings.json` med mätdefinitionens hash, önskat villkor, läsriktning, tolerans och port. Varje ny importerad mät-JSON innehåller `measurementCondition`, där önskat (`requested`), filrapporterat (`reported`) och tolkat (`interpreted`) villkor hålls åtskilda. M0 kan tolkas från kombinationen i1Pro 2 i TI3 och en entydig körlogg som rapporterar inget UV-filter. Det redovisas då uttryckligen som en slutsats från instrument/drivrutin, inte som en M0-etikett i original-TI3. Om underlaget saknas lämnas villkoret okänt. Äldre sparade resultat skrivs inte om automatiskt.
+The settings are saved in `measurement-settings.json` with the measurement definition's hash, requested condition, reading direction, tolerance and port. Each newly imported measurement JSON contains `measurementCondition`, in which the requested (`requested`), file-reported (`reported`) and interpreted (`interpreted`) conditions are kept separate. M0 can be interpreted from the combination of i1Pro 2 in the TI3 and an unambiguous run log reporting no UV filter. It is then explicitly reported as a conclusion from the instrument/driver, not as an M0 label in the original TI3. If the data is missing, the condition is left unknown. Older saved results are not rewritten automatically.
 
-Villkorsinformationen visas också när en ruta väljs i resultatkartan. Skärmfärgerna är fortfarande mål-RGB; valet av M-villkor ändrar inte skärmförhandsvisningen.
+The condition information is also shown when a square is selected in the result map. The on-screen colours are still target RGB; the choice of M condition does not change the on-screen preview.
 
-Källor: [Argyll: i1Pro 2 och instrumentbegränsningar](https://www.argyllcms.com/doc/instruments.html), [chartread: filterval](https://www.argyllcms.com/doc/chartread.html), [TI3: INSTRUMENT_FILTER](https://www.argyllcms.com/doc/ti3_format.html). Kontrollerat mot installerad ArgyllCMS 3.5.0-dokumentation och officiell webbplats 2026-09-26.
+Sources: [Argyll: i1Pro 2 and instrument limitations](https://www.argyllcms.com/doc/instruments.html), [chartread: filter selection](https://www.argyllcms.com/doc/chartread.html), [TI3: INSTRUMENT_FILTER](https://www.argyllcms.com/doc/ti3_format.html). Checked against the installed ArgyllCMS 3.5.0 documentation and the official website 2026-09-26.
 
 
 ## Retry a failed calibration (2026-09-27)
@@ -283,7 +283,7 @@ uses English labels. Close other instrument sessions first and keep the same
 print, backing and instrument. Press **Start spot measurement**, put the
 instrument on its own white reference, and press **Calibrate**. A failed
 calibration can be retried. Then place it stationary at the centre of the named
-patch and click **Measure patch in the dialog window**. Keep the instrument
+patch and click **Measure patch** in the dialog window. Keep the instrument
 still until the result appears. Do not swipe or press the instrument button
 in this workflow; the dialog sends the measurement trigger.
 
@@ -333,7 +333,7 @@ status. The largest difference is selected initially. Clicking a table row
 opens the correct page, highlights that patch and enables **Remeasure patch**.
 Patches within tolerance remain selectable and can also be remeasured.
 The values compare the two original sweeps, not the print against a profile.
-Accepted spot replacements are marked **Spot replaced (old scans)**: the old
+Accepted spot replacements are marked **Spot replaced**: the old
 scan difference is retained as history rather than presented as a new spot
 repeatability measurement. If paired comparisons are unavailable, the window
 says so; it does not infer differences from nominal target RGB.
@@ -360,11 +360,11 @@ nominal displayed RGB, otherwise cyan or black/white. An additional inset
 black/white outline provides contrast on the patch itself. This is a display
 visibility heuristic, not a colourimetric assessment of the printed patch.
 
-## Randomiserade mål och dubbelriktad medelvärdesmätning
+## Randomised targets and bidirectional average measurement
 
-Rättat 2026-09-28: TI2 kan lagra poster i SAMPLE_ID-ordning trots att utskriften är randomiserad. Paired-läget sorterar därför sin genomgång på SAMPLE_LOC (numerisk rad och bokstavskolumn), och behåller en explicit mappning till originalets JSON-index. Original-TI2, patch-ID och mätkoppling ändras inte. Tidigare kunde Start measurement stoppas av detta antagande före instrumentstart. Startfel visas nu också i en felruta, loggen och MATLABs kommandofönster.
+Corrected 2026-09-28: TI2 can store entries in SAMPLE_ID order even though the print is randomised. The paired mode therefore sorts its walkthrough by SAMPLE_LOC (numeric row and letter column), and keeps an explicit mapping to the original's JSON index. The original TI2, patch ID and measurement linkage are not changed. Previously, Start measurement could be stopped by this assumption before the instrument started. Start errors are now also shown in an error box, the log and MATLAB's command window.
 
-Verifierat med syntetiska fram-/bakåtmätningar och medelvärden för både randomiserat och orandomiserat mål samt det faktiska C2-målets sju rader/fjorton pass. Ingen instrumentmätning ingick i regressionstesten.
+Verified with synthetic forward/backward measurements and averages for both a randomised and a non-randomised target, as well as the actual C2 target's seven rows/fourteen passes. No instrument measurement was included in the regression tests.
 
 
 ### Starting a strip scan
@@ -374,9 +374,9 @@ Verifierat med syntetiska fram-/bakåtmätningar och medelvärden för både ran
 InkProf-generated charts retain contrast markers as standard. External prints without markers can be harder for chartread to segment; this is not a universal prohibition on measuring charts without markers. If measured in another application, preserve the original MXF under the project's `sources` directory with a unique name. `inkprof.importMeasurement` creates a separate measurement session, preserving the imported source and mapping.
 
 
-### Radnummer vid slumpad patchordning
+### Row numbers with random patch order
 
-Dialogens radnummer härleds från TI2-filens fysiska patchkoordinater i radordning, inte från posternas ordning i filen. Detta gäller enkelriktning och alternativ 2 (växelvis riktning), även vid Previous/Next och sidbyte. Alternativ 3 använder sin separata koppling mellan svep och fysisk rad. Ett visningsfel för slumpade TI2-filer rättades 2026-09-28; chartread kunde stå på rad 2 medan dialogen visade rad 1. Varnade läsningar från en sådan session ska inte accepteras som rätt rad.
+The dialog's row numbers are derived from the TI2 file's physical patch coordinates in row order, not from the order of the entries in the file. This applies to single direction and option 2 (alternating direction), also with Previous/Next and page changes. Option 3 uses its separate linkage between sweep and physical row. A display error for randomised TI2 files was corrected 2026-09-28; chartread could be on row 2 while the dialog showed row 1. Warned readings from such a session shall not be accepted as the right row.
 
 
 ### Hardware scan after page change (2026-09-29)

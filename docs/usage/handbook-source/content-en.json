@@ -1,7 +1,7 @@
 [
   {
     "title": "From image to a reliable colour workflow",
-    "tag": "USER HANDBOOK | v1.0.0RC1",
+    "tag": "USER HANDBOOK | RC2 | 2026-10-08",
     "sections": [
       [
         "The image should reach the paper",
@@ -17,7 +17,7 @@
       ],
       [
         "How this handbook helps",
-        "This handbook explains the main window, dialogs and all 19 rows of the profiling workflow. Button names and explanations are in English. It describes 1.0.0-rc.1, the release candidate for v1.0.0 dated 3 October 2026. The current online usage guides supplement this handbook, including the separate existing-ICC verification workflow."
+        "This handbook describes the main window, dialogs and 19 profiling steps, with current profiling paths, smoothing and FWA limitations. Updated on 8 October 2026 against the source. The final appendix follows a complete profiling job and its decisions."
       ],
       [
         "The three parts of the work",
@@ -38,6 +38,10 @@
       [
         "There is more than one route",
         "B2 is needed for the manual profiling route. The profile comparison on row 18 supports your decision. Row 19 is a separate option when the current iteration has been checked numerically but has not been verified by a separate print and measurement."
+      ],
+      [
+        "Additional guidance",
+        "The later chapters cover smoothing, gradients, remeasurement, target preparation, diagnostics and FWA. The final appendix gives the complete recommended profiling route and decision points."
       ]
     ],
     "lead": "The row number on the left and the internal step identifier are different things. This handbook uses row numbers to help you find the step in the app.",
@@ -169,11 +173,11 @@
       ],
       [
         "Optical brighteners: FWA / OBA",
-        "FWA and OBA refer to fluorescent or optical brightening agents in paper. Compensate optical brighteners (D50) requests compensation. It requires spectral M0 measurements, a known instrument and a paper-white patch. This models D50 illumination; it does not turn the measurement into a physical M1 measurement."
+        "FWA (Fluorescent Whitening Agents) and OBA (Optical Brightening Agents) are two names for optical brighteners in paper. OBC (Optical Brightener Compensation) means compensation for their effect: the same phenomenon, but a process rather than a substance. Argyll calls it FWA compensation; X-Rite uses OBC. The algorithms are not necessarily identical. Compensate optical brighteners (D50) selects InkProf’s compensation. The supported M0 route models D50 and does not become a physical M1 measurement."
       ],
       [
         "Change FWA after measurement",
-        "The option can be changed later. Raw measurements are preserved, but the profile must be rebuilt and checks repeated. Follow the steps that the app marks as stale. Read reports in terms of the compensation actually used to build the profile, not just a checkbox in the project."
+        "Changing only FWA/OBA preserves locked B1 but makes B2 and later profile results stale. Raw measurements remain preserved. Actual changes to materials or printing conditions also invalidate B1. New recipes support FWA before Argyll pre-smoothing and final smoothing; see the M0 white-reference section. See page 21."
       ],
       [
         "Black point compensation: BPC",
@@ -203,7 +207,7 @@
       ],
       [
         "Editable paper suggestions",
-        "Paper planning compares sheets from A5 to A3+, cut pieces and roll feed for the current patch count. You can change the suggestion. A smaller refinement target can therefore use a smaller format. Check that the chosen piece fits the printer and can pass through the measurement equipment."
+        "Paper planning compares A5 to A3+, cut pieces and roll feed. 1/2 A4 (2 pieces per sheet) means a half-A4 measurement piece, not a split TIFF. Whole sheet uses the entire sheet. Dimensions and areas display one decimal; calculations retain precision. Check that the piece fits the printer and measurement equipment."
       ],
       [
         "Print and allow to dry",
@@ -227,7 +231,7 @@
       ],
       [
         "Start and calibrate",
-        "Start measurement begins the measurement. Follow the status instructions and use the instrument calibration reference when calibration is requested. Calibrate controls the calibration stage. Use Page loaded when the next page is in place. The log shows instrument messages."
+        "Start measurement starts the instrument workflow. Calibrate when requested. At page changes, instructions show the page, row number and FORWARD or REVERSE, consistently with the row prompts. Position the correct page and use Page loaded. Instrument messages appear in the log."
       ],
       [
         "Scan and retry",
@@ -235,7 +239,7 @@
       ],
       [
         "Finish with a saved result",
-        "Save and finish ends the session and saves the collected measurement. Open results folder shows the results folder. Close/cancel cancels the dialog. Read the app result afterwards and check that a saved measurement revision really exists."
+        "Save and finish ends the measurement and saves a new revision. The overview of all patches may open after Save; this is intended review and does not start remeasurement. Earlier revisions remain available. If no successful save was recorded, no automatic import occurs; read the log before continuing."
       ],
       [
         "Measurement conditions and instrument identity",
@@ -262,7 +266,7 @@
       ],
       [
         "When a patch needs remeasurement",
-        "Use the patch coordinate and ID to find the same patch on the correct sheet. Remeasure through the associated measurement/review function, save the new revision and select it for further work. Review again if the app requires it. A small change is still a measurement result; its size does not tell you whether the revision was saved."
+        "Remeasure patch rereads one patch. Remeasure row lets you choose a page and printed row and retains the original scan mode, including forward/reverse. Review changes before Accept row replacement. Discard / Close leaves the row unreplaced. An accepted row is saved as a new revision; original and raw readings remain preserved. See page 24."
       ],
       [
         "Absolute colour and change are different",
@@ -290,11 +294,11 @@
       ],
       [
         "Row 6: B2. Create recipe",
-        "The manual route uses Profiling recipe. Review the profile name, description, colour data and table quality, together with printing details read from Project details. Shared project information has a single source so that the recipe and project do not describe different printing conditions."
+        "Profiling recipe is used by the manual route. Measurement data smoothing controls optional pre-regularization. Smoothing at ICC build controls final colprof -r; empty means 0.5%. These stages are separate. Printing details come from Project details. Review profile name, colour data and table quality. See pages 21-23. Perceptual compression (%) controls perceptual gamut mapping; see the new rendering-intent section."
       ],
       [
         "Row 7: B3. Build ICC / automatic iteration",
-        "Choose the offered profiling route. Manual profile building requires the B2 recipe. The automatic route uses its available candidate and iteration inputs. Activity is displayed during calculation; allow the process to finish and read the result or any error message."
+        "Manual uses the B2 recipe. Automatic creates its own recipes and does not use B2's gradient checkbox. After a successful manual build, the RGB gradient window can open if selected in B2 and pre-regularization is enabled. Saving B2 does not open it. Complete means calculation finished, not approved print quality. Automatic carries forward B2 perceptual compression; preprocessing and the gradient checkbox remain part of the Manual route."
       ],
       [
         "What is saved when it finishes?",
@@ -359,11 +363,11 @@
     "sections": [
       [
         "Row 9: save the verification target",
-        "C2. Save verification target as TIFF16 creates a verification target for the current candidate. Verification colours are associated with desired references and the printer values calculated by the profile. Save or copy the TIFF16, print separately and allow the sheet to dry under the project conditions."
+        "C2 creates a verification target for the current ICC. Lab references are converted once to printer RGB with absolute colorimetry and no BPC. Preparation displays activity and elapsed time. Save TIFF16, print separately and allow it to dry. C2 contains colours, neutrals, challenges and repeats, not only problem regions."
       ],
       [
         "Avoid double profile conversion",
-        "The C2 target contains the printer values calculated by the workflow. Do not apply another ICC conversion to the same target in the printing application. Check colour management throughout the print path and retain the same materials, quality and media setting documented in the project."
+        "New C2 files contain the printer profile as an embedded tag. The tag does not change RGB values or mean the profile should be applied again. Keep it without conversion. Older files may be untagged. Printer Manages Colors or a greyed-out Off control does not prove the complete print chain has no extra conversion. See page 25."
       ],
       [
         "Row 10: measure and select a revision",
@@ -371,7 +375,7 @@
       ],
       [
         "Row 11: C3. Compare model and print",
-        "The comparison distinguishes Measured vs desired from Model vs measurement, which compares the profile prediction with the measured colour. Inspect both summaries and individual patches. Large errors for difficult colours may reflect the material gamut; large model errors provide a different reason to investigate measurement, printing and the model."
+        "Measured vs desired compares print with desired colour. Model vs measurement compares ICC prediction with print. Both are colour differences, not absolute colour values. Desired Lab and Measured Lab contain L*, a*, b*. Largest errors appear first. C3 may warn about suspected double colour management; this is a hypothesis, not proof. See page 26."
       ],
       [
         "Row 12: Review feedback",
@@ -447,6 +451,28 @@
     "lead": "A refinement should investigate something you want to understand or improve. It does not need to target a particular colour."
   },
   {
+    "title": "Choose the error-driven refinement method",
+    "tag": "ROW 15 / ARGYLL OR INKPROF",
+    "sections": [
+      [
+        "Choose the method in row 15",
+        "Choose From verification errors, then 1. Argyll only or 2. Current InkProf (Jacobian sampling). Current C3 verification and feedback are required. Argyll only is the default. This selector is for additional patches, not B3."
+      ],
+      [
+        "Argyll only",
+        "The checked ICC preconditions Argyll targen to select new device-RGB patches, without InkProf Jacobian sampling or pre-regularization. The continuation builds a high-quality colprof candidate with -r 1.0."
+      ],
+      [
+        "Current InkProf (Jacobian sampling)",
+        "C3 residuals and Jacobian-guided patch selection are used, followed by comparison of ICC candidates using development measurements. Both methods build the ICC with Argyll colprof; they differ in patch selection and continuation settings."
+      ],
+      [
+        "Saved choice and verification",
+        "The method is saved in proposal.json as refinementMode and passed to row 17 after the new target is printed and measured. Choose another method when creating a later error-driven refinement; existing targets and measurements are not rewritten. Image-guided refinement uses a separate path. Numerical B3 fit checks are not independent print verification: print and measure the new C2 target to assess the new result."
+      ]
+    ]
+  },
+  {
     "title": "Measure the refinement and iterate",
     "tag": "ROWS 15-17 / COMBINED TARGET",
     "sections": [
@@ -510,6 +536,129 @@
     "callout": "A useful decision rationale is specific: what changed, what evidence was assessed and why is it sufficient for the intended use? Do not equate a larger gamut with lower measured error."
   },
   {
+    "title": "M0, optical brighteners and averaged white",
+    "tag": "FWA / OBA WITH ARGYLL SMOOTHING",
+    "sections": [
+      [
+        "What is measured, and what is estimated",
+        "Native i1Pro2 M0 spectra are measured under the instrument’s illumination. Argyll estimates their response under simulated D50 using paper white and instrument information. This is the best available M0-based estimate in this workflow, not direct UV excitation quantification or a native M1 measurement. A UV LED observation indicates brighteners but does not quantify the correction."
+      ],
+      [
+        "Several white patches",
+        "All device-white spectra are averaged by Argyll (RGB channels above 99.9%). Their count, mean spectrum and sample variation are saved. Averaging can reduce random variation; it cannot restore missing UV excitation or guarantee that weak fluorescence is resolved. White controls preserved in B1 source data can supply the reference even when excluded from fitting."
+      ],
+      [
+        "Compensation before smoothing",
+        "New B2 recipes integrate and FWA-compensate spectra once using spec2cie. Both the intermediate Argyll pre-smoothing model and the final ICC read the resulting XYZ without repeating compensation. Fit and C3 use the same policy. Save a new B2 recipe; use Manual B3 for the explicit pre-smoothing choice. Automatic iteration still creates its own recipes."
+      ],
+      [
+        "If no white measurement is available",
+        "B2 offers Measure blank paper, Select saved blank-paper reference or Cancel. Use the same unprinted stock and backing; measure several clean locations with stationary i1Pro2 M0, then explicitly accept the mean. Follow calibration prompts. The instrument, wavelength grid and calibration standard must match. Required colour spectra must cover at or below 400 nm through at least 700 nm; measuring only white cannot repair missing colour spectra."
+      ],
+      [
+        "What is saved and reused",
+        "The approved reference includes source readings and checksums. A separately measured white supplies an auxiliary profile white anchor; it is not presented as a target colour or independent verification patch. Analytical comparisons retain the original target patch set. B2’s approved reference is available to automatic builds and continuation on the same stock when needed; current target whites take precedence."
+      ],
+      [
+        "Certificate and final check",
+        "The certificate records white-reference source and count separately for training and verification and explains the M0 limitation. Original spectra remain unchanged. Compensation or averaging is not proof of improved reproduction: finish with a new C2 print and C3 measurement before approving the profile."
+      ]
+    ]
+  },
+  {
+    "title": "Choose the profiling and refinement path",
+    "tag": "B2 / B3 / REFINEMENT SETTINGS",
+    "sections": [
+      [
+        "B2: two current choices",
+        "Argyll only (raw measurements) disables separate pre-smoothing, but colprof still fits and smooths. Argyll colprof pre-smoothing (experimental) adds an intermediate model before the final ICC build with FWA integrated once before both passes in new recipes."
+      ],
+      [
+        "Two independent noise settings",
+        "Assumed noise (%) is first-pass colprof -r, default 0.5%. Smoothing at ICC build is final-pass -r; empty uses the documented engine default 0.5%. Neither value is an acceptance limit."
+      ],
+      [
+        "B3 Manual versus Automatic",
+        "Manual executes the saved B2 recipe. Automatic creates its own candidate recipes with pre-smoothing off; the app carries over perceptual compression, not the whole B2 recipe. Its default Argyll mode uses high quality and final -r 1.0. Use Manual to test explicit B2 smoothing settings."
+      ],
+      [
+        "Refinement method in row 15",
+        "Argyll only uses preconditioned targen patches without Jacobian sampling; continuation builds with -r 1.0 and no pre-smoothing. Current InkProf (Jacobian sampling) uses C3 residuals and Jacobian-guided patches. Both build ICCs with Argyll. InkProf continuation disables pre-smoothing and compares final -r candidates 0.5, 1.0 and 1.5 with development data; without such data it uses the engine-default build."
+      ],
+      [
+        "What continues into the next iteration",
+        "Row 17 follows the mode saved in the proposal and its specified combined training set, not the entire older B2 recipe. Read the selected candidate recipe and job log. Change refinement mode by creating a new proposal in row 15 and measuring its target."
+      ],
+      [
+        "Two practical routes",
+        "First profile: rows 1-6, choose B3 Manual or Automatic, then rows 8-14 for measured delivery. Refinement: row 15 method choice, print and measure in 16, build in 17, compare in 18, then repeat 8-14 for final measured approval. Row 19 is numerical-only delivery."
+      ],
+      [
+        "Evidence belongs to a specific profile",
+        "Check iteration, ICC and measurement revision. A changed profile cannot inherit earlier physical verification or approval. Small prediction changes or numerical stopping do not prove print accuracy. Investigate Stale/Locked status and repeat dependent checks."
+      ]
+    ]
+  },
+  {
+    "title": "Best practice: acceptance and print-system limits",
+    "tag": "INTERPRETING FINAL RESULTS",
+    "lead": "A useful photographic profile may still fail to reproduce some reference colours within the selected comparison limits.",
+    "sections": [
+      [
+        "Agree on the intended use",
+        "Set the use, relevant colours, gradients, viewing conditions and acceptance criteria before judging results. Stabilise the printer and record paper, ink, preset, drying, backing and measurement conditions. Resolve acquisition errors before changing smoothing or refinement."
+      ],
+      [
+        "Keep three kinds of evidence separate",
+        "Training fit describes agreement with profiling measurements. Profile comparison describes changes between predictions. Final C2/C3 measures a new print against desired colours and current predictions. Once a measurement trains a profile it is no longer independent verification of that profile."
+      ],
+      [
+        "Stop for a documented reason",
+        "Use comparable errors and visual checks of neutrals, skin tones, shadows and gradients. No useful improvement may justify stopping refinement, but does not prove print accuracy or physical gamut limits. Record regularisation and the chosen Argyll only or InkProf/Jacobian refinement method."
+      ],
+      [
+        "Interpret remaining errors honestly",
+        "Large desired-colour errors with small prediction errors may be consistent with system limits, but first check profile identity, print conversion, measurement conditions, inversion and local model reliability. Model-reachable, outside-model-or-inversion-unresolved and unknown colours are distinct. Paper white, attainable black and chroma may limit reproduction. An unresolved inverse alone is not proof of physical impossibility."
+      ],
+      [
+        "Approval does not waive a standard requirement",
+        "Disclose unmet comparison limits. The ISO-related references shown in InkProf do not establish conformity of its custom RGB target. Where an applicable standard is required and its requirements are unmet, do not approve for that purpose. A reviewer may approve a measured photographic result for another stated use with explicit limitations."
+      ],
+      [
+        "Present the full result",
+        "Report all assessed colours and mean, median, P95 and maximum errors, with difficult colours separately identified. Neither worst patches alone nor the overall average is sufficient. Follow the final measured approval route in rows 8-14. Row 19 supplies only numerical evidence for the current profile."
+      ]
+    ]
+  },
+  {
+    "title": "Finish with a measured and approved profile",
+    "tag": "FINAL PRINT VERIFICATION / ROWS 8-14",
+    "lead": "When further refinement gives no useful improvement, finish by printing and measuring a control target for the exact profile you will deliver.",
+    "sections": [
+      [
+        "Decide when to stop",
+        "Use row 18 and comparable error measures to document why you stop. Training fit, model change and physical print accuracy are different measures. Small changes or numerical convergence alone do not prove print accuracy. This procedure does not assume automatic detection of stalled improvement."
+      ],
+      [
+        "1. Check and create the final target",
+        "After row 17, run row 8 (Fit, Grid and C1) for the selected current profile. Run row 9 (C2: save verification TIFF16). Check that the target belongs to this profile and iteration. The ICC transform has already been applied once."
+      ],
+      [
+        "2. Print without another colour conversion",
+        "Follow the accompanying target text. In Photoshop choose Discard the embedded profile (don’t color manage) when opening the target. Print at 100%, with colour management disabled in the application and colour adjustment disabled in the printer driver. Keep the documented paper, ink and printer settings and allow drying."
+      ],
+      [
+        "3. Measure and review",
+        "Run row 10 to measure the final control print. Run row 11 (C3) to compare measured print colours with desired colours and profile predictions. Run row 12 to review feedback. This final evidence must belong to the delivered profile; measurements used to train it are not independent verification of it."
+      ],
+      [
+        "4. Approve and deliver",
+        "Run row 13 (Approve intended use), enter the intended use, accepted limitations and review notes, and confirm explicitly. Run row 14 to save the ICC and measurement certificate. The certificate records actual print measurement and user approval tied to that profile. Approval is for the stated use, not automatic ISO certification."
+      ]
+    ],
+    "callout": "Do not use row 19 for this route: it documents a numerical-only delivery without current print verification. If the final measurement does not meet the intended use, investigate or refine before approving."
+  },
+  {
     "title": "Finish without another test print",
     "tag": "ROW 19 / A CERTIFICATE WITH EXPLICIT SCOPE",
     "sections": [
@@ -546,7 +695,7 @@
     "sections": [
       [
         "Visible activity in later steps",
-        "Long calculations use an activity dialog showing the operation and elapsed time. This includes preparation and saving of refinement measurements, building the next iteration, profile comparison, reports and export. The time shown is elapsed time, not an estimate of when the job will finish."
+        "Longer calculations display operation and elapsed time, including C2 colour and paper preparation. TIFF generation can show a clock and Cancel. Time is elapsed time, not a forecast. Long TIFF footer summaries are shortened when needed; full filenames and metadata remain preserved."
       ],
       [
         "The measurement window has its own signals",
@@ -606,7 +755,7 @@
       ],
       [
         "Basis of this handbook",
-        "This is the English translation of the Swedish handbook, whose core workflow was checked against app.m, projectDetailsDialog.m, workflowSteps.m and the usage documentation (public code reference ab311f1). It includes subsequent material and delivery sections. Current Markdown guides supplement this handbook for later additions. Translation is not new physical validation of instruments or print results."
+        "The Swedish and English handbooks share the same chapter order and corresponding content. The 7 October 2026 update was checked against workflow, recipe, row remeasurement, RGB gradients, C2/C3 source and usage guides. Separate diagnostic scripts are not built-in app features. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -710,7 +859,466 @@
       ],
       [
         "Release status",
-        "This documentation accompanies 1.0.0-rc.1, published as v1.0.0RC1 ahead of stable v1.0.0. macOS is tested. Windows/Linux and all instrument modes are not qualified. A published source release does not include MATLAB, Python or Argyll binaries."
+        "This handbook describes release candidate 1.0.0-rc.2, dated 8 October 2026. It is not the stable v1.0.0 release. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+      ]
+    ]
+  },
+  {
+    "title": "Two stages of regularization",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "Stage 1: Measurement data smoothing",
+        "Choose Off, Argyll colprof model or an InkProf-owned model. Pre-regularization creates separate derived input before the final ICC. Original spectra, XYZ and raw measurements remain preserved. The feature is experimental and off by default."
+      ],
+      [
+        "Argyll: Assumed noise (%)",
+        "The first colprof model uses an assumed average deviation through -r, normally 0.5%. This is not an exact measured Delta E00. The model is evaluated at the original RGB values."
+      ],
+      [
+        "Stage 2: Smoothing at ICC build",
+        "This controls final colprof -r. Empty uses 0.5%. The value is independent of the first-stage noise assumption. Percentages display one decimal without rounding stored precision."
+      ],
+      [
+        "FWA/OBA and B1",
+        "New B2 recipes support native M0 FWA before Argyll pre-smoothing and final fitting. Compensation is applied once, not again to derived XYZ. Changing FWA preserves B1 but requires new B2 and later results. See the M0 white-reference section."
+      ]
+    ]
+  },
+  {
+    "title": "Test RGB gradients",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "B2 selection and Manual B3",
+        "With pre-regularization selected, tick Open RGB gradient test after profile build. The window opens after successful Manual B3. Save recipe in B2 does not start the check. Automatic B3 creates its own recipes and does not use this B2 choice."
+      ],
+      [
+        "Run RGB check",
+        "Nine RGB paths with 1,025 samples each are evaluated through the final ICC. Select a path and relative or perceptual intent. Curves show RGB, Lab, adjacent Delta E00 steps and Lab second differences. JSON and Markdown are saved in the job's checks folder."
+      ],
+      [
+        "Check blue-sky inverse",
+        "The blue-sky test uses B2A and returns through A2B. It complements the forward check and changes neither recipe nor ICC. Reopen a closed window with inkprof.checkRGBGradients(jobFolder)."
+      ],
+      [
+        "Interpretation",
+        "Large local steps, reversals and second differences identify places to investigate. Real printer curvature can also produce these values. No universal pass threshold is used. Printed gradients and documented viewing conditions are needed for physical assessment."
+      ]
+    ]
+  },
+  {
+    "title": "Remeasure a whole printed row",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "New measurement or earlier revision",
+        "Measure starts a new measurement. Saved revisions selects an earlier saved revision. Import file reads an external file. For isolated problems, use Remeasure patch or Remeasure row in the overview. A new save preserves previous history."
+      ],
+      [
+        "Select page and row",
+        "Remeasure row uses the printed page and row number. B24 means position B, row 24; patch ID is separate. Original scan mode, tolerance and instrument conditions are retained. An isolated session measures only the selected row."
+      ],
+      [
+        "Measure and review",
+        "Click Measure selected row, calibrate and follow FORWARD/REVERSE. Save supplies candidate values. Change Delta E00 compares previous and new measurements, not error against desired colour. Accept row replacement creates a revision replacing only this row. Discard / Close retains previous values."
+      ],
+      [
+        "Preserved traceability",
+        "Original data, new raw readings and the decision are saved. Old paired readings are labelled historical after row replacement. Select and review the correct workflow revision before locking B1 again; Accept in the remeasurement window does not necessarily select profiling input."
+      ]
+    ]
+  },
+  {
+    "title": "C2: profile, TIFF and print chain",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "Conversion and tag",
+        "Lab-based targets use B2A, absolute colorimetry and BPC off. Layout and RGB16 quantization follow. The exact printer ICC is now embedded as a tag without another pixel conversion. Earlier exports do not change when code is updated."
+      ],
+      [
+        "Keep already converted values",
+        "When opening in Photoshop, discard/ignore the embedded profile without converting RGB values; do not convert to a working space. Print at 100% without further colour conversion. Assigned sRGB or Adobe RGB followed by conversion can greatly change older untagged targets. Read PRINTING.txt and document the chain."
+      ],
+      [
+        "Contents and difficult colours",
+        "The profiling-workflow default is 80 colours, 24 neutrals, 12 challenges and 12 repeats. Counts can be changed. Challenges may be outside gamut or have an unresolved inverse. C2 therefore does not contain only previous problem colours."
+      ],
+      [
+        "White margin",
+        "An unprinted margin uses pure device RGB white. A white image area converted with absolute intent may receive colour to reproduce the reference white point. This is not the paper's own whiteness. A converted image margin and the target background are therefore different things."
+      ]
+    ]
+  },
+  {
+    "title": "Read the C3 table and warnings",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "Identity and Lab",
+        "Page and Coordinate identify position. ID is identity and Role is patch type. Desired Lab is desired colour; Measured Lab is the print. L* is lightness, negative/positive a* green/red and negative/positive b* blue/yellow."
+      ],
+      [
+        "Two error columns",
+        "Measured vs desired (dE00) compares measurement with desired colour. Model vs measurement (dE00) compares ICC prediction with measurement. Similar numbers do not mean similar colours: if both are large, measurement differs from both. Near zero in the second column means close model agreement."
+      ],
+      [
+        "Sorting and groups",
+        "Largest errors appear first. Main statistics include unique patches, including challenges, but not extra repeats. Filter groups before drawing conclusions. Small differences between repeats or forward/reverse show repeatability, not accuracy."
+      ],
+      [
+        "Suspected double colour management",
+        "C3 simulates extra conversion from sRGB and Adobe RGB to the printer profile and warns when a simulation explains measurements much better. This is a hypothesis; other print faults may look similar. Check assignment, conversion and the driver before retraining the model."
+      ]
+    ]
+  },
+  {
+    "title": "Reference colours and an existing ICC",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "Fixed reference set",
+        "C2 can use a Lab table, Argyll CIE/CGATS with Lab or XYZ, or TI1 with device RGB. Use only material you are entitled to use. Names and patch codes are preserved for C3. A reference name does not imply protected vendor layout or data are included."
+      ],
+      [
+        "Lab or RGB",
+        "Lab references are converted through the ICC and test inverse, print and measurement together. Device RGB is printed as given without ICC conversion; reference Lab is the A2B prediction. PRINTING.txt and verification.json identify the method."
+      ],
+      [
+        "New project: Verify existing ICC",
+        "The separate seven-step workflow imports an RGB printer profile, creates a target, measures, analyses, reviews, records assessment and saves a certificate. It does not rebuild the profile. The editable 575-patch suggestion covers skin tones, shadows, neutrals and broad colours."
+      ],
+      [
+        "Unknown independence",
+        "If original training data are unavailable, independence is unknown. Numerical checks and a good photographic impression do not give automatic approval or ISO certification. Document intended use, the chain and limitations."
+      ],
+      [
+        "Methods in RGB Target",
+        "The RGB target designer offers OFPS, incremental far point, quasi-random, body-centred cubic and random through Argyll. An existing ICC can guide placement through pre-conditioning; it does not create new measurements or apply the profile to the raw target RGB. Method, seed and profile reference are saved."
+      ]
+    ]
+  },
+  {
+    "title": "Diagnose with JSON and the right check",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "Traceable chain",
+        "B1 locks measurement input. The job saves recipe.json, status.json and result/profile.icc. C2 saves an exact ICC copy, desired Lab, RGB16 and placement in verification.json. C3 links measurement JSON and its TI3 revision through hashes. Coordinate and ID are different identifiers."
+      ],
+      [
+        "Built-in MATLAB checks",
+        "inkprof.checkProfileFit checks the forward model against training. inkprof.checkProfileGrid and inkprof.checkProfileC1 provide grid, CMM and inverse diagnostics. inkprof.checkVerificationTarget compares the verification print. inkprof.checkRGBGradients opens the gradient window. Read each check's purpose."
+      ],
+      [
+        "Separate scripts are not app buttons",
+        "The development measurement-JSON inverse script compared Lab, inverse RGB and return through A2B. It is not a built-in InkProf function. Small Lab-RGB-Lab error shows internal consistency, not a correct physical print. Alternative solutions can give large RGB differences."
+      ],
+      [
+        "Test the hypothesis first",
+        "First check suspected wrong ICC or inverse numerically and through hashes, without another print. Check a suspected wrong row against TI2 and by remeasurement. A changed print chain may require a new sample with identical device RGB. Do not rebuild the model to conceal an unresolved chain error."
+      ]
+    ]
+  },
+  {
+    "title": "Compare accuracy and gradients",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "Open the comparison",
+        "After valid B1, choose Compare accuracy and gradients in the main window. Enter one to six positive final colprof -r values. Compare the currently offered Argyll candidates.  Several builds may take minutes; progress is displayed."
+      ],
+      [
+        "Read the results",
+        "Compare fit against original measurements, held-out evidence where available, model change and photographic-gradient diagnostics. Training fit is not independent validation. Inspect matching gradient paths: an average across different interior coverage can mislead."
+      ],
+      [
+        "Automatic B3 selection",
+        "With development controls, Automatic tests final -r values 0.5, 1 and 1.5 at high table quality. Selection balances accuracy and float-gradient smoothness. Guards check patch and gray regressions, curvature, reversals, coverage and colour span. Defaults permit 0.05 RMS accuracy tradeoff for at least 5% gradient improvement. These are numerical selection rules, not print acceptance criteria. Without development controls, one candidate is built with no claim of superiority."
+      ],
+      [
+        "Choose deliberately",
+        "Comparison preserves B1 and leaves the current workflow ICC selected. To use a comparison setting, enter it in B2 and build Manual B3. New recipes support FWA before pre-smoothing with the measured-white requirements described in the M0 section."
+      ]
+    ],
+    "lead": ""
+  },
+  {
+    "title": "Photographic gradient conversion",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "Open the diagnostic",
+        "Choose Photographic gradients in the main window after a successful profile build, or in the RGB gradient window. The check uses the exact selected ICC and saves JSON and Markdown in its checks folder."
+      ],
+      [
+        "What is tested",
+        "Nine paths with 1,025 samples are converted from sRGB and Adobe RGB (1998) to printer RGB, then through relative A2B to predicted Lab. Relative and perceptual intent, BPC on/off, and float, 16-bit and 8-bit input/output buffers give 216 combinations. LittleCMS performs these conversions; Photoshop and printer drivers may behave differently."
+      ],
+      [
+        "Read the columns",
+        "Curvature P95 measures normalized Lab second differences. L* reversals count decreasing lightness steps on eligible interior points; interpret them in relation to the chosen path. Unique RGB codes and unchanged steps describe quantization plateaus. The JSON also records longest plateau and Lab span. Large numbers are not automatically visible defects."
+      ],
+      [
+        "Limits of the test",
+        "Hard device clipping is excluded from comparison metrics, but this is not a proven physical-gamut mask. Quantization plateaus are expected, especially at 8 bit. Compare matching paths and precision. Numerical smoothness does not certify absence of banding; verify printed gradients."
+      ]
+    ]
+  },
+  {
+    "title": "Certificate evidence",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "Pre-regularization in the certificate",
+        "The certificate records the selected job recipe, pre-regularization method, its assumed noise (avgdev) and final colprof -r. Saved results include the model change when available. Raw measurements are preserved. Model change is not print accuracy. The former InkProf grid regularization and its measurement weights have been removed."
+      ],
+      [
+        "Gradient evidence and regeneration",
+        "A saved photographic-gradient report is included only if its SHA-256 matches the certificate ICC. The certificate summarizes CMM, settings, sample count, interior coverage, reversals and curvature, and embeds full per-path evidence in JSON. Missing evidence is stated explicitly. Re-run step 14 for a new certificate; historical and signed certificates are preserved."
+      ]
+    ]
+  },
+  {
+    "title": "One ICC, three rendering intents",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "New B2 recipes",
+        "Newly built profiles support perceptual, relative colorimetric and absolute colorimetric in one ICC file. B2 provides Perceptual compression (%), passed to colprof -s. The default 20% generic compression is a starting setting, not a measured optimum. Automatic B3 carries forward this B2 value."
+      ],
+      [
+        "What the ICC contains",
+        "Perceptual uses a gamut-mapped B2A0 table. Relative uses B2A1. Absolute uses the relative table plus the media white point (wtpt); it does not require a separate B2A3 table. The colour-management application selects the rendering intent. The profile header default does not prevent choosing another intent."
+      ],
+      [
+        "Build validation and certificate",
+        "New builds require perceptual and relative tables with distinct data and a valid media-white tag before publication. Saved jobs and certificates record the rendering-intent settings. Structural validation and numerical conversions do not establish print quality."
+      ],
+      [
+        "Update an existing profile",
+        "Restart InkProf, save a new B2 recipe and rebuild B3 to obtain the new gamut mapping. Existing recipes, ICC files and imported profiles are preserved. Recheck the profile and its print before approval and delivery. C2 verification still applies the ICC once, absolute without BPC, followed by printing with colour management disabled."
+      ]
+    ],
+    "links": [
+      [
+        "ArgyllCMS colprof",
+        "https://www.argyllcms.com/doc/colprof.html"
+      ],
+      [
+        "ICC specification",
+        "https://www.color.org/icc1-v41.pdf"
+      ]
+    ]
+  },
+  {
+    "title": "TIFF: conversion versus embedded ICC",
+    "tag": "NEW FEATURES | 2026-10-07",
+    "sections": [
+      [
+        "Read the companion text file",
+        "PRINTING.txt beside modern TIFF targets, and *-README.txt for the legacy exporter, list ICC conversion and Embedded ICC separately. Tagged files identify the printer profile and its SHA-256. C2 also has package-level PRINTING.txt; read it together with print/PRINTING.txt."
+      ],
+      [
+        "Conversion: what changed the pixels?",
+        "Base and refinement targets render source device RGB directly without a printer ICC conversion by InkProf. Ordinary C2 colour-reference targets have already passed through the printer ICC once, absolute colorimetric without BPC. C2 device-RGB reference sets instead print their RGB unchanged; the ICC predicts reference Lab only. Imported source history may be unknown."
+      ],
+      [
+        "Tag: what identifies the file?",
+        "Both kinds of C2 TIFF embed the printer ICC as an identifying tag. Embedding alone changes no pixels and is not an instruction to apply the ICC again. A tag does not prove that no other conversion occurred earlier. InkProf records its own processing separately. Base and refinement targets normally have no embedded profile."
+      ],
+      [
+        "Print without another conversion",
+        "Print at 100% with colour management disabled in the application, OS print path and driver. Preserve any embedded tag without conversion. Do not assign another profile or convert the TIFF to a working space. A program can use the embedded tag if colour management is enabled. New packages contain the clearer instructions; existing TIFFs and packages are preserved."
+      ]
+    ]
+  },
+  {
+    "title": "Appendix: plan and create the base target",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "sections": [
+      [
+        "1. Define success before printing",
+        "Agree on photographic use or a specific reference condition, viewing light, important colours and gradients, and acceptance criteria. Record printer, ink, paper, driver preset, quality, resolution, backing and instrument. Check nozzles and allow consistent drying time. A custom RGB target does not establish ISO proofing conformity."
+      ],
+      [
+        "2. Use an existing ICC as a starting estimate",
+        "Choose a reliable RGB printer ICC for the same printer, ink, paper and settings, or a reasonably similar system. In target generation, select an Argyll method supporting perceptual placement and supply the preconditioning profile. Argyll uses its predictions to distribute device-RGB patches; the base target is not converted through that ICC. A poor or unrelated profile can bias sampling. Without a suitable ICC, use an unconditioned initial target and improve the sampling after the first build."
+      ],
+      [
+        "3. Choose the measurement budget",
+        "A practical starting recommendation is about 1,000 colour samples with broad RGB coverage, neutrals, shadows, skin tones and distributed controls. For a careful full profile, 1,500–2,000 samples are reasonable; the existing 2,000-patch route is appropriate when measurement time permits. A 300–600-sample pilot can reveal setup problems before a larger run. These are workflow recommendations, not a universal optimum or a software default. Reserve space for repeats and several unprinted-white readings; confirm the actual generated count, including controls, in the preview."
+      ],
+      [
+        "Decision before saving",
+        "Preserve patch size and instrument scan geometry. Choose paper dimensions and inspect the actual page preview. Save the TIFF16 together with its matching TI2, layout and PRINTING.txt. Keep the original ICC and its identity with the project. A target-generation preconditioner is distinct from the profile later built from the measurements."
+      ]
+    ]
+  },
+  {
+    "title": "Appendix: print, measure and decide on OBA",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "sections": [
+      [
+        "4. Print the prepared RGB target",
+        "Follow its PRINTING.txt. In the Photoshop profile-mismatch dialog choose Discard the embedded profile (don’t color manage). Disable colour management in the printing application and colour adjustment in the driver. Print at 100% with the recorded preset. Do not convert to Adobe RGB or apply the printer ICC again. An identifying embedded ICC does not change this instruction. C2 reference targets have already received their specified preparation; their RGB values must also reach the printer unchanged."
+      ],
+      [
+        "5. Measure and review before B1",
+        "Calibrate the instrument, use consistent backing and scan direction, and measure all pages. Save each measurement round as a revision. Review identities, white controls, duplicate colours and unusual readings; remeasure suspect patches or a whole row with the correct page and forward/reverse choice. Correct acquisition errors before smoothing. Select and accept the intended revision, then lock B1. Keep different print rounds identifiable."
+      ],
+      [
+        "6. Decide whether FWA/OBA compensation is needed",
+        "Do not enable compensation solely because white looks yellow or a UV lamp makes the paper glow. Consider the paper, verified measurement condition and intended viewing light. For the supported i1Pro2 M0 route, compensation is a D50 simulation using available visible spectra, not a measurement of UV excitation or an M1 result. If the paper has little OBA, or the available evidence does not support compensation, retain the uncompensated route and document the choice."
+      ],
+      [
+        "If compensation is selected",
+        "Use native M0 spectra with verified instrument metadata and sufficient spectral coverage. InkProf averages available white-patch spectra and records their count and variation. If no usable white reference exists, B2 offers blank-paper measurement, a saved approved reference, or Cancel. Measure several clean locations on the same paper with the same backing. Averaging can reduce random noise; it cannot recover missing excitation information. Save a new B2 recipe. Keep compensation and viewing assumptions consistent through comparisons and final verification; changing this choice invalidates later results."
+      ]
+    ]
+  },
+  {
+    "title": "Appendix: build, refine and stop",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "sections": [
+      [
+        "7. Choose smoothing and the B3 route",
+        "Start with Argyll only (raw measurements) when repeatability is good. If noisy measurements or gradients justify it, compare Argyll colprof pre-smoothing (experimental) against the raw route. Its Assumed noise (%) and Smoothing at ICC build are separate settings; 0.5% is the initial recipe value, not an established optimum for every instrument. Check colour fit and equivalent photographic gradient paths. Select the RGB gradient test when useful. For an exact saved B2 recipe, choose Manual in B3; Automatic creates its own recipes and does not inherit every B2 smoothing setting. With FWA and pre-smoothing, use the newly saved supported two-pass recipe."
+      ],
+      [
+        "8. Select the refinement method",
+        "Use Argyll only as the initial refinement choice: Argyll places additional patches using the current profile. Current InkProf (Jacobian sampling) uses measured local residuals and local response to propose additional RGB samples. Both routes build the resulting ICC with Argyll. Choose Jacobian sampling when a reproducible local discrepancy warrants targeted investigation; do not expect it to make unattainable colours printable. Save the choice with the proposal. Print and measure the added device-RGB target unchanged, then build the next iteration."
+      ],
+      [
+        "9. Compare equivalent evidence",
+        "Use row 18 for Previous profile prediction vs current profile prediction at common samples. Separately review fitting error, development/held-out evidence where available, repeatability, gradients and Measured print vs desired colour. A smaller training error alone is insufficient. A small inverse round-trip error only shows consistency of the model and inverse. Large measured discrepancies require checks of profile identity, RGB values, print management, patch mapping and measurement conditions before attributing them to gamut."
+      ],
+      [
+        "10. Decide whether another iteration is worthwhile",
+        "Continue when a specific measured uncertainty can be reduced. Stop when comparable errors and gradients show no useful improvement beyond repeatability, or a further round produces an unacceptable accuracy/smoothness trade-off. One or two comparable rounds without meaningful gain are a practical review trigger, not an automatic InkProf acceptance rule. Record the evidence, selected profile and reason for stopping. Numerical convergence does not prove physical colour accuracy or compliance."
+      ]
+    ]
+  },
+  {
+    "title": "Appendix: final verification and certificate",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "sections": [
+      [
+        "11. Verify the exact profile to be delivered",
+        "After choosing the final iteration, run row 8 (Fit, Grid and C1) and row 9 (C2: save verification TIFF16) for that current profile. Make a new control print with the documented settings and no further colour conversion. Measure it in row 10, retain the revision, and run row 11 (C3) and row 12 (feedback). Do this even if development or training measurements already look good. A measurement used to train a later build cannot independently verify that later ICC."
+      ],
+      [
+        "12. Assess the whole result",
+        "Review count, mean, median, P95 and maximum for all assessed unique colours, not only the worst patches. Identify challenge colours, controls and repeatability. Compare desired-colour error with current-profile prediction error where available. Inspect important photographs and gradients. Model-reachable, outside-model/inversion-unresolved and unclassified references describe model evidence; they are not proof of a physical gamut limit. Confirm white, black, neutral balance and the intended viewing conditions."
+      ],
+      [
+        "13. Approve or decline the intended use",
+        "In row 13, enter review notes, scope, print settings, limitations and the decision. Approval is justified only by the relevant measured evidence and agreed criteria. If a required standard limit is not met, report it; printer limitations do not waive that requirement. Photographic use may be approved with explicit limitations when agreed, while conformity for a different use is declined. If the remaining cause is unresolved, say so. Row 14 exports the selected ICC and English measurement certificate."
+      ],
+      [
+        "14. Preserve the evidence and status",
+        "Check that the certificate identifies this ICC, iteration, current verification revision, regularisation, FWA reference and reviewer decision. Retain the target, TI2/layout, PRINTING.txt, raw measurements, recipe, ICC and complete reports. Row 19 is numerical-only delivery and cannot replace fresh measured verification. If the ICC or print setup changes after approval, repeat final verification. The defensible conclusion is measured and approved for the stated use, with disclosed limits—not automatic ISO approval."
+      ]
+    ]
+  },
+  {
+    "title": "Appendix: evidence behind the recommendations",
+    "sections": [
+      [
+        "Argyll: sampling and measurement quality",
+        "The targen documentation supports using a prior or similar ICC to guide perceptual patch placement. printtarg explains instrument-dependent patch geometry and randomised locations, which help identification and distribute spatial printing effects. Preserve the generated layout; do not rearrange patches manually. There is no universally optimal patch count. The suggested budgets in this appendix are InkProf working recommendations to be evaluated against repeatability and independent results."
+      ],
+      [
+        "Argyll: smoothing is an uncertainty assumption",
+        "colprof defines -r as the assumed average deviation of device and instrument readings, with a default of 0.5%. Raising it gives less weight to individual readings and more to collective behaviour. A percentage is not ΔE00. Estimate the need from repeat readings and compare accuracy and gradients; do not increase smoothing simply to conceal a systematic print error."
+      ],
+      [
+        "X-Rite: distinguish M0 compensation from M1",
+        "X-Rite describes M1 as the preferred condition for OBA-enhanced substrates and explains that M0 does not fully define UV content. The i1Pro2 hardware supports M1, but the InkProf path described here uses verified M0 data. Recording spectral bands near or below 400 nm does not measure the illumination spectrum or establish calibrated UV excitation. Averaging white readings improves repeatability, not the physical definition of M0. Use actual M1 measurements in a compatible workflow when required by the reference or conformity claim."
+      ],
+      [
+        "Fogra: verification needs the relevant reference and control",
+        "Fogra links contract-proof verification to its defined MediaWedge, printing condition and applicable tolerances. An InkProf custom RGB verification and reviewer approval are useful evidence for a stated use, but do not substitute for that complete procedure. The independent final control print in this appendix is an InkProf quality-control recommendation."
+      ],
+      [
+        "What external sources do not establish",
+        "These sources do not demonstrate that InkProf Jacobian sampling outperforms Argyll only, nor that the recommended patch budgets or stopping triggers are universally optimal. Those decisions require comparable local results. Sources reviewed on 8 October 2026; the handbook describes current InkProf behaviour separately from external guidance."
+      ]
+    ],
+    "links": [
+      [
+        "Argyll: target placement and preconditioning",
+        "https://www.argyllcms.com/doc/targen.html"
+      ],
+      [
+        "Argyll: patch layout and randomisation",
+        "https://www.argyllcms.com/doc/printtarg.html"
+      ],
+      [
+        "Argyll: smoothing and profile building",
+        "https://www.argyllcms.com/doc/colprof.html"
+      ],
+      [
+        "X-Rite: measurement conditions and optical brighteners",
+        "https://www.xrite.com/resources/successful-color-management-of-papers-with-optical-brighteners"
+      ],
+      [
+        "Fogra: MediaWedge and contract-proof verification",
+        "https://fogra.org/en/shop/mediawedge-cmyk"
+      ]
+    ],
+    "tag": "COMPLETE PROFILING APPENDIX | SOURCES | 2026-10-08"
+  },
+  {
+    "title": "Appendix: Torger and i1Profiler",
+    "tag": "COMPLETE PROFILING APPENDIX | COMPARISON",
+    "sections": [
+      [
+        "Torger: a useful photographic starting point",
+        "Torger recommends preconditioning, optimised placement and extra greys. His Colormunki example favours about 840 patches as a practical balance; this is experience with that instrument and print system, not a universal limit. He uses colprof -r1.0 to trade a little fit accuracy for smoothness and evaluates diagnostic gradients and a familiar photograph. His reported profile-matching errors compare predictions with measured device patches, including training-data checks; they are not interchangeable with InkProf C3 errors against desired colours on a separate profile-converted print. His tutorial is primarily a base-profiling workflow, not evidence that InkProf refinement replicates a particular iterative algorithm."
+      ],
+      [
+        "i1Profiler: a more extensive measurement route",
+        "X-Rite’s recommended RGB workflow proposes 2,033 or 1,586 patches, wider patches for better sampling, about an hour of drying, instrument calibration and saved measurement data. These recommendations concern its own software and layouts: do not blindly increase InkProf patch width or assume one hour guarantees stability for every paper. i1Profiler also offers targeted optimisation and optical-brightener compensation; the internal engine is not Argyll, and its OBC must not be described as identical to InkProf’s M0 method."
+      ],
+      [
+        "Reconciled recommendation for InkProf",
+        "For a paper used regularly and a careful i1Pro2 profiling job, begin with approximately 1,500–2,000 patches when feasible. Around 800–1,000 is a reasonable lower-budget start; a 300–600-patch pilot is for setup checks. Use a suitable existing ICC for placement, distribute neutral and white controls, and preserve reliable patch geometry. Compare raw Argyll fitting with justified smoothing on the same data. Choose further patches from measured evidence rather than a fixed obligation to iterate."
+      ],
+      [
+        "The final decision remains measured",
+        "Neither an attractive photograph nor low model-fit error alone establishes measured accuracy for the intended reference. Keep the familiar photographic check and gradient review, then make the independent final C2 print and C3 measurement before reviewer approval and certificate delivery. This combines practical photographic assessment with traceable measurement."
+      ]
+    ],
+    "links": [
+      [
+        "Torger: Inkjet printer profiling with Argyll and Colormunki",
+        "https://www.torger.se/anders/photography/argyll-print.html"
+      ],
+      [
+        "X-Rite: Recommended RGB Printer Profiling With i1Profiler",
+        "https://www.xrite.com/it-it/service-support/recommended_rgb_printer_profiling_with_i1profiler"
+      ],
+      [
+        "X-Rite: i1Profiler features and targeted optimisation",
+        "https://www.xrite.com/-/media/xrite/files/literature/l7/l7-700_l7-799/l7-760-i1-brochure/l7-760_i1_brochure_en.pdf"
+      ]
+    ]
+  },
+  {
+    "title": "Keith Cooper: test images and sky gradients",
+    "tag": "COMPLETE PROFILING APPENDIX | VISUAL ASSESSMENT",
+    "sections": [
+      [
+        "Keith Cooper: photographic test images",
+        "Keith Cooper (Northlight Images) provides printer test images and assessment notes, including the Datacolor image made available courtesy of Datacolor. Use it for overall photographic assessment of skin tones, neutrals, shadows and saturated colours. In InkProf comparisons, inspect the sky gradient for banding or uneven transitions when assessing smoothing; it is a visual diagnostic, not proof of a particular cause. Compare the same source, ICC path, intent, BPC, print preset and viewing light. The original Adobe RGB photograph needs one intended printer-profile conversion; an already converted device-RGB version must receive no second conversion. Do not apply fitting-target opening instructions to the original photograph. JPEG quantisation and clipping can also produce visible steps; use synthetic high-precision gradients alongside it. Download from Keith Cooper’s page; the image is not distributed in the InkProf repository."
+      ]
+    ],
+    "links": [
+      [
+        "Keith Cooper — Printer Test Images, Northlight Images",
+        "https://www.northlight-images.co.uk/printer-test-images/"
       ]
     ]
   }

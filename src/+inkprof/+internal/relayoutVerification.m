@@ -4,10 +4,12 @@
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function folder=relayoutVerification(referenceFile,folder)
 % Preserve frozen reference RGB/Lab, replace only their print placement.
+calculation=inkprof.internal.calculationProgress("Preparing C2", "Reading test colours and preparing paper options. Please wait.");
 reference=jsondecode(fileread(referenceFile));old=fileparts(referenceFile);
 assert(~isfolder(folder),'inkprof:Exists','Output exists.');
 source=fullfile(old,'definition','verification.ti1');
 target=inkprof.importTarget(source);
+clear calculation;
 choice=inkprof.internal.paperLayoutDialog(numel(target.ids),inkprof.internal.findProject(referenceFile),source);
 assert(~isempty(choice),'inkprof:Cancelled','Paper selection cancelled.');
 mkdir(folder);copyfile(fullfile(old,'definition'),fullfile(folder,'definition'));

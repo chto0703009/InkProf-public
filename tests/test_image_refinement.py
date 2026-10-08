@@ -11,7 +11,7 @@ import sys
 import tempfile
 import unittest
 import numpy as np
-from PIL import Image, ImageCms
+from PIL import Image
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'analysis'))
 from image_refinement import source_profile, representatives, choose_candidates, attach_fit_estimates, run, sha
 from lcms_float import LittleCMS

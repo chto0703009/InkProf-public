@@ -1,21 +1,43 @@
-# C1 – RGB-nät, invers, gråramp och CMM-jämförelse
+# C1 – RGB grid, inverse, gray ramp and CMM comparison
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 ```matlab
 [gridReport, gridFile] = inkprof.checkProfileGrid(jobFolder);
 ```
 
-Standardnätet är 9×9×9 = 729 RGB-punkter. `GridLevels` kan anges mellan 3 och 25. Fönstret visar statistik, lika-RGB-gråramp och RGB-kanalerna från neutral Lab genom inversen. `ShowDialog=false` stöds. Resultat sparas i jobbets `checks/<UUID>` som JSON och Markdown; manifestet uppdateras.
+The default grid is 9×9×9 = 729 RGB points; `GridLevels` can be set from 3 to 25. The window shows statistics, the equal-RGB gray ramp, and the RGB channels obtained from neutral Lab through the inverse. `ShowDialog=false` is supported. Results are saved in the job's `checks/<UUID>` folder as JSON and Markdown, and the manifest is updated.
 
-Beräkningen använder `xicclu -ir -pl` utan svartpunktskompensation. Framåt går genom A2B och bakåt genom den lagrade B2A-tabellen (`-fb`), inte genom numerisk inversion av A2B (`-fif`). RGB → Lab → RGB → Lab kontrolleras med ΔE00 och RGB-fel i procentenheter. Antal RGB-värden utanför kuben redovisas utan att först klippa dem. Icke-ändliga värden och felaktigt antal verktygsresultat avvisas.
+## Roundtrip
 
-Övergångar undersöks med 27 linjer (tre axlar, övriga kanaler i 0/0,5/1), vardera 257 prov. Andra differensens Lab76-norm redovisas; värden över 1 Lab-enhet är diagnostiska kandidater, inte en generell acceptansgräns. Grårampen har 257 lika RGB-värden. Minskning i L* större än 0,001 räknas. En separat neutral Lab-ramp undersöker inversen från profilens svarta L* till 100; neutralpunkterna är inte garanterat inom gamut.
+The computation uses `xicclu -ir -pl` without black point compensation. Forward goes through A2B; backward goes through the stored B2A table (`-fb`), not through numerical inversion of A2B (`-fif`).
 
-Pillow/LittleCMS jämförs framåt och bakåt med Argyll vid samma kvantiserade indata, relativ kolorimetri, BPC av. RGB/Lab-gränssnittet är 8-bitars. NumPy-representationen av Pillow LAB har signerade, byteomslagna a/b-kanaler; detta hanteras uttryckligen och testas mot Pillow-pixlar. Resultatet är en begränsad CMM-kontroll, inte flyttalsprecision eller bred kompatibilitetscertifiering.
+RGB → Lab → RGB → Lab is checked with ΔE00 and with RGB error in percentage points. The number of RGB values outside the cube is reported without clipping them first. Non-finite values and a wrong number of tool results are rejected.
 
-Ett syntetiskt nät är separat från mätpunkterna men är inte en oberoende uppmätt kontroll. Stor RGB-roundtripavvikelse kan bero på icke-entydighet, gamutbegränsning eller approximation i inversen; den får inte förklaras som ofarlig utan vidare granskning. Avstånd mellan grannpunkter är en gradient, inte automatiskt en diskontinuitet. Ändligt antal prov kan inte bevisa jämnhet överallt. Lika RGB är inte heller ett krav på neutralt Lab för en okorrigerad skrivare.
+## Transitions and ramps
 
-Sju automatiska tester täcker verktygsutdata, fel, icke-ändliga värden, nätstorlek och Lab-kodning. Den aktuella 575-profilen har körts genom MATLAB-fönstret. Ett första internt prov hade fel Lab-kodning i CMM-jämförelsen; den rapporten är markerad `invalid-cmm-comparison` och ska inte användas. Korrigerade rapporter genereras med aktuell kod.
+- **Transitions:** 27 lines (three axes, with the other channels at 0, 0.5 and 1), 257 samples each. The Lab76 norm of the second difference is reported. Values above 1 Lab unit are diagnostic candidates, not a general acceptance limit.
+- **Gray ramp:** 257 equal-RGB values. Decreases in L* larger than 0.001 are counted.
+- **Neutral Lab ramp:** a separate ramp tests the inverse from the profile's black L* up to 100. The neutral points are not guaranteed to be in gamut.
 
-[Argyll xicclu](https://www.argyllcms.com/doc/xicclu.html) dokumenterar skillnaden mellan bakåttabell och inverterad framåttabell samt relativ/absolut kolorimetri. Profilkvalitet vid verklig utskrift behöver fortsatt verifieras med nya mätningar.
+## CMM comparison
+
+Pillow/LittleCMS is compared with Argyll, forward and backward, at the same quantized inputs, with relative colorimetric intent and BPC off.
+
+The RGB/Lab interface is 8-bit. NumPy's representation of Pillow LAB has signed, byte-wrapped a/b channels; this is handled explicitly and tested against Pillow pixels. The result is a limited CMM check, not floating-point precision or broad compatibility certification.
+
+## Interpretation
+
+- A synthetic grid is separate from the measurement points, but it is not an independent measured control.
+- A large RGB roundtrip deviation can be caused by non-uniqueness, gamut limits or approximation in the inverse. It must not be dismissed as harmless without further review.
+- The distance between neighbouring points is a gradient, not automatically a discontinuity.
+- A finite number of samples cannot prove smoothness everywhere.
+- Equal RGB is not a requirement for neutral Lab on an uncorrected printer.
+
+## Testing
+
+Seven automatic tests cover tool output, errors, non-finite values, grid size and Lab encoding. The current 575-patch profile has been run through the MATLAB window.
+
+A first internal trial had the wrong Lab encoding in the CMM comparison. That report is marked `invalid-cmm-comparison` and must not be used. Corrected reports are generated with the current code.
+
+[Argyll xicclu](https://www.argyllcms.com/doc/xicclu.html) documents the difference between the backward table and the inverted forward table, and relative versus absolute colorimetric. Profile quality in real printing still needs to be verified with new measurements.

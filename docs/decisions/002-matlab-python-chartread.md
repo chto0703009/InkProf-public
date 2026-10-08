@@ -1,80 +1,80 @@
-# 002 - MATLAB, Python-brygga och radmätning med ArgyllCMS
+# 002 - MATLAB, Python bridge and row measurement with ArgyllCMS
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Datum: 2026-09-25. Uppdaterat: 2026-09-26. Status: egen mätprototyp simuleringsprovad; fysisk verifiering återstår. Kompletterar projektplan v0.6 och [beslut 007](007-independent-inkprof.md).
+Date: 2026-09-25. Updated: 2026-09-26. Status: own measurement prototype tested in simulation; physical verification remains. Supplements project plan v0.6 and [decision 007](007-independent-inkprof.md).
 
-## Uppdaterat beslut: terminalägd mätsession
+## Updated decision: terminal-owned measurement session
 
-Den rekommenderade implementationen är nu `startMeasurement` / `finishMeasurement`. Python startar chartread med direkt terminalkontakt och äger hela mätsessionen. MATLAB förbereder chart-JSON och validerar/importerar resultatet efteråt. Ingen löpande pollning eller tangentvidarebefordran krävs från MATLAB. Den äldre JSON-lines-/PTY-bryggan nedan behålls för felsökning och är inte längre det rekommenderade användarflödet.
+The recommended implementation is now `startMeasurement` / `finishMeasurement`. Python starts chartread with direct terminal contact and owns the whole measurement session. MATLAB prepares the chart JSON and validates and imports the result afterwards. No ongoing polling or key forwarding from MATLAB is needed. The older JSON-lines/PTY bridge below is kept for troubleshooting and is no longer the recommended user workflow.
 
-Chartreads radomläsning och `-r` återanvänds. Python sparar tidigare TI3 före Resume och ett separat resultatsnapshot efter sparning. Körningsmetadata loggas, men den nya direkta terminalvägen sparar ännu inte rå dialogtext. Se [aktuell köranvisning](../usage/chart-measurement.md).
+Chartread's row re-reading and `-r` are reused. Python saves the earlier TI3 before Resume, and a separate result snapshot after saving. Run metadata is logged, but the new direct terminal path does not yet save the raw dialogue text. See the [current run guide](../usage/chart-measurement.md).
 
-## Inriktning
+## Direction
 
-InkProf behåller MATLAB Base som huvudplattform och äger själv spektrala data och beräkningar, utan körberoende till SpectraLab eller Camera-41. För interaktiv radmätning rekommenderas en liten separat Python-process som styr ArgyllCMS `chartread`. Bryggan avgränsas till processkommunikation och mätsessionens tillstånd. Den ska inte bli en andra implementation av färgberäkningar eller projektmodellen.
+InkProf keeps MATLAB Base as its main platform and owns its spectral data and computations itself, without a runtime dependency on SpectraLab or Camera-41. For interactive row measurement, a small separate Python process that controls ArgyllCMS `chartread` is recommended. The bridge is limited to process communication and the state of the measurement session. It must not become a second implementation of colour computations or of the project model.
 
-Python blir ett deklarerat beroende för denna integrerade mätväg. Import av redan uppmätta filer och analys i MATLAB ska kunna användas utan bryggan. Ingen ChromIQ-adapter krävs.
+Python becomes a declared dependency for this integrated measurement path. Import of already measured files and analysis in MATLAB must be usable without the bridge. No ChromIQ adapter is needed.
 
-## Radmätning i ArgyllCMS
+## Row measurement in ArgyllCMS
 
-`chartread` stöder radvis mätning för instrument som har motsvarande stöd. Användaren för spektrometern över en rad patchar; Argyll hanterar instrumentkommunikation och identifiering av patcharna. Targetets geometri måste vara anpassad till instrumentet och mätläget.
+`chartread` supports row-by-row measurement for instruments with the corresponding support. The user moves the spectrometer over a row of patches; Argyll handles instrument communication and patch identification. The target's geometry must suit the instrument and the measurement mode.
 
-Underlaget är en `.ti2`-fil som beskriver kartan. Resultatet sparas som `.ti3`, med spektrala data när instrumentet tillhandahåller dem. Verktyget stöder omläsning och återupptagning av en delvis uppmätt karta med `-r`. Exakt instrumentmodell, Argyll-version, operativsystem och mätläge måste verifieras praktiskt.
+The input is a `.ti2` file describing the chart. The result is saved as `.ti3`, with spectral data when the instrument provides them. The tool supports re-reading and resuming a partly measured chart with `-r`. The exact instrument model, Argyll version, operating system and measurement mode must be verified in practice.
 
-Kontinuerlig insamling under dragningen innebär inte automatiskt att MATLAB får varje patchvärde i realtid. Första målet är statusåterkoppling efter en godkänd rad och korrekt import av sparade mätdata. Liveöverföring av spektrum eller patchvärden är ett separat krav som måste provas; konsolmeddelanden är inte ett garanterat strömmande data-API.
+Continuous capture during the sweep does not automatically mean that MATLAB receives each patch value in real time. The first goal is status feedback after an accepted row, and correct import of the saved measurement data. Live transfer of spectra or patch values is a separate requirement that must be tested; console messages are not a guaranteed streaming data API.
 
-## Ansvarsfördelning
+## Division of responsibility
 
-| Del | Ansvar |
+| Part | Responsibility |
 |---|---|
-| InkProf i MATLAB | Projekt, targetdefinition, patchidentiteter, utskriftsrecept, användargränssnitt och profilförsök |
-| InkProfs egna beräkningsrutiner (planerade) | Spektral kolorimetri, XYZ/Lab, ΔE00 och analys med spårbara indata |
-| Python-brygga | Starta och övervaka `chartread`, hantera dess dialog, kommandon, loggar och sessionstillstånd |
-| ArgyllCMS | Instrumentkommunikation, radmätning, patchidentifiering och ICC-generering genom respektive verktyg |
+| InkProf in MATLAB | Project, target definition, patch identities, print recipe, user interface and profile experiments |
+| InkProf's own computation routines (planned) | Spectral colorimetry, XYZ/Lab, ΔE00 and analysis with traceable inputs |
+| Python bridge | Start and monitor `chartread`, handle its dialogue, commands, logs and session state |
+| ArgyllCMS | Instrument communication, row measurement, patch identification and ICC generation through the respective tools |
 
-Endast Argyll-processen ska äga instrumentanslutningen i denna mätväg. InkProf ska inte samtidigt öppna en separat spotread-session mot samma instrument.
+Only the Argyll process may own the instrument connection in this measurement path. InkProf must not at the same time open a separate spotread session against the same instrument.
 
-## Varför en brygga?
+## Why a bridge?
 
-MATLAB kan starta externa program, men ett vanligt `system`-anrop väntar på att programmet avslutas. Det ger inte ensamt en komplett lösning för löpande, dubbelriktad kommunikation och ett responsivt användargränssnitt under mätningen.
+MATLAB can start external programs, but an ordinary `system` call waits for the program to finish. On its own, that does not give a complete solution for ongoing, two-way communication and a responsive user interface during measurement.
 
-Direkt processhantering från MATLAB är möjlig att undersöka. Bedömningen är ändå att en avgränsad Python-process blir enklare att underhålla, med hänsyn till tidigare arbete i SpectraLab. Språkvalet avgörs inte av färgmatematiken eller mätningens hastighet, utan av robust hantering av den interaktiva processen.
+Direct process handling from MATLAB is worth investigating. The assessment is nevertheless that a bounded Python process will be easier to maintain, given earlier work in SpectraLab. The choice of language is not decided by the colour mathematics or the speed of measurement, but by robust handling of the interactive process.
 
-Bryggan behöver hantera kalibreringsbegäran, efterfrågad rad, godkänd eller misslyckad dragning, omläsning, avbrott och kontrollerat avslut. Ett avbrott ska inte rapporteras som en lyckad sparning utan kontroll av resultatfilen. Mätningar som bara finns i processens minne får inte antas vara säkrade på disk.
+The bridge needs to handle calibration requests, the requested row, an accepted or failed sweep, re-reading, interruption and a controlled exit. An interruption must not be reported as a successful save without checking the result file. Measurements that exist only in the process's memory must not be assumed to be secured on disk.
 
-För `targen`, `printtarg` och `colprof` är behovet av en interaktiv brygga mindre. Vanliga processanrop kan räcka, med separat hantering av framsteg och avbrytning om gränssnittet kräver det.
+For `targen`, `printtarg` and `colprof` the need for an interactive bridge is smaller. Ordinary process calls can be enough, with separate handling of progress and cancellation if the interface requires it.
 
-## Gränssnitt mellan MATLAB och bryggan
+## Interface between MATLAB and the bridge
 
-Prototypen använder JSON-meddelanden över standardströmmar och POSIX-PTY mot chartread. Händelserna är `started`, `output`, `exited` och `error`. Rå konsoltext och resultatfiler bevaras. Windows-mätning stöds ännu inte.
+The prototype uses JSON messages over the standard streams, and a POSIX PTY towards chartread. The events are `started`, `output`, `exited` and `error`. Raw console text and result files are preserved. Windows measurement is not yet supported.
 
-Möjliga framtida semantiska händelser är ”kalibrering krävs”, ”rad B efterfrågas”, ”rad godkänd”, ”omläsning behövs”, ”resultat sparat” och ”session misslyckad”. Händelserna är bryggans kontrakt, inte befintliga standardmeddelanden från Argyll.
+Possible future semantic events are "calibration required", "row B requested", "row accepted", "re-reading needed", "result saved" and "session failed". These events are the bridge's contract, not existing standard messages from Argyll.
 
-Originalfilerna `.ti2` och `.ti3`, verktygsversion, argument, sessionslogg och koppling till targetets identitet ska bevaras. InkProf i MATLAB ansvarar för validering och införlivande av mätdata. Om konsoltext behöver tolkas ska adaptern provas mot angivna Argyll-versioner, och okända meddelanden ska kunna granskas i råloggen.
+The original `.ti2` and `.ti3` files, tool version, arguments, session log and link to the target's identity are to be preserved. InkProf in MATLAB is responsible for validating and incorporating measurement data. If console text has to be interpreted, the adapter must be tested against stated Argyll versions, and unknown messages must be reviewable in the raw log.
 
-## Erfarenheter från befintliga program
+## Experience from existing programs
 
-SpectraLabs `SpotreadInstrument.m` använder redan `ManualSafeBridge.m` och Python för ett interaktivt Argyll-flöde. Erfarenheter av processlivslängd, kalibrering, fel och diagnostik kan återanvändas, men inga anrop till SpectraLab ska krävas. `chartread` kräver däremot en egen sessionshantering för hela kartan; punktmätningens livscykel ska inte kopieras oförändrad.
+SpectraLab's `SpotreadInstrument.m` already uses `ManualSafeBridge.m` and Python for an interactive Argyll workflow. Experience of process lifetime, calibration, errors and diagnostics can be reused, but no calls to SpectraLab may be required. `chartread`, on the other hand, needs its own session handling for the whole chart; the spot-measurement lifecycle must not be copied unchanged.
 
-ChromIQ har `workflow/measure_manager.py`, med en `MeasureManager` som styr `chartread`, tolkar meddelanden och hanterar fel. Det finns även en alternativ mäthjälpare med JSON-kommunikation. Detta är en historisk kodobservation. Fortsatt implementation ska använda vanlig ArgyllCMS och egen adapter, utan att leta rutiner i ChromIQ-koden. Ingen tredjepartskod har importerats genom detta beslut.
+ChromIQ has `workflow/measure_manager.py`, with a `MeasureManager` that controls `chartread`, interprets messages and handles errors. There is also an alternative measurement helper with JSON communication. This is a historical code observation. Further implementation is to use ordinary ArgyllCMS and InkProf's own adapter, without searching for routines in the ChromIQ code. No third-party code has been imported through this decision.
 
-## Första praktiska verifiering
+## First practical verification
 
-1. Dokumentera instrumentmodell, operativsystem, Argyll-version, Python-miljö och önskat mätläge.
-2. Skapa och skriv ut en liten karta lämpad för instrumentets radmätning. Bevara `.ti2`, patchidentiteter och utskriftsrecept.
-3. Kalibrera och läs flera rader med vanlig `chartread` för att fastställa att själva instrumentflödet fungerar.
-4. Upprepa genom bryggan och MATLAB-gränssnittet. Prova omläsning och hantering av en misslyckad rad.
-5. Avsluta med sparning och återuppta. Kontrollera vad som faktiskt sparas; prova kontrollerad felhantering vid förlorad anslutning.
-6. Importera `.ti3` till InkProfs interna JSON och kontrollera patch-ID, enheter, spektral våglängdsaxel, mätvillkor samt att tidigare godkända värden bevaras korrekt.
-7. Kontrollera att MATLAB-gränssnittet förblir responsivt och att fel eller ofullständiga sessioner aldrig visas som fullständiga mätningar.
+1. Document the instrument model, operating system, Argyll version, Python environment and desired measurement mode.
+2. Create and print a small chart suited to the instrument's row measurement. Preserve the `.ti2`, the patch identities and the print recipe.
+3. Calibrate and read several rows with plain `chartread`, to establish that the instrument workflow itself works.
+4. Repeat through the bridge and the MATLAB interface. Test re-reading and the handling of a failed row.
+5. Finish with saving and resuming. Check what is actually saved, and test controlled error handling on a lost connection.
+6. Import the `.ti3` into InkProf's internal JSON and check patch IDs, units, the spectral wavelength axis, measurement conditions, and that previously accepted values are preserved correctly.
+7. Check that the MATLAB interface stays responsive, and that errors or incomplete sessions are never shown as complete measurements.
 
-Provet avgör bryggans detaljer. Radmätningen är i sig inget skäl att överge MATLAB.
+The test decides the bridge's details. Row measurement is in itself no reason to abandon MATLAB.
 
-## Källor
+## Sources
 
 - [ArgyllCMS: chartread](https://www.argyllcms.com/doc/chartread.html)
-- [ArgyllCMS: TI3-format](https://www.argyllcms.com/doc/ti3_format.html)
+- [ArgyllCMS: TI3 format](https://www.argyllcms.com/doc/ti3_format.html)
 - [MathWorks: system](https://www.mathworks.com/help/matlab/ref/system.html)
-- Lokal kod granskad 2026-09-25: SpectraLab `SpectraLab_v1.2.1-dev/spectralab/+spectralab/+drivers/SpotreadInstrument.m` och `+spotread/ManualSafeBridge.m`.
-- Lokal kod granskad 2026-09-25: ChromIQ `workflow/measure_manager.py`.
+- Local code reviewed 2026-09-25: SpectraLab `SpectraLab_v1.2.1-dev/spectralab/+spectralab/+drivers/SpotreadInstrument.m` and `+spotread/ManualSafeBridge.m`.
+- Local code reviewed 2026-09-25: ChromIQ `workflow/measure_manager.py`.

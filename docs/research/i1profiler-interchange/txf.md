@@ -2,42 +2,42 @@
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Datum: 2026-09-25. Status: preliminärt läs-/skrivkontrakt för InkProf.
+Date: 2026-09-25. Status: preliminary read/write contract for InkProf.
 
-Ett verkligt [TXF-referensfall med 2 033 patchar](chart-2033-txf-inspection.md) har nu inspekterats. Där dokumenteras konkreta XML-sökvägar och layoutattribut; rendering och mätning är ännu inte verifierade.
+A real [TXF reference case with 2,033 patches](chart-2033-txf-inspection.md) has now been inspected. It documents concrete XML paths and layout attributes; rendering and measurement have not yet been verified.
 
-## Källbelagd roll
+## Source-backed role
 
-`.txf` används för i1Profilers testtarget. [S5] Filen innehåller enhetsvärden och kan beskriva patchplacering via CxF3:s platsinformation och egna resurser. PXF och TXF kan ligga nära varandra strukturellt; skillnaden är inte enbart filändelsen. [S4] Se [gemensamma regler och källor](README.md).
+`.txf` is used for i1Profiler's test targets. [S5] The file contains device values and can describe patch placement via CxF3's location information and custom resources. PXF and TXF may be structurally close; the difference is not just the file extension. [S4] See [common rules and sources](README.md).
 
-## Föreslagen betydelse i InkProf
+## Proposed meaning in InkProf
 
-En TXF behandlas som en targetdefinition med möjlig fysisk layout. Dokumentera separat vilka delar som faktiskt lästs: styrvärden, logisk ordning, sida/rad/kolumn, storlek och instrumentrelaterade parametrar. Saknad layout betyder inte att patcharna får antas ligga i radordning.
+A TXF is treated as a target definition with a possible physical layout. Document separately which parts have actually been read: control values, logical order, page/row/column, size and instrument-related parameters. A missing layout does not mean the patches may be assumed to lie in row order.
 
-## Importkrav
+## Import requirements
 
-- Läs och validera styrvärden enligt [PXF-kontraktet](pxf.md).
-- Spara både originalordning och fysisk position när båda finns. En permutation mellan dem ska vara explicit.
-- Bevara platsdata och egna XML-resurser. Exakta sökvägar och enheter ska fastställas från schema och referensfiler; detta dokument anger inga påhittade privata taggar.
-- Kontrollera att patchar inte oavsiktligt placeras på samma position och att sid-/rad-/kolumnindex tolkas enligt producentens konvention.
-- Matcha layouten mot det utskrivna targetet innan den används för mätning.
+- Read and validate control values according to the [PXF contract](pxf.md).
+- Save both original order and physical position when both exist. A permutation between them must be explicit.
+- Preserve location data and custom XML resources. Exact paths and units must be established from the schema and reference files; this document states no invented private tags.
+- Check that patches are not unintentionally placed at the same position and that page/row/column indices are interpreted according to the producer's convention.
+- Match the layout against the printed target before it is used for measurement.
 
-## Exportkrav
+## Export requirements
 
-En targetexport för mätning behöver en verklig layout som mottagaren kan använda. Om i1Profiler genererar om layouten efter import ska det nya targetet skrivas ut. Dess beskrivning får inte användas för att mäta ett tidigare utskrivet ark med annan placering.
+A target export for measurement needs a real layout that the recipient can use. If i1Profiler regenerates the layout after import, the new target must be printed. Its description must not be used to measure a previously printed sheet with a different placement.
 
-För en redan utskriven karta ska exporten bevara patchordning och geometri tillräckligt för rätt identifiering vid mätning. Om detta inte kan styrkas ska InkProf erbjuda export av patchuppsättning för ny layout, inte kalla resultatet en ekvivalent TXF.
+For an already printed chart, the export must preserve patch order and geometry sufficiently for correct identification during measurement. If this cannot be substantiated, InkProf must offer export of a patch set for a new layout, not call the result an equivalent TXF.
 
-## Utbyte med Argyll
+## Interchange with Argyll
 
-TXF motsvarar funktionellt TI2, men en TI2 kan kräva layout- och instrumentinformation som inte har en direkt eller känd TXF-motsvarighet. Konvertering kräver en särskilt verifierad adapter. Att byta ändelse eller kopiera endast RGB-listan räcker inte.
+TXF corresponds functionally to TI2, but a TI2 may require layout and instrument information that has no direct or known TXF equivalent. Conversion requires a specially verified adapter. Changing the extension or copying only the RGB list is not sufficient.
 
-Förlustrapporten ska skilja mellan bevarade färgvärden, ändrad fysisk layout och bortfall av instrumentinställningar. Targetbilden eller utskriftsfilen ska arkiveras tillsammans med layoutbeskrivningen.
+The loss report must distinguish between preserved colour values, changed physical layout and loss of instrument settings. The target image or print file must be archived together with the layout description.
 
-## Verifieringsfall
+## Verification cases
 
-Prova flera sidor, en ofullständig sista rad, randomiserade patchar samt en layout med asymmetriska kontrollfärger i hörnen. Jämför producerad karta med originalet och kontrollera läsriktningen. Vilka privata resurser mottagaren kräver är en öppen versionsfråga.
+Test several pages, an incomplete last row, randomised patches and a layout with asymmetric control colours in the corners. Compare the produced chart with the original and check the reading direction. Which private resources the recipient requires is an open version question.
 
-## Praktisk granskning av i1Profiler 3.8.5
+## Practical review of i1Profiler 3.8.5
 
-Se [verifieringsrapporten](ui-verification-3.8.5.md) för observerade menyval, utförd MXF-import, spektral CGATS-export och TIFF-export. Rapporten skiljer utförda prov från återstående format- och layoutverifiering.
+See the [verification report](ui-verification-3.8.5.md) for observed menu choices, the performed MXF import, spectral CGATS export and TIFF export. The report distinguishes performed tests from remaining format and layout verification.

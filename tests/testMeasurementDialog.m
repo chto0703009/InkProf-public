@@ -103,6 +103,11 @@ verifyEqual(tc,dialog.Result.measurementCondition.interpreted,"unknown");
 verifyFalse(tc,dialog.Result.measurementCondition.fwaApplied);
 preview=findall(groot,'Tag','InkProfMeasurementResult');
 verifyEqual(tc,numel(preview),1);
+% Save opens the saved-result overview; hardware rereads require a separate click.
+verifyEmpty(tc,findall(groot,'Tag','InkProfSpotMeasurement'));
+verifyEmpty(tc,findall(groot,'Tag','InkProfRowRemeasurement'));
+verifyFalse(tc,isfolder(fullfile(folder,'spot-rereads')));
+verifyFalse(tc,isfolder(fullfile(folder,'row-rereads')));
 previewCleanup=onCleanup(@()delete(preview));
 verifyTrue(tc,contains(join(string(findobj(preview,'Tag','patchDetails').Value)),"Patch"));
 verifyTrue(tc,contains(string(findobj(preview,'Tag','patchValues').Text),"Target RGB (%)"));

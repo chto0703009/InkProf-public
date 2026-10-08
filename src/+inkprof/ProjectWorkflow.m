@@ -124,6 +124,9 @@ classdef ProjectWorkflow < handle
             % Invalidate descendants before starting, including cancelled reruns.
             obj.invalidate(id);obj.State.currentStep=id;
             obj.State.steps.(id).status="running";obj.State.steps.(id).message="Running";obj.event(id,"started",options);obj.save();
+            % Keep the manifest consistent while the step runs, so a crash or
+            % forced quit does not leave the project failing its integrity check.
+            inkprof.updateProject(obj.Root,Step="workflow-"+id+"-started",WorkflowMetadataOnly=true);
             try
                 [outputs,files]=inkprof.internal.executeWorkflowStep(obj,id,options);
                 if id=="recipe"&&isfield(outputs,'recipe')
@@ -182,6 +185,22 @@ classdef ProjectWorkflow < handle
                 end
                 rethrow(err)
             end
+            clear lock
+        end
+        function ids=recoverInterrupted(obj)
+            %RECOVERINTERRUPTED Mark steps left "running" by a closed MATLAB session as failed
+            % and record the workflow files in the manifest. Targets, measurements and
+            % profiles are not rehashed, so changed artifacts are still reported.
+            lock=obj.lock();ids=strings(0,1);
+            for id=reshape(string(fieldnames(obj.State.steps)),1,[])
+                if string(obj.State.steps.(id).status)=="running"
+                    obj.State.steps.(id).status="failed";
+                    obj.State.steps.(id).message="Interrupted: MATLAB closed while the step was running. Run the step again.";
+                    obj.event(id,"interrupted","MATLAB closed while the step was running.");ids(end+1)=id; %#ok<AGROW>
+                end
+            end
+            obj.save();
+            inkprof.updateProject(obj.Root,Step="workflow-recovered-after-interruption",WorkflowMetadataOnly=true);
             clear lock
         end
         function destination=savePrintCopy(obj,id,parent)
@@ -251,7 +270,18 @@ classdef ProjectWorkflow < handle
                 return
             end
             if printingChanged
-                if obj.mode()=="verification",obj.invalidate("c2");else,obj.invalidate("input");end
+                previousPrinting=before.printing;physicalPrinting=printing;
+                if isfield(previousPrinting,'fwaCompensation'),previousPrinting=rmfield(previousPrinting,'fwaCompensation');end
+                if isfield(physicalPrinting,'fwaCompensation'),physicalPrinting=rmfield(physicalPrinting,'fwaCompensation');end
+                onlyFWA=strcmp(jsonencode(orderfields(previousPrinting)),jsonencode(orderfields(physicalPrinting)));
+                if obj.mode()=="verification"
+                    obj.invalidate("c2");
+                elseif onlyFWA
+                    % FWA changes the build recipe, not the frozen raw measurements.
+                    obj.invalidate("recipe");
+                else
+                    obj.invalidate("input");
+                end
             else
                 obj.invalidate("export");obj.invalidate("numericalExport");
             end

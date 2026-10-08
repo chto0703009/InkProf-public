@@ -11,10 +11,10 @@ from urllib.parse import quote
 
 
 def details(delivery):
-    return [f"Fil: {Path(delivery['file']).name}", 'Internt profilnamn: '+delivery['internalName'],
-            'Leveransfilens SHA-256: '+delivery['sha256'],
-            'Kontrollerad originalprofil, SHA-256: '+delivery['sourceSHA256'],
-            'Endast profilens namninformation och nödvändiga filstruktur-/identitetsfält har ändrats. Alla övriga ICC-taggar, inklusive färgberäkningarnas tabeller, är byte-identiska.']
+    return [f"File: {Path(delivery['file']).name}", 'Internal profile name: '+delivery['internalName'],
+            'Delivery file SHA-256: '+delivery['sha256'],
+            'Checked original profile SHA-256: '+delivery['sourceSHA256'],
+            'Only profile naming information and necessary file structure/identity fields have changed. All other ICC tags, including colour computation tables, are byte-identical.']
 
 
 def create(folder):
@@ -28,13 +28,13 @@ def create(folder):
     if r['documentType'] == 'inkprof.numerical-report':
         from numerical_report import create as render
     else:
-        section = '<h2>Levererad ICC-profil</h2>'+''.join('<p>'+html.escape(x)+'</p>' for x in details(delivery))
-        section += "<p><a href='"+quote(delivery['file'])+"'>Hämta namngiven ICC-profil</a></p>"
+        section = '<h2>Delivered ICC profile</h2>'+''.join('<p>'+html.escape(x)+'</p>' for x in details(delivery))
+        section += "<p><a href='"+quote(delivery['file'])+"'>Download named ICC profile</a></p>"
         page = (folder/'final-report.html').read_text(encoding='utf-8')
-        page = page.replace('<h2>Sparad ICC-profil</h2>',section+'<h2>Kontrollerad ICC-kandidat (projektoriginal)</h2>',1)
+        page = page.replace('<h2>Saved ICC profile</h2>',section+'<h2>Checked ICC candidate (project original)</h2>',1)
         (folder/'final-report.html').write_text(page,encoding='utf-8')
         text = (folder/'final-report.txt').read_text(encoding='utf-8')
-        text = text.replace('SPARAD ICC\n','LEVERERAD ICC-PROFIL\n'+'\n'.join(details(delivery))+'\n\nKONTROLLERAD ICC-KANDIDAT (PROJEKTORIGINAL)\n',1)
+        text = text.replace('SAVED ICC\n','DELIVERED ICC PROFILE\n'+'\n'.join(details(delivery))+'\n\nCHECKED ICC CANDIDATE (PROJECT ORIGINAL)\n',1)
         (folder/'final-report.txt').write_text(text,encoding='utf-8')
         from workflow_final_pdf import create as render
     render(folder)

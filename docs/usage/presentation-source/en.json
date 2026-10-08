@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf - When colours have to be right | v1.0.0 - PREPARATION",
+    "tag": "InkProf | v1.0.0-rc.2 | 2026-10-08",
     "title": "Your image deserves the right colours",
     "lead": "You chose the light, shaped the image and worked on every nuance. When the image reaches paper, that work should come with it.",
     "sections": [
@@ -86,7 +86,7 @@
       ],
       [
         "04  Build and check the ICC profile",
-        "ArgyllCMS builds the profile. Numerical checks examine model fit and colour transformations. A successfully generated profile is a candidate to assess, not the end of quality control."
+        "ArgyllCMS builds the profile. The profiling process considers both colour accuracy and smooth tonal transitions, helping gradients reproduce evenly in print. Numerical checks examine model fit and colour transformations. A generated profile still needs assessment with a real print."
       ],
       [
         "05  Verify a real print",
@@ -94,7 +94,7 @@
       ],
       [
         "06  Approve, document or improve",
-        "Save the ICC and measurement certificate, or add colour patches from verification errors or an image for the next iteration. Profiles can be compared at shared sample points. If a later iteration is finalized without another verification print, the certificate explicitly states its numerical-only scope."
+        "Review the measured result and approve the profile for its stated use, or add colours for another iteration. When improvement stops, verify the exact final profile with a fresh control print before measured delivery. Profiles can also be compared at shared sample points. Delivery without a new verification print is explicitly labelled numerical-only."
       ]
     ],
     "callout": "TIFF16 is saved for separate printing. Measurement takes place in the app. Save the ICC and PDF/HTML certificate where you need them, while the project preserves the evidence and history."
@@ -113,7 +113,7 @@
       ],
       [
         "A measurement certificate to hand over",
-        "PDF and HTML collect project details, measurement conditions, results, profile identity and decisions. They state whether the current iteration was print-verified or only numerically checked. The certificate includes a signature section, references and explanations in Appendix A, and legal terms in Appendix B."
+        "PDF and HTML collect project details, measurement conditions, profile identity and reviewer decisions. They present the assessed colours as a whole, with difficult colours and limitations explained. Measured print results are distinguished from model predictions and numerical-only checks. The certificate includes a signature section, standards references and legal terms."
       ],
       [
         "Standards references supporting assessment",
@@ -145,20 +145,14 @@
   },
   {
     "tag": "VISUAL EXAMPLES FROM INKPROF",
-    "title": "Colour patches and profiles",
-    "lead": "These examples show how a printed verification target and the profile's predicted colours provide two different views of the same work.",
+    "title": "From colour patches to gamut",
+    "lead": "A printed target provides measurements. The following page shows a cross-section of the colour gamut described by the resulting profile.",
     "images": [
       [
         "patch-target.png",
-        85,
-        60,
+        150,
+        106,
         "Patch target. An example with 131 patches, including repetitions, contrast markers and position labels. Do not use this reduced image as a measurement print."
-      ],
-      [
-        "profile-3d.png",
-        104,
-        65,
-        "The profile's verification colours in 3D. Points show predicted colours in CIELAB D50: lightness L* and the a* and b* colour axes. These are verification points, not measured values or the printer's entire gamut. Colours are display-adapted previews."
       ]
     ],
     "sections": [
@@ -167,31 +161,31 @@
         "A model makes colour conversion possible. Measurement shows what actually reached the paper. Together, they support the next decision: use the profile, check a deviating patch or add more colours in another iteration."
       ]
     ],
-    "small": "Existing InkProf examples: Epson Stylus Pro 3880, glossy paper, Candidate-1 shared Lab comparison, 2026-09-29. The images illustrate the functions and are not new validation results."
+    "small": "Existing InkProf target example, 2026-09-29. The illustration is not a new validation result."
   },
   {
-    "tag": "ICC GAMUT | CIELAB D50",
-    "title": "See the printer’s colour gamut",
-    "lead": "A continuous 3D surface complements the sample points and shows the colour gamut described by the ICC profile.",
+    "tag": "ICC GAMUT | CIELAB D50 | L* = 50",
+    "title": "The colour gamut at L* = 50",
+    "lead": "A CIELAB cross-section shows the profile gamut at a fixed lightness. The a* axis is horizontal and b* is vertical.",
     "images": [
       [
-        "gamut-surface.png",
-        170,
-        117,
-        "Example: InkProf, iteration 2. Predicted A2B surface in CIELAB D50. Display colours are sRGB previews."
+        "gamut-L50-en.png",
+        174,
+        111,
+        "Epson Stylus Pro 3880, Photo Rag Baryta 315, InkProf iteration 3. ICC-derived absolute colorimetric gamut; sRGB colour previews."
       ]
     ],
     "sections": [
       [
-        "Understand the possibilities",
-        "The surface helps you see how the gamut changes between light, dark and saturated colours. The printer, paper and ink combination determines what can be reproduced."
+        "Read the gamut boundary",
+        "The contour is the intersection of the ICC-derived gamut surface with the L* = 50 plane. It shows the described colour extent at this lightness, not the entire gamut or a new measurement."
       ],
       [
-        "Consistent evidence in app and certificate",
-        "Select View gamut in the app. The HTML certificate provides a rotatable surface and the PDF a static view. The profile SHA-256 ties the figure to the correct ICC. The figure does not replace print measurements or provide a quality score."
+        "Paper white is shown separately",
+        "The cross marks the a*/b* projection of the profile-predicted paper white: L* = 97.28, a* = −0.19, b* = 1.06. Its actual lightness lies outside the L* = 50 slice. The white point is calculated at printer RGB = (1, 1, 1)."
       ]
     ],
-    "small": "ArgyllCMS iccgamut: forward A2B, absolute colorimetric, Lab D50. Surface detail approximately 5 Delta E; not an accuracy limit.",
+    "small": "ArgyllCMS A2B, absolute colorimetric, Lab D50. Triangle/plane intersection; no convex hull. Profile SHA-256: c6b94a0c30ebb5dd… Screen colours may be clipped to sRGB.",
     "links": [
       [
         "ArgyllCMS: ICC gamut surface",
@@ -201,11 +195,19 @@
   },
   {
     "tag": "v1.0.0 | NEW OPTIONS",
-    "title": "Understand your materials",
+    "title": "Understand your print system",
     "sections": [
+      [
+        "The limits of the print system",
+        "Colour accuracy is limited by what the printer, paper, ink and print settings can physically reproduce. InkProf helps assess the achievable result and documents remaining colour differences. A lack of further improvement does not by itself prove that a physical limit has been reached; the selected profile still needs verification with a measured print."
+      ],
       [
         "One project definition",
         "Printer, paper and finish, dye or pigment ink, printer coating and drying time are recorded centrally and included in the measurement certificate."
+      ],
+      [
+        "Correction for optical brighteners",
+        "Correction for optical brighteners in paper can be selected when needed. The selected correction is documented with the profile and results."
       ],
       [
         "More dark colour samples for matte paper",
@@ -216,8 +218,12 @@
         "Cut-sheet or roll suggestions adapt to patch count and your measurement sled dimensions. Suggestions and limits remain editable."
       ],
       [
+        "Support throughout the work",
+        "The user handbook supports the complete profiling process, from planning and printing to assessment and final verification. Practical guidance helps you decide when to refine, when to stop and how to evaluate the finished result."
+      ],
+      [
         "Release preparation",
-        "This documentation accompanies 1.0.0-rc.1 ahead of v1.0.0. New features do not alter saved targets or measurements. Assess improvement through printing and measurement."
+        "This documentation accompanies 1.0.0-rc.2 ahead of v1.0.0. New features do not alter saved targets or measurements. Assess improvement through printing and measurement."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub."

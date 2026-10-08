@@ -13,7 +13,7 @@ image=textAt(image,"InkProf Quality Profiling RGB printer",[widthMm/2 9],dpi,20,
 layout=inkprof.internal.printFurnitureLayout(widthMm);
 if layout.compact
     if strlength(string(summary))>0
-        image=textAt(image,string(summary),[widthMm/2 heightMm-layout.summaryInsetMm],dpi,7,"center",widthMm-16);
+        image=textAt(image,string(summary),[widthMm/2 heightMm-layout.summaryInsetMm],dpi,7,"center",widthMm-16,true);
     end
     [lines,points,lineMm]=footerLines(string(filePath),widthMm-16,dpi,4,12);
     for k=1:numel(lines)
@@ -23,7 +23,7 @@ if layout.compact
     image=textAt(image,string(page)+" ("+total+")",[widthMm-8 heightMm-layout.dateInsetMm],dpi,7,"right");
 else
 if strlength(string(summary))>0
-    image=textAt(image,string(summary),[widthMm/2 heightMm-footerInsetMm-5.3],dpi,7,"center",widthMm-16);
+    image=textAt(image,string(summary),[widthMm/2 heightMm-footerInsetMm-5.3],dpi,7,"center",widthMm-16,true);
 end
 image=textAt(image,timestamp,[8 heightMm-footerInsetMm],dpi,9,"left");
 % Keep filename clear of date/time and page count; never silently clip it.
@@ -37,8 +37,9 @@ image=textAt(image,string(page)+" ("+total+")",[widthMm-8 heightMm-footerInsetMm
 end
 end
 
-function image=textAt(image,text,position,dpi,points,alignment,maxWidthMm)
+function image=textAt(image,text,position,dpi,points,alignment,maxWidthMm,shortenSummary)
 if nargin<7,maxWidthMm=inf;end
+if nargin<8,shortenSummary=false;end
 font=java.awt.Font('SansSerif',java.awt.Font.PLAIN,1).deriveFont(single(points*dpi/72));
 probe=java.awt.image.BufferedImage(1,1,java.awt.image.BufferedImage.TYPE_INT_RGB);
 g=probe.createGraphics();g.setFont(font);metrics=g.getFontMetrics();
@@ -46,8 +47,16 @@ while double(metrics.stringWidth(char(text)))+2>maxWidthMm*dpi/25.4 && points>6
     points=points-0.5;
     font=font.deriveFont(single(points*dpi/72));g.setFont(font);metrics=g.getFontMetrics();
 end
+if shortenSummary&&double(metrics.stringWidth(char(text)))+2>maxWidthMm*dpi/25.4
+    % Full source details stay in metadata; only the supplementary caption is shortened.
+    caption=char(text);
+    while ~isempty(caption)&&double(metrics.stringWidth([caption '…']))+2>maxWidthMm*dpi/25.4
+        caption=caption(1:end-1);
+    end
+    text=string(caption)+"…";
+end
 assert(double(metrics.stringWidth(char(text)))+2<=maxWidthMm*dpi/25.4, ...
-    'inkprof:Label','TIFF filename is too long for the centred footer; choose a shorter filename.');
+    'inkprof:Label','Print heading/footer text does not fit the available width.');
 w=double(metrics.stringWidth(char(text)))+2;h=double(metrics.getHeight());ascent=double(metrics.getAscent());g.dispose();
 canvas=java.awt.image.BufferedImage(w,h,java.awt.image.BufferedImage.TYPE_INT_RGB);
 g=canvas.createGraphics();g.setColor(java.awt.Color.WHITE);g.fillRect(0,0,w,h);

@@ -7,17 +7,19 @@ function [out,files]=executeWorkflowStep(w,id,o)
 out=struct;files=strings(0,1);
 project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
 if w.mode()=="verification"&&id=="profile"
- calculation=inkprof.internal.calculationProgress("Importing existing ICC","Checking the RGB output profile and saving an unchanged project copy."); %#ok<NASGU>
+
  source=string(get(o,'Source',""));assert(isfile(source),'inkprof:Input','Select an existing ICC file.');
  dest=w.newFolder('profiles');mkdir(dest);
- [profile,receipt]=inkprof.saveICC(source,fullfile(dest,'profile.icc'));
+ [compatible,conversion]=inkprof.internal.iccV2Compatibility(source,fullfile(dest,'v2-conversion'));
+ calculation=inkprof.internal.calculationProgress("Importing existing ICC","Validating the selected ICC and saving the project copy."); %#ok<NASGU>
+ [profile,receipt]=inkprof.saveICC(compatible,fullfile(dest,'profile.icc'));
  paths=inkprof.paths();
  inkprof.runPython(fullfile(paths.Root,'analysis','validate_external_profile.py'),profile,RequiredModules=["numpy","colour"]);
  [~,name,ext]=fileparts(source);
  metadata=struct('documentType',"inkprof.imported-profile",'profileSHA256',receipt.sha256, ...
-  'originalName',name+ext,'trainingData',"unavailable",'modified',false);
+  'originalName',name+ext,'trainingData',"unavailable",'modified',conversion.converted,'conversion',conversion);
  file=fullfile(dest,'source.json');inkprof.internal.writeJson(file,metadata);
- out=struct('profile',profile,'job',file);files=[profile;file];return
+ out=struct('profile',profile,'job',file);files=allFiles(dest);return
 end
 switch id
  case "numericalExport"
@@ -143,7 +145,12 @@ switch id
    if role~=""
     d=w.newFolder('sources');mkdir(d);copyfile(role,fullfile(d,'roles.json'));role=fullfile(d,'roles.json');
    end
-   [folder,r]=inkprof.iterateProfile(w.output('measurement','measurement'),ProjectFolder=w.Root, ...
+   selectedRecipe=jsondecode(fileread(w.output('recipe','recipe')));compression=20;
+   if isfield(selectedRecipe.engine,'gamutMapping')&&isstruct(selectedRecipe.engine.gamutMapping)
+    compression=selectedRecipe.engine.gamutMapping.compressionPercent;
+   end
+   whiteReference=struct;if isfield(selectedRecipe.colorimetry,'paperWhiteReference'),whiteReference=selectedRecipe.colorimetry.paperWhiteReference;end
+   [folder,r]=inkprof.iterateProfile(w.output('measurement','measurement'),PaperWhiteReference=whiteReference,ProjectFolder=w.Root,PerceptualCompression=compression, ...
     Name="Iteration "+w.State.cycle,RoleFile=role,MaxNewPatches=get(o,'MaxNewPatches',100), ...
     NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2));
    out.job=fullfile(folder,r.selectedJob,'status.json');out.profile=fullfile(folder,r.profileFile);
@@ -156,6 +163,17 @@ switch id
   assert(c1.allNegativeControlsDetected&&isempty(c1.grossFailureAlerts),'inkprof:WorkflowNumerical','C1 reports serious problems. Review the reports before C2.');
   out.fit=a;out.grid=b;out.c1=c;files=[a;b;c];
  case "c2"
+  referenceSet=get(o,'ReferenceSet',"");
+  if referenceSet~=""
+   % Fixed reference set (Lab or device RGB): same TIFF16/TI2 print package, patch names kept in verification.json.
+   calculation=inkprof.internal.calculationProgress("Creating profile test target","Applying the ICC once to the reference colours and preparing TIFF16 files."); %#ok<NASGU>
+   if w.mode()=="verification",jobFolder=fileparts(w.output('profile','profile'));else,jobFolder=fileparts(w.output('profile','job'));end
+   [folder,~]=inkprof.createVerificationTarget(jobFolder,ExternalProfile=w.mode()=="verification", ...
+    OutputFolder=w.newFolder('targets'),Name="Profile test "+string(referenceName(referenceSet)),ReferenceSet=referenceSet, ...
+    Repeats=get(o,'Repeats',12),PlanPaper=get(o,'PlanPaper',true),DPI=get(o,'DPI',300));
+   reference=fullfile(folder,'verification.json');
+   out=inkprof.internal.workflowTiffOutputs(fullfile(folder,'print','target.ti2'));out.reference=reference;files=allFiles(folder);return
+  end
   if w.mode()=="verification"
    calculation=inkprof.internal.calculationProgress("Creating verification target","Selecting colours, applying the imported ICC once and preparing TIFF16 files."); %#ok<NASGU>
    count=get(o,'PatchCount',575);validateattributes(count,{'double'},{'scalar','integer','>=',64,'<=',2000});
@@ -234,7 +252,7 @@ switch id
    assert(method=="errors",'inkprof:Workflow','Unknown refinement method.');
    [ok,why]=w.valid('feedback');assert(ok,'inkprof:WorkflowBlocked','Error-driven refinement requires current C3 feedback: %s',why);
    [~,folder]=inkprof.refineVerification(w.output('c3','report'),Name="Iteration "+(w.State.cycle+1), ...
-    MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true,PlanPaper=true);
+    RefinementMode=string(get(o,'RefinementMode',"argyll")),MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true,PlanPaper=true);
   end
   inkprof.internal.writeJson(fullfile(folder,'workflow-review.json'),struct('notes',get(o,'Notes',""),'method',method,'includedC2',get(o,'IncludeC2',false),'utc',utc()));
   out=inkprof.internal.workflowTiffOutputs(fullfile(folder,'refinement-print','print','target.ti2'));out.proposal=fullfile(folder,'proposal.json');
@@ -245,6 +263,9 @@ switch id
  otherwise
   error('inkprof:Workflow','Unknown operation.');
 end
+end
+function n=referenceName(file)
+[~,n]=fileparts(file);
 end
 function v=get(s,k,fallback)
 if isfield(s,k),v=s.(k);else,v=fallback;end

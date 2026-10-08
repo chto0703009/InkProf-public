@@ -1,79 +1,90 @@
-# CGATS-import och export
+# CGATS import and export
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-## Varning: externa utskrifter utan kontrastmarkörer
+## Warning: external prints without contrast markers
 
-**Mål som skrivits ut utan kontrastmarkörer mellan patcharna kan ge problem vid radmätning med chartread**, särskilt när intilliggande patchar har snarlika färger. Det kan exempelvis ge fel om för få eller för många patchar. En korrekt importerad patchdefinition garanterar inte att det befintliga arket går att läsa tillförlitligt.
+**Targets printed without contrast markers between the patches can cause problems in row measurement with chartread**, especially when neighbouring patches have similar colours. This can, for example, give errors with too few or too many patches. A correctly imported patch definition does not guarantee that the existing sheet can be read reliably.
 
-**Rekommenderat arbetsflöde:** importera patchdefinitionerna som TI1/TI2 i första hand, eller generell CGATS från ett annat program, och låt InkProf generera en ny TIFF16-utskrift med kontrastmarkörer och matchande TI2/JSON. Använd sedan just det nya utskriftspaketets TI2 vid mätningen. Kontrastmarkörer minskar risken för segmenteringsproblem men garanterar inte felfria svep.
+**Recommended workflow:** import the patch definitions as TI1/TI2 in the first place, or as generic CGATS from another program, and let InkProf generate a new TIFF16 print with contrast markers and a matching TI2/JSON. Then measure with exactly that new print package's TI2. Contrast markers reduce the risk of segmentation problems but do not guarantee error-free sweeps.
 
-En import eller omordning i programmet ändrar inte ett redan utskrivet ark. Om det befintliga arket mäts i ett annat program kan dess mätfil importeras separat med bevarad patchkoppling.
+An import or reordering in the program does not change a sheet that has already been printed. If the existing sheet is measured in another program, its measurement file can be imported separately with the patch link preserved.
 
+InkProf can read and write CGATS text for patch definitions and measurement data. All tables, columns, text values and metadata are preserved. Argyll CTI1/CTI2/CTI3 and i1Profiler's CGATS.17 use the same reader. The file extension does not determine the content.
 
-InkProf kan läsa och skriva CGATS-text för patchdefinitioner och mätdata. Samtliga tabeller, kolumner, textvärden och metadata bevaras. Argyll CTI1/CTI2/CTI3 och i1Profilers CGATS.17 använder samma läsare. Filändelsen avgör inte innehållet.
+## Recommended import formats for RGB patch definitions
 
-## Rekommenderade importformat för RGB-patchdefinitioner
+1. **TI1/TI2 are the first choice.** TI1 describes patch definitions; TI2 is used when an existing target description with patch positions should come along.
+2. **Generic CGATS is recommended from other programs** when TI1/TI2 is not offered. A text file with, for example, the extension `.txt` can contain CGATS. Give the RGB scale explicitly according to the source, for example `RGBScale=255` for the tested export from i1Profiler.
+3. **CxF, PXF and TXF are complementary options** for the supported variants. CxF can be suitable when more structured colour and measurement metadata need to be preserved.
 
-1. **TI1/TI2 är förstahandsval.** TI1 beskriver patchdefinitioner; TI2 används när en befintlig målbeskrivning med patchpositioner ska följa med.
-2. **Generell CGATS rekommenderas från andra program** när TI1/TI2 inte erbjuds. En textfil med exempelvis ändelsen `.txt` kan innehålla CGATS. Ange RGB-skalan uttryckligen enligt källan, exempelvis `RGBScale=255` för den provade exporten från i1Profiler.
-3. **CxF, PXF och TXF är kompletterande alternativ** för stödda varianter. CxF kan vara lämpligt när mer strukturerad färg- och mätmetadata behöver bevaras.
+The priority applies to patch definitions. Measurement data are handled separately, among other ways via TI3 and positioned MXF. No format in itself guarantees a print layout: a patch list without positions can be used for a new InkProf target with contrast markers, but it does not automatically describe a sheet that has already been printed. The original IDs, RGB values and relevant metadata are to be preserved on import.
 
-Prioriteringen gäller patchdefinitioner. Mätdata hanteras separat, bland annat via TI3 och positionerad MXF. Inget format garanterar i sig utskriftslayout: en patchlista utan positioner kan användas för ett nytt InkProf-mål med kontrastmarkörer, men beskriver inte automatiskt ett redan utskrivet ark. Ursprungliga ID, RGB-värden och relevant metadata ska bevaras vid import.
-
-## Patchdefinition till och från CGATS
+## Patch definition to and from CGATS
 
 ```matlab
 paths = setupInkProf();
-target = inkprof.importTarget('min-definition.ti1');
-inkprof.exportCgats('patchar.cgats', target);
+target = inkprof.importTarget('my-definition.ti1');
+inkprof.exportCgats('patches.cgats', target);
 
-% Ange källans RGB-skala uttryckligt: 100 för procent, 255 för 8-bitarsvärden.
+% Give the source's RGB scale explicitly: 100 for percent, 255 for 8-bit values.
 folder = fullfile(paths.Projects, 'cgats-target');
-inkprof.createTarget(folder, Source='patchar.cgats', RGBScale=100, ...
+inkprof.createTarget(folder, Source='patches.cgats', RGBScale=100, ...
     Paper='A3-portrait', Randomize=true, Seed=42, DPI=300);
 ```
 
-Export av ett `inkprof.target` skriver CGATS.17 med SAMPLE_ID, SAMPLE_NAME och ursprungliga RGB-värden med 17 signifikanta siffror. RGB_SCALE sparas som ett eget deklarerat nyckelord. Andra program behöver inte förstå detta nyckelord; skalan måste avtalas vid utbyte. ImportTarget kräver fortfarande explicit RGBScale för generell CGATS. Denna patchlista innehåller ingen fysisk layout.
+Exporting an `inkprof.target` writes CGATS.17 with SAMPLE_ID, SAMPLE_NAME and the original RGB values with 17 significant digits. RGB_SCALE is saved as a separately declared keyword. Other programs do not need to understand this keyword; the scale must be agreed on when exchanging files. ImportTarget still requires an explicit RGBScale for generic CGATS. This patch list contains no physical layout.
 
-`createTiff16` skriver därför två kompletterande CGATS-filer. `*-patches.cgats` innehåller källpatcharna i källordning. `*-layout.cgats` innehåller utskriftens fysiska ordning, `SAMPLE_LOC`, en uttrycklig utfyllnadsflagga och RGB-värden på skalan 0–100. För mätning används fortfarande paketets TI2; CGATS-filerna är neutrala utbytes- och kopplingsunderlag.
+`createTiff16` therefore writes two complementary CGATS files:
 
-## Mätdata, inklusive spektra
+- `*-patches.cgats` contains the source patches in source order.
+- `*-layout.cgats` contains the print's physical order, `SAMPLE_LOC`, an explicit padding flag and RGB values on the 0–100 scale.
+
+The package's TI2 is still used for measurement; the CGATS files are neutral exchange and mapping files.
+
+## Measurement data, including spectra
 
 ```matlab
-doc = inkprof.importCgats('matning-M0.txt');
+doc = inkprof.importCgats('measurement-M0.txt');
 data = inkprof.cgatsData(doc, RGBScale=255, SpectralScale=1);
 
-% Exempel: den verifierade i1Profiler-exporten använder 0–255 RGB
-% och reflektansfraktioner. Ange inte dessa skalor för andra filer utan kontroll.
+% Example: the verified i1Profiler export uses 0–255 RGB
+% and reflectance fractions. Do not assume these scales for other files without checking.
 rgb = data.rgbPercent;
 wavelengths = data.wavelengthNm;
 reflectance = data.spectralFraction;
 
-inkprof.exportCgats('matning-kopia.txt', doc);
+inkprof.exportCgats('measurement-copy.txt', doc);
 ```
 
-`cgatsData` ger också `ids`, `locations`, `rgb`, `cmyk`, `xyz` och `lab`. Med `XYZScale=100` eller `XYZScale=1` får man `xyz100`. Utan explicit skala är respektive normaliserad matris tom; råa numeriska värden finns kvar. SpectralScale används för reflektans/transmittans, inte för emissionsenheter. Värden över 100 % och små negativa spektralvärden klipps inte bort.
+`cgatsData` also gives `ids`, `locations`, `rgb`, `cmyk`, `xyz` and `lab`. With `XYZScale=100` or `XYZScale=1` you get `xyz100`. Without an explicit scale, the respective normalized matrix is empty; the raw numeric values remain. SpectralScale is used for reflectance/transmittance, not for emission units. Values above 100 % and small negative spectral values are not clipped.
 
-SPEC_380 och SPECTRAL_NM380 identifieras som spektralfält. Den numeriska vyn sorterar våglängder stigande och behåller kopplingen till rätt värden. Originaltabellen ändras inte. Deklarerade SPECTRAL_BANDS/START_NM/END_NM kontrolleras mot kolumnerna. Ingen spektral interpolation eller omräkning till XYZ/Lab görs.
+SPEC_380 and SPECTRAL_NM380 are recognized as spectral fields. The numeric view sorts wavelengths in ascending order and keeps the link to the right values; the original table is not changed. Declared SPECTRAL_BANDS/START_NM/END_NM are checked against the columns. No spectral interpolation or conversion to XYZ/Lab is done.
 
-M0/M1/M2, instrument, XRGA, observatör och belysning bevaras där de finns i källans metadata. Saknade villkor fylls inte i. Flera mätvillkorsfiler hålls separata; importen slår inte ihop mätningar eller kopplar dem automatiskt till ett target. Upprepade ID:n bevaras och `idsUnique` visar om en entydig ID-koppling är möjlig. CTI1/CTI2:s färgvärden märks som targetuppskattningar, inte mätningar.
+M0/M1/M2, instrument, XRGA, observer and illuminant are preserved where they exist in the source's metadata. Missing conditions are not filled in. Several measurement-condition files are kept separate; the import does not merge measurements or link them automatically to a target. Repeated IDs are preserved, and `idsUnique` shows whether an unambiguous ID link is possible. CTI1/CTI2 colour values are marked as target estimates, not measurements.
 
-## Flera tabeller och egen data
+## Several tables and your own data
 
-`doc.tables(k)` innehåller `signature`, `metadata` (ordnad cellista av strängvektorer), `fields` och `data` (strängmatris). Ändra dessa för att exportera bearbetade data; de numeriska värdena från `cgatsData` är en separat vy. Använd `compose('%.17g', values)` för nya flyttalsvärden i tabellens data. `Table=2` väljer nästa tabell i `cgatsData`. Argylls hjälptabeller bevaras, liksom okända fält och upprepade KEYWORD-rader.
+`doc.tables(k)` contains `signature`, `metadata` (an ordered cell list of string vectors), `fields` and `data` (a string matrix). Change these to export processed data; the numeric values from `cgatsData` are a separate view. Use `compose('%.17g', values)` for new floating-point values in the table's data. `Table=2` chooses the next table in `cgatsData`. Argyll's helper tables are preserved, as are unknown fields and repeated KEYWORD lines.
 
-`rawText`, källsökväg och SHA256 sparas i dokumentobjektet för spårbarhet. Originalfilen ändras inte. Spara originalet tillsammans med projektets data; en källsökväg ensam gör inte projektet självständigt. Export skriver aldrig över en befintlig fil, regenererar rad-/fältantal, läser tillbaka och jämför tabellerna innan filen publiceras.
+`rawText`, the source path and SHA256 are saved in the document object for traceability. The original file is not changed. Keep the original together with the project's data; a source path alone does not make the project self-contained. Export never overwrites an existing file. It regenerates the row and field counts, reads the file back and compares the tables before the file is published.
 
-## Avgränsningar
+## Limitations
 
-- Detta är tabellbaserad CGATS-text, inte en full implementation av varje CGATS/ISO-variant. Signatur krävs för varje tabell; godtyckliga BEGIN/END-utökningar avvisas.
-- Kommentarer och ursprunglig whitespace finns i rawText men återskapas inte i den normaliserade exporten. Metadata och datacellernas textvärden bevaras.
-- Strängar med inbäddade citattecken eller radbrytningar avvisas uttryckligt.
-- Export av ett CGATS-dokument behåller dess signatur och fältnamn. Att döpa om en CGATS.17-fil till `.ti3` konverterar den inte till Argylls format. Automatisk dialektkonvertering, inklusive i1Profiler-spektra till TI3, ingår inte i detta API.
-- Numerisk kontroll sker med cgatsData; den generella dokumentläsaren får även bära textkolumner och okända datatyper utan att tolka dem.
-- Detta ersätter inte matchande TXF-export för mätning av samma utskrift i i1Profiler. Fysisk mätning och import i mottagarprogram har inte verifierats med dessa exporter.
+- This is table-based CGATS text, not a full implementation of every CGATS/ISO variant. A signature is required for each table; arbitrary BEGIN/END extensions are rejected.
+- Comments and the original whitespace are in rawText but are not recreated in the normalized export. Metadata and the data cells' text values are preserved.
+- Strings with embedded quotation marks or line breaks are rejected explicitly.
+- Exporting a CGATS document keeps its signature and field names. Renaming a CGATS.17 file to `.ti3` does not convert it to Argyll's format. Automatic dialect conversion, including i1Profiler spectra to TI3, is not part of this API.
+- Numeric checks are done with cgatsData; the general document reader can also carry text columns and unknown data types without interpreting them.
+- This does not replace a matching TXF export for measuring the same print in i1Profiler. Physical measurement and import in the receiving program have not been verified with these exports.
 
-## Tester
+## Tests
 
-`runtests('tests/testCgats.m')` provar de tre verkliga i1Profiler-exporterna M0/M1/M2 (2040 × 36 spektralvärden vardera), patchimport/export med 2033 patchar, flera tabeller, Lab, upprepade ID:n/nyckelord, tomma strängar, kommentarer, okända metadata och felaktiga tabeller/spektra. Den befintliga targetsviten provar samtidigt Argylls CTI1/CTI2-filer med hjälptabeller.
+`runtests('tests/testCgats.m')` tests:
+
+- the three real i1Profiler exports M0/M1/M2 (2040 × 36 spectral values each),
+- patch import/export with 2033 patches,
+- several tables, Lab, repeated IDs and keywords, empty strings, comments and unknown metadata,
+- faulty tables and spectra.
+
+The existing target suite also tests Argyll's CTI1/CTI2 files with helper tables.

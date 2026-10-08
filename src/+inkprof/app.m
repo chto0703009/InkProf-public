@@ -28,13 +28,15 @@ gamutButton=uibutton(projectBar,'Text','View gamut','Tag','showGamut','Enable','
 verifyButton=uibutton(projectBar,'Text','Verify project','Tag','verifyProject','Enable','off','ButtonPushedFcn',@verifyCurrentProject);
 body=uigridlayout(g,[1 2]);body.ColumnWidth={490,'1x'};body.Padding=[0 0 0 0];
 table=uitable(body,'ColumnName',{'Step','Status'},'ColumnWidth',{350,105},'ColumnEditable',false,'Tag','workflowSteps','CellSelectionCallback',@select);
-right=uigridlayout(body,[7 1]);right.RowHeight={34,100,'1x',42,42,42,36};right.Padding=[10 0 0 0];
+right=uigridlayout(body,[9 1]);right.RowHeight={34,100,'1x',42,42,42,36,36,36};right.Padding=[10 0 0 0];
 titleLabel=uilabel(right,'FontSize',18,'FontWeight','bold','Text','Workflow');
 hint=uitextarea(right,'Editable','off','Value',{'Select a project.'});
 details=uitextarea(right,'Editable','off','Tag','workflowDetails');
 runButton=uibutton(right,'Text','Run selected step','Tag','runWorkflowStep','Enable','off','ButtonPushedFcn',@run);
 uibutton(right,'Text','Open selected step results','ButtonPushedFcn',@openResult);
 printButton=uibutton(right,'Text','Copy TIFF16 for printing…','Tag','copyPrintTIFF','Enable','off','ButtonPushedFcn',@copyPrint);
+compareButton=uibutton(right,'Text','Compare accuracy and gradients','Tag','compareProfileTradeoffs','Enable','off','ButtonPushedFcn',@compareTradeoffs);
+photoButton=uibutton(right,'Text','Photographic gradients','Tag','photoGradientCheck','Enable','off','ButtonPushedFcn',@photoCheck);
 legal=uigridlayout(right,[1 2]);legal.Padding=[0 0 0 0];legal.ColumnWidth={'1x',170};
 uilabel(legal,'Text','Results and progress are saved in the project.','WordWrap','on');
 uibutton(legal,'Text','Licence and liability','Tag','licenseNotice','ButtonPushedFcn',@showLicense);
@@ -62,7 +64,24 @@ end
     end
     function loadProject(folder)
         check=inkprof.verifyProject(folder);
-        if ~check.passed,uialert(fig,strjoin(check.issues,newline),'Project integrity check failed');return;end
+        if ~check.passed
+            % Only the workflow records differ: typical after MATLAB was closed or
+            % force-quit during a step. Offer to record them; anything else stays blocked.
+            metadata="Changed file: "+["workflow.json","result-log.jsonl","result-log.txt"];
+            if ~all(ismember(check.issues,metadata))
+                uialert(fig,strjoin(check.issues,newline),'Project integrity check failed');return;
+            end
+            message="The project was interrupted while a step was running (for example after a forced quit)."+newline+newline+ ...
+                "Only the workflow records differ from the manifest:"+newline+strjoin(extractAfter(check.issues,"Changed file: "),newline)+newline+newline+ ...
+                "Targets, measurements and profiles are unchanged. Record the current workflow state and mark the interrupted step as failed?";
+            choice=uiconfirm(fig,message,'Project was interrupted','Icon','warning','Options',{'Record and open','Cancel'},'DefaultOption',1,'CancelOption',2);
+            if ~strcmp(choice,'Record and open'),return;end
+            try
+                candidate=inkprof.ProjectWorkflow(folder);candidate.recoverInterrupted();
+            catch err,uialert(fig,err.message,'Project recovery');return;end
+            check=inkprof.verifyProject(folder);
+            if ~check.passed,uialert(fig,strjoin(check.issues,newline),'Project integrity check failed');return;end
+        end
         candidate=inkprof.ProjectWorkflow(folder);
         mismatch=inkprof.internal.projectFolderStatus(candidate.Root);
         if mismatch.changed
@@ -80,7 +99,7 @@ end
     function newProject(~,~)
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if busy,return;end
-        paths=inkprof.paths();[n,p]=uiputfile('*','New project name',fullfile(paths.Projects,'New-paper'));
+        paths=inkprof.paths();[n,p]=inkprof.internal.withFocus(fig,@uiputfile,'*','New project name',fullfile(paths.Projects,'New-paper'));
         if isequal(n,0),return;end
         try
             modeChoice=uiconfirm(fig,'Create a new profile or verify an existing printer ICC?', 'Project purpose', ...
@@ -105,13 +124,18 @@ end
     function openProject(~,~)
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if busy,return;end
-        paths=inkprof.paths();p=uigetdir(char(paths.Projects),'Select an existing InkProf project');
+        paths=inkprof.paths();p=inkprof.internal.withFocus(fig,@uigetdir,char(paths.Projects),'Select an existing InkProf project');
         if isequal(p,0),return;end
         try,loadProject(string(p));catch err,uialert(fig,err.message,'Project');end
     end
     function select(~,e)
         if isempty(e.Indices)||busy,return;end
         selected=string(defs(e.Indices(1),1).id);refresh();
+        % Approval is an interactive review: open it on selection rather than
+        % leaving the user with an instruction and no assessment field.
+        if selected=="approve"&&~isempty(w)&&strcmp(runButton.Enable,'on')
+            run([],[]);
+        end
     end
     function refresh()
         if isempty(w)||busy,return;end
@@ -126,8 +150,12 @@ end
             reportButton.Enable=matlab.lang.OnOffSwitchState((assessment.export.valid&&isfield(w.State.steps.export.outputs,'finalReport'))||(assessment.numericalExport.valid&&isfield(w.State.steps.numericalExport.outputs,'finalReport')));
             labButton.Enable=matlab.lang.OnOffSwitchState(assessment.c2.valid);
             gamutButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid);
+            compareButton.Enable=matlab.lang.OnOffSwitchState(assessment.input.valid);
+            photoButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid);
             table.Data=data;index=find(string({defs.id})==selected);titleLabel.Text=defs(index).label;
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
+            runButton.Text='Run selected step';
+            if selected=="approve",runButton.Text='Open review and approval';end
             guide=instruction(selected);
             if w.mode()=="verification"
                 guide="Verify the imported ICC using the documented printer, paper, ink and settings. The original profile is preserved.";
@@ -178,6 +206,18 @@ end
             if w.mode()=="verification",heading.Text="InkProf | Verify existing ICC";end
             status.Text="Last active step: "+string(w.State.currentStep)+" | saved revision "+w.State.revision;
         catch err,status.Text=err.message;runButton.Enable='off';end
+    end
+    function photoCheck(~,~)
+        if isempty(w)||busy,return;end
+        busy=true;
+        try,inkprof.checkPhotoGradients(fileparts(w.output('profile','job')));catch err,uialert(fig,err.message,'Photographic gradients');end
+        busy=false;refresh();
+    end
+    function compareTradeoffs(~,~)
+        if isempty(w)||busy,return;end
+        busy=true;compareButton.Enable='off';
+        try,inkprof.internal.profileTradeoffDialog(w,fig);catch err,uialert(fig,err.message,'Profile comparison');end
+        busy=false;refresh();
     end
     function run(~,~,saveElsewhere)
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
@@ -274,7 +314,7 @@ end
         copyPrintStep(selected);
     end
     function copyPrintStep(id)
-        parent=uigetdir(char(fileparts(w.Root)),'Choose destination for TIFF16 print copies');
+        parent=inkprof.internal.withFocus(fig,@uigetdir,char(fileparts(w.Root)),'Choose destination for TIFF16 print copies');
         if isequal(parent,0),return;end
         try
             destination=w.savePrintCopy(id,string(parent));refresh();
@@ -287,12 +327,23 @@ end
             o.Source=pick('*.icc;*.icm','Select existing RGB printer ICC');
             if o.Source=="",o=[];end
             return
-        elseif w.mode()=="verification"&&id=="c2"
-            project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));count=575;
-            if isfield(project,'verificationPatchCount'),count=project.verificationPatchCount;end
-            a=inputdlg({'Total control patches (including repeats, 64–2000)'},'Verification target',1,{char(string(count))});
-            if isempty(a),o=[];return;end
-            o.PatchCount=str2double(a{1});validateattributes(o.PatchCount,{'double'},{'scalar','integer','>=',64,'<=',2000});
+        elseif id=="c2"
+            % Profile test target: fixed reference set (e.g. ColorChecker SG Lab) or generated colours.
+            [o.ReferenceSet,cancelled]=inkprof.internal.chooseReferenceSet(fig,w.mode()~="verification");
+            if cancelled,o=[];return;end
+            if o.ReferenceSet~=""
+                a=inkprof.internal.withFocus(fig,@inputdlg,{'Extra repeat patches (0 = none)'},'Profile test target',1,{'12'});
+                if isempty(a),o=[];return;end
+                o.Repeats=str2double(a{1});validateattributes(o.Repeats,{'double'},{'scalar','integer','>=',0,'<=',500});
+                return
+            end
+            if w.mode()=="verification"
+                project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));count=575;
+                if isfield(project,'verificationPatchCount'),count=project.verificationPatchCount;end
+                a=inkprof.internal.withFocus(fig,@inputdlg,{'Total control patches (including repeats, 64–2000)'},'Verification target',1,{char(string(count))});
+                if isempty(a),o=[];return;end
+                o.PatchCount=str2double(a{1});validateattributes(o.PatchCount,{'double'},{'scalar','integer','>=',64,'<=',2000});
+            end
             return
         end
         if id=="definition"
@@ -303,7 +354,7 @@ end
                 if o.Source=="",o=[];return;end
                 [~,~,ext]=fileparts(o.Source);
                 if any(lower(ext)==[".txt",".cgats"])
-                    a=inputdlg('RGB scale (1, 100 or 255)','RGB scale',1,{'100'});if isempty(a),o=[];return;end;o.RGBScale=str2double(a{1});
+                    a=inkprof.internal.withFocus(fig,@inputdlg,'RGB scale (1, 100 or 255)','RGB scale',1,{'100'});if isempty(a),o=[];return;end;o.RGBScale=str2double(a{1});
                 end
             end
         elseif id=="render"
@@ -330,6 +381,10 @@ end
                 if strcmp(choice,'Cancel'),o=[];return;end
                 o.Method="image";
                 if strcmp(choice,'From verification errors')
+                    mode=uiconfirm(fig,'Argyll only: preconditioned targen patches, colprof -r 1.0, no InkProf Jacobian or pre-regularization. Current InkProf: C3 residuals and Jacobian-guided patches. Both require a new measurement and independent print verification.', ...
+                        'Refinement method','Options',{'1. Argyll only','2. Current InkProf (Jacobian sampling)','Cancel'},'DefaultOption',1,'CancelOption',3);
+                    if strcmp(mode,'Cancel'),o=[];return;end
+                    o.RefinementMode="inkprof";if startsWith(mode,'1.'),o.RefinementMode="argyll";end
                     o.Method="errors";[ok,why]=w.valid('feedback');
                     if ~ok,uialert(fig,"Complete current C3 feedback first: "+why,'Refinement');o=[];return;end
                 end
@@ -347,17 +402,17 @@ end
             if id=="review"
                 m=w.output('measurement','measurement');inkprof.previewMeasurement(fileparts(m),jsondecode(fileread(m)));
             end
-            a=inputdlg(char(instruction(id)),'Record assessment',[4 65],{''});
+            a=inkprof.internal.withFocus(fig,@inputdlg,char(instruction(id)),'Record assessment',[4 65],{''});
             if isempty(a),o=[];return;end
             o.Notes=inkprof.internal.dialogText(a{1});o.Confirmed=strlength(strtrim(o.Notes))>0;
         elseif any(id==["export","numericalExport"])
             if w.mode()=="verification"
-                destination=uigetdir(char(fileparts(w.Root)),'Save certificate bundle in this folder (Cancel: keep project copy only)');
+                destination=inkprof.internal.withFocus(fig,@uigetdir,char(fileparts(w.Root)),'Save certificate bundle in this folder (Cancel: keep project copy only)');
                 if ~isequal(destination,0),o.BundleDestination=string(destination);end
                 return
             end
             if id=="numericalExport"
-                a=inputdlg({'Why are you ending this iteration without a separate verification print? State intended use.'},'Save measurement certificate',[4 70],{''});
+                a=inkprof.internal.withFocus(fig,@inputdlg,{'Why are you ending this iteration without a separate verification print? State intended use.'},'Save measurement certificate',[4 70],{''});
                 if isempty(a),o=[];return;end
                 o.Notes=inkprof.internal.dialogText(a{1});
                 if strlength(strtrim(o.Notes))==0,o=[];return;end
@@ -381,11 +436,11 @@ end
             if strcmp(choice,'Save in project only'),return;end
             record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
             iccName=inkprof.internal.iccDeliveryName(string(record.name));
-            [n,p]=uiputfile({'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Choose where to save the ICC profile',fullfile(w.Root,iccName));
+            [n,p]=inkprof.internal.withFocus(fig,@uiputfile,{'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Choose where to save the ICC profile',fullfile(w.Root,iccName));
             if isequal(n,0),o=[];return;end
             o.ICCDestination=string(fullfile(p,n));
             reportName='measurement-certificate.pdf';
-            [n,p]=uiputfile({'*.pdf','Report (*.pdf)';'*.html','Report (*.html)';'*.txt','Report as text (*.txt)'}, ...
+            [n,p]=inkprof.internal.withFocus(fig,@uiputfile,{'*.pdf','Report (*.pdf)';'*.html','Report (*.html)';'*.txt','Report as text (*.txt)'}, ...
                 'Name the report bundle (PDF, HTML and supporting files)',fullfile(p,reportName));
             if isequal(n,0),o=[];return;end
             o.ReportDestination=string(fullfile(p,n));o.Overwrite=true;
@@ -409,13 +464,13 @@ end
             end
         end
         if any(id==["profile","refine","continue"])&&~(id=="refine"&&isfield(o,'Method')&&o.Method=="image")
-            a=inputdlg({'MaxNewPatches','NormTarget','GrayWeight'},'Iteration parameters',1,{'100','1','2'});
+            a=inkprof.internal.withFocus(fig,@inputdlg,{'MaxNewPatches','NormTarget','GrayWeight'},'Iteration parameters',1,{'100','1','2'});
             if isempty(a),o=[];return;end
             o.MaxNewPatches=str2double(a{1});o.NormTarget=str2double(a{2});o.GrayWeight=str2double(a{3});
         end
     end
     function file=pick(filter,label)
-        [n,p]=uigetfile(filter,label,char(w.Root));file="";if ~isequal(n,0),file=string(fullfile(p,n));end
+        [n,p]=inkprof.internal.withFocus(fig,@uigetfile,filter,label,char(w.Root));file="";if ~isequal(n,0),file=string(fullfile(p,n));end
     end
     function openLog(~,~)
         if isempty(w),return;end
@@ -485,7 +540,7 @@ end
             labels(strcmp(names,'delivery'))={'Open delivery receipt (saved locations)'};
         end
         dialogFocus=inkprof.internal.restoreAppFocus(fig);
-        [ix,ok]=listdlg('ListString',labels,'SelectionMode','single','PromptString','Choose a result or save copies');
+        [ix,ok]=inkprof.internal.withFocus(fig,@listdlg,'ListString',labels,'SelectionMode','single','PromptString','Choose a result or save copies');
         clear dialogFocus
         if ~ok,return;end
         resultFocus=inkprof.internal.restoreAppFocus(fig,RestoreOnReturn=false); %#ok<NASGU>

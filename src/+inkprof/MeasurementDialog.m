@@ -33,6 +33,8 @@ classdef MeasurementDialog < handle
             arguments
                 folder (1,1) string = ""
                 options.Source (1,1) string = ""
+                options.ShowPreview (1,1) logical = true
+                options.RowContext (1,1) struct = struct
                 options.ArgyllBin (1,1) string = ""
                 options.PythonExecutable (1,1) string = ""
                 options.PairedWarningDeltaE (1,1) double {mustBePositive,mustBeFinite} = 1
@@ -67,6 +69,11 @@ classdef MeasurementDialog < handle
                 set(findobj(obj.Figure,'Tag','tolerance'),'Value',options.ScanTolerance);
                 set(findobj(obj.Figure,'Tag','port'),'Value',options.Port);
                 set(findobj(obj.Figure,'Tag','condition'),'Value',options.Condition);
+                if ~isempty(fieldnames(options.RowContext))
+                    for tag=["direction","tolerance","port","condition"],set(findobj(obj.Figure,'Tag',tag),'Enable','off');end
+                    obj.Status.Text=sprintf('Remeasure page %d · Row %s',options.RowContext.page,options.RowContext.row);
+                    obj.Hint.Text='Place the SAME printed page in the guide. Only the selected row will be read, using the original scan settings.';
+                end
             catch err
                 delete(obj);rethrow(err);
             end
@@ -126,7 +133,7 @@ classdef MeasurementDialog < handle
         end
         function browse(obj)
             paths=inkprof.paths();
-            [name,folder]=uigetfile({'*.ti2','Argyll chart definition (*.ti2)'},'Choose chart file',char(paths.Projects));
+            [name,folder]=inkprof.internal.withFocus(obj.Figure,@uigetfile,{'*.ti2','Argyll chart definition (*.ti2)'},'Choose chart file',char(paths.Projects));
             if isequal(name,0),return;end
             set(findobj(obj.Figure,'Tag','targetFile'),'Value',fullfile(folder,name));
         end
@@ -195,6 +202,9 @@ classdef MeasurementDialog < handle
                     obj.Status.Text='Check chart and settings';obj.Hint.Text=string(err.message);
                     for tag=["targetFile","browse","direction","tolerance","port","condition","begin"]
                         set(findobj(obj.Figure,'Tag',tag),'Enable','on');
+                    end
+                    if ~isempty(fieldnames(options.RowContext))
+                        for tag=["direction","tolerance","port","condition"],set(findobj(obj.Figure,'Tag',tag),'Enable','off');end
                     end
                     if isfile(fullfile(obj.Folder,'chart.json'))
                         set(findobj(obj.Figure,'Tag','targetFile'),'Enable','off');
@@ -280,14 +290,21 @@ classdef MeasurementDialog < handle
                     data=obj.Figure.UserData;
                     plan=struct;if isfield(data,'pairedPlan'),plan=data.pairedPlan;end
                     pageInfo=inkprof.internal.measurementPage(data.physicalChart,obj.State.row,plan);
+                    directionLabel="FORWARD";phaseLabel="";
                     if isfield(data,'scanMode')&&data.scanMode=="paired"
                         pass=data.pairedPlan.passes(obj.State.row);
-                        obj.Status.Text=sprintf('Page %d · Row %s · %s scan (%d/2)',pass.page,string(pass.physicalRow),upper(string(pass.expectedDirection)),pass.phase);
+                        directionLabel=upper(string(pass.expectedDirection));phaseLabel=string(sprintf(' (%d/2)',pass.phase));
+                        obj.Status.Text=sprintf('Page %d · Row %s · %s scan%s',pass.page,string(pass.physicalRow),directionLabel,phaseLabel);
                     elseif isfield(data,'scanMode')
                         directionLabel="FORWARD";
                         if data.scanMode=="alternating"&&mod(obj.State.row,2)==0,directionLabel="REVERSE";end
                         obj.Status.Text=sprintf('Page %d/%d · Row %s · %s scan',pageInfo.page,pageInfo.totalPages,pageInfo.row,directionLabel);
                     else,obj.Status.Text=sprintf('Ready for row %d',obj.State.row);end
+                    if ~isempty(fieldnames(data.RowContext))
+                        context=data.RowContext;
+                        if data.scanMode=="alternating",directionLabel=upper(string(context.expectedDirection));end
+                        obj.Status.Text=sprintf('Page %d/%d · Row %s · %s scan%s',context.page,context.totalPages,context.row,directionLabel,phaseLabel);
+                    end
                     obj.Hint.Text='FORWARD = left to right; REVERSE = right to left on the printed chart. Follow the displayed direction after Previous/Next too; rereading replaces the selected pass.';
                     if isfield(data,'scanMode')&&data.scanMode=="alternating"
                         obj.Hint.Text=obj.Hint.Text+" Automatic direction detection can be ambiguous on non-randomized charts. Use Single direction if uncertain.";
@@ -296,6 +313,9 @@ classdef MeasurementDialog < handle
                         obj.Hint.Text='Scan the SAME physical row twice: forward, then reverse. Move to the next printed row only when its number appears. Both readings will be saved and averaged.';
                     end
                     obj.Hint.Text="Press and hold the button on the i1 Pro 2 to scan; start and finish on white paper. "+string(obj.Hint.Text);
+                    if ~isempty(fieldnames(data.RowContext))
+                        obj.Hint.Text=sprintf('Use printed page %d, row %s. ',data.RowContext.page,data.RowContext.row)+string(obj.Hint.Text);
+                    end
                     if obj.State.allRead
                         obj.Status.Text=obj.Status.Text+" · ALL ROWS READ";
                         obj.Hint.Text='Select Save and finish. You can also return to a row and reread it before saving.';
@@ -304,7 +324,7 @@ classdef MeasurementDialog < handle
                     if obj.State.allRead,obj.Buttons.save.Enable='on';end
                     if ~obj.State.allRead && pageInfo.page~=obj.LoadedPage
                         obj.disable();
-                        obj.Status.Text=sprintf('Change to page %d of %d',pageInfo.page,pageInfo.totalPages);
+                        obj.Status.Text=sprintf('Change to page %d of %d · Row %s · %s scan%s',pageInfo.page,pageInfo.totalPages,pageInfo.row,directionLabel,phaseLabel);
                         obj.Hint.Text=sprintf('Place printed page %d in the guide. The next printed row is %s (row %d on this page). Select Page loaded, or scan the indicated row using the i1 Pro 2 button after changing the sheet. A successful scan also confirms the page change.',pageInfo.page,pageInfo.row,pageInfo.rowOnPage);
                         obj.Buttons.pageLoaded.Visible='on';obj.Buttons.pageLoaded.Enable='on';
                     end
@@ -383,7 +403,7 @@ classdef MeasurementDialog < handle
             % Visualization failure must never reclassify a successfully saved measurement.
             try
                 obj.Figure.WindowStyle='normal';
-                inkprof.previewMeasurement(obj.Folder,obj.Result);
+                if data.ShowPreview,inkprof.previewMeasurement(obj.Folder,obj.Result);end
             catch err
                 obj.Hint.Text="The measurement is saved, but the result chart could not be displayed: "+string(err.message);
             end

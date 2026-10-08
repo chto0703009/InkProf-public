@@ -1,6 +1,6 @@
 # Instrument connection at startup
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 InkProf starts ArgyllCMS chartread to connect to and initialise the spectrometer. Calibration on the instrument’s own white reference remains a separate user action.
 

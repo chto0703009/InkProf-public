@@ -1,23 +1,23 @@
-# TXF-verifiering med licensdongel, 2026-09-26
+# TXF verification with licence dongle, 2026-09-26
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Kontroll i i1Profiler 3.8.5 med synlig PUBLISH & DEVICE LINK-licens. Fyra TXF-kandidater från aktuell `createTiff16` provades, baserade på 2033 RGB-patchar, slumpfrö 42 och 287 utfyllnadsfält. Varje kandidat innehåller 580 positioner på en sida.
+Check in i1Profiler 3.8.5 with a visible PUBLISH & DEVICE LINK licence. Four TXF candidates from the current `createTiff16` were tested, based on 2033 RGB patches, random seed 42 and 287 padding fields. Each candidate contains 580 positions on one page.
 
-## Resultat och korrigering
+## Result and correction
 
-Importen behåller i1Pro 2, 263 × 195 mm, 29 kolumner × 20 rader och 8 × 8 mm patchar. Första bildkontrollen visade att mottagaren placerar objekt kolumnvis, medan exportören tidigare skrev dem radvis. `writeTxfCandidate` har därför rättats: endast TXF-objektordningen ändras, medan TIFF/TI2 och den fysiska JSON-kartan behåller sin ordning. Koordinatnamnen följer rätt patch även efter omordningen. Regressionstestet kontrollerar både RGB och namn efter återimport.
+The import retains i1Pro 2, 263 × 195 mm, 29 columns × 20 rows and 8 × 8 mm patches. The first image check showed that the recipient places objects column by column, whereas the exporter previously wrote them row by row. `writeTxfCandidate` has therefore been corrected: only the TXF object order changes, while the TIFF/TI2 and the physical JSON map keep their order. The coordinate names follow the correct patch even after the reordering. The regression test checks both RGB and names after re-import.
 
-Samtliga fyra rättade TXF-filer öppnades och sparades som TIFF genom mottagarens användargränssnitt. Alla 2320 patchars inre färgfält stämmer exakt mot InkProfs JSON och TIFF-underlag, inklusive utfyllnad. Mottagarens TIFF är RGB8 vid cirka 101,6 dpi och används endast som kontrollbild, inte som ersättning för InkProfs TIFF16. Alla provvärden är exakt RGB8-representerbara.
+All four corrected TXF files were opened and saved as TIFF through the recipient's user interface. The inner colour fields of all 2320 patches match exactly against InkProf's JSON and TIFF basis, including padding. The recipient's TIFF is RGB8 at about 101.6 dpi and is used only as a control image, not as a replacement for InkProf's TIFF16. All test values are exactly representable in RGB8.
 
-## Kvarvarande geometrisk avvikelse
+## Remaining geometric deviation
 
-Mottagarens färgfält börjar vid x=15,5 mm, medan InkProf-mallen börjar vid x=14,75 mm. Avvikelsen är +0,75 mm horisontellt. Y-positionen 24,5 mm och patchstorleken 8 × 8 mm stämmer. Efter denna konstanta x-förskjutning jämfördes hela patchrektanglarna: 2320 av 2320 stämde exakt, maximal RGB8-avvikelse 0.
+The recipient's colour fields begin at x=15.5 mm, whereas the InkProf template begins at x=14.75 mm. The deviation is +0.75 mm horizontally. The Y position 24.5 mm and the patch size 8 × 8 mm match. After this constant x offset, the whole patch rectangles were compared: 2320 of 2320 matched exactly, maximum RGB8 deviation 0.
 
-Absolut sidplacering är alltså inte identisk. Ingen fysisk radmätning har utförts och filerna markeras fortsatt som kandidater. Ingen generell kompatibilitetsflagga har satts till godkänd. Äldre kandidater skapade före ordningsrättningen måste genereras om; utskriftsbilderna ändras inte av rättningen.
+Absolute page placement is thus not identical. No physical row measurement has been performed and the files continue to be marked as candidates. No general compatibility flag has been set to approved. Older candidates created before the order correction must be regenerated; the print images are not changed by the correction.
 
-Varje TXF är en separat sida. Mottagaren visar därför Page 1 of 1 och lokala radnummer även för InkProfs sida 2–4. Använd rätt sidfil och bevara JSON-kartan vid senare sammanfogning av mätresultat. Den granskade vägen är `createTiff16`-sidmallen; den äldre `exportTxfTarget`-vägen för Argyll-layouter med separatorer har inte kvalificerats här.
+Each TXF is a separate page. The recipient therefore shows Page 1 of 1 and local row numbers even for InkProf's pages 2–4. Use the correct page file and preserve the JSON map when merging measurement results later. The reviewed path is the `createTiff16` page template; the older `exportTxfTarget` path for Argyll layouts with separators has not been qualified here.
 
-## Evidens
+## Evidence
 
-Maskinläsbar rapport och filhashar: `txf-template-verification-2026-09-26.json`. Lokala prov och återexporter: `work/txf-verification-20260926/` (ignorerad arbetskatalog). Sista sidans TXF återexporterades även som XML; samtliga 580 RGB-objekt behöll värden och ordning.
+Machine-readable report and file hashes: `txf-template-verification-2026-09-26.json`. Local tests and re-exports: `work/txf-verification-20260926/` (ignored working directory). The last page's TXF was also re-exported as XML; all 580 RGB objects retained values and order.

@@ -1,6 +1,6 @@
 # Image-guided refinement
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Use **step 15 → From image** to propose additional patches from a photograph or other RGB image. All colours are eligible. The selection does not favour green or any other colour family. A current ICC profile and completed numerical checks are required. Error-driven refinement remains available as a separate choice and requires current verification feedback.
 
@@ -58,6 +58,6 @@ The project preserves a snapshot of the original C2, the shared TIFF/TI2, new pl
 - **16 — Measure refinement:** preparation, revision discovery, import, integrity checks and combined C2 analysis display activity. The instrument window keeps its scan/calibration status; saving and averaging readings has its own busy indicator.
 - **17 — Build next iteration:** the busy dialog remains visible while training data, ICC candidates, numerical checks and the next verification target are generated.
 - **18 — Compare profiles:** common-grid sampling and report generation display activity before opening the report.
-- **19 — Save ICC and measurement certificate:** PDF/HTML/figure creation and copying delivery files display activity.
+- **19 — Save ICC and measurement certificate without print verification:** PDF/HTML/figure creation and copying delivery files display activity.
 
 Indicators show the operation and elapsed time, without claiming a completion percentage. Nested calculation stages reuse one indicator and restore the outer stage afterward. Indicators close before interactive choices and on errors. Final output hashing and saving project JSON/logs also display activity.

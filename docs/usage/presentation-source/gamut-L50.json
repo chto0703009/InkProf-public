@@ -1,0 +1,14 @@
+{
+  "profileSHA256": "c6b94a0c30ebb5dd2f4c3ddac34f8b41120cd442e46227de0b39797ecc7a5f8b",
+  "lightness": 50,
+  "whitePointLab": [
+    97.276132,
+    -0.193377,
+    1.063982
+  ],
+  "whitePointMethod": "xicclu forward absolute colorimetric D50 at device RGB 1 1 1",
+  "whitePointDisplay": "a,b projection; actual L shown separately",
+  "sectionMethod": "triangle-plane intersection; no convex hull",
+  "segments": 220,
+  "closedContours": 1
+}

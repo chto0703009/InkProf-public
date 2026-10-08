@@ -31,6 +31,9 @@ arguments
     options.Randomize (1,1) logical = false
     options.Seed (1,1) double {mustBeInteger,mustBeNonnegative} = 1
     options.TimeoutSeconds (1,1) double {mustBePositive,mustBeFinite} = 120
+    % Printer ICC embedded as a TIFF tag only (C2). Pixels stay device RGB; an
+    % untagged file can otherwise be assigned a working space and converted.
+    options.EmbedICCProfile (1,1) string = ""
 end
 if options.Paper~=""
     assert(isempty(options.PaperSizeMm),'inkprof:Paper','Use Paper OR PaperSizeMm, not both.');
@@ -170,7 +173,15 @@ if options.Randomize,args=[args,"-R"+options.Seed];else,args=[args,"-r"];end
 args=[args,"argyll/target"];
 logs(end+1)=inkprof.internal.runTool(printtarg,args,stage,options.TimeoutSeconds);
 checkpoint(options.Continue);
-inkprof.internal.horizontalPages(stage,renderPaper,outputFolder,target.targetInfo);
+if options.EmbedICCProfile~=""
+    options.EmbedICCProfile=inkprof.internal.absolutePath(options.EmbedICCProfile);
+    [~,iccName,iccExt]=fileparts(options.EmbedICCProfile);
+    target.printSettings.embeddedICCProfile=struct('file',string(iccName)+string(iccExt), ...
+        'sha256',inkprof.internal.sha256(options.EmbedICCProfile), ...
+        'role',"tag only; pixels are already this printer's device RGB - print without colour management");
+end
+target.printSettings.iccHandling=inkprof.internal.tiffICCInstructions(target.targetInfo,options.EmbedICCProfile);
+inkprof.internal.horizontalPages(stage,renderPaper,outputFolder,target.targetInfo,options.EmbedICCProfile);
 checkpoint(options.Continue);
 layout=inkprof.internal.readLayout(stage);
 for k=1:numel(layout)
@@ -211,7 +222,7 @@ fprintf(fid,['Print target*.tif at 100%% physical size, without fit-to-page or a
     'This is a NEW layout; do not measure it with the original TXF.\n' ...
     'Receiver layout compatibility and physical strip measurement are NOT yet verified.\n' ...
     'Preview PNG files are for screen inspection only. Source definitions are archived in source/.\n'], ...
-    options.PaperSizeMm,options.DPI);fclose(fid);
+    options.PaperSizeMm,options.DPI);fprintf(fid,'\n%s',target.printSettings.iccHandling);fclose(fid);
 savedOptions=rmfield(options,{'TargetInfo','Continue'});savedOptions.RGBScale=target.rgbScale;savedOptions.ArgyllBin=bin;
 savedOptions.Source=target.sourcePath;
 manifest=struct('schemaVersion',1,'documentType',"inkprof.print-package",'inkprofVersion',"0.1.4", ...

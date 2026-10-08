@@ -1,64 +1,70 @@
-# 008 – Patchdefinition, utskriftslayout och mätresultat
+# 008 – Patch definition, print layout and measurement results
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Datum: 2026-09-26. Status: beslutad specifikation. Beslutet beskriver önskat beteende; formatstöd och fysisk kompatibilitet måste verifieras separat.
+Date: 2026-09-26. Status: decided specification. The decision describes the desired behaviour; format support and physical compatibility must be verified separately.
 
-## Grundprincip
+## Basic principle
 
-InkProf bestämmer standarden för mål som InkProf skapar. InkProf ska samtidigt kunna analysera mätresultat från andra utskrifts- och mätprogram. En patchdefinition, en fysisk utskriftslayout och ett mätresultat är tre olika slags information.
+InkProf sets the standard for targets that InkProf creates. At the same time, InkProf must be able to analyse measurement results from other print and measurement programs. A patch definition, a physical print layout and a measurement result are three different kinds of information.
 
-## Formatstöd och bevarande av ursprunglig layout
+## Format support and preserving the original layout
 
-InkProf ska hantera samtliga format som ingår i projektets formatspecifikation, utifrån vad varje fil faktiskt innehåller: patchdefinition, utskriftslayout, mätdata eller en kombination. Detta omfattar bland annat PXF, TXF, MXF/CMXF, TI1/TI2/TI3, relevanta CGATS-varianter och TIFF-baserade mål. InkProfs egen utskriftsstandard är inte ett villkor för import eller analys. Målet om formatstöd innebär inte att varje adapter eller dialekt redan är implementerad och verifierad.
+InkProf is to handle all formats included in the project's format specification, according to what each file actually contains: patch definition, print layout, measurement data or a combination. This includes, among others, PXF, TXF, MXF/CMXF, TI1/TI2/TI3, relevant CGATS variants and TIFF-based targets. InkProf's own print standard is not a condition for import or analysis. The goal of format support does not mean that every adapter or dialect is already implemented and verified.
 
-Vid import ska originalfilen och dess beskrivning av hur målet såg ut vid mätningen bevaras: patchidentiteter, styrvärden och kanalbeskrivning, ordning, sid-/rad-/kolumnindelning, koordinater, patchmått, orientering, utfyllnad och markörer där uppgifterna finns. Mätningar ska förbli knutna till denna ursprungliga layout. Saknade eller motsägande uppgifter ska redovisas; de får inte ersättas tyst med InkProfs standardvärden.
+On import, the original file and its description of how the target looked at measurement time are to be preserved, where the information exists:
 
-## Import av patchdefinitioner och skapande av nya utskrifter
+- patch identities, control values and channel description,
+- order, page/row/column division and coordinates,
+- patch size, orientation, padding and markers.
 
-Import och omlayout är separata operationer. Import av en stödd PXF, TXF, TI1 eller CGATS-definition ska bevara tillgängliga originaluppgifter i intern JSON och arkiverad källfil. Importen får inte i sig ändra ordningen, lägga till kontrastmarkörer eller omtolka ett redan uppmätt mål som en ny InkProf-layout.
+Measurements are to remain linked to this original layout. Missing or contradictory information is to be reported; it must not be silently replaced with InkProf's default values.
 
-När användaren väljer att skapa ett nytt RGB-mål från definitionen får InkProf skapa en egen layout enligt [utskriftsstandarden](../usage/target-print-standard.md). Den nya layouten ska vara en separat version med spårbar koppling till originalets patchidentiteter och RGB-värden. Ursprunglig layout och tidigare mätningar ska bevaras.
+## Importing patch definitions and creating new prints
 
-Om patcharna randomiseras (scrambling) ska den exakta permutationens koppling mellan identitet, rad, kolumn och sida följa med i JSON och relevanta mätfiler, exempelvis TI2. Upprepade RGB-värden får inte användas som enda identitetsnyckel. Den aktuella RGB-begränsningen för att skapa nya mål ska inte användas för att tyst kassera kanaler eller metadata i importerade dokument; färgmodeller som en viss analys ännu inte stöder ska rapporteras uttryckligen.
+Import and re-layout are separate operations. Importing a supported PXF, TXF, TI1 or CGATS definition is to preserve the available original information in internal JSON and in the archived source file. The import must not in itself change the order, add contrast markers or reinterpret an already measured target as a new InkProf layout.
 
-## Kontrastmarkörer vid radmätning
+When the user chooses to create a new RGB target from the definition, InkProf may create its own layout according to the [print standard](../usage/target-print-standard.md). The new layout is to be a separate version with a traceable link to the original's patch identities and RGB values. The original layout and earlier measurements are to be preserved.
 
-Kontrastmarkörer ska vara standard i nya InkProf-mål avsedda för radmätning, även om det senare mätprogrammet är i1Profiler. De ska beskrivas som en del av layouten och vara förenliga med det valda instrumentets mätunderlag. De är avgränsningar, inte källpatchar eller färgprov för profilberäkningen. Utfyllnad är en separat kategori.
+If the patches are randomized (scrambled), the exact permutation's mapping between identity, row, column and page is to be carried in JSON and in the relevant measurement files, for example TI2. Repeated RGB values must not be used as the only identity key. The current RGB restriction for creating new targets must not be used to silently discard channels or metadata in imported documents; colour models that a given analysis does not yet support are to be reported explicitly.
 
-Stöd för kontrastfält i ett utskriftsformat innebär inte automatiskt stöd för samma layout i ett annat mätprogram. Varje adapter måste verifiera mottagarens layouttolkning. I Argyll-flödet ska TIFF och TI2 genereras som ett sammanhängande paket med samma spacerinställningar; godtyckliga färgfält får inte läggas till i bilden efteråt.
+## Contrast markers for row measurement
 
-## Import av mätresultat
+Contrast markers are to be the default in new InkProf targets intended for row measurement, even if the later measurement program is i1Profiler. They are to be described as part of the layout and be compatible with the chosen instrument's measurement files. They are separators, not source patches or colour samples for the profile computation. Padding is a separate category.
 
-En stödd MXF ska kunna importeras till den interna mätmodellen och analyseras på samma principiella sätt som TI3 eller annan stödd mätdata. Det kräver inte att utskriften skapades av InkProf eller innehöll kontrastmarkörer: mätningen är redan utförd.
+Support for contrast fields in one print format does not automatically mean support for the same layout in another measurement program. Every adapter must verify the recipient's interpretation of the layout. In the Argyll workflow, TIFF and TI2 are to be generated as one coherent package with the same spacer settings; arbitrary colour fields must not be added to the image afterwards.
 
-Importen ska kontrollera och bevara:
+## Importing measurement results
 
-- Patchidentitet och entydig koppling till RGB-styrvärden; sida och position när de behövs för identifieringen.
-- Spektra, våglängder, enheter och skala, utan tyst ersättning med enbart XYZ/Lab.
-- Mätvillkor såsom M0/M1/M2, instrument och tillgänglig mätgeometri. Olika villkor hålls åtskilda; okända uppgifter förblir okända.
-- Originalfil, ursprung, saknade eller duplicerade mätningar och eventuell begränsning i formatadaptern.
+A supported MXF is to be importable into the internal measurement model and analysable in the same principled way as TI3 or other supported measurement data. This does not require that the print was created by InkProf or contained contrast markers: the measurement has already been made.
 
-Om patchkopplingen inte kan fastställas ska det rapporteras; värden får inte tyst tilldelas patchar genom antagen ordning. Filändelsen MXF är inte ensam ett löfte om stöd för varje variant. Analysens kvalitet beror också på mätningens kvalitet, inte bara på att filen kan läsas.
+The import is to check and preserve:
 
-## TIFF-bilder och fysisk radmätning
+- Patch identity and an unambiguous link to the RGB control values; page and position when needed for the identification.
+- Spectra, wavelengths, units and scale, without silent replacement with XYZ/Lab only.
+- Measurement conditions such as M0/M1/M2, instrument and available measurement geometry. Different conditions are kept apart; unknown information stays unknown.
+- The original file, its origin, missing or duplicated measurements, and any limitation in the format adapter.
 
-En TIFF-bild beskriver bildpixlar och kan innehålla upplösning och annan metadata, men är inte automatiskt en fullständig patchdefinition eller mätfil. InkProf ska läsa tillgänglig information och koppla bilden till dess tillhörande definition där sådan finns. Patchidentiteter, mätvillkor eller spektraldata får inte hittas på utifrån bilden. Om bildbaserad patchidentifiering behövs ska den redovisas som härledd och verifieras mot definitionen eller användarens uppgifter.
+If the patch link cannot be established, this is to be reported; values must not be silently assigned to patches by an assumed order. The MXF file extension alone is not a promise of support for every variant. The quality of the analysis also depends on the quality of the measurement, not only on the file being readable.
 
-Den praktiska läsbarhetsbegränsning som observerats gäller instrumentets radmätning av ett utskrivet mål, inte en generell begränsning av import av externa filformat. Snarlika intilliggande patchar kan göra gränser svåra att identifiera. Scrambling kan minska risken genom att ändra grannskapet, men slumpning garanterar inte tillräcklig kontrast mellan varje par. Kontrastmarkörer behålls som stöd i nya InkProf-mål för radmätning.
+## TIFF images and physical row measurement
 
-Scrambling eller tillagda kontrastmarkörer kräver en ny fysisk utskrift och matchande layout-/mätunderlag. De får inte användas för att i efterhand ändra definitionen för ett befintligt ark eller dess mätningar. Redan utskrivna externa mål ska hanteras enligt sin faktiska layout. Om radmätning av ett sådant ark är problematisk kan det mätas i ursprungsprogrammet och resultatet importeras, eller ersättas av en separat ny utskrift från samma patchdefinition.
+A TIFF image describes image pixels and can contain resolution and other metadata, but it is not automatically a complete patch definition or measurement file. InkProf is to read the available information and link the image to its associated definition where one exists. Patch identities, measurement conditions or spectral data must not be invented from the image. If image-based patch identification is needed, it is to be reported as derived and verified against the definition or the user's information.
 
-## Erfarenhet från i1Pro 2-provet
+The practical readability limitation that has been observed concerns the instrument's row measurement of a printed target, not a general limitation on importing external file formats. Similar neighbouring patches can make boundaries hard to identify. Scrambling can reduce the risk by changing the neighbourhood, but randomization does not guarantee sufficient contrast between every pair. Contrast markers are kept as support in new InkProf targets for row measurement.
 
-Sessionen `matning-A4-20260926-123236` omfattade 143 källpatchar och fyra utfyllnader på sju rader, med kontrastmarkörer. Alla rader accepterades och samtliga källpatchar kunde importeras. Användaren förklarade första radens omsvep med att arket satt för långt till höger i släden. Detta ska inte redovisas som ett fel i patchigenkänningen.
+Scrambling or added contrast markers require a new physical print and matching layout and measurement files. They must not be used to change, after the fact, the definition of an existing sheet or its measurements. Already printed external targets are to be handled according to their actual layout. If row measurement of such a sheet is problematic, it can be measured in the original program and the result imported, or replaced by a separate new print from the same patch definition.
 
-Centrering behövs praktiskt för utrymme att börja och avsluta svepet på papper. Kontrastmarkörerna behålls även eftersom användaren har erfarenhet av liknande avläsningsproblem i i1Profiler. Provet visar ett fungerande fall, inte en generell garanti eller ett isolerat bevis på varje layoutändrings effekt.
+## Experience from the i1Pro 2 test
 
-## Implementationsstatus och acceptans
+The session `matning-A4-20260926-123236` covered 143 source patches and four padding fields in seven rows, with contrast markers. All rows were accepted and all source patches could be imported. The user explained the re-sweep of the first row by the sheet sitting too far to the right in the sled; this is not to be reported as an error in patch recognition.
 
-RGB-patchimport, Argyll-kontrastfält och TI3-import finns. En generell MXF-adapter och mottagarverifiering ska inte betraktas som färdiga enbart för att enskilda MXF-filer har analyserats med hjälpskript.
+Centring is needed in practice for room to start and finish the sweep on paper. The contrast markers are also kept because the user has experience of similar reading problems in i1Profiler. The test shows one working case, not a general guarantee or isolated proof of the effect of each layout change.
 
-Vid detta beslut är `createTarget` fortfarande förvalt till `SpacerMode="auto"`; kontrastprovet använder uttryckligen `SpacerMode="colored"`. Den fasta 29 × 20-mallen saknar kontrastfält. Att göra kontrastmarkörer till förval i samtliga radmätningslayouter återstår att genomföra enligt denna specifikation.
+## Implementation status and acceptance
 
-Acceptans kräver dels verifierad TIFF/layout/patchkoppling, dels fysisk radmätning av det valda flödet. För mätimport krävs verifiering mot verkliga formatvarianter och bevarade data/metadata. Dessa kontroller ska redovisas separat.
+RGB patch import, Argyll contrast fields and TI3 import exist. A general MXF adapter and recipient verification are not to be considered finished merely because individual MXF files have been analysed with helper scripts.
+
+At the time of this decision, `createTarget` still defaults to `SpacerMode="auto"`; the contrast test uses `SpacerMode="colored"` explicitly. The fixed 29 × 20 template has no contrast fields. Making contrast markers the default in all row-measurement layouts remains to be done according to this specification.
+
+Acceptance requires verified TIFF/layout/patch mapping and physical row measurement of the chosen workflow. Measurement import requires verification against real format variants and preserved data and metadata. These checks are to be reported separately.

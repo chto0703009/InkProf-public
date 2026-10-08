@@ -11,7 +11,7 @@ end
 function testBoundariesAndStock(tc)
 p=inkprof.planTargetPaper(120);
 verifyTrue(tc,any(string({p.kind})=="Roll"));
-verifyTrue(tc,any(contains(string({p.description}),"A3+ / 2")));
+verifyTrue(tc,any(contains(string({p.description}),"1/2 A3+")));
 for v=p
  verifyLessThanOrEqual(tc,v.sizeMm(1),320);verifyLessThanOrEqual(tc,v.sizeMm(2),370);
  verifyGreaterThanOrEqual(tc,v.stockSheets*v.piecesPerSheet,v.estimatedPages);

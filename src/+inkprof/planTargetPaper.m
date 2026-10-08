@@ -24,7 +24,9 @@ for s=1:4
   for c=1:log2(cuts),[~,j]=max(piece);piece(j)=piece(j)/2;end
   for rot=0:1
    dims=piece;if rot,dims=fliplr(dims);end
-   add("Sheet",names(s)+" / "+cuts+" piece(s)",dims,cuts,prod(stock(s,:)),0);
+   label=names(s)+" (whole sheet)";
+   if cuts>1,label="1/"+cuts+" "+names(s)+" ("+cuts+" pieces per sheet)";end
+   add("Sheet",label,dims,cuts,prod(stock(s,:)),0);
   end
  end
 end

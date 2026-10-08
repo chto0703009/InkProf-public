@@ -1,8 +1,8 @@
-# ICC-läsare A1
+# ICC reader A1
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-Implementerad 2026-09-27. MATLAB Base använder InkProfs valda Python. Läsaren kräver endast Pythons standardbibliotek.
+Implemented 2026-09-27. MATLAB Base uses InkProf's selected Python. The reader needs only the Python standard library.
 
 ```matlab
 cd('/Users/christer/Desktop/InkProf')
@@ -10,43 +10,58 @@ setupInkProf();
 [profile, jsonFile] = inkprof.readICC();
 ```
 
-Välj en `.icc` eller `.icm`. Fönstret visar beskrivning, version, klass, enhetsfärgrymd, PCS, taggar och varningar. Avbryt i filvalet ger inget resultat och sparar inget.
+Choose an `.icc` or `.icm` file. The window shows the description, version, class, device colour space, PCS, tags and warnings. Cancelling the file chooser gives no result and saves nothing.
 
-Skriptanvändning:
+Script use:
 
 ```matlab
-[profile, jsonFile] = inkprof.readICC('min-profil.icc', ...
-    OutputFolder='mitt-projekt/profiles/inspections', ShowDialog=false);
+[profile, jsonFile] = inkprof.readICC('my-profile.icc', ...
+    OutputFolder='my-project/profiles/inspections', ShowDialog=false);
 ```
 
-Originalprofilen ändras inte. En unik JSON sparas under projektets `profiles/inspections` om källan ligger i ett InkProf-projekt, annars under `projects/icc-inspections`. `OutputFolder` kan anges uttryckligen. Finns ett projektmanifest där resultatet sparas uppdateras det. Utanför projektet är resultatet fristående. Originalets sökväg och SHA-256 finns i JSON; A1 kopierar inte själva profilen. Oförändrad profilimport/Spara som hör till A2.
+The original profile is not changed. A unique JSON is saved under the project's `profiles/inspections` if the source is in an InkProf project, and under `projects/icc-inspections` otherwise. `OutputFolder` can be given explicitly. If there is a project manifest where the result is saved, it is updated; outside a project, the result stands alone. The original's path and SHA-256 are in the JSON. A1 does not copy the profile itself; unchanged profile import and Save as belong to A2.
 
-Stöd: ICC v2/v4-huvud, taggförteckning, desc/mluc/text/XYZ. Övriga typer redovisas men avkodas inte. Delade dataintervall tillåts; trunkerade profiler, felaktiga katalogintervall, duplicerade signaturer och partiell överlappning avvisas. Fel i en avkodad tagg visas som varning. Profiler större än 256 MiB avvisas av en uttrycklig resursgräns.
+## What is supported
 
-`rgbOutputCandidate` anger klass prtr, RGB och Lab/XYZ PCS. Det är inte ett godkännande för profilering. Ingen LUT-utvärdering, full ICC-konformitetskontroll eller kvalitetsbedömning utförs. Icke-RGB kan inspekteras. ICC-profil-ID redovisas men dess checksumma verifieras inte.
+Supported: the ICC v2/v4 header, the tag table, and desc/mluc/text/XYZ tags. Other tag types are listed but not decoded. Shared data ranges are allowed.
 
-Verifiering: nio Python-felhanterings-/formatprov, MATLAB-integration inklusive dialog, samt tre lokala Epson 3880-profiler (2.1/2.4/4.2) med beskrivningar jämförda mot LittleCMS. Ingen instrumentmätning behövs.
+Rejected: truncated profiles, faulty table ranges, duplicated signatures and partial overlap. An error in a decoded tag is shown as a warning. Profiles larger than 256 MiB are rejected by an explicit resource limit.
 
-## A2 – import och Spara som
+`rgbOutputCandidate` means class prtr, RGB, and a Lab/XYZ PCS. It is not an approval for profiling. No LUT evaluation, full ICC conformance check or quality assessment is done. Non-RGB profiles can be inspected. The ICC profile ID is reported, but its checksum is not verified.
 
-A1 godkändes av användaren 2026-09-27. A2 lägger till knapparna **Import into project** och **Save copy as…** i samma fönster.
+Verification: nine Python error-handling/format tests, MATLAB integration including the dialog, and three local Epson 3880 profiles (2.1/2.4/4.2) whose descriptions were compared with LittleCMS. No instrument measurement is needed.
 
-Importera till ett befintligt InkProf-projekt. Om ett nytt behövs skapas det först:
+## A2 – import and Save as
+
+A1 was accepted by the user on 2026-09-27. A2 adds the buttons **Import into project** and **Save copy as…** to the same window.
+
+### Import
+
+Import into an existing InkProf project. If a new one is needed, create it first:
 
 ```matlab
 paths = inkprof.paths();
-project = inkprof.createProject(fullfile(paths.Projects,'mina-profiler'));
+project = inkprof.createProject(fullfile(paths.Projects,'my-profiles'));
 [profileFile, record] = inkprof.importICC('', project);
 ```
 
-Tom källsökväg öppnar filval. `inkprof.importICC()` låter även användaren välja projektmapp. Avbryt lämnar projektet orört. Importen får en unik undermapp under `profiles/imported` med originalets filnamn och `inspection.json`. Kopian valideras före publicering, hash jämförs med källan och manifestet uppdateras. JSON använder en relativ källsökväg och bevarar ursprunglig sökväg som proveniens. Ingen automatisk konvertering eller profilredigering görs; även okända taggar bevaras byte för byte.
+An empty source path opens a file chooser. `inkprof.importICC()` also lets the user choose the project folder. Cancel leaves the project untouched.
+
+The import gets a unique subfolder under `profiles/imported`, containing the original file name and `inspection.json`. The copy is validated before it is published, its hash is compared with the source, and the manifest is updated. The JSON uses a relative source path and keeps the original path as provenance. No automatic conversion or profile editing is done; even unknown tags are preserved byte for byte.
+
+### Save as
 
 ```matlab
 [savedFile, receipt] = inkprof.saveICC(profileFile);
 ```
 
-Det öppnar Spara som. Filnamnsbyte ändrar inte profilens interna beskrivning. En befintlig destination kräver bekräftelse. I skript används en uttrycklig sökväg och vid avsiktlig ersättning `Overwrite=true`. Ursprung och destination får inte vara samma fil. Felaktig källprofil avvisas innan en befintlig destination ersätts.
+This opens Save as.
 
-Efter kopiering kontrolleras SHA-256. Om källan hör till ett projekt sparas ett exportkvitto under `profiles/exports`, med destination, hash och tid, och manifestet uppdateras. Exportkvittot dokumenterar exporttillfället; det övervakar inte senare förändringar av externa filer.
+- Renaming the file does not change the profile's internal description.
+- An existing destination requires confirmation. In scripts, use an explicit path and, for an intentional replacement, `Overwrite=true`.
+- Source and destination must not be the same file.
+- A faulty source profile is rejected before an existing destination is replaced.
 
-A2:s integrationstest kontrollerar import, hashidentisk export, skydd mot oavsiktlig ersättning, ogiltig källa, manifestlänk samt att den importerade profilen går att hitta efter flytt av projektmappen. Användaracceptans av A2 återstår.
+After copying, the SHA-256 is checked. If the source belongs to a project, an export receipt is saved under `profiles/exports` with destination, hash and time, and the manifest is updated. The export receipt documents the moment of export; it does not monitor later changes to external files.
+
+A2's integration test checks import, hash-identical export, protection against accidental replacement, an invalid source, the manifest link, and that the imported profile can still be found after the project folder has been moved. User acceptance of A2 remains.

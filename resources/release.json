@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "targetVersion": "1.0.0",
   "status": "prerelease",
-  "date": "2026-10-03",
+  "date": "2026-10-08",
   "license": "GPL-3.0-or-later",
-  "tag": "v1.0.0RC1"
+  "tag": "v1.0.0-rc.2"
 }

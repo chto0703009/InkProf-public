@@ -100,32 +100,45 @@ def caption(language='sv'):
     return 'ICC-profilens beräknade gamut i CIELAB D50, från framåttabellen A2B (absolut kolorimetriskt). Ytdetalj cirka 5 Delta E; detta är ingen noggrannhetsgräns. Skärmfärgerna är klippta sRGB-förhandsvisningar. Figuren är inte en ny mätning eller ett kvalitetsbetyg.'
 
 
-def interactive(data, language='sv'):
-    if not data:
-        return ''
-    label = 'Rotate automatically; drag to turn' if language == 'en' else 'Rotera automatiskt; dra för att vrida'
-    payload = json.dumps(data, separators=(',', ':')).replace('<', '\\u003c')
-    script = (Path(__file__).with_name('gamut_view.js')).read_text()
-    return '<div class="gamut-view"><label><input type="checkbox" checked> '+label+'</label><canvas width="850" height="520" style="width:100%;max-height:520px;touch-action:none" aria-label="ICC gamut CIELAB D50"></canvas><script type="application/json">'+payload+'</script></div><script>'+script+'</script>'
+def slice_segments(data, level=50):
+    """Intersect mesh triangles with an exact constant-L* plane, without a hull."""
+    result=[];seen=set();eps=1e-9
+    for tri in data['triangles']:
+        hits=[]
+        for i,j in zip(tri,tri[1:]+tri[:1]):
+            a,b=data['vertices'][i],data['vertices'][j]
+            if abs(a[0]-level)<eps and abs(b[0]-level)<eps:
+                hits.extend([a[1:],b[1:]])
+            elif (a[0]-level)*(b[0]-level)<=0 and abs(b[0]-a[0])>eps:
+                t=(level-a[0])/(b[0]-a[0]);hits.append([a[k]+t*(b[k]-a[k]) for k in [1,2]])
+        unique=[]
+        for h in hits:
+            if not any(sum((x-y)**2 for x,y in zip(h,q))<eps**2 for q in unique):unique.append(h)
+        pairs=[(unique[0],unique[1])] if len(unique)==2 else list(zip(unique,unique[1:]+unique[:1])) if len(unique)>2 else []
+        rgb=[sum(data['rgb'][i][c] for i in tri)/3 for c in range(3)]
+        for a,b in pairs:
+            key=tuple(sorted([tuple(round(x,8) for x in a),tuple(round(x,8) for x in b)]))
+            if key not in seen:result.append((a,b,rgb));seen.add(key)
+    return result
 
 
-def pdf_drawing(data, language='sv'):
-    from reportlab.graphics.shapes import Drawing, Polygon, String, Line
+def interactive(data, language='en'):
+    if not data:return ''
+    from lab_views import interactive as view
+    return view(dict(data,kind='surface',label='ICC-predicted gamut'))
+
+
+def pdf_drawing(data, language='en'):
+    from reportlab.graphics.shapes import Line,String
     from reportlab.lib.colors import Color
-    d = Drawing(480, 330)
-    angle = .65
-    def project(v):
-        l, a, b = v
-        return (240+1.5*(a*math.cos(angle)-b*math.sin(angle)), 70+1.9*l+.45*(a*math.sin(angle)+b*math.cos(angle)), a*math.sin(angle)+b*math.cos(angle))
-    points = [project(v) for v in data['vertices']]
-    for tri in sorted(data['triangles'], key=lambda t: sum(points[i][2] for i in t), reverse=True):
-        rgb = [sum(data['rgb'][i][c] for i in tri)/3 for c in range(3)]
-        d.add(Polygon([n for i in tri for n in points[i][:2]], fillColor=Color(*rgb), strokeColor=None))
-    for end, label in [([0,110,0],'a*'),([0,0,110],'b*'),([110,0,0],'L*')]:
-        start=project([0,0,0]); stop=project(end)
-        d.add(Line(*start[:2],*stop[:2],strokeColor=Color(.2,.25,.3)))
-        d.add(String(stop[0]+3,stop[1]+3,label,fontSize=10))
-    d.add(String(8,10,'CIELAB D50 | A2B | absolute colorimetric',fontSize=9))
+    from lab_views import plane
+    extent=max([20]+[abs(v) for p in data['vertices'] for v in p[1:]])
+    d,project=plane(extent,'ICC gamut | exact L* = 50 slice')
+    segments=slice_segments(data,50)
+    for a,b,rgb in segments:
+        d.add(Line(*project(*a),*project(*b),strokeColor=Color(*rgb),strokeWidth=2))
+    if not segments:d.add(String(110,180,'No gamut intersection at L* = 50.',fontSize=11))
+    d.add(String(12,6,'CIELAB D50 | A2B | absolute colorimetric | ICC prediction',fontSize=9))
     return d
 
 
@@ -134,4 +147,4 @@ if __name__ == '__main__':
     ref = generate(sys.argv[1], sys.argv[2], sys.argv[3])
     (Path(sys.argv[2])/'gamut-reference.json').write_text(json.dumps(ref))
     data = load(sys.argv[2], dict(gamut=ref, profile=dict(sha256=ref['profileSHA256'])))
-    (Path(sys.argv[2])/'gamut-view.html').write_text('<section><h2>ICC gamut — CIELAB D50</h2><p>'+html.escape(caption())+'</p>'+interactive(data)+'</section>')
+    (Path(sys.argv[2])/'gamut-view.html').write_text('<section><h2>ICC gamut — CIELAB D50</h2><p>'+html.escape(caption("en"))+'</p>'+interactive(data,"en")+'</section>')

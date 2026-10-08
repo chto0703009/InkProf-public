@@ -20,6 +20,17 @@ verifyTrue(tc,isfile(fullfile(folder,'profiling.ti3')));verifyEqual(tc,r.patchCo
 [~,inherited]=inkprof.createProfileRecipe(folder,ShowDialog=false);
 verifyEqual(tc,inherited.name,"Project ICC");verifyEqual(tc,inherited.description,"Project description");
 verifyEqual(tc,inherited.colorimetry.mode,"storedXYZ");verifyEqual(tc,inherited.engine.b2aQuality,"medium");
+verifyFalse(tc,inherited.gradientPreview.enabled);
+[~,preview]=inkprof.createProfileRecipe(folder,ShowDialog=false,PreRegularization="argyll-colprof", ...
+ PreRegularizationAvgDev=0.4,GradientPreview=true,Smoothing=0.22);
+verifyTrue(tc,preview.gradientPreview.enabled);verifyEqual(tc,preview.engine.smoothing,0.22);
+verifyEqual(tc,preview.engine.preRegularization.method,"argyll-colprof-a2b-resample");
+verifyEqual(tc,preview.engine.preRegularization.avgdev,0.4);
+args=string(preview.engine.plannedArguments);verifyTrue(tc,any(args=="-s"));verifyEqual(tc,preview.engine.gamutMapping.compressionPercent,20);idx=find(args=="-r");verifyEqual(tc,str2double(args(idx+1)),0.22);
+% The InkProf grid regularization (axial/Hessian) has been removed.
+verifyError(tc,@()inkprof.createProfileRecipe(folder,ShowDialog=false,PreRegularization="inkprof-axial"),?MException);
+[~,raw]=inkprof.createProfileRecipe(folder,ShowDialog=false,GradientPreview=true);
+verifyFalse(tc,raw.gradientPreview.enabled);
 [recipeFile,recipe]=inkprof.createProfileRecipe(folder,DataMode="storedXYZ",ShowDialog=false,Name="Test recipe");
 verifyTrue(tc,isfile(recipeFile));verifyEqual(tc,string(recipe.colorimetry.mode),"storedXYZ");
 verifyFalse(tc,recipe.colorimetry.fwaCompensation);
@@ -99,7 +110,12 @@ inkprof.importChartMeasurement(session,f);files=dir(fullfile(session,'measuremen
 manifest=jsondecode(fileread(fullfile(project,'inkprof-project.json')));verifyTrue(tc,manifest.printing.fwaCompensation);
 verifyFalse(tc,old.colorimetry.fwaCompensation);verifyTrue(tc,new.colorimetry.fwaCompensation);
 verifyNotEqual(tc,oldFile,newFile);verifyTrue(tc,isfile(oldFile));
-verifyEqual(tc,string(new.colorimetry.fwaIlluminant),"D50");verifyTrue(tc,any(new.engine.plannedArguments=="-f"));
+verifyEqual(tc,string(new.colorimetry.fwaIlluminant),"D50");verifyFalse(tc,any(new.engine.plannedArguments=="-f"));
+verifyEqual(tc,string(new.colorimetry.fwaPreparation),"white-reference-spec2cie-v1");
+verifyGreaterThan(tc,new.colorimetry.paperWhiteReference.count,0);
+[~,withPre]=inkprof.createProfileRecipe(folder,Printing=struct('fwaCompensation',true),PreRegularization="argyll-colprof",ShowDialog=false);
+verifyFalse(tc,any(withPre.engine.preRegularization.plannedArguments=="-f"));
+verifyFalse(tc,any(withPre.engine.preRegularization.plannedArguments=="-i"));
 verifyEqual(tc,inkprof.internal.sha256(source),digest);
 verifyError(tc,@()inkprof.createProfileRecipe(folder,DataMode="storedXYZ",ShowDialog=false),'inkprof:FWA');
 % Save the later choice through the actual B2 UI while run() owns the lock.

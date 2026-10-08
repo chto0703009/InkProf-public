@@ -6,7 +6,7 @@
 Usage: python analysis/investigate_inverse.py JOB GRID_REPORT OUTPUT [--xicclu PATH]
 No profile or measurement is modified.
 """
-import sys,json,argparse,shutil
+import json,argparse,shutil
 from pathlib import Path
 import numpy as np
 

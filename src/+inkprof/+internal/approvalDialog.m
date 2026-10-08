@@ -35,6 +35,7 @@ bar=uigridlayout(g,[1 2]);bar.Padding=[0 0 0 0];
 uibutton(bar,'Text','Cancel - continue reviewing','ButtonPushedFcn',@(~,~)uiresume(f));
 uibutton(bar,'Text','Approve for stated use','ButtonPushedFcn',@accept,'Tag','approvalSave');
 f.CloseRequestFcn=@(~,~)uiresume(f);
+topGuard=inkprof.internal.lowerTopWindows(f); %#ok<NASGU> keep the dialog above always-on-top windows
 uiwait(f);
 if isvalid(f),delete(f);end
     function accept(~,~)

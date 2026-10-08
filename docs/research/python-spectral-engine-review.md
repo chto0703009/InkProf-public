@@ -1,51 +1,51 @@
-# MATLAB Base, Python och spektral profilering i InkProf
+# MATLAB Base, Python and spectral profiling in InkProf
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Datum: 2026-09-26. Status: granskning och rekommenderad fortsättning; ingen ny beräkningsmotor är implementerad genom detta dokument.
+Date: 2026-09-26. Status: review and recommended way forward; no new calculation engine is implemented by this document.
 
-## Rekommendation
+## Recommendation
 
-Behåll MATLAB Base som användargränssnitt och projektledande lager. Använd Python för nya spektrala beräkningar, modellpassning och begränsad numerisk optimering. Behåll ArgyllCMS för instrumentkommunikation och som första ICC-profilmotor och jämförelsereferens. JSON förblir intern datamodell; TI1/TI2/TI3 är utbytesformat.
+Keep MATLAB Base as the user interface and project-leading layer. Use Python for new spectral calculations, model fitting and constrained numerical optimisation. Keep ArgyllCMS for instrument communication and as the first ICC profile engine and comparison reference. JSON remains the internal data model; TI1/TI2/TI3 are exchange formats.
 
-Nästa konkreta leverans bör vara en verifierbar beräkningskedja från befintliga uppmätta spektra till XYZ, Lab och jämförelser. Därefter kommer ICC-profilering och oberoende validering. Egen spektral inversmodell och optimering under flera ljuskällor är senare steg.
+The next concrete delivery should be a verifiable calculation chain from existing measured spectra to XYZ, Lab and comparisons. After that come ICC profiling and independent validation. An own spectral inverse model and optimisation under several light sources are later steps.
 
-Pythonvalet motiveras främst av tillgången till etablerade numeriska bibliotek utan MATLAB-tillägg. Språkbytet i sig förbättrar varken mätdata eller nätfördelning. Fungerande MATLAB-kod behöver inte skrivas om enbart för enhetlighet.
+The choice of Python is motivated mainly by the availability of established numerical libraries without MATLAB add-ons. The change of language in itself improves neither measurement data nor grid distribution. Working MATLAB code does not need to be rewritten merely for uniformity.
 
-## Vad finns redan, och kräver det MATLAB-tillägg?
+## What already exists, and does it require MATLAB add-ons?
 
-Lokal kodgranskning omfattade MATLAB-koden, Pythonstarten och chartread-bryggan. `matlab.codetools.requiredFilesAndProducts` kördes i R2025b Update 7 på 60 MATLAB-filer inklusive setup. Analysen redovisade **enbart MATLAB** som nödvändig produkt, med 60 identifierade beroendefiler. Rapporten finns lokalt i `work/review-python-20260926/matlab-dependencies.json`.
+The local code review covered the MATLAB code, the Python start-up and the chartread bridge. `matlab.codetools.requiredFilesAndProducts` was run in R2025b Update 7 on 60 MATLAB files including setup. The analysis reported **only MATLAB** as a required product, with 60 dependency files identified. The report is stored locally in `work/review-python-20260926/matlab-dependencies.json`.
 
-Det är en statisk analys, inte bevis för alla dynamiska körvägar. Datorn har flera tillägg installerade; acceptansprov på en installation med endast Base återstår. Analysen säger inte heller något om externa Python- eller Argyll-beroenden.
+This is a static analysis, not proof of all dynamic run paths. The computer has several add-ons installed; an acceptance test on an installation with only Base remains. Nor does the analysis say anything about external Python or Argyll dependencies.
 
-MATLAB Base har redan [Delaunay-triangulering](https://www.mathworks.com/help/matlab/ref/delaunaytriangulation.html), [spridd interpolation](https://www.mathworks.com/help/matlab/ref/scatteredinterpolant.html), linjär algebra och [fminsearch](https://www.mathworks.com/help/matlab/ref/fminsearch.html). Det senare söker ett lokalt minimum utan explicita bivillkor. [lsqnonlin](https://www.mathworks.com/help/optim/ug/lsqnonlin.html) tillhör däremot Optimization Toolbox. Spektral integration kräver inte i sig ett tillägg; den kan uttryckas med vanliga matriser.
+MATLAB Base already has [Delaunay triangulation](https://www.mathworks.com/help/matlab/ref/delaunaytriangulation.html), [scattered interpolation](https://www.mathworks.com/help/matlab/ref/scatteredinterpolant.html), linear algebra and [fminsearch](https://www.mathworks.com/help/matlab/ref/fminsearch.html). The latter searches for a local minimum without explicit constraints. [lsqnonlin](https://www.mathworks.com/help/optim/ug/lsqnonlin.html), by contrast, belongs to the Optimization Toolbox. Spectral integration does not in itself require an add-on; it can be expressed with ordinary matrices.
 
-Den nuvarande Python-bryggan använder standardbiblioteket. InkProf har redan val av Python per dator, kontroll av körmiljö och anrop som separat process. Det är en lämplig grund att bygga vidare på.
+The current Python bridge uses the standard library. InkProf already has selection of Python per computer, checking of the runtime environment and invocation as a separate process. This is a suitable foundation to build on.
 
-## Kritisk granskning av den inskickade texten
+## Critical review of the submitted text
 
-Texten identifierar värdet av att behålla spektra, men kodexemplen är inte produktionsklara. Följande behöver rättas innan de kan användas som förebild.
+The text identifies the value of keeping spectra, but the code examples are not production-ready. The following needs to be corrected before they can be used as a model.
 
-| Påstående eller konstruktion | Bedömning och konsekvens |
+| Claim or construction | Assessment and consequence |
 |---|---|
-| ICC/LittleCMS är otillräckligt för hela arbetsflödet | De ersätter inte spektral analys, men är fortfarande relevanta för vanlig ICC-baserad färgkonvertering. Spektral analys och ICC-leverans kan samexistera. |
-| Spektrum → XYZ → sRGB ger skrivarens RGB | sRGB är en definierad färgrymd, inte Canons enhets-RGB. Skrivarvärden kräver skrivarprofil eller en uppmätt inversmodell. |
-| D50-XYZ skickas till standardanrop för sRGB | Vitpunkt måste anges och kromatisk adaptation hanteras. Standardanropen får inte antas förstå att indata avser D50. |
-| Ett spektralvärde vid 500 nm används som Lab-vitpunkt | Fel typ av storhet. Lab-konverteringen behöver vitpunktens kromaticitet, inte ljuskällans effekt vid en våglängd. |
-| Lab under flera ljuskällor räknas med standardvitpunkt | Varje beräkning behöver uttrycklig och konsekvent referensvitpunkt. Annars blir även ΔE missvisande. |
-| Fyra slumpmässiga bläckkurvor summeras linjärt | Detta är ingen kalibrerad modell för övertryck. Noll bläck ger i exemplet svart, inte papper; ökade positiva vikter gör det ljusare. Klippningen skapar dessutom konstgjorda platåer. |
-| CMYK-vikter optimeras för Canon | InkProf styr RGB i det aktuella arbetsflödet. De interna bläckkanalerna är inte åtkomliga genom detta gränssnitt. |
-| Samma RGB-referens definierar originalet under alla ljus | Tre färgkoordinater bestämmer inte ett unikt reflektansspektrum. Referensspektrum eller ett uttryckligt antagande krävs. |
-| Viktad summa av ΔE kallas SMI och ger garanti | Det är ett valt optimeringsmått, inte därmed ett verifierat standardiserat metameriindex. Lokal optimering garanterar inte globalt optimum eller ett fysiskt utskriftsresultat. |
-| F11 representerar LED-belysning | F11 avser en fluorescerande standardljuskälla. Verklig LED-belysning måste beskrivas av en passande eller uppmätt spektralfördelning. |
+| ICC/LittleCMS is insufficient for the whole workflow | They do not replace spectral analysis, but remain relevant for ordinary ICC-based colour conversion. Spectral analysis and ICC delivery can coexist. |
+| Spectrum → XYZ → sRGB gives the printer's RGB | sRGB is a defined colour space, not Canon's device RGB. Printer values require a printer profile or a measured inverse model. |
+| D50 XYZ is passed to standard calls for sRGB | The white point must be specified and chromatic adaptation handled. The standard calls must not be assumed to understand that the input refers to D50. |
+| A spectral value at 500 nm is used as the Lab white point | Wrong kind of quantity. The Lab conversion needs the white point's chromaticity, not the light source's power at a single wavelength. |
+| Lab under several light sources is computed with a standard white point | Each calculation needs an explicit and consistent reference white point. Otherwise even ΔE becomes misleading. |
+| Four random ink curves are summed linearly | This is not a calibrated model for overprint. Zero ink gives black in the example, not paper; increased positive weights make it lighter. The clipping also creates artificial plateaus. |
+| CMYK weights are optimised for Canon | InkProf controls RGB in the current workflow. The internal ink channels are not accessible through this interface. |
+| The same RGB reference defines the original under all lights | Three colour coordinates do not determine a unique reflectance spectrum. A reference spectrum or an explicit assumption is required. |
+| A weighted sum of ΔE is called SMI and gives a guarantee | It is a chosen optimisation measure, not thereby a verified standardised metamerism index. Local optimisation guarantees neither a global optimum nor a physical print result. |
+| F11 represents LED lighting | F11 refers to a fluorescent standard illuminant. Real LED lighting must be described by a suitable or measured spectral distribution. |
 
-Colour anger att [`XYZ_to_Lab`](https://colour.readthedocs.io/en/develop/generated/colour.XYZ_to_Lab.html) tar vitpunkt som xy eller xyY och normalt använder D65. [`sRGB_to_XYZ`](https://colour.readthedocs.io/en/develop/generated/colour.sRGB_to_XYZ.html) och [`XYZ_to_sRGB`](https://colour.readthedocs.io/en/develop/generated/colour.XYZ_to_sRGB.html) kräver att vald vitpunkt och adaptation förstås. En variabel kallad `cmyk_profiles` blir inte CMYK eller en ICC-profil genom att innehålla sRGB-tal.
+Colour states that [`XYZ_to_Lab`](https://colour.readthedocs.io/en/develop/generated/colour.XYZ_to_Lab.html) takes the white point as xy or xyY and normally uses D65. [`sRGB_to_XYZ`](https://colour.readthedocs.io/en/develop/generated/colour.sRGB_to_XYZ.html) and [`XYZ_to_sRGB`](https://colour.readthedocs.io/en/develop/generated/colour.XYZ_to_sRGB.html) require that the chosen white point and adaptation are understood. A variable called `cmyk_profiles` does not become CMYK or an ICC profile by containing sRGB numbers.
 
-Colour-dokumentationens illuminanttabell använder nyckeln [`FL11`](https://colour.readthedocs.io/en/v0.3.16_b/generated/colour.SDS_ILLUMINANTS.html), inte exemplets `F11`. Nycklar och API ska kontrolleras mot den version som faktiskt låses och testas.
+Colour's documentation illuminant table uses the key [`FL11`](https://colour.readthedocs.io/en/v0.3.16_b/generated/colour.SDS_ILLUMINANTS.html), not the example's `F11`. Keys and API must be checked against the version that is actually pinned and tested.
 
-## Rätt matematisk utgångspunkt
+## The correct mathematical starting point
 
-För ett icke-fluorescerande reflektansprov r och en ljuskälla E beräknas relativ kolorimetri diskret som
+For a non-fluorescent reflectance sample r and a light source E, relative colorimetry is computed discretely as
 
 ```text
 k = 100 / sum(E_i * ybar_i * delta_lambda_i)
@@ -54,63 +54,63 @@ Y = k * sum(r_i * E_i * ybar_i * delta_lambda_i)
 Z = k * sum(r_i * E_i * zbar_i * delta_lambda_i)
 ```
 
-Perfekt diffus reflektor får Y=100. Referensvitpunkten beräknas med r=1 på samma våglängdsunderlag. Biblioteksanrop som använder XYZ på skalan 0–1 ska få motsvarande skalning. Detta är relativ kolorimetri; det är inte automatiskt absolut luminans eller fullständig beskrivning av färgupplevelsen.
+A perfect diffuse reflector gets Y=100. The reference white point is computed with r=1 on the same wavelength basis. Library calls that use XYZ on the 0–1 scale must be given corresponding scaling. This is relative colorimetry; it is not automatically absolute luminance or a complete description of colour appearance.
 
-Våglängdsintervall, interpolationsmetod och extrapolation måste dokumenteras. 400–700 nm och 380–730 nm får inte behandlas som identiska fullständiga spektra. [`sd_to_XYZ`](https://colour.readthedocs.io/en/develop/generated/colour.sd_to_XYZ.html) erbjuder olika beräkningsmetoder och normaliseringar; vi behöver välja och testa en uttrycklig konvention.
+Wavelength range, interpolation method and extrapolation must be documented. 400–700 nm and 380–730 nm must not be treated as identical complete spectra. [`sd_to_XYZ`](https://colour.readthedocs.io/en/develop/generated/colour.sd_to_XYZ.html) offers different calculation methods and normalisations; we need to choose and test an explicit convention.
 
-Optiska vitmedel gör återbelysning mer komplicerad: uppmätt spektral respons kan bero på mätljusets UV-innehåll. M0/M1/M2 ska bevaras och får inte blandas som likvärdiga prov. En enkel reflektansintegral får inte utlovas som exakt prognos för godtycklig belysning på fluorescerande papper.
+Optical brighteners make relighting more complicated: the measured spectral response may depend on the UV content of the measurement light. M0/M1/M2 must be preserved and must not be mixed as equivalent samples. A simple reflectance integral must not be promised as an exact prediction for arbitrary illumination on fluorescent paper.
 
-## Modellen för vår RGB-skrivare
+## The model for our RGB printer
 
-Den relevanta framåtmodellen är
+The relevant forward model is
 
 ```text
 u = (R, G, B), 0 <= u_j <= 1
-F(u; papper, utskriftsläge, drivrutinsinställningar) = uppmätt spektral respons
+F(u; paper, print mode, driver settings) = measured spectral response
 ```
 
-Den omfattar hela den låsta utskriftskedjan. Antalet patroner ger inte motsvarande antal styrbara variabler. Börja med en empirisk RGB-modell från mätningar. Spektra kan modelleras direkt eller genom en lågdimensionell bas, exempelvis SVD/PCA med Base eller NumPy. Val av modell, antal komponenter och regularisering ska avgöras med separat validering. Begränsningar för rekonstruerade spektra måste ta hänsyn till om datan innehåller fluorescens; blind klippning till 0–1 är inte en universell lösning.
+It covers the whole locked print chain. The number of cartridges does not give a corresponding number of controllable variables. Start with an empirical RGB model from measurements. Spectra can be modelled directly or through a low-dimensional basis, for example SVD/PCA with Base or NumPy. The choice of model, number of components and regularisation should be decided with separate validation. Constraints on reconstructed spectra must take into account whether the data contains fluorescence; blind clipping to 0–1 is not a universal solution.
 
-En senare invers kan söka RGB som minimerar färgfel under ett eller flera specificerade ljus, med RGB-gränser och regularisering. För ett känt reflektansoriginal kan båda proven beräknas under samma ljus och jämföras. Om originalet endast är RGB måste uppgiften i stället formuleras som ett valt färgåtergivningsmål; dess verkliga metameri är okänd.
+A later inverse can search for RGB that minimises colour error under one or more specified lights, with RGB bounds and regularisation. For a known reflectance original, both samples can be computed under the same light and compared. If the original is only RGB, the task must instead be formulated as a chosen colour reproduction target; its true metamerism is unknown.
 
-Med tre styrvariabler kan vi inte lova oberoende kontroll av färgen under flera ljus. En förbättring under ett ljus kan försämra en annan. Förbättring ska därför redovisas per ljuskälla och verifieras med nya utskrifter.
+With three control variables we cannot promise independent control of the colour under several lights. An improvement under one light may worsen another. Improvement must therefore be reported per light source and verified with new prints.
 
-Lokal Taylor-utveckling med approximerad Jacobian är rimlig som numerisk metod. Kombinera med begränsade steg, skalning och regularisering när inversen är illa konditionerad. Snabb konvergens bevisar inte att modellen är riktig. SciPys [`least_squares`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html) erbjuder bounds, numeriska Jacobianer och robusta förlustfunktioner. Funktionen behöver en residualvektor; en viktad summa av ΔE ska inte utan eftertanke behandlas som samma minsta-kvadratproblem. Varken godkänd solverstatus eller låg träningsavvikelse ersätter fysisk validering.
+Local Taylor expansion with an approximated Jacobian is a reasonable numerical method. Combine it with bounded steps, scaling and regularisation when the inverse is ill-conditioned. Fast convergence does not prove that the model is correct. SciPy's [`least_squares`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.least_squares.html) offers bounds, numerical Jacobians and robust loss functions. The function needs a residual vector; a weighted sum of ΔE should not be treated without thought as the same least-squares problem. Neither an approved solver status nor a low training deviation replaces physical validation.
 
-## Arbetsfördelning
+## Division of work
 
-| Del | Rekommenderat ansvar |
+| Part | Recommended responsibility |
 |---|---|
-| Fönster, filval, preview och presentation | MATLAB Base; engelska texter |
-| Befintlig definition, layout och TIFF16 | Behåll fungerande implementation |
-| Instrument och radavläsning | Argyll chartread via InkProfs egen Python-brygga |
-| Spektral kolorimetri och ΔE00 | Python, NumPy och Colour Science, med referensprov |
-| Modellpassning och begränsad invers | Python/SciPy när validerade data finns |
-| ICC-generering och profiluppslag | Argyll colprof och xicclu som första motor |
-| Data, identiteter och spårbarhet | Versionssatt JSON; formatadaptrar vid import/export |
+| Windows, file selection, preview and presentation | MATLAB Base; English texts |
+| Existing definition, layout and TIFF16 | Keep the working implementation |
+| Instrument and strip reading | Argyll chartread via InkProf's own Python bridge |
+| Spectral colorimetry and ΔE00 | Python, NumPy and Colour Science, with reference samples |
+| Model fitting and constrained inverse | Python/SciPy when validated data exists |
+| ICC generation and profile lookup | Argyll colprof and xicclu as the first engine |
+| Data, identities and traceability | Versioned JSON; format adapters at import/export |
 
-En vanlig ICC-profil använder kolorimetrisk PCS. Det betyder att profilens standardtransform inte bevarar hela spektrumet, inte att mätningarnas spektra behöver kastas. ICC beskriver [XYZ/Lab-baserad PCS och spektrala utvidgningar](https://www.color.org/iccmax/connection1/); [iccMAX](https://www.color.org/iccmax/) har spektrala möjligheter. iccMAX bör inte införas som krav innan utskriftskedjans stöd och behov är visade.
+An ordinary ICC profile uses a colorimetric PCS. This means that the profile's standard transform does not preserve the whole spectrum, not that the measurements' spectra need to be discarded. ICC describes [XYZ/Lab-based PCS and spectral extensions](https://www.color.org/iccmax/connection1/); [iccMAX](https://www.color.org/iccmax/) has spectral capabilities. iccMAX should not be introduced as a requirement before support in the print chain and the need have been shown.
 
-[Argyll colprof](https://www.argyllcms.com/doc/colprof.html) är första profilreferens. [profcheck](https://www.argyllcms.com/doc/profcheck.html) kan jämföra profil och TI3, inklusive CIEDE2000 med `-k`. Vi behöver skilja profilens framåtmodellfel från en verklig kontrollutskrift genom profilen: de senare proven testar även invers, rendering intent och faktisk utskriftskedja.
+[Argyll colprof](https://www.argyllcms.com/doc/colprof.html) is the first profile reference. [profcheck](https://www.argyllcms.com/doc/profcheck.html) can compare a profile and TI3, including CIEDE2000 with `-k`. We need to distinguish the profile's forward-model error from a real check print through the profile: the latter tests also the inverse, rendering intent and the actual print chain.
 
-## Portabel Python och datakontrakt
+## Portable Python and data contract
 
-Återanvänd separata processer och befintlig sökvägskonfiguration. MATLAB skickar ett versionssatt JSON-jobb och får resultatfil, status och logg tillbaka. Använd inte maskinbundna Python-sökvägar i sparad projektdefinition. Relativa resurser, programkonfiguration och källdata ska skiljas åt. Skriv resultat atomärt och bevara indata oförändrade.
+Reuse separate processes and the existing path configuration. MATLAB sends a versioned JSON job and receives a result file, status and log back. Do not use machine-bound Python paths in the saved project definition. Relative resources, program configuration and source data should be kept apart. Write results atomically and preserve input unchanged.
 
-Behåll den fungerande mätbryggan utan nya tunga beroenden. Lägg analysens paket i en separat definierad och testad beroendegrupp. Lås Python- och paketversioner först efter prov på stödda datorer; aktuell minimiversion i InkProf är inte automatiskt tillräcklig för nya bibliotek. Colours granskade [utvecklingsmetadata](https://github.com/colour-science/colour/blob/develop/pyproject.toml) anger Python >=3.11,<3.15 för 0.4.7. Det är inte ett besked att installera utvecklingsgrenen eller att den är testad i InkProf.
+Keep the working measurement bridge without new heavy dependencies. Put the analysis packages in a separately defined and tested dependency group. Pin Python and package versions only after testing on supported computers; InkProf's current minimum version is not automatically sufficient for new libraries. Colour's reviewed [development metadata](https://github.com/colour-science/colour/blob/develop/pyproject.toml) states Python >=3.11,<3.15 for 0.4.7. This is not a notice to install the development branch or a claim that it has been tested in InkProf.
 
-JSON behöver bära patch-ID, enhets-RGB och skala, fysisk position och sidnummer, råspektrum med våglängder/enheter, instrument/mätvillkor, upprepningar, källfil och hash. Härledda resultat sparas separat med ljuskälla, observatör, vitpunkt, skalning, integrationsmetod, programversioner och källreferens. Modellresultat ska dessutom ha tränings-/valideringsroller, parametrar, residualer och konvergensstatus. Befintligt targetInfo ska återanvändas, inte dupliceras med avvikande metadata.
+JSON needs to carry patch ID, device RGB and scale, physical position and page number, raw spectrum with wavelengths/units, instrument/measurement conditions, repeats, source file and hash. Derived results are stored separately with light source, observer, white point, scaling, integration method, program versions and source reference. Model results should additionally have training/validation roles, parameters, residuals and convergence status. The existing targetInfo should be reused, not duplicated with diverging metadata.
 
-## Genomförande och acceptans
+## Implementation and acceptance
 
-1. **Fastställ kolorimetrikontraktet.** Inventera riktiga JSON/TI3/MXF-spektradata och identifiera saknade metadata. Bevara okända fält som okända; gissa inte M-läge, skala eller belysning.
-2. **Bygg Python-analys som första nya motor.** Läs en befintlig mätning och ge spårbar XYZ/Lab. Testa vit/svart/neutral, procent kontra 0–1, olika spektralintervall, felaktiga data och publicerade ΔE00-referensfall. Jämför med Argyll när förutsättningarna verkligen är samma; förklara metodskillnader innan toleranser godtas.
-3. **Bygg ICC-baslinjen.** Skapa TI3 från validerad intern data, generera RGB-profil med Argyll och rapportera ΔE00 på separata kontrollpatchar. Testa sedan en fysisk utskrift med profilen. Gråskala, maximum och percentiler redovisas tillsammans med medelfel.
-4. **Bygg empirisk modell och återkoppling.** Jämför enkla modeller innan komplexitet tillförs. Förtäta områden med påvisat modellfel och otillräckligt stöd, enligt plan för felstyrd förtätning. Använd upprepningar för att skilja mätbrus från modellfel. När kontrollprov används för att välja nästa nät behövs nya orörda slutkontroller.
-5. **Pröva flerljusoptimering.** Först när referensspektrum eller ett definierat färgåtergivningsmål finns. Rapportera kompromisser, känslighet och verklig mätverifiering; kalla inte ett eget mått standardiserat metameriindex.
+1. **Establish the colorimetry contract.** Inventory real JSON/TI3/MXF spectral data and identify missing metadata. Preserve unknown fields as unknown; do not guess M-mode, scale or illumination.
+2. **Build Python analysis as the first new engine.** Read an existing measurement and give traceable XYZ/Lab. Test white/black/neutral, percent versus 0–1, different spectral ranges, erroneous data and published ΔE00 reference cases. Compare with Argyll when the conditions are really the same; explain method differences before accepting tolerances.
+3. **Build the ICC baseline.** Create TI3 from validated internal data, generate an RGB profile with Argyll and report ΔE00 on separate check patches. Then test a physical print with the profile. Grey scale, maximum and percentiles are reported together with the mean error.
+4. **Build an empirical model and feedback.** Compare simple models before adding complexity. Densify areas with demonstrated model error and insufficient support, according to the plan for error-driven densification. Use repeats to separate measurement noise from model error. When check samples are used to choose the next grid, new untouched final checks are needed.
+5. **Try multi-light optimisation.** Only when a reference spectrum or a defined colour reproduction target exists. Report trade-offs, sensitivity and real measurement verification; do not call an own measure a standardised metamerism index.
 
-Geometriskt avstånd i RGB är ett täckningsmått. ΔE00 efter mätning är ett färgfel. Osäkerhet i en modell är ett tredje mått. De behöver skilda namn och fält, även om de senare kombineras för att välja nya patchar.
+Geometric distance in RGB is a coverage measure. ΔE00 after measurement is a colour error. Uncertainty in a model is a third measure. They need separate names and fields, even if they are later combined to choose new patches.
 
-## Avgränsning av denna granskning
+## Scope of this review
 
-Officiell dokumentation har granskats för MathWorks, SciPy, Colour Science, ICC och ArgyllCMS. Den inskickade koden har granskats som förslag, inte godkänts genom körning. Inga nya Python-paket har installerats, ingen fysisk mätning har körts och ingen spektral optimeringsmotor har lagts in. Rekommendationen kompletterar projektplanen; den ersätter inte befintliga fungerande mät- och targetflöden.
+Official documentation has been reviewed for MathWorks, SciPy, Colour Science, ICC and ArgyllCMS. The submitted code has been reviewed as a proposal, not approved by running it. No new Python packages have been installed, no physical measurement has been run and no spectral optimisation engine has been added. The recommendation supplements the project plan; it does not replace existing working measurement and target flows.

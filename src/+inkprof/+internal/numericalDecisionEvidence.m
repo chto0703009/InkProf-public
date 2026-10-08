@@ -34,7 +34,7 @@ if isfield(evidence.trainingFit,'previous')&&isfield(evidence.trainingFit,'curre
   end
  end
 end
-evidence.trainingFit.caveat="Anpassningsfel mot respektive iterations profilunderlag. Mätpunkter och antal kan skilja sig; detta är inte en jämförelse på ett gemensamt oberoende utskriftsprov.";
+evidence.trainingFit.caveat="Fit error against each iteration's profiling data. Samples and counts may differ; this is not comparison on a shared independent print test.";
 if w.valid('compare')
  data=jsondecode(fileread(w.output('compare','comparison')));
  assert(string(data.profileSHA256.current)==digest,'inkprof:Integrity','Comparison refers to another current ICC.');

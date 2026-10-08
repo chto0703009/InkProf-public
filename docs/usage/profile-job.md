@@ -1,39 +1,41 @@
-# B3 – separat profileringsjobb
+# B3 – separate profiling job
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-Implementerad 2026-09-27; användaracceptans återstår. B2 är användargodkänd.
+Implemented 2026-09-27; user acceptance remains. B2 has been accepted by the user.
 
 ```matlab
 [jobFolder, status] = inkprof.runProfileJob(recipeFile);
 ```
 
-`recipeFile` är JSON-filen från B2. Utan argument öppnas filval för receptet. Detta startar **colprof** och kan skapa en ICC-kandidat; B3 omfattar teknisk jobbkörning, inte utskriftsvalidering eller automatiskt godkännande av profilen.
+`recipeFile` is the JSON file from B2. Without an argument, a file chooser for the recipe opens. This starts **colprof** and can create an ICC candidate. B3 covers technical job execution, not print validation or automatic approval of the profile.
 
-Fönstret visar status, jobbmapp och senaste loggutskriften. **Cancel job** eller kryssknappen begär avbrytning av just den egna körningen. MATLAB väntar på avslutad körning men GUI:t behandlar händelser. Ctrl+C begär också avbrytning genom städningen. Om MATLAB tvångsavslutas kan automatisk städning inte garanteras.
+The window shows the status, the job folder and the latest log output. **Cancel job**, or the window's close button, requests cancellation of this particular run only. MATLAB waits for the run to finish, but the GUI keeps processing events. Ctrl+C also requests cancellation, through the clean-up. If MATLAB is force-quit, automatic clean-up cannot be guaranteed.
 
-## Jobbets innehåll
+## Job contents
 
-Varje körning får en unik mapp under projektets `profiles/jobs`:
+Each run gets a unique folder under the project's `profiles/jobs`:
 
-- `recipe.json`, `profile-input.json`, `source.ti3`: ögonblicksbilder av valt recept och profileringsdata.
-- `engine.ti3`: exakt indata till motorn. Spectral behåller spektra; storedXYZ tar bort spektral- och Lab-kolumner samt spektralmetadata, med kontroll att RGB/XYZ och patchidentiteter är oförändrade.
-- `request.json`: filhashar, sökväg till motorn, tidsgräns och förberedelsemetod.
-- `version.txt`, `colprof.log`, `worker.log`: version, motorlogg och eventuella fel från Python-jobbet.
-- `status.json`: atomiskt uppdaterad status, verkliga argument, verktygshash, exitkod, resultat eller fel.
-- `work`: isolerad arbetsmapp; felaktiga eller avbrutna kandidatfiler kan finnas här för felsökning.
-- `result/profile.icc` och `result/inspection.json`: publiceras bara efter exitkod 0, A1-kontroll utan varningar, rätt profilklass/färgrymd, förväntade A2B0/B2A0-taggar och oförändrade indata.
+| File or folder | Content |
+|---|---|
+| `recipe.json`, `profile-input.json`, `source.ti3` | Snapshots of the chosen recipe and the profiling data. |
+| `engine.ti3` | The exact input to the engine. Spectral mode keeps the spectra. storedXYZ removes spectral and Lab columns and spectral metadata, after checking that RGB/XYZ and patch identities are unchanged. |
+| `request.json` | File hashes, engine path, time limit and preparation method. |
+| `version.txt`, `colprof.log`, `worker.log` | Version, engine log and any errors from the Python job. |
+| `status.json` | Atomically updated status, actual arguments, tool hash, exit code, result or error. |
+| `work` | Isolated working folder; faulty or cancelled candidate files may be left here for troubleshooting. |
+| `result/profile.icc`, `result/inspection.json` | Published only after exit code 0, an A1 check without warnings, the correct profile class and colour space, the expected A2B0/B2A0 tags, and unchanged inputs. New generic-compression recipes additionally require a distinct B2A1 and valid media white (wtpt), supporting perceptual, relative and absolute intents. Legacy recipes retain their original build settings. |
 
-Slutstatus är `succeeded`, `failed` eller `cancelled`. `succeeded` betyder tekniskt skapad och strukturellt kontrollerad kandidat, inte godkänd färgkvalitet. Normal avslutning uppdaterar projektmanifestet. Tidigare profiler och låsta mätningar skrivs aldrig över.
+The final status is `succeeded`, `failed` or `cancelled`. `succeeded` means a technically created and structurally checked candidate, not approved colour quality. A normal finish updates the project manifest. Earlier profiles and locked measurements are never overwritten.
 
-Python äger colprof-processen och hanterar avbrytning; MATLAB visar status och skickar en cancel-fil. Argument skickas som separata processargument, utan shell. Jobbet accepterar bara implementerade receptinställningar och jämför rekonstruerade argument med B2:s planerade argument.
+Python owns the colprof process and handles cancellation; MATLAB shows the status and writes a cancel file. Arguments are passed as separate process arguments, without a shell. The job accepts only implemented recipe settings, and compares the reconstructed arguments with B2's planned arguments.
 
-Standardtidsgränsen är 1800 sekunder för motorbygget, versionsfrågan högst 15 sekunder. Motorns sökväg hämtas från InkProfs Argyll-konfiguration; `ColprofExecutable` kan anges uttryckligen. `ShowDialog=false` används för skripttester. Inget instrument används.
+The default time limit is 1,800 seconds for the engine build, and at most 15 seconds for the version query. The engine path comes from InkProf's Argyll configuration; `ColprofExecutable` can be given explicitly. `ShowDialog=false` is used for script tests. No instrument is used.
 
-## Tester
+## Tests
 
-Python-prover med en falsk motor täcker lyckad körning, exitkod 7, manipulerad indata och avbrytning. MATLAB-integration testar storedXYZ-förberedelse och verktygsfel. En separat temporär kopia av det godkända spektrala 575-receptet används för prov mot installerad colprof; den väljer inte en produktionsprofil åt användaren.
+Python tests with a fake engine cover a successful run, exit code 7, tampered input and cancellation. MATLAB integration tests cover storedXYZ preparation and tool errors. A separate temporary copy of the approved spectral 575-patch recipe is used for a test against the installed colprof; it does not choose a production profile for the user.
 
-Begränsningar: kontroll av LUT-kvalitet, fysisk utskrift och oberoende färgvalidering hör till senare steg. Okända utskriftsinställningar i receptet blir inte kända genom att jobbet lyckas. Ingen systeminstallation av profilen sker.
+Limitations: checks of LUT quality, physical printing and independent colour validation belong to later steps. Unknown print settings in the recipe do not become known because the job succeeds. The profile is not installed into the system.
 
-Provresultat 2026-09-27: den temporära körningen med 575 spektrala patchar, D50/1931_2, medium/Lab cLUT och colprof 3.5.0 avslutades med `succeeded`. A1 identifierade resultatet som ICC 2.2.0. Testprojektet togs bort efter kontroll; detta är teknisk verifiering av körvägen, inte en accepterad produktionsprofil. MATLAB:s Cancel-knapp ingår också i integrationstestet med en väntande falsk motor.
+Test result 2026-09-27: the temporary run with 575 spectral patches, D50/1931_2, medium/Lab cLUT and colprof 3.5.0 finished with `succeeded`. A1 identified the result as ICC 2.2.0. The test project was removed after the check. This is technical verification of the execution path, not an accepted production profile. MATLAB's Cancel button is also covered by the integration test, using a waiting fake engine.

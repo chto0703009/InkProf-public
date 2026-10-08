@@ -11,7 +11,7 @@ import re
 import subprocess
 import numpy as np
 import colour
-from fwa import arguments as fwa_arguments
+from fwa import arguments as fwa_arguments, prepare as fwa_prepare
 
 NUMBER=r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?'
 LINE=re.compile(r'^\[('+NUMBER+r')\]\s+(.*?)\s+@\s+(.*?):\s+(.*?)\s+->\s+(.*?)\s+should be\s+(.*?)\s*$')
@@ -58,20 +58,25 @@ def run(job, expected_file, executable, output):
         if sha(p)!=h:raise ValueError('Profile job artifact hash mismatch.')
     expected=json.loads(Path(expected_file).read_text())
     if expected['ti3SHA256']!=sha(ti3):raise ValueError('Expected patch mapping belongs to another TI3.')
+    raw_ti3=ti3; fwa_evidence=None
+    prepared_fwa=recipe['colorimetry'].get('fwaPreparation')=='white-reference-spec2cie-v1' and recipe['colorimetry'].get('fwaCompensation')
+    if prepared_fwa:
+        ti3,fwa_evidence=fwa_prepare(recipe['colorimetry'],recipe.get('measurementCondition',{}),ti3,output/'fwa',Path(executable).with_name('spec2cie'+Path(executable).suffix))
     args=['-v2','-k','-I','a']
-    if recipe['colorimetry']['mode']=='spectral':args+=['-i','D50','-o','1931_2']
-    elif recipe['colorimetry']['mode']!='storedXYZ':raise ValueError('Unsupported recipe data mode.')
-    args += fwa_arguments(recipe['colorimetry'], recipe.get('measurementCondition', {}), ti3)
+    if recipe['colorimetry']['mode']=='spectral' and not prepared_fwa:args+=['-i','D50','-o','1931_2']
+    elif recipe['colorimetry']['mode'] not in ('spectral','storedXYZ'):raise ValueError('Unsupported recipe data mode.')
+    if not prepared_fwa:args += fwa_arguments(recipe['colorimetry'], recipe.get('measurementCondition', {}), ti3)
     version=subprocess.run([str(executable),'-?'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=15)
     completed=subprocess.run([str(executable),*args,str(ti3),str(profile)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=120)
     text=completed.stdout.decode(errors='replace');(output/'profcheck.log').write_text(text)
     if completed.returncode:raise ValueError(f'profcheck failed ({completed.returncode}).')
+    if fwa_evidence and sha(ti3)!=fwa_evidence['compensatedTI3SHA256']:raise ValueError('Compensated basis changed during fit checking.')
     patches=parse_log(text,expected)
-    for p,h in [(profile,status['profileSHA256']),(ti3,status['engineTI3SHA256'])]:
+    for p,h in [(profile,status['profileSHA256']),(raw_ti3,status['engineTI3SHA256'])]:
         if sha(p)!=h:raise ValueError('Profile/input changed during analysis.')
     result=dict(schemaVersion=1,documentType='inkprof.profile-fit',purpose='Training-data fit; not independent validation or convergence proof',
                 metric='CIEDE2000',intent='absolute colorimetric',colorimetry=recipe['colorimetry'],
-                profileSHA256=sha(profile),sourceTI3SHA256=sha(ti3),recipeSHA256=sha(job/'recipe.json'),
+                profileSHA256=sha(profile),sourceTI3SHA256=sha(raw_ti3),fwaPreparation=fwa_evidence,recipeSHA256=sha(job/'recipe.json'),
                 tool=dict(executable=str(executable),versionOutput=version.stdout.decode(errors='replace'),arguments=args,
                           labPrecision='6 decimal places from profcheck; deltaE00 independently recomputed with Colour',colourVersion=colour.__version__),
                 summary=stats(patches),groups={k:stats([p for p in patches if p[k]]) for k in ['gray','dark','highChroma','rgbBoundary']},

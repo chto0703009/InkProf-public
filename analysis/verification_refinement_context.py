@@ -15,7 +15,7 @@ from profile_grid import lookup
 
 def sha(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
-def run(source,exe,output,step):
+def run(source,exe,output,step,use_jacobian=True):
     source=Path(source).resolve();report=json.loads(source.read_text());analyse(report)
     files=[(Path(s['path']),s['sha256']) for s in report['sources']]
     for p,h in files:
@@ -39,13 +39,15 @@ def run(source,exe,output,step):
         key=tuple(r['deviceRGB16']);groups.setdefault(key,[]).append(p)
     rgb=np.array(list(groups),float)*100/65535
     forward=lambda x:lookup(exe,profile,x/100,intent='a')
-    pred=forward(rgb);full=local_sensitivity(forward,rgb,step);half=local_sensitivity(forward,rgb,step/2)
+    pred=forward(rgb)
+    full=local_sensitivity(forward,rgb,step) if use_jacobian else {}
+    half=local_sensitivity(forward,rgb,step/2) if use_jacobian else {}
     obs=[]
     for (key,ps),x,model in zip(groups.items(),rgb,pred):
         if max(float(colour.delta_E(model,p['predictedLab'])) for p in ps)>.02:raise ValueError('C3 model prediction differs from ICC')
         labs=np.array([p['measuredLab'] for p in ps]);mean=labs.mean(axis=0)
         spread=max(float(colour.delta_E(a,b)) for a in labs for b in labs)
-        j=np.array(half[key]['jacobian']);j0=np.array(full[key]['jacobian'])
+        j=np.array(half[key]['jacobian']) if use_jacobian else np.zeros((3,3));j0=np.array(full[key]['jacobian']) if use_jacobian else j
         obs.append(dict(rgbPercent=x.tolist(),sampleIds=[str(p['sampleId']) for p in ps],
             coordinates=[p['coordinate'] for p in ps],gray=any(p['role']=='gray' for p in ps),
             residualLab=(mean-model).tolist(),deltaE00=float(colour.delta_E(mean,model)),
@@ -62,6 +64,7 @@ def run(source,exe,output,step):
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('source');p.add_argument('executable');p.add_argument('output');p.add_argument('--step',type=float,default=.5)
+    p.add_argument('--no-jacobian',action='store_true')
     a=p.parse_args()
     if not 0<a.step<=10:raise ValueError('Invalid finite difference step')
-    run(a.source,a.executable,a.output,a.step)
+    run(a.source,a.executable,a.output,a.step,not a.no_jacobian)

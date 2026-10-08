@@ -1,42 +1,42 @@
-# Referensfall: Chart 2033 Patches.txf
+# Reference case: Chart 2033 Patches.txf
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Granskat 2026-09-25. Kompletterar [granskningen av PXF och TXT](chart-2033-inspection.md).
+Reviewed 2026-09-25. Supplements the [review of the PXF and TXT](chart-2033-inspection.md).
 
-## Original och metod
+## Original and method
 
-Christer tillhandahöll `/Users/christer/Downloads/Chart 2033 Patches.txf`. En oförändrad kopia finns i `tests/fixtures/i1profiler/chart-2033/` tillsammans med PXF och TXT. Exakt i1Profiler-version är ännu inte angiven.
+Christer provided `/Users/christer/Downloads/Chart 2033 Patches.txf`. An unchanged copy is kept in `tests/fixtures/i1profiler/chart-2033/` together with the PXF and TXT. The exact i1Profiler version has not yet been stated.
 
-Filen har lästs som XML och jämförts med PXF på objektnivå. Detta är filinspektion, inte XSD-validering, återimport i i1Profiler eller praktisk mätverifiering.
+The file was read as XML and compared with the PXF at object level. This is file inspection, not XSD validation, re-import into i1Profiler or practical measurement verification.
 
-## Patchinnehåll
+## Patch content
 
-- CxF3-namnrymd: `http://colorexchangeformat.com/CxF3-core`.
-- Producent: `X-Rite - Prism`.
-- Angivet skapandedatum: `2026-09-25T14:36:04+01:00`, bevarat som skrivet i filen.
-- **2 033 targetobjekt**.
-- ID, namn, objekttyp, RGB-värden och objektordning är **exakt samma som i PXF-filen**.
-- RGB-värdena är alltså heltal på skalan 0–255 och har samma tidigare konstaterade trunkeringssamband till TXT-filen.
-- Inga `Location`-element och inga `ReflectanceSpectrum`-element hittades.
+- CxF3 namespace: `http://colorexchangeformat.com/CxF3-core`.
+- Producer: `X-Rite - Prism`.
+- Stated creation date: `2026-09-25T14:36:04+01:00`, preserved as written in the file.
+- **2,033 target objects**.
+- ID, name, object type, RGB values and object order are **exactly the same as in the PXF file**.
+- The RGB values are thus integers on the 0–255 scale and have the same previously established truncation relationship to the TXT file.
+- No `Location` elements and no `ReflectanceSpectrum` elements were found.
 
-TXF kompletterar därmed targetet med layoutparametrar men tillför inte högre precision i färgvärdena eller några mätningar.
+The TXF thus supplements the target with layout parameters but adds neither higher precision in the colour values nor any measurements.
 
-## Konkreta lässökvägar i detta referensfall
+## Concrete read paths in this reference case
 
 ```text
-Namnrymder:
+Namespaces:
   cc  = http://colorexchangeformat.com/CxF3-core
   xrp = http://www.xrite.com/products/prism
 
-Patchar:
+Patches:
   cc:CxF/cc:Resources/cc:ObjectCollection/cc:Object
     @Id, @Name, @ObjectType
     cc:DeviceColorValues/cc:ColorRGB
       @ColorSpecification
       cc:R, cc:G, cc:B
 
-Layoutparametrar:
+Layout parameters:
   cc:CxF/cc:CustomResources/xrp:Prism/xrp:CustomAttributes
     @NumberPatchColumns, @NumberPatchRows, @NumberPatchPages
     @PageWidth, @PageHeight, @PaperOrientation
@@ -44,11 +44,11 @@ Layoutparametrar:
     @DimensionUnit, @ScramblePatches
 ```
 
-Prefixen är exempel; implementationen ska matcha namnrymd och lokalt namn. Schema för privata Prism-resurser är inte verifierat. Attributnamn ovan är direkt observerade, inte gissade.
+The prefixes are examples; the implementation must match namespace and local name. The schema for private Prism resources has not been verified. The attribute names above are directly observed, not guessed.
 
-## Layoutmetadata
+## Layout metadata
 
-| Attribut | TXF-värde | PXF-värde |
+| Attribute | TXF value | PXF value |
 |---|---|---|
 | `NumberPatchColumns` | 30 | 0 |
 | `NumberPatchRows` | 23 | 0 |
@@ -58,28 +58,28 @@ Prefixen är exempel; implementationen ska matcha namnrymd och lokalt namn. Sche
 | `PatchSizeWidthValue` | 8.00 | 0.00 |
 | `PatchSizeHeightValue` | 7.00 | 0.00 |
 
-Dessa är de sju ändrade attributen i `CustomAttributes`. Gemensamma värden omfattar `PaperOrientation="Landscape"`, `ScramblePatches="False"`, `DimensionUnit="2"` och `MeasurementDevice="i1Pro 3"`.
+These are the seven changed attributes in `CustomAttributes`. Common values include `PaperOrientation="Landscape"`, `ScramblePatches="False"`, `DimensionUnit="2"` and `MeasurementDevice="i1Pro 3"`.
 
-Sidmåtten motsvarar liggande US Letter om enheten är millimeter: 279,4 × 215,9 mm. Patchmåtten skulle då vara 8 × 7 mm. Detta är en rimlig tolkning av storleksvärdena, **inte en verifierad generell definition av enhetskoden 2**. Enheten ska bekräftas mot i1Profiler eller en renderad originalkarta före fysisk reproduktion.
+The page dimensions correspond to landscape US Letter if the unit is millimetres: 279.4 × 215.9 mm. The patch dimensions would then be 8 × 7 mm. This is a plausible interpretation of the size values, **not a verified general definition of unit code 2**. The unit must be confirmed against i1Profiler or a rendered original chart before physical reproduction.
 
-Rutnätet anger 30 × 23 = 690 positioner per sida. Tre fulla rutnät skulle ha 2 070 positioner, alltså 37 fler än antalet targetpatchar. Filen ger här inte en explicit patch-för-patch-karta som visar hur dessa positioner används. De ska inte automatiskt betraktas som vita patchar eller mätpatchar.
+The grid specifies 30 × 23 = 690 positions per page. Three full grids would have 2,070 positions, i.e. 37 more than the number of target patches. The file here does not give an explicit patch-by-patch map showing how these positions are used. They must not automatically be regarded as white patches or measurement patches.
 
-## Vad vi nu kan göra
+## What we can now do
 
-Vi har ett verkligt referensfall även för TXF-läsning: patchlistan och ovanstående layoutparametrar kan importeras och bevaras. Det gör att läsaren kan verifieras mot verkliga PXF-, TXT- och TXF-filer från samma target.
+We have a real reference case for TXF reading as well: the patch list and the layout parameters above can be imported and preserved. This makes it possible to verify the reader against real PXF, TXT and TXF files from the same target.
 
-Vi kan skapa en **ny** instrumentanpassad layout och TIFF16 med korrekt tillhörande TI2. Väljs TXT som källa till styrvärden används dess högre numeriska precision; väljs TXF används de faktiska heltalsvärdena. Filernas värden får inte blandas tyst.
+We can create a **new** instrument-adapted layout and TIFF16 with the correct accompanying TI2. If the TXT is chosen as the source of control values, its higher numerical precision is used; if the TXF is chosen, the actual integer values are used. The files' values must not be silently mixed.
 
-## Vad som fortfarande måste verifieras för samma fysiska karta
+## What must still be verified for the same physical chart
 
-- Hur objektordningen kopplas till rad, kolumn och sida, inklusive läsriktning.
-- Hur den sista sidan fylls och om extra kontroll- eller utfyllnadspatchar genereras.
-- Enhet, faktisk startposition, sidhuvud, mellanrum och identifieringsmarkeringar. Angivna nollmarginaler bevisar inte att targetet börjar i sidans övre vänstra hörn.
-- Hur i1Profiler använder defaults och instrumentinställningar när targetet renderas.
-- Att en motsvarande TI2 kan beskriva en karta som chartread kan mäta med valt instrument.
+- How the object order maps to row, column and page, including reading direction.
+- How the last page is filled and whether extra control or padding patches are generated.
+- Unit, actual start position, page header, gaps and identification marks. The stated zero margins do not prove that the target starts at the page's top-left corner.
+- How i1Profiler uses defaults and instrument settings when the target is rendered.
+- That a corresponding TI2 can describe a chart that chartread can measure with the chosen instrument.
 
-En TIFF eller PDF som i1Profiler genererar från denna TXF är ett lämpligt nästa referensunderlag för layoutkontrollen. Den behövs inte för att börja implementera patchimporten, men behövs tillsammans med praktiska tester innan vi lovar identisk rendering och mätbarhet i båda programmen.
+A TIFF or PDF that i1Profiler generates from this TXF is a suitable next reference for the layout check. It is not needed to begin implementing the patch import, but is needed together with practical tests before we promise identical rendering and measurability in both programs.
 
-## Slutsats för implementationsunderlaget
+## Conclusion for the implementation basis
 
-Tidigare uppgift om att TXF saknas gäller inte längre. Däremot kvarstår skillnaden mellan **import av observerade layoutparametrar** och **verifierad återgivning av originalets fullständiga utskriftslayout**. Dessa ska ha skilda statusflaggor i InkProf.
+The earlier statement that the TXF is missing no longer applies. What remains, however, is the difference between **import of observed layout parameters** and **verified reproduction of the original's complete print layout**. These must have separate status flags in InkProf.

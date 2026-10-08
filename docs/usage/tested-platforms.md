@@ -1,18 +1,6 @@
-# Testade plattformar / Tested platforms
+# Tested platforms
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
-
-## Svenska
-
-**InkProf har testats på macOS. Programmet och dess arbetsflöde har inte testats på Windows eller Linux.**
-
-MATLAB och Python finns för macOS, Windows och Linux. Det innebär inte att InkProf fungerar eller är verifierat på samtliga plattformar. Även ArgyllCMS, instrumentkommunikation, drivrutiner, filvägar och dialoger behöver fungera tillsammans och provas i respektive miljö.
-
-Den interaktiva mätbryggan använder POSIX-funktioner. Linux är inte testat även om delar av implementationen är avsedda för POSIX-system. Instrumentmätning på Windows kräver dessutom en anpassad konsollösning och verifiering med instrumentet.
-
-Exempel på Windows- eller Linux-kommandon i dokumentationen är inte belägg för att InkProf har testats där. macOS-testningen innebär inte att varje version av macOS eller varje instrumentmodell har verifierats.
-
-## English
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 **InkProf has been tested on macOS. The application and its workflow have not been tested on Windows or Linux.**
 

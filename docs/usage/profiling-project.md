@@ -1,43 +1,45 @@
-# Sammanhållet profileringsprojekt
+# Self-contained profiling project
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-Ett profileringsarbete bor i en gemensam mapp med `inkprof-project.json`. JSON-filer för definition, layout, mätning och analys behåller sina egna roller; projektmanifestet sammanställer dem och lagrar historik.
+A profiling job lives in one shared folder with `inkprof-project.json`. The JSON files for definition, layout, measurement and analysis keep their own roles; the project manifest brings them together and stores the history.
 
 ```matlab
 paths=setupInkProf();
-project=inkprof.createProject(fullfile(paths.Projects,'mitt-profileringsprojekt'), ...
+project=inkprof.createProject(fullfile(paths.Projects,'my-profiling-project'), ...
     Name="Printer / paper / print mode");
 ```
 
-## Mappar och arbetsflöde
+## Folders and workflow
 
-- `sources/`: importerade definitioner och annat ursprungsunderlag.
-- `targets/`: sparade definitioner och fullständiga TIFF/TI2/layout-paket.
-- `measurements/`: mätomgångar och omläsningar.
-- `analyses/`: valfri plats för härledda analyser; de kan också sparas bredvid mätningen.
-- `reports/`: PDF och kontrollresultat; rapporter kan också ligga bredvid mätningen.
-- `profiles/`: framtida profiler och valideringsunderlag.
+| Folder | Contents |
+|---|---|
+| `sources/` | Imported definitions and other source material. |
+| `targets/` | Saved definitions and complete TIFF/TI2/layout packages. |
+| `measurements/` | Measurement sessions and re-readings. |
+| `analyses/` | Optional place for derived analyses; they can also be saved next to the measurement. |
+| `reports/` | PDF and check results; reports can also sit next to the measurement. |
+| `profiles/` | Profiles and validation material. |
 
-Spara definitioner under projektet och öppna dem med `inkprof.renderTarget`. Renderdialogen föreslår projektets targets-mapp när indata tillhör projektet. `inkprof.measureChart` skapar mätomgångar i projektets measurements-mapp när vald TI2 ligger inom projektet. Analysens standardplats är bredvid mätfilen. Ange PDF-plats inom projektet.
+Save definitions in the project and open them with `inkprof.renderTarget`. The render dialog suggests the project's targets folder when the input belongs to the project. `inkprof.measureChart` creates measurement sessions in the project's measurements folder when the chosen TI2 is inside the project. The default place for an analysis is next to the measurement file. Give a PDF location inside the project.
 
-## Automatisk uppdatering
+## Automatic updates
 
-MATLAB-API:erna registrerar framgångsrik sparning av RGB-definition, TIFF16-paket, chart-förberedelse, mätinställningar, mätresultat, spektralanalys och PDF/kontrollrapport. Äldre fristående mappar fortsätter fungera utan att omvandlas automatiskt. Om ett manifest inte går att uppdatera efter sparning visas en varning; sparade mätdata förstörs inte. Kör då `inkprof.updateProject(project)`.
+The MATLAB APIs record each successful save of an RGB definition, TIFF16 package, chart preparation, measurement settings, measurement result, spectral analysis and PDF/check report. Older standalone folders keep working without being converted automatically. If a manifest cannot be updated after a save, a warning is shown; saved measurement data are not destroyed. In that case run `inkprof.updateProject(project)`.
 
-Filer som kopieras manuellt eller skapas genom direkta Python-/Argyll-CLI-anrop registreras med samma uppdateringsfunktion efteråt. Ingen bakgrundsbevakning av filsystemet är installerad. Profilgenerering och leverans registreras i projektets manifest och arbetsgång när operationerna slutförs.
+Files copied manually, or created by direct Python/Argyll CLI calls, are registered afterwards with the same update function. No background file-system monitoring is installed. Profile generation and delivery are recorded in the project manifest and workflow when the operations complete.
 
 ```matlab
 inkprof.updateProject(project,Step="external-files-imported");
 ```
 
-Manifestet innehåller projekt-ID, revisionsnummer, relativa sökvägar, dokumenttyper, storlekar och SHA256 för filerna. Varje steg anger ändrade och borttagna sökvägar. Tidigare manifest sparas i `.manifest-history/`, som inte räknas in rekursivt i filinventeringen. Ett lås hindrar samtidiga skrivningar; uppdateringen publiceras via en temporär fil.
+The manifest contains the project ID, revision number, relative paths, document types, sizes and SHA256 of the files. Each step lists changed and removed paths. Earlier manifests are saved in `.manifest-history/`, which is not counted recursively in the file inventory. A lock prevents simultaneous writes, and the update is published via a temporary file.
 
-Kända beroendehashar mellan chart, TI3, mätning och analys matchas mot projektets filer i `links`. Omatchade hashreferenser redovisas i `unresolvedLinkCount`; det är inte automatiskt bevis för att projektet saknar körindata (en referens kan exempelvis avse ett äldre ursprung). Manifesthistorik är inte backup av äldre filinnehåll. Radera inte rådata.
+Known dependency hashes between chart, TI3, measurement and analysis are matched to the project's files in `links`. Unmatched hash references are reported in `unresolvedLinkCount`. This is not automatically proof that the project lacks run inputs; a reference may, for example, point to an older origin. Manifest history is not a backup of older file contents. Do not delete raw data.
 
-## Fysisk utskrift
+## Physical printing
 
-TIFF/layout beskriver vad som förbereddes. Uppgifter om verklig skrivare, papper, drivrutin, utskriftsläge och färghantering registreras uttryckligen och står annars som okända. Uppdatera hela printing-posten:
+TIFF/layout describes what was prepared. Information about the actual printer, paper, driver, print mode and colour management is recorded explicitly, and otherwise stays unknown. Update the whole printing record:
 
 ```matlab
 printing=struct('status',"user-recorded",'printer',"...",'paper',"...", ...
@@ -45,11 +47,13 @@ printing=struct('status',"user-recorded",'printer',"...",'paper',"...", ...
 inkprof.updateProject(project,Step="physical-print-recorded",Printing=printing);
 ```
 
-## Flytt och befintligt arbete
+## Moving and existing work
 
-Den aktuella 575-patchkedjan är kopierad till `projects/Canon-575-20260927`. Originalmapparna har bevarats. Alla kopierade filer verifierades med SHA256. Historiska absoluta sökvägar i rådata har inte skrivits om, eftersom det skulle ändra kontrollsummor. `relocations` kopplar deras gamla rotmappar till relativa sökvägar inom projektet; PDF-rutinen använder denna koppling för layouten. Nya mätningar ska startas från den kopierade TI2-filen i projektets targets-mapp.
+The current 575-patch chain has been copied to `projects/Canon-575-20260927`, and the original folders have been preserved. All copied files were verified with SHA256.
 
-Ta med hela projektmappen vid överföring till en annan dator. `inkprof.updateProject` kan därefter uppdatera inventeringen utan att vara beroende av den gamla projektrotens sökväg.
+Historical absolute paths in the raw data have not been rewritten, because that would change checksums. `relocations` maps their old root folders to relative paths inside the project; the PDF routine uses this mapping for the layout. New measurements are to be started from the copied TI2 file in the project's targets folder.
+
+Take the whole project folder when moving to another computer. `inkprof.updateProject` can then update the inventory without depending on the old project root path.
 
 ## v1.0.0 project settings
 

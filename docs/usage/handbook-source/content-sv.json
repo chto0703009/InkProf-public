@@ -1,0 +1,1321 @@
+[
+  {
+    "title": "Från bild till tryggt färgflöde",
+    "tag": "ANVÄNDARHANDBOK | RC2 | 2026-10-08",
+    "lead": "InkProf - När färgerna måste bli rätt",
+    "sections": [
+      [
+        "Bilden ska hela vägen till papperet",
+        "För fotografen är målet att den omsorgsfullt framtagna bilden också ska komma till sin rätt i utskriften. Ett tydligt och väl kontrollerat flöde hjälper fotografen, utskriftsföretaget och kunden att förstå resultatet och arbeta mot samma mål."
+      ],
+      [
+        "Mindre tid och material går förlorat",
+        "För ett utskriftsföretag ger dokumenterade inställningar och återkommande kontroll bättre förutsättningar för jämna leveranser. När fel upptäcks och förstås tidigt minskar behovet av att göra nya utskrifter, med den extra arbetstid, det papper och det bläck som annars går åt."
+      ],
+      [
+        "Transparens som gör färgen begriplig",
+        "InkProf samlar färgmål, spektrala mätningar, ICC-profiler och beslut i ett projekt. Den öppna källkoden och det spårbara flödet ger insyn i hur resultaten har tagits fram. Det gör det lättare att förstå svåra färger och arbeta ända fram till gränsen för vad vald skrivare, papper och bläck kan återge."
+      ],
+      [
+        "Vad den här handboken hjälper dig med",
+        "Handboken beskriver huvudfönstret, dialogerna och profilflödets 19 steg för 1.0.0-rc.2. Appens knappar och fältnamn är engelska i båda språkversionerna. Uppdaterad 8 oktober 2026. Bilagan beskriver hela profileringen och besluten längs vägen."
+      ],
+      [
+        "Arbetets tre delar",
+        "Först dokumenterar och mäter du skrivaren. Därefter bygger och kontrollerar du en profil. Slutligen verifierar du en utskrift eller dokumenterar ett uttryckligen avgränsat numeriskt beslut. Vid behov tillför en ny iteration fler mätningar."
+      ]
+    ],
+    "callout": "InkProf sparar TIFF16 för separat utskrift. Mätning, profilbygge, analys och dokumentation ingår i appens arbetsgång. Utskriften gör du i ditt vanliga utskriftsprogram."
+  },
+  {
+    "title": "Hitta rätt i arbetsgången",
+    "tag": "ÖVERSIKT",
+    "lead": "Radnumret till vänster och stegets interna beteckning är två olika saker. Här används radnumret när du ska hitta i appen.",
+    "rows": [
+      [
+        "Rad",
+        "Steg i appen",
+        "Syfte / läs vidare"
+      ],
+      [
+        "1-2",
+        "Create / import RGB target; Save TIFF16",
+        "Grundmål och utskriftsfil. Sida 6."
+      ],
+      [
+        "3-4",
+        "Measure / select measurement revision; Review and accept measurement",
+        "Mät, välj sparad revision och granska. Sidor 7-8."
+      ],
+      [
+        "5-7",
+        "B1. Lock profiling inputs; B2. Create recipe; B3. Build ICC",
+        "Lås underlag, välj recept och bygg profil. Sida 9."
+      ],
+      [
+        "8",
+        "C1. Fit, Grid and C1",
+        "Numerisk kontroll. Sida 10."
+      ],
+      [
+        "9-10",
+        "C2. Save verification target; Measure / select verification revision",
+        "Skriv ut och mät kontrollmål. Sida 11."
+      ],
+      [
+        "11-12",
+        "C3. Compare model and print; Review feedback",
+        "Bedöm verklig utskrift och återkoppling. Sida 11."
+      ],
+      [
+        "13-14",
+        "Approve for intended use; Save ICC and measurement certificate",
+        "Beslut och leverans efter verifiering. Sida 12."
+      ],
+      [
+        "15-17",
+        "Save refinement TIFF16; Measure refinement; Build next iteration",
+        "Nya färgprov och ny profil. Sidor 13-14."
+      ],
+      [
+        "18",
+        "Compare with previous iteration",
+        "Jämför profiler på gemensamt underlag. Sida 15."
+      ],
+      [
+        "19",
+        "Save ICC + measurement certificate without print verification",
+        "Avgränsat beslut utan ny kontrollutskrift. Sida 16."
+      ]
+    ],
+    "sections": [
+      [
+        "Så läser du statusen",
+        "Ready betyder att steget går att köra. Complete betyder att dess registrerade krav är uppfyllda. Locked betyder att ett nödvändigt underlag saknas. Stale betyder att underlag har ändrats och resultatet behöver uppdateras. Att bara öppna och stänga en dialog gör inte steget klart."
+      ],
+      [
+        "Det finns fler än en väg",
+        "B2 behövs för den manuella profileringsvägen. Profiljämförelsen på rad 18 är ett stöd för beslut. Rad 19 är ett särskilt alternativ när den aktuella iterationen har kontrollerats numeriskt men inte verifierats med en separat utskrift och mätning."
+      ],
+      [
+        "Nya funktioner: sidorna 21-28",
+        "21: två utjämningssteg. 22: mätbrus. 23: RGB-gradienter. 24: radommätning. 25: C2 och ICC-tagg. 26: C3-tabell och varningar. 27: målmetoder, referenser och befintlig ICC. 28: JSON och rätt felsökningskontroll."
+      ]
+    ]
+  },
+  {
+    "title": "Huvudfönstret",
+    "tag": "APPENS NAV",
+    "lead": "Välj först en rad i tabellen. Läs beskrivningen och de sparade resultaten innan du väljer Run selected step.",
+    "diagram": true,
+    "sections": [
+      [
+        "Projekt och återupptagning",
+        "New project skapar ett projekt. Open project öppnar ett befintligt, även efter att appen varit stängd under torktiden. Project details samlar uppgifter om användare, material och inställningar. Projektnamn och aktuell sökväg visas i huvudfönstret."
+      ],
+      [
+        "Körning och resultat",
+        "Run selected step öppnar nästa operation eller dialog. Open selected step results visar det som redan har skapats. Copy TIFF16 for printing… används när en sparad målfil ska kopieras för separat utskrift. Läs filvägen i resultatet så att du använder rätt mål och iteration."
+      ],
+      [
+        "Historik och kontroll",
+        "Iteration history visar omgångarna. Open results log öppnar arbetsloggen. Verify project kontrollerar projektets registrerade filer och integritet. Refresh läser in aktuellt läge; det ersätter inte Save, Accept eller ett uttryckligt godkännande i en dialog."
+      ],
+      [
+        "Rapport, visning och avslut",
+        "Open report öppnar tillgänglig rapport; benämningen kan anpassas till certifikatet. View 3D visar tillgängliga färgpunkter. View gamut visar en separat ICC-beräknad 3D-yta. Close app är den tydliga vägen att avsluta appen. Avsluta först pågående dialog med dess avsedda spara- eller avbrytknapp."
+      ]
+    ]
+  },
+  {
+    "title": "Projektet är arbetets minne",
+    "tag": "NEW PROJECT / OPEN PROJECT",
+    "lead": "Ett projekt är en separat mapp som håller ihop inställningar, filer, mätningar och historik.",
+    "sections": [
+      [
+        "Skapa och fyll i",
+        "Välj New project och ange namn, användare och projektuppgifter. I Project details finns fyra flikar: Project and materials, Printing settings, Profiling och Target paper. Spara med Save. Cancel lämnar dialogen utan att spara ändringarna."
+      ],
+      [
+        "Project and materials",
+        "Ange Project name, User, Printer, Paper name, Paper finish, Ink / ink set och Ink type (dye/pigment/mixed/unknown). Ange tillräckligt tydliga produktnamn för att kunna återskapa kombinationen. Paper finish erbjuder bland annat Glossy och Matte. Här finns också valet FWA / OBA för optiska vitmedel, beskrivet på nästa sida."
+      ],
+      [
+        "Printing settings",
+        "Fyll i Driver media setting, Printing application, Driver / RIP, Print quality, Colour management, Drying time (hours), Printer coating och Coating settings. I Printer settings kan du beskriva ytterligare val. Torktiden hämtas härifrån till arbetsflödet; en registrerad tid visar inte i sig att arket verkligen har torkat."
+      ],
+      [
+        "Korrigera eller börja om?",
+        "Rätta felskrivna uppgifter i Project details. Receptet hämtar de gemensamma uppgifterna härifrån, och gemensamma projektuppgifter ändras i Project details. Ett senare FWA-val uppdaterar också projektet. Om skrivare, papper, bläck eller utskriftsförhållanden faktiskt ska bli en annan kombination är ett nytt projekt tydligare. Följ appens krav på att köra om steg när underlag ändras."
+      ],
+      [
+        "Byta namn och flytta",
+        "När du ändrar projektnamnet i appen ändras även projektmappens namn. Vid namnändring utanför appen kan den upptäcka skillnaden och be dig bekräfta det avsedda namnet. Flytta hela projektmappen till en annan dator och öppna den där. Kopiera inte bara workflow.json eller en enstaka ICC-fil om du vill behålla hela arbetskedjan."
+      ],
+      [
+        "Vad sparas?",
+        "Projektets JSON-filer håller reda på identitet, inställningar, steg och iterationer. Resultatloggen finns som läsbar text och JSONL, där varje rad är en loggpost. Rådata och skapade resultat kopplas till respektive operation. Kontrollsummor hjälper appen att upptäcka ändrade underlag."
+      ]
+    ],
+    "callout": "Paus under torkning: spara färdigt det aktuella steget, avsluta appen och öppna samma projekt när arken är klara. Skapa inte ett nytt projekt för att fortsätta samma mätomgång."
+  },
+  {
+    "title": "Profil och mätförutsättningar",
+    "tag": "PROJECT DETAILS",
+    "sections": [
+      [
+        "Profiling",
+        "Profile name och Description beskriver profilen. Colour data kan vara Spectra (D50 / 2 degrees) eller Stored XYZ. Spektraldata möjliggör omräkning från uppmätta spektra. Stored XYZ bevarar de lagrade färgvärdena. Inverse table (B2A) erbjuder High (denser) eller Medium (baseline). Tätare tabell är en beräkningsinställning, inte ett bevis på bättre utskrift."
+      ],
+      [
+        "D50 och D65",
+        "D50 är referensljuset i appens spektrala profilering, tillsammans med tvågraders standardobservatör. D65 är en annan dagsljusreferens. Bedöm färg under dokumenterade betraktningsförhållanden och blanda inte jämförelser med olika referensljus. Den aktuella Profiling-fliken har inget separat D65-val; valet Spectra anger uttryckligen D50."
+      ],
+      [
+        "Optiska vitmedel: FWA / OBA",
+        "FWA (Fluorescent Whitening Agents) och OBA (Optical Brightening Agents) är två namn för optiska vitmedel i papper. OBC (Optical Brightener Compensation) betyder kompensation för deras effekt: samma fenomen men en behandling, inte ämnet. Argyll kallar det FWA compensation och X-Rite använder OBC. Algoritmerna behöver inte vara identiska. Compensate optical brighteners (D50) väljer InkProfs kompensation. Den stödda M0-vägen modellerar D50 men blir inte en fysisk M1-mätning."
+      ],
+      [
+        "Ändra FWA efter mätning",
+        "En ändring enbart av FWA/OBA bevarar låst B1 men gör B2 och senare profilresultat inaktuella. Råmätningarna bevaras. Verkligt ändrade material eller utskriftsvillkor gör även B1 inaktuellt. Nya recept stöder FWA före Argyll-förutjämning och slututjämning; se avsnittet om M0-vitreferens. Se sidan 21."
+      ],
+      [
+        "Svartpunktskompensation: BPC",
+        "Black point compensation anpassar svartpunkten mellan färgrymder. I de kontrollerade jämförelser som beskrivs här är den avstängd för att hålla beräkningsvillkoren tydliga. Uppgiften BPC off är en redovisning av villkoret, inte ett felmeddelande."
+      ],
+      [
+        "Dator och instrument",
+        "MATLAB är appens gränssnitt. Python, ArgyllCMS och LittleCMS används i underliggande beräkningar och verktyg. Verktygssökvägar är datorberoende och måste fungera på den aktuella datorn. Installationen ska därför kontrolleras även om projektmappen är komplett. Programmet har testats på macOS. Windows och Linux är inte verifierade miljöer för hela InkProf-flödet."
+      ]
+    ]
+  },
+  {
+    "title": "Grundmål och TIFF16",
+    "tag": "RAD 1-2 / PAPPERSDIALOGEN",
+    "lead": "Ett grundmål beskriver vilka RGB-värden skrivaren ska återge. Den utskrivna och uppmätta versionen blir profileringens underlag.",
+    "sections": [
+      [
+        "Rad 1: skapa eller importera",
+        "Kör Create / import RGB target. Skapa ett mål enligt dialogens val eller importera ett befintligt kompatibelt RGB-underlag. Antalet färgprov och deras identitet måste följa med genom layout, utskrift och mätning. Ett måls bildutseende räcker inte för att identifiera dess mätunderlag."
+      ],
+      [
+        "Rad 2: spara utskriftsfilen",
+        "Kör Save TIFF16 och välj layout. Appen sparar en 16-bitars TIFF samt matchande mål- och layoutinformation. Kontrollera sidantal, patchantal och angiven filväg i resultatet. TIFF16 är leveransen för utskrift; InkProf skickar inte jobbet till skrivaren."
+      ],
+      [
+        "Target paper och den fysiska mätsläden",
+        "I Project details anger Maximum measurement sweep (mm) största bredden för ett svep. Maximum target length (mm) begränsar målets andra dimension. Roll width (mm) anger rullbredd. Gränserna omfattar marginaler och sparas i projektets JSON. De ska anpassas till din utrustning; de är inte universella instrumentmått."
+      ],
+      [
+        "Ändringsbara pappersförslag",
+        "Pappersplanering jämför A5 till A3+, skurna delar och rulle. 1/2 A4 (2 pieces per sheet) betyder en halv A4 som mätstycke, inte en delad TIFF. Whole sheet använder hela arket. Mått och ytor visas med en decimal; beräkningarna behåller precisionen. Kontrollera att stycket passar skrivare och mätutrustning."
+      ],
+      [
+        "Skriv ut och låt torka",
+        "Kopiera vid behov med Copy TIFF16 for printing…. Skriv ut i 100 procent storlek utan automatisk anpassning till sidan. Använd dokumenterade material och drivrutinsinställningar. För ett obehandlat grundmål ska ingen extra profilomvandling förändra de avsedda RGB-värdena. Spara utskriftsinställningarna och följ projektets torktid."
+      ],
+      [
+        "Hitta rätt rad vid mätning",
+        "Använd målbildens rad- och positionsmarkeringar för att orientera arket. Radmarkeringar på båda sidor underlättar svepet. En tidigare exporterad TIFF ändras inte när programkoden uppdateras; granska den faktiska fil du ska skriva ut."
+      ]
+    ],
+    "callout": "Varför detta steg? Fel skala, fel färghantering eller fel pappersinställning kan ge mätningar som inte beskriver den skrivarkombination du tänker profilera."
+  },
+  {
+    "title": "Mätfönstret",
+    "tag": "RAD 3 / MEASURE CHART",
+    "lead": "Mätningarna görs med en spektrometer som stöds av mätkedjan. Instrumentets kalibrering och rätt koppling till målfilen är avgörande.",
+    "sections": [
+      [
+        "Innan du startar",
+        "Välj Measure / select measurement revision. I mätfönstret kontrollerar du Chart (TI2), Scan mode, Scan tolerance, Instrument port och Measurement condition. Målfilen måste höra till just det utskrivna arket. Instrument port 0 betyder standardval."
+      ],
+      [
+        "Start och kalibrering",
+        "Start measurement startar instrumentkedjan. Kalibrera när programmet ber om det. Vid sidbyte visas sida, radnummer och FORWARD eller REVERSE, i samma form som radinstruktionerna. Lägg rätt sida i position och använd Page loaded. Instrumentmeddelanden visas i loggen."
+      ],
+      [
+        "Svep och omtag",
+        "Single direction, Alternate rows och Forward + reverse average beskriver olika svepmönster. Följ valt läge. Reread / retry gör ett omtag. Accept reading accepterar när dialogen begär det. Previous row, Next row och Next unread hjälper dig att hitta rätt rad. Ta hjälp av arkets markeringar och statusanvisningen, inte enbart bokstavskoder i loggen."
+      ],
+      [
+        "Avsluta med ett sparat resultat",
+        "Save and finish avslutar och sparar mätningen som en ny revision. Översikten med alla patchar kan öppnas efter Save; det är avsedd granskning och startar inte ommätning. Tidigare revisioner finns kvar. Om ingen lyckad sparning registrerats sker ingen automatisk import; läs loggen innan du fortsätter."
+      ],
+      [
+        "Mätvillkor och instrumentidentitet",
+        "Mätfönstret skiljer bland annat på M0 för i1Pro 2 utan UV-filter och ospecificerat instrumentstandardläge. Ange inte M1 eller M2 om instrumentkedjan inte ger den mätningen. Modell och serienummer hämtas från instrumentutskriften när de finns tillgängliga; okända uppgifter ska inte ersättas med antaganden."
+      ],
+      [
+        "Om första anslutningen misslyckas",
+        "Vid vissa tidiga startfel kan mätkedjan göra begränsade återförsök. Det är inte samma sak som en fullständig maskinvaruåterställning. Om ett fel kvarstår, avbryt ordnat, läs loggen och kontrollera anslutningen samt att ett annat program inte använder instrumentet. Starta därefter mätningen igen."
+      ]
+    ]
+  },
+  {
+    "title": "Revision, granskning och ommätning",
+    "tag": "RAD 3-4 / SAVED REVISIONS",
+    "lead": "En mätning som visas på skärmen är inte automatiskt den revision som används i profileringen.",
+    "sections": [
+      [
+        "Saved revisions: välj det sparade underlaget",
+        "Efter mätning eller import visar revisionsvalet tillgängliga sparade mätningar. Identifiera rätt omgång med datum, mål och omfattning. Use revision gör den valda revisionen till arbetsflödets underlag. Kontrollera vilken revision som nu anges som använd."
+      ],
+      [
+        "Rad 4: granska och acceptera",
+        "Review and accept measurement öppnar mätöversikten och tillhörande bedömning. Granska saknade värden, tydliga avvikelser och de färgprov som behöver uppmärksamhet. Skriv relevanta anteckningar och avsluta med dialogens uttryckliga acceptans. Att stänga förhandsvisningen är inte ett godkännande."
+      ],
+      [
+        "När en patch behöver mätas om",
+        "Remeasure patch mäter om en patch. Remeasure row låter dig välja sida och tryckt rad och behåller ursprungligt scanläge, inklusive forward/reverse. Granska förändringarna innan Accept row replacement. Discard / Close avstår från ersättning. En accepterad rad sparas som ny revision; original och råavläsningar bevaras. Se sidan 24."
+      ],
+      [
+        "Absolut färg och förändring är olika uppgifter",
+        "Measured Lab beskriver själva färgen med L*, a* och b*. Förändringen mellan två mätningar beskriver hur dessa värden har ändrats. ΔE00 sammanfattar färgskillnaden. Läs därför etiketten innan du tolkar ett tal som nytt absolutvärde, en komponentförändring eller en sammanlagd färgskillnad."
+      ],
+      [
+        "Ändrad mätning påverkar kedjan",
+        "En ny använd revision kan göra låsta underlag, profil, kontroller och godkännande inaktuella. Det är avsiktligt: den färdiga profilen ska kunna kopplas till den mätning som verkligen användes. Tidigare revisioner ger historik, men ersätter inte uppdatering av beroende steg."
+      ]
+    ],
+    "callout": "Kontrollera alltid tre saker: är ommätningen sparad, är den nya revisionen vald, och har granskningen accepterats? Refresh kan visa det aktuella läget men utför inte dessa tre handlingar."
+  },
+  {
+    "title": "Bygg en ICC-kandidat",
+    "tag": "RAD 5-7 / B1, B2 OCH B3",
+    "lead": "En ICC-profil beskriver sambandet mellan skrivarens RGB-värden och färgerna den återger. Kandidaten behöver därefter kontrolleras.",
+    "sections": [
+      [
+        "Rad 5: B1. Lock profiling inputs",
+        "B1 låser den valda och granskade mätningen tillsammans med nödvändiga mål- och projektuppgifter. Det skapar en spårbar utgångspunkt så att profilbygget inte oavsiktligt blandar olika revisioner. Kör om när appen anger att underlaget har blivit inaktuellt."
+      ],
+      [
+        "Vad är en RoleFile?",
+        "En rollfil beskriver hur färgprov ska användas, exempelvis för träning, kontroll eller reserverad bedömning. Om dialogen erbjuder No separate role file och du inte har en särskilt framtagen rollfil väljer du det alternativet. Hitta inte på roller eller välj en orelaterad fil. För appskapade kompletteringsmål är rollkopplingen en del av det sparade underlaget."
+      ],
+      [
+        "Rad 6: B2. Create recipe",
+        "Profiling recipe används i den manuella vägen. Measurement data smoothing styr valfri förregularisering. Smoothing at ICC build styr slutligt colprof -r; tomt betyder 0,5 %. Stegen är separata. Utskriftsuppgifter läses från Project details. Granska profilnamn, färgdata och tabellkvalitet. Se sidorna 21-23. Perceptual compression (%) styr den perceptuella gamutanpassningen; se det nya avsnittet om återgivningsmetoder."
+      ],
+      [
+        "Rad 7: B3. Build ICC / automatic iteration",
+        "Manual använder B2-receptet. Automatic skapar egna recept och använder inte B2:s gradientkryssruta. Efter lyckat manuellt bygge kan RGB-gradientfönstret öppnas om valet gjorts i B2 och förregularisering används. Sparat B2 öppnar inte fönstret. Complete betyder färdig beräkning, inte godkänd utskriftskvalitet. Automatic för vidare B2:s perceptuella kompression; förregularisering och gradientkryssrutan används fortfarande av Manual."
+      ],
+      [
+        "Vad har sparats när det är klart?",
+        "Projektet innehåller ICC-kandidaten med koppling till låsta underlag och profiljobb. Detta är den interna arbetskopian. Senare export skapar en separat leveranskopia med önskat namn och placering."
+      ],
+      [
+        "Varför räcker inte en skapad ICC-fil?",
+        "Ett lyckat profilbygge visar att en profil kunde beräknas. Det visar inte ensamt hur en ny utskrift blir. Därför följer numeriska kontroller och, för den fullständiga verifieringsvägen, en separat kontrollutskrift och mätning."
+      ]
+    ]
+  },
+  {
+    "title": "Förstå den numeriska kontrollen",
+    "tag": "RAD 8 / C1. FIT, GRID AND C1",
+    "lead": "Kontrollen undersöker den beräknade modellen och dess tabeller innan du bedömer en verklig kontrollutskrift.",
+    "rows": [
+      [
+        "Uppgift",
+        "Vad den hjälper dig att förstå"
+      ],
+      [
+        "Fit / anpassning",
+        "Hur modellen stämmer med de mätdata som den jämförs mot. Träningsdata är inte en oberoende kontrollutskrift."
+      ],
+      [
+        "Grid / rutnät",
+        "Profilens beteende på ett valt beräkningsrutnät. Tätare provtagning kan visa detaljer men är fortfarande en numerisk undersökning."
+      ],
+      [
+        "Framåt och invers",
+        "Framåt beräknar färg från RGB. Invers beräknar RGB för en önskad färg. Resultat från flera motorer kan jämföras."
+      ],
+      [
+        "Lokala prov och ramper",
+        "Hur RGB eller färg ändras vid små förändringar och längs övergångar. Kraftiga förändringar behöver tolkas i sitt sammanhang."
+      ],
+      [
+        "Mean, median, P95, max",
+        "Medelvärde, mittvärde, 95:e percentilen och största avvikelsen. Läs både typiskt beteende och enskilda ytterligheter."
+      ]
+    ],
+    "sections": [
+      [
+        "Skilj på olika felmått",
+        "ΔE00 mäter färgskillnad enligt CIEDE2000. RGB-avvikelse i procentenheter beskriver skillnad i styrvärden. En liten skillnad mellan två beräkningsmotorer kan samexistera med ett större fel mellan önskad och utskriven färg. Måtten besvarar olika frågor."
+      ],
+      [
+        "Är ett stort steg ett språng?",
+        "En brant övergång eller en knut i interpolation är inte i sig ett bevis på en diskontinuitet. Undersök flera steglängder och närliggande prov. Ändlig numerisk provtagning kan inte bevisa kontinuitet över hela färgrymden."
+      ],
+      [
+        "Nästa handling",
+        "Öppna de sparade kontrollresultaten. Läs eventuella varningar och deras underlag. Fortsätt med C2 för att kontrollera utskrift, eller använd senare den uttryckligen avgränsade numeriska leveransvägen om det är ditt dokumenterade beslut."
+      ]
+    ],
+    "callout": "Liten numerisk avvikelse är inte samma sak som liten utskriftsavvikelse. Håll alltid isär vad som beräknats och vad som faktiskt mätts på papper."
+  },
+  {
+    "title": "Kontrollera den verkliga utskriften",
+    "tag": "RAD 9-12 / C2, C3 OCH FEEDBACK",
+    "sections": [
+      [
+        "Rad 9: spara kontrollmålet",
+        "C2 skapar ett kontrollmål för aktuell ICC. Lab-referenser omvandlas en gång till skrivar-RGB med absolut kolorimetri utan BPC. Förberedelsen visar aktivitet och förfluten tid. Spara TIFF16, skriv ut separat och låt torka. C2 innehåller färger, neutrala, utmanande färger och upprepningar; inte enbart problemområden."
+      ],
+      [
+        "Undvik dubbel profilomvandling",
+        "Nya C2-filer innehåller skrivarprofilen som inbäddad tagg. Taggen ändrar inte RGB-värden och betyder inte att profilen ska läggas på igen. Ignorera/ta bort profilkopplingen i Photoshop utan att konvertera RGB-värdena. Äldre filer kan vara otaggade. Printer Manages Colors eller grå Off-kontroll bevisar inte att hela utskriftskedjan saknar extra färgomvandling. Se sidan 25."
+      ],
+      [
+        "Rad 10: mät och välj revision",
+        "Measure / select verification revision använder kontrollmålets egen målfil. Mät, spara och välj rätt revision på samma sätt som vid grundmätningen. Ett kontrollmål från en tidigare ICC-kandidat är inte automatiskt verifiering av den nya kandidaten."
+      ],
+      [
+        "Rad 11: C3. Compare model and print",
+        "Measured vs desired jämför utskriften med önskad färg. Model vs measurement jämför ICC-förutsägelsen med utskriften. Båda är färgskillnader, inte absoluta färgvärden. Desired Lab och Measured Lab innehåller L*, a*, b*. Största avvikelser visas först. C3 kan varna för misstänkt dubbel färghantering; det är en hypotes, inte bevis. Se sidan 26."
+      ],
+      [
+        "Rad 12: Review feedback",
+        "Öppna återkopplingen, läs den och dokumentera bedömningen med dialogens avsedda avslut. Ett kvarvarande Ready kan betyda att du bara har tittat på resultatet. Gå tillbaka och kontrollera att bedömningen verkligen sparats."
+      ],
+      [
+        "Vad betyder ej godkänd?",
+        "En uppgift om att färghantering eller acceptanskriterier inte är verifierade betyder att resultatet ännu saknar ett dokumenterat godkännandebeslut. Det betyder inte ensamt att mätningen misslyckades. Läs vilka belägg som finns och vad som återstår innan du väljer avsedd användning."
+      ]
+    ],
+    "callout": "Ett högt Measured vs desired men lågt Model vs measurement kan tyda på att modellen förutsäger begränsningen ganska väl. Ett stort modellfel motiverar närmare granskning. Inget av fallen avgör orsaken utan ytterligare underlag."
+  },
+  {
+    "title": "Beslut, ICC och mätcertifikat",
+    "tag": "RAD 13-14 / VERIFIERAD VÄG",
+    "sections": [
+      [
+        "Rad 13: Approve for intended use",
+        "Öppna aktuella kontrollresultat innan du godkänner. Beskriv vad profilen ska användas till och varför underlaget räcker för det syftet. Fyll i dialogens begärda uppgifter och bekräftelse, och spara beslutet. Att bara skriva accept i en text som inte sparas slutför inte steget."
+      ],
+      [
+        "När godkännandet blir inaktuellt",
+        "Om ICC, underlag eller kontroller ändras kan godkännandet markeras stale. Läs vilket beroende som har ändrats och uppdatera de steg som krävs. Ett gammalt beslut får inte utan vidare följa med till en ny profil."
+      ],
+      [
+        "Rad 14: välj vad som ska sparas",
+        "Save ICC and measurement certificate används för leveransen. Profilen finns redan som arbetsresultat i projektet. Filväljaren för ICC avser den separata kopian som du vill använda eller lämna vidare. Välj destination och kontrollera filnamnet."
+      ],
+      [
+        "Profilnamn i fil och bildprogram",
+        "Exportnamnet följer projektnamnet med datum, exempelvis MittProjekt_261003.icc. Vid export anpassas profilens interna beskrivning till leveransnamnet, så att den går att känna igen även i exempelvis Photoshop. Om du senare döper om filen i Finder ändras inte automatiskt den interna ICC-beskrivningen."
+      ],
+      [
+        "Certifikatets innehåll",
+        "Mätcertifikatet beskriver projekt, material, utskriftsförhållanden, profil och kontrollresultat. Det ska framgå vilken iteration som avses, vilka mätningar som stöder den och hur FWA har hanterats. Instrumentidentitet redovisas när den kunnat hämtas. Färgprover i rapporten är skärmvisningar, inte en ersättning för originalutskriften."
+      ],
+      [
+        "Var sparas rapporterna?",
+        "Projektet behåller sina resultat. Vid extern leverans sparas rapporten med sina tillhörande filer i en gemensam rapportmapp. Flytta hela mappen för HTML-versionen. PDF-filen kan öppnas separat. Använd den angivna sökvägen och Open report för att hitta projektets rapport."
+      ]
+    ],
+    "callout": "PDF-certifikatet har datum och plats för underskrift på papper. Den juridiska texten ligger i en bilaga efter signeringsdelen, så att resultat och beslut kan läsas sammanhängande."
+  },
+  {
+    "title": "Välj nya färgprov",
+    "tag": "RAD 15 / ERRORS OR IMAGE",
+    "lead": "En komplettering ska undersöka något du vill förstå eller förbättra. Den behöver inte vara riktad mot en viss färg.",
+    "sections": [
+      [
+        "Från verifieringsfel",
+        "From verification errors utgår från tillgänglig kontroll och återkoppling. Beskriv varför du vill fortsätta. Att appen ber om en motivering betyder inte att den har bevisat att fortsatt iteration saknar nytta; motiveringen dokumenterar ditt beslut."
+      ],
+      [
+        "Från en bild",
+        "From image hämtar representativa färger från en RGB-bild. Välj en bild med inbäddad ICC-profil. Om den saknas visar appen en varning och erbjuder Use sRGB, Choose another image eller Cancel. sRGB är då ett uttryckligt antagande som sparas. Bildens original ändras inte."
+      ],
+      [
+        "Bildurval och mängd",
+        "Dialogen låter dig begränsa bildområdet och antalet nya patchar. Minsta RGB-avstånd minskar täta dubbletter. En grannradie kan lägga prov runt valda färger; radie noll ger bildfärger utan sådana grannar. En bild med många liknande pixlar behöver inte lika många separata färgprov."
+      ],
+      [
+        "Granska förslagen",
+        "Urvalsfönstret visar beräknade mått och färgprov. Standardfiltret är uppskattad lokal anpassningsavvikelse ΔE00 större än 5. Tröskeln kan ändras. Endast synliga, markerade förslag går vidare. Om inget visas, granska tröskel och valt mått; det är inte automatiskt ett bevis på perfekta färger."
+      ],
+      [
+        "Vad betyder uppskattat fel?",
+        "Estimated local fit bygger på närliggande träningsmätningar och visar lokal modellanpassning. Det är inte en ny mätning av bildens utskrift. Model mapping ΔE00 är ett annat mått: avvikelsen i profilens beräknade återgivning av den önskade bildfärgen. Saknas underlag för en lokal uppskattning ska du inte tolka det som noll fel."
+      ],
+      [
+        "Spara val och välj papper",
+        "Bekräfta de valda patcharna och granska den föreslagna papperslayouten. Use saved image patches kan återanvända ett sparat urval. Appen sparar underlag och val för spårbarhet. Läs resultatets patchantal och TIFF-sökväg innan du skriver ut."
+      ]
+    ]
+  },
+  {
+    "title": "Välj metod för felstyrd förfining",
+    "tag": "ROW 15 / ARGYLL OR INKPROF",
+    "sections": [
+      [
+        "Välj metod i rad 15",
+        "Välj From verification errors och därefter 1. Argyll only eller 2. Current InkProf (Jacobian sampling). Aktuell C3-kontroll och återkoppling krävs. Argyll only är standardvalet. Valet gäller nya patchar och finns inte i B3."
+      ],
+      [
+        "Argyll only",
+        "Den kontrollerade ICC-profilen förkonditionerar Argyll targen för urval av nya device-RGB-patchar, utan InkProfs Jacobian-sampling eller förregularisering. Fortsättningen bygger en colprof-kandidat med hög kvalitet och -r 1.0."
+      ],
+      [
+        "Current InkProf (Jacobian sampling)",
+        "C3-mätfelen och Jacobian-styrt patchurval används, följt av jämförelse av ICC-kandidater med utvecklingsmätningar. Båda metoderna bygger ICC-profilen med Argyll colprof; de skiljer sig i patchurval och inställningar för fortsättningen."
+      ],
+      [
+        "Sparat val och kontroll",
+        "Metoden sparas i proposal.json som refinementMode och förs vidare till rad 17 efter att det nya målet skrivits ut och mätts. Välj en annan metod när en senare felstyrd förfining skapas; befintliga mål och mätningar skrivs inte om. Bildstyrd förfining har en separat väg. B3:s numeriska anpassningskontroll är inte oberoende utskriftskontroll: skriv ut och mät det nya C2-målet för att bedöma det nya resultatet."
+      ]
+    ]
+  },
+  {
+    "title": "Mät kompletteringen och iterera",
+    "tag": "RAD 15-17 / KOMBINERAT MÅL",
+    "sections": [
+      [
+        "C2 följer med tills det är mätt",
+        "När aktuell C2-verifiering ännu inte är mätt kan dess patchar tas med tillsammans med bildförslagen i kompletteringsmålet. Att C2 redan har skrivits ut räcker inte för att utesluta det. Ett giltigt registrerat mätresultat för aktuell C2 avgör om det fortfarande är väntande."
+      ],
+      [
+        "Färgproven har olika roller",
+        "Det kombinerade målet bevarar C2-provets skrivarvärden och referenser. Bildförslag och kompletterande kontrollprov läggs till. Ett bildfilter på ΔE00 tar inte bort de väntande C2-proven. Därför kan det totala patchantalet bli större än antalet valda bildfärger."
+      ],
+      [
+        "Rad 16: Measure refinement",
+        "Skriv ut rätt TIFF16 och mät det kombinerade målet med dess matchande målfil. Spara och använd revisionen. När mål och mätning är korrekt kopplade kan samma mätning också ge C2-underlaget och C3-jämförelsen för den föregående kandidaten. Du ska inte behöva mäta samma kombinerade ark två gånger."
+      ],
+      [
+        "C2-mätningar i träningen",
+        "C2-färgprov, gråprov och challenge-prov i det kombinerade underlaget får användas i träningen för nästa profil. Upprepningar och pappersvita kontrollprov hanteras som kontroller så att de inte ger oavsiktlig dubbel vikt. Det är målens sparade roller som styr användningen."
+      ],
+      [
+        "Rad 17: Build next iteration",
+        "Nästa iteration bygger på föregående låsta underlag och de nya träningsprov som den sparade fortsättningsplanen anger. Appen bygger en ny ICC och genomför tillhörande kontroller. När beräkningen är klar väljer du mellan jämförelse, ny fysisk verifiering eller den avgränsade leveransen på rad 19."
+      ],
+      [
+        "En viktig gräns mellan träning och verifiering",
+        "C2-mätningen kan bedöma den profil som skapade C2-målet. När samma mätning sedan används för att träna nästa ICC är den inte en oberoende kontroll av den nya ICC:n. För sådan kontroll behövs nytt verifieringsunderlag. Separat redan uppmätt C2 ska inte antas automatiskt ingå i varje senare träning; läs den aktuella fortsättningsplanen."
+      ]
+    ],
+    "callout": "Rad 17 skapar nästa profil i projektet. Det är inte automatiskt samma sak som extern leverans. För verifierad leverans fortsätter du via aktuell kontroll och rad 13-14; för numeriskt avgränsad leverans använder du rad 19."
+  },
+  {
+    "title": "Jämför två iterationer",
+    "tag": "RAD 18 / COMPARE WITH PREVIOUS ITERATION",
+    "lead": "Jämförelsen gör det lättare att se vad som har ändrats och dokumentera varför du fortsätter eller stannar.",
+    "sections": [
+      [
+        "Rätt profiler utan att leta efter filnamn",
+        "Arbetsgången använder projektets registrerade iterationer och deras ICC-filer. Kontrollera de profilnamn och iterationer som visas. Jämförelsen kan köras när en tidigare och en aktuell kandidat finns, normalt från iteration 2."
+      ],
+      [
+        "Olika mätmesh går att jämföra",
+        "Profilerna behöver inte ha skapats från identiska mätrutnät. Verktyget utvärderar dem på gemensamma beräkningspunkter. Det ger en jämförbar fråga till båda modellerna. Det gör däremot inte deras ursprungliga fysiska mätningar identiska eller lika oberoende."
+      ],
+      [
+        "2D-vyn börjar vid L* = 50",
+        "Den plana vyn visar a* och b* vid valt ljushetsläge L*. Ändra L* för att undersöka ljusare och mörkare områden och använd snittets bredd för att styra vilka punkter som visas. När 2D-valet stängs av visas en 3D-vy som kan roteras."
+      ],
+      [
+        "Färgerna i jämförelsen",
+        "Blått representerar föregående profil och orange den aktuella profilen i iterationsjämförelsen. Läs alltid teckenförklaringen och profilnamnen. En större utbredning i ett område betyder att modellerna beskriver området olika; den är inte ensam ett kvalitetsbetyg."
+      ],
+      [
+        "Tolka skillnaden i sitt sammanhang",
+        "Små profilskillnader kan motivera att du avslutar när resultatet räcker för avsedd användning. Större eller oväntade skillnader kan motivera mer granskning. Jämför numeriska mått, lokala övergångar och tillgängliga mätningar. En numerisk ändring visar inte på egen hand om nya utskrifter har blivit bättre."
+      ],
+      [
+        "Dokumentera beslutet",
+        "Spara jämförelsen som underlag och ange i beslutet vilka iakttagelser som varit viktiga. Om felmått mellan iterationer jämförs ska det framgå vilka mätningar och villkor de kommer från. Då går det senare att förstå även en försämring eller divergens."
+      ]
+    ],
+    "callout": "En bra beslutsmotivering är konkret: vad ändrades, vilket underlag bedömdes och varför räcker det för användningen? Undvik att likställa större färgomfång med lägre uppmätt fel."
+  },
+  {
+    "title": "M0, optiska vitmedel och medelvärdesbildat vitt",
+    "tag": "FWA / OBA MED ARGYLL-UTJÄMNING",
+    "sections": [
+      [
+        "Vad mäts och vad uppskattas?",
+        "Ursprungliga i1Pro2 M0-spektra mäts under instrumentets belysning. Argyll uppskattar responsen under simulerad D50 med pappersvitt och instrumentinformation. Det är arbetsgångens bästa tillgängliga M0-baserade uppskattning, inte direkt kvantifiering av UV-excitation eller fysisk M1-mätning. En UV-LED-observation indikerar vitmedel men kvantifierar inte korrigeringen."
+      ],
+      [
+        "Flera vita patchar",
+        "Argyll medelvärdesbildar alla spektra för device-white (RGB-kanaler över 99,9 %). Antal, medelspektrum och provvariation sparas. Medelvärdet kan minska slumpvariation men inte återställa saknad UV-excitation eller garantera att svag fluorescens kan särskiljas. Vitkontroller som bevarats i B1-källdata kan ge referensen även om de uteslutits från anpassningen."
+      ],
+      [
+        "Kompensation före utjämning",
+        "Nya B2-recept integrerar och FWA-kompenserar spektra en gång med spec2cie. Både Argyll-mellanmodellen för förutjämning och slutlig ICC läser dessa XYZ utan ny kompensation. Anpassningskontroll och C3 använder samma princip. Spara nytt B2-recept; använd Manual B3 för uttryckligt val av förutjämning. Automatisk iteration skapar fortfarande egna recept."
+      ],
+      [
+        "Om vitmätning saknas",
+        "B2 erbjuder Measure blank paper, Select saved blank-paper reference eller Cancel. Använd samma otryckta papperssort och mätunderlag. Mät flera rena positioner med stillaliggande i1Pro2 M0 och godkänn sedan medelvärdet uttryckligen. Följ kalibreringsanvisningarna. Instrument, våglängder och kalibreringsstandard måste stämma. Färgspektra måste täcka 400 nm eller lägre till minst 700 nm; enbart vitmätning kan inte ersätta saknade färgspektra."
+      ],
+      [
+        "Vad sparas och återanvänds?",
+        "Godkänd referens innehåller källmätningar och kontrollsummor. Separat uppmätt vitt ger ett extra profilankare för pappersvitt; det redovisas inte som målfärg eller oberoende verifieringspatch. Analysen behåller målets ursprungliga patchar. B2-referensen kan följa med till automatiskt bygge och fortsättning på samma papper när den behövs; aktuella vitpatchar har företräde."
+      ],
+      [
+        "Certifikat och slutkontroll",
+        "Certifikatet anger vitreferensens källa och antal separat för träning och verifiering samt förklarar M0-begränsningen. Ursprungliga spektra bevaras. Kompensation eller medelvärdesbildning bevisar inte förbättrad återgivning: avsluta med ny C2-utskrift och C3-mätning före godkännande."
+      ]
+    ]
+  },
+  {
+    "title": "Välj profileringsväg och förfiningsmetod",
+    "tag": "B2 / B3 / INSTÄLLNINGAR FÖR FÖRFINING",
+    "sections": [
+      [
+        "B2: två aktuella val",
+        "Argyll only (raw measurements) stänger av separat förutjämning, men colprof anpassar och jämnar fortfarande ut. Argyll colprof pre-smoothing (experimental) lägger till en mellanmodell före slutlig ICC med FWA-integrering en gång före båda stegen i nya recept."
+      ],
+      [
+        "Två oberoende brusinställningar",
+        "Assumed noise (%) är första stegets colprof -r, standard 0,5 %. Smoothing at ICC build är slutstegets -r; tomt använder dokumenterat motorstandardvärde 0,5 %. Inget av värdena är en acceptansgräns."
+      ],
+      [
+        "B3 Manual eller Automatic",
+        "Manual kör det sparade B2-receptet. Automatic skapar egna kandidatrecept utan förutjämning; appen för vidare perceptuell kompression, inte hela B2-receptet. Standardläget Argyll använder hög kvalitet och slutligt -r 1,0. Använd Manual för att testa uttryckliga B2-inställningar."
+      ],
+      [
+        "Förfiningsmetod i steg 15",
+        "Argyll only använder förkonditionerade targen-patchar utan Jacobian; fortsättningen bygger med -r 1,0 utan förutjämning. Current InkProf (Jacobian sampling) använder C3-residualer och Jacobianstyrda patchar. Båda bygger ICC med Argyll. InkProf-fortsättningen har förutjämning avstängd och jämför slutliga -r 0,5, 1,0 och 1,5 när utvecklingsdata finns; annars används motorns standardbygge."
+      ],
+      [
+        "Vad följer med till nästa iteration?",
+        "Steg 17 följer läget i det sparade förslaget och dess angivna kombinerade träningsunderlag, inte hela äldre B2-receptet. Läs valt kandidatrecept och jobblogg. Ändra förfiningsmetod genom ett nytt förslag i steg 15 och mät det förslagets mål."
+      ],
+      [
+        "Två praktiska vägar",
+        "Första profil: steg 1-6, välj B3 Manual eller Automatic, därefter 8-14 för uppmätt leverans. Förfining: metodval i 15, skriv ut och mät i 16, bygg i 17, jämför i 18, därefter nya 8-14 för slutlig uppmätt verifiering. Steg 19 ger endast numeriskt kontrollerad leverans."
+      ],
+      [
+        "Underlaget hör till en bestämd profil",
+        "Kontrollera iteration, ICC och mätrevision. En ändrad profil kan inte ärva tidigare fysisk verifiering eller godkännande. Små modelländringar eller numeriskt avslut bevisar inte utskriftsnoggrannhet. Granska Stale/Locked och upprepa beroende kontroller."
+      ]
+    ]
+  },
+  {
+    "title": "God praxis: godkännande och skrivsystemets gränser",
+    "tag": "TOLKA SLUTRESULTATET",
+    "lead": "En användbar fotografisk profil kan ändå missa de valda jämförelsegränserna för vissa referensfärger.",
+    "sections": [
+      [
+        "Bestäm avsedd användning",
+        "Bestäm användning, relevanta färger, gradienter, betraktningsförhållanden och acceptanskriterier före bedömningen. Stabilisera skrivaren och dokumentera papper, bläck, förinställning, torkning, mätunderlag och mätvillkor. Rätta mätfel innan utjämning eller förfining ändras."
+      ],
+      [
+        "Håll isär tre typer av underlag",
+        "Anpassningsfelet beskriver överensstämmelse med profileringsmätningarna. Profiljämförelsen beskriver ändringar mellan förutsägelser. Slutlig C2/C3 mäter en ny utskrift mot börvärden och aktuell förutsägelse. När en mätning tränar en profil är den inte längre oberoende verifiering av den profilen."
+      ],
+      [
+        "Avsluta av dokumenterade skäl",
+        "Använd jämförbara felmått och visuell kontroll av neutrala toner, hudtoner, skuggor och gradienter. Utebliven användbar förbättring kan motivera avslut, men bevisar inte utskriftsnoggrannhet eller fysiska gamutgränser. Dokumentera regularisering och vald förfiningsmetod, Argyll only eller InkProf/Jacobian."
+      ],
+      [
+        "Tolka kvarstående fel ärligt",
+        "Stora fel mot börvärdet men små fel mot förutsägelsen kan vara förenliga med systemgränser. Kontrollera först profilidentitet, färgomvandling, mätvillkor, invers och lokal modelltillförlitlighet. Modellnåbara, utanför modellen eller olöst invers och okända färger är skilda grupper. Pappersvitt, möjlig svärta och färgmättnad kan begränsa återgivningen. En olöst invers bevisar inte fysisk omöjlighet."
+      ],
+      [
+        "Godkännande upphäver inte standardkrav",
+        "Redovisa jämförelsegränser som inte uppnås. InkProfs ISO-relaterade referenser bevisar inte standardöverensstämmelse för det egna RGB-målet. Om tillämpliga standardkrav krävs men inte uppfylls ska resultatet inte godkännas för det ändamålet. Granskaren kan godkänna ett uppmätt fotografiskt resultat för en annan angiven användning med uttryckliga begränsningar."
+      ],
+      [
+        "Visa hela resultatet",
+        "Redovisa alla bedömda färger och medel, median, P95 och maxfel, med svåra färger särredovisade. Enbart värsta patchar eller medelvärdet räcker inte. Följ slutlig uppmätt godkännandeväg i steg 8-14. Steg 19 ger endast numeriskt underlag för aktuell profil."
+      ]
+    ]
+  },
+  {
+    "title": "Avsluta med en mätt och godkänd profil",
+    "tag": "SLUTLIG UTSKRIFTSVERIFIERING / STEG 8-14",
+    "lead": "När fortsatt förfining inte ger någon användbar förbättring avslutar du med att skriva ut och mäta ett kontrollmål för exakt den profil som ska levereras.",
+    "sections": [
+      [
+        "Avgör när du ska avsluta",
+        "Använd steg 18 och jämförbara felmått för att dokumentera varför du avslutar. Anpassning till träningsdata, modelländring och faktisk utskriftsnoggrannhet är olika mått. Små ändringar eller numerisk konvergens bevisar inte utskriftsnoggrannhet. Denna arbetsgång förutsätter inte automatisk identifiering av utebliven förbättring."
+      ],
+      [
+        "1. Kontrollera och skapa slutmålet",
+        "Efter steg 17 kör du steg 8 (Fit, Grid and C1) för den valda aktuella profilen. Kör steg 9 (C2: save verification TIFF16). Kontrollera att målet hör till denna profil och iteration. ICC-omvandlingen har redan applicerats en gång."
+      ],
+      [
+        "2. Skriv ut utan ytterligare färgomvandling",
+        "Följ målbildens medföljande text. I Photoshop väljer du Discard the embedded profile (don’t color manage) när målet öppnas. Skriv ut i 100 %, med färghanteringen avstängd i bildprogrammet och färgjustering avstängd i skrivardrivrutinen. Behåll dokumenterat papper, bläck och skrivarinställningar och låt utskriften torka."
+      ],
+      [
+        "3. Mät och granska",
+        "Kör steg 10 för att mäta den slutliga kontrollutskriften. Kör steg 11 (C3) för att jämföra uppmätta utskriftsfärger med börvärden och profilens förutsägelser. Kör steg 12 för att granska återkopplingen. Slutkontrollen ska höra till den levererade profilen; mätningar som använts för att träna den är inte oberoende verifiering av den."
+      ],
+      [
+        "4. Godkänn och leverera",
+        "Kör steg 13 (Approve intended use), ange användningsområde, accepterade begränsningar och granskningsanteckningar och bekräfta uttryckligen. Kör steg 14 för att spara ICC och mätcertifikatet. Certifikatet dokumenterar faktisk utskriftsmätning och användarens godkännande knutna till profilen. Godkännandet gäller angiven användning och är inte automatiskt en ISO-certifiering."
+      ]
+    ],
+    "callout": "Använd inte steg 19 för denna väg: det dokumenterar en leverans med endast numeriska kontroller utan aktuell utskriftsverifiering. Om slutmätningen inte uppfyller avsedd användning ska du undersöka eller förfina innan du godkänner."
+  },
+  {
+    "title": "Avsluta utan en ny kontrollutskrift",
+    "tag": "RAD 19 / MÄTCERTIFIKAT MED TYDLIG OMFATTNING",
+    "sections": [
+      [
+        "När detta alternativ passar",
+        "Du kan vara nöjd med en senare iteration efter numerisk kontroll och jämförelse, men välja att inte skriva ut och mäta ett nytt C2-mål. Rad 19 dokumenterar det beslutet och låter dig spara ICC och mätcertifikat med rätt avgränsning."
+      ],
+      [
+        "Vad användaren gör",
+        "Se till att den aktuella iterationens numeriska kontroller finns. Öppna Save ICC + measurement certificate without print verification. Ange avsedd användning och motivering. Bekräfta omfattningen i dialogen och välj destinationer för leveransfilerna."
+      ],
+      [
+        "Det ska stå tydligt i certifikatet",
+        "Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning."
+      ],
+      [
+        "Tidigare mätningar behåller sin identitet",
+        "Sista mätresultat kan ingå som bakgrund. Det måste framgå vilken iteration och profil som mättes. Äldre fysiska resultat blir inte nya mätningar bara för att de visas i det aktuella certifikatet. En profiljämförelse kan förklara beslutet att stanna utan att få rollen som fysisk verifiering."
+      ],
+      [
+        "PDF och HTML",
+        "PDF ger ett fast dokument för överlämning och underskrift. HTML ger tillgång till den interaktiva profilvisningen: 2D-snitt med L* = 50 som utgångspunkt och möjlighet att växla till 3D. PDF återger figurer som stillbilder. Flytta eller skicka hela HTML-rapportmappen så att dess tillhörande filer följer med."
+      ],
+      [
+        "Signering och juridisk bilaga",
+        "Resultat, omfattning och beslut kommer före signeringsdelen. Den juridiska texten ligger därefter i ett appendix. Den beskriver bland annat uppgifter som beställaren lämnat, ansvar för beställarens målutskrifter och begränsningarna hos skrivare, papper och bläck. Läs bilagan vid överlämning tillsammans med den dokumenterade omfattningen."
+      ]
+    ],
+    "callout": "Dokumentet heter fortfarande mätcertifikat. Rubriken får inte dölja skillnaden mellan uppmätt utskriftsverifiering och en iteration som bara kontrollerats numeriskt."
+  },
+  {
+    "title": "När något verkar stanna",
+    "tag": "STATUS, AKTIVITET OCH ÅTERHÄMTNING",
+    "rows": [
+      [
+        "Det du ser",
+        "Det du gör"
+      ],
+      [
+        "Ready efter att ett fönster stängts",
+        "Kontrollera att dialogens Save, Use revision eller acceptans faktiskt användes. Öppnad förhandsvisning räcker inte."
+      ],
+      [
+        "Running / beräkning pågår",
+        "Läs aktiv operation och förfluten tid. Låt körningen avslutas. Öppna inte samma operation flera gånger."
+      ],
+      [
+        "Väntan på dialog",
+        "Kontrollera om en filväljare, bekräftelse eller ett mätfönster väntar på ditt svar. Följ statusraden."
+      ],
+      [
+        "Stale / Requires approve: stale",
+        "Öppna resultat och identifiera ändrat underlag. Kör om nödvändiga kontroller och fatta ett aktuellt beslut."
+      ],
+      [
+        "Ingen ny TIFF hittas",
+        "Läs Saved results för rätt iteration och steg. Använd Open selected step results eller Copy TIFF16 for printing…."
+      ],
+      [
+        "Project integrity check failed",
+        "Läs vilka filer kontrollen pekar ut och öppna resultatloggen. Återställ inte genom att godtyckligt ändra JSON eller radera kontrolluppgifter."
+      ],
+      [
+        "Resultat finns men listan är gammal",
+        "Tryck Refresh efter att den pågående operationen har avslutats. Kontrollera sedan stegstatus och använda revisioner."
+      ]
+    ],
+    "sections": [
+      [
+        "Synlig aktivitet i de senare stegen",
+        "Längre beräkningar visar operation och förfluten tid, även när C2 förbereder färger och pappersval. TIFF-generering kan visa klocka och Cancel. Tiden är förfluten tid, inte en prognos. Långa sammanfattningar i TIFF-foten förkortas vid behov; fullständiga filnamn och metadata bevaras."
+      ],
+      [
+        "Fönstret för mätning har egna signaler",
+        "Kalibrering, radläsning och instrumentfrågor visas i mätfönstrets status och logg. Under dessa moment kan programmet vänta på en fysisk handling. Skilj sådan väntan från profil- och rapportberäkning."
+      ],
+      [
+        "När du rapporterar ett problem",
+        "Ange steg, iteration, vad du klickade på och den exakta feltexten. Bifoga relevant del av resultatloggen. Det gör det möjligt att hitta orsaken utan att gissa eller ändra mätdata."
+      ]
+    ]
+  },
+  {
+    "title": "Ordlista, källor och version",
+    "tag": "REFERENS OCH TEKNISK GRUND",
+    "rows": [
+      [
+        "Begrepp",
+        "Betydelse"
+      ],
+      [
+        "ICC",
+        "International Color Consortium; här en profil som beskriver färgomvandlingen för en enhet eller färgrymd."
+      ],
+      [
+        "CIELAB / L*, a*, b*",
+        "Färgrymd från Commission Internationale de l'Éclairage. L* beskriver ljushet; a* och b* beskriver färgriktningar."
+      ],
+      [
+        "ΔE00 / CIEDE2000",
+        "Ett mått på färgskillnad. Siffran ska alltid läsas tillsammans med vilka två färger som jämförs."
+      ],
+      [
+        "TIFF16 / RGB",
+        "Bild med 16 bitar per färgkanal; RGB anger kanalerna rött, grönt och blått."
+      ],
+      [
+        "TI1, TI2, TI3",
+        "ArgyllCMS-format för färgprov, layout-/mätunderlag respektive mätdata."
+      ],
+      [
+        "JSON / JSONL",
+        "Strukturerad text för projektdata. JSONL lagrar separata poster rad för rad, exempelvis en händelselogg."
+      ],
+      [
+        "FWA / OBA / BPC",
+        "Fluorescent Whitening Agent / Optical Brightening Agent, optiska vitmedel. Black Point Compensation, svartpunktskompensation."
+      ],
+      [
+        "RIP / mesh",
+        "Raster Image Processor, ett utskriftsbearbetande program. Mesh betyder här rutnätet av prov- eller beräkningspunkter."
+      ]
+    ],
+    "sections": [
+      [
+        "Standarder som referens",
+        "Projektets dokumentation relaterar kvalitetsbedömning till ISO, International Organization for Standardization. Referenser till bvdm avser Bundesverband Druck und Medien, Tysklands branschorganisation för tryck och medier. Ett internt gränsvärde, exempelvis ΔE00 större än 5 i en lista, ska inte ensamt tolkas som ett fullständigt ISO-godkännande."
+      ],
+      [
+        "Öppen källkod och licenser",
+        "InkProf distribueras under GNU General Public License version 3 eller senare. MATLAB och övriga externa komponenter har egna villkor. Läs LICENSE och THIRD_PARTY_NOTICES i projektet för licens och tredjepartsreferenser."
+      ],
+      [
+        "Underlag för denna handbok",
+        "Svenska och engelska handledningen har samma kapitelordning och motsvarande innehåll. Uppdateringen 7 oktober 2026 har kontrollerats mot arbetsflöde, recept, radommätning, RGB-gradienter samt C2/C3-källkod och användarguider. Separata felsökningsskript är inte inbyggda appfunktioner. Dokumentation och numeriska tester är inte ny fysisk validering."
+      ]
+    ],
+    "links": [
+      [
+        "Publikt projekt och installation",
+        "https://github.com/chto0703009/InkProf-public"
+      ],
+      [
+        "Användardokumentation",
+        "https://github.com/chto0703009/InkProf-public/tree/main/docs/usage"
+      ],
+      [
+        "InkProfs licens",
+        "https://github.com/chto0703009/InkProf-public/blob/main/LICENSE"
+      ],
+      [
+        "Tredjepartskod och referenser",
+        "https://github.com/chto0703009/InkProf-public/blob/main/THIRD_PARTY_NOTICES.md"
+      ]
+    ]
+  },
+  {
+    "tag": "v1.0.0 | MATERIAL OCH SKUGGOR",
+    "title": "Fler mätpunkter i mörka färger",
+    "sections": [
+      [
+        "Matt papper",
+        "Project details / Profiling har läget Extra shadow detail for Matte. Det används när Paper finish är Matte. Standard distribution stänger av anpassningen."
+      ],
+      [
+        "Ändringsbara startvärden",
+        "Dark patch emphasis = 2, Shadow grid emphasis = 1,3 och Extra iteration patches = 48. Det första målet omfördelar den valda patchbudgeten. Nästa iterations mål lägger till upp till 48 mörka träningspatchar utan att ta bort färger från bilden eller C3."
+      ],
+      [
+        "Urvalet följer profilens svärta",
+        "Den aktuella ICC-profilen används för att uppskatta Lab. Urvalet täcker den mörkaste fjärdedelen mellan modellens svart och vitt, så det fungerar även när matt papper har ett relativt ljust svart. Dubbletter i RGB16 undviks. Faktiskt antal, färger, gränser och profilhash sparas i shadow-patches.json."
+      ],
+      [
+        "Mät och jämför",
+        "Tätare tabellupplösning i skuggorna ger mindre tonvikt åt ljusare områden. Det är en InkProf-strategi med Argylls dokumenterade verktyg, inte ett officiellt mattpappersrecept. Nya patchar måste skrivas ut och mätas. Enbart ett nytt profilbygge skapar inga nya mätdata."
+      ],
+      [
+        "Bläck och coating hör till kombinationen",
+        "Ange dye/pigment/mixed/unknown och om skrivaren lägger coating: av, på, automatiskt eller okänt. Beskriv produkt och inställningar. Dessa uppgifter följer projektet och mätcertifikatet; appen ändrar inte skrivaren."
+      ]
+    ]
+  },
+  {
+    "tag": "v1.0.0 | LEVERANS OCH LICENS",
+    "title": "Gamut, certifikat och källkod",
+    "sections": [
+      [
+        "Yta och mätpunkter är olika bilder",
+        "View gamut visar en ICC-beräknad yta i CIELAB D50. Den kompletterar mät-/modellpunkterna och profiljämförelsens 2D-snitt med L*=50 som start. HTML kan roteras; PDF visar en fast figur. Ytan är inte ett nytt mätresultat."
+      ],
+      [
+        "Överlämna en komplett rapport",
+        "Spara ICC och mätcertifikat via rad 14 efter aktuell utskriftsgranskning, eller rad 19 efter ett tydligt avgränsat numeriskt beslut i en senare iteration. HTML-leveransen är en mapp med underlag. Behåll hela mappen. Signeringsdelen följs av bilaga A med förklaringar/referenser och bilaga B med juridik."
+      ],
+      [
+        "Öppen källkod",
+        "InkProfs kod och egen dokumentation licensieras enligt GNU GPL version 3 eller senare. Copyright 2026 Christer Törnkvist. Programmet tillhandahålls utan garanti enligt LICENSE. MATLAB, Python, ArgyllCMS, typsnitt och andra beroenden har egna villkor; se THIRD_PARTY_NOTICES.md."
+      ],
+      [
+        "Utgåvestatus",
+        "Handboken beskriver release candidate 1.0.0-rc.2, daterad 8 oktober 2026. Det är inte den stabila v1.0.0-utgåvan. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
+      ]
+    ]
+  },
+  {
+    "title": "Två steg av regularisering",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Steg 1: Measurement data smoothing",
+        "Välj Off, Argyll colprof model eller en egen InkProf-modell. Förregularisering skapar ett separat härlett underlag före slutlig ICC. Originalets spektra, XYZ och råmätningar bevaras. Funktionen är experimentell och avstängd som standard."
+      ],
+      [
+        "Argyll: Assumed noise (%)",
+        "Den första colprof-modellen använder antagen genomsnittlig avvikelse via -r, normalt 0,5 %. Det är inte ett exakt uppmätt ΔE00. Modellen utvärderas vid originalets RGB-värden."
+      ],
+      [
+        "Steg 2: Smoothing at ICC build",
+        "Detta styr slutligt colprof -r. Tomt använder 0,5 %. Värdet är oberoende av första stegets brusantagande. Procent visas med en decimal utan avrundning av lagrad precision."
+      ],
+      [
+        "FWA/OBA och B1",
+        "Nya B2-recept stöder ursprunglig M0 FWA före Argyll-förutjämning och slutprofil. Kompensation sker en gång, inte igen på härledda XYZ. Ändrat FWA-val bevarar B1 men kräver nya B2 och senare resultat. Se avsnittet om M0-vitreferens."
+      ]
+    ]
+  },
+  {
+    "title": "Pröva RGB-gradienter",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "B2-val och Manual B3",
+        "Med förregularisering vald kan Open RGB gradient test after profile build kryssas. Fönstret öppnas efter lyckat Manual B3. Save recipe i B2 startar inte kontrollen. Automatic B3 gör egna recept och använder inte detta B2-val."
+      ],
+      [
+        "Run RGB check",
+        "Nio RGB-banor med 1 025 prov vardera beräknas genom slutlig ICC. Välj bana och relativ eller perceptuell intent. Kurvorna visar RGB, Lab, intilliggande ΔE00-steg och Lab-andradifferenser. JSON och Markdown sparas i jobbets checks-mapp."
+      ],
+      [
+        "Check blue-sky inverse",
+        "Blåhimlestestet använder B2A och återgång genom A2B. Det kompletterar framåtkontrollen och ändrar inte recept eller ICC. Öppna ett stängt fönster med inkprof.checkRGBGradients(jobFolder)."
+      ],
+      [
+        "Tolkning",
+        "Stora lokala steg, reverseringar och andradifferenser är platser att undersöka. Äkta skrivarkrökning kan också ge utslag. Ingen universell godkändgräns används. Tryckta gradienter och dokumenterade betraktningsvillkor behövs för fysisk bedömning."
+      ]
+    ]
+  },
+  {
+    "title": "Mät om en hel tryckt rad",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Ny mätning eller tidigare revision",
+        "Measure startar en ny mätning. Saved revisions väljer en tidigare sparad revision. Import file läser en extern fil. För enstaka fel används Remeasure patch eller Remeasure row i översikten. En ny sparning bevarar tidigare historik."
+      ],
+      [
+        "Välj sida och rad",
+        "Remeasure row använder tryckt sida och radnummer. B24 betyder position B, rad 24; patch-ID är separat. Originalets scanläge, tolerans och instrumentvillkor följer med. En isolerad session mäter bara vald rad."
+      ],
+      [
+        "Mät och granska",
+        "Klicka Measure selected row, kalibrera och följ FORWARD/REVERSE. Save ger kandidatvärden. Change ΔE00 jämför tidigare och ny mätning, inte fel mot önskad färg. Accept row replacement skapar en revision som ersätter bara denna rad. Discard / Close behåller tidigare värden."
+      ],
+      [
+        "Bevarad spårbarhet",
+        "Original, nya råavläsningar och beslut sparas. Gamla parade avläsningar märks som historiska efter radersättning. Välj och granska rätt revision i arbetsflödet innan B1 låses på nytt; Accept i ommätningsfönstret väljer inte nödvändigtvis profilunderlag."
+      ]
+    ]
+  },
+  {
+    "title": "C2: profil, TIFF och utskriftskedja",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Omvandling och tagg",
+        "För Lab-baserat mål används B2A, absolut kolorimetri och BPC av. Därefter sker layout och RGB16-kvantisering. Exakt skrivar-ICC bäddas nu in som tagg utan ny pixelkonvertering. Äldre exporter ändras inte när koden uppdateras."
+      ],
+      [
+        "Behåll redan konverterade värden",
+        "När filen öppnas i Photoshop: ignorera den inbäddade profilen utan att konvertera RGB-värdena; konvertera inte till arbetsfärgrymd. Skriv ut i 100 % utan ytterligare färgomvandling. Tilldelad sRGB eller Adobe RGB och efterföljande konvertering kan ändra äldre otaggade mål kraftigt. Läs PRINTING.txt och dokumentera kedjan."
+      ],
+      [
+        "Innehåll och svåra färger",
+        "Profilflödets standard är 80 färger, 24 neutrala, 12 utmanande och 12 upprepningar. Antal kan ändras. Utmanande färger kan vara utanför omfånget eller ha olöst invers. C2 innehåller alltså inte enbart tidigare problemfärger."
+      ],
+      [
+        "Vit marginal",
+        "Otryckt marginal använder ren device-RGB-vit. Vit bildyta som omvandlas med absolut intent kan få färg för att återge referensens vitpunkt. Det är inte papprets egen vithet. En omvandlad bildmarginal och målarkets bakgrund är därför olika saker."
+      ]
+    ]
+  },
+  {
+    "title": "Läs C3-tabellen och varningarna",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Identitet och Lab",
+        "Page och Coordinate anger position. ID är identitet och Role typ av patch. Desired Lab är önskad färg; Measured Lab är utskriften. L* anger ljushet, negativ/positiv a* grönt/rött och negativ/positiv b* blått/gult."
+      ],
+      [
+        "Två felkolumner",
+        "Measured vs desired (dE00) jämför mätning med önskat. Model vs measurement (dE00) jämför ICC-förutsägelse med mätning. Liknande tal betyder inte liknande färger: om båda är stora avviker mätningen från båda. Nära noll i andra kolumnen betyder god modellöverensstämmelse."
+      ],
+      [
+        "Sortering och grupper",
+        "Största fel visas först. Huvudstatistiken gäller unika patchar, inklusive utmanande, men inte extra upprepningar. Filtrera grupper innan slutsatser dras. Små skillnader mellan upprepningar eller forward/reverse visar repeterbarhet, inte noggrannhet."
+      ],
+      [
+        "Suspected double colour management",
+        "C3 simulerar extra konvertering från sRGB och Adobe RGB till skrivarprofilen och varnar när en simulering förklarar mätningen betydligt bättre. Det är en hypotes; andra utskriftsfel kan likna detta. Kontrollera tilldelning, konvertering och drivrutin innan modellen tränas om."
+      ]
+    ]
+  },
+  {
+    "title": "Referensfärger och befintlig ICC",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Fast referensuppsättning",
+        "C2 kan använda Lab-tabell, Argyll CIE/CGATS med Lab eller XYZ, eller TI1 med device-RGB. Använd bara material du har rätt till. Namn och patchkoder sparas för C3. Ett referensnamn innebär inte att skyddad leverantörslayout eller data ingår."
+      ],
+      [
+        "Lab eller RGB",
+        "Lab-referens omvandlas genom ICC och testar invers, utskrift och mätning tillsammans. Device-RGB skrivs som angivet utan ICC-konvertering; referens-Lab är A2B-förutsägelsen. PRINTING.txt och verification.json anger metoden."
+      ],
+      [
+        "New project: Verify existing ICC",
+        "Det separata sjusstegsflödet importerar en RGB-skrivarprofil, skapar mål, mäter, analyserar, granskar, dokumenterar bedömning och sparar certifikat. Profilen byggs inte om. Förslaget med 575 patchar kan ändras och omfattar hudtoner, skuggor, neutrala och bred färgtäckning."
+      ],
+      [
+        "Okänt oberoende",
+        "Om originalets träningsdata saknas är oberoendet okänt. Numeriska kontroller och bra fotografiskt intryck ger inte automatiskt godkännande eller ISO-certifiering. Dokumentera avsedd användning, kedja och begränsningar."
+      ],
+      [
+        "Metoder i RGB Target",
+        "RGB-måldesignern erbjuder bland annat OFPS, incremental far point, quasi-random, body-centred cubic och random via Argyll. En befintlig ICC kan styra placeringen genom pre-conditioning; den skapar inte nya mätningar och innebär inte att profilen appliceras på råmålets RGB. Metod, seed och profilreferens sparas."
+      ]
+    ]
+  },
+  {
+    "title": "Felsök med JSON och rätt kontroll",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Spårbar kedja",
+        "B1 låser mätunderlag. Jobbet sparar recipe.json, status.json och result/profile.icc. C2 sparar exakt ICC-kopia, önskat Lab, RGB16 och placering i verification.json. C3 länkar mät-JSON och dess TI3-revision med filhashar. Koordinat och ID är olika uppgifter."
+      ],
+      [
+        "Inbyggda MATLAB-kontroller",
+        "inkprof.checkProfileFit kontrollerar framåtmodell mot träning. inkprof.checkProfileGrid och inkprof.checkProfileC1 ger nät-, CMM- och inversdiagnoser. inkprof.checkVerificationTarget jämför kontrollutskrift. inkprof.checkRGBGradients öppnar gradientfönstret. Läs varje kontrolls syfte."
+      ],
+      [
+        "Separata skript är inte appknappar",
+        "Utvecklingens mät-JSON-inversskript jämförde Lab, invers-RGB och återgång genom A2B. Det är inte en inbyggd InkProf-funktion. Litet Lab-RGB-Lab-fel visar intern konsistens, inte korrekt fysisk utskrift. Alternativa lösningar kan ge stora RGB-skillnader."
+      ],
+      [
+        "Testa hypotesen först",
+        "Misstänkt fel ICC eller invers kontrolleras först numeriskt och med hash, utan ny utskrift. Misstänkt fel rad kontrolleras mot TI2 och genom ommätning. Ändrad utskriftskedja kan kräva nytt prov med identiskt device-RGB. Bygg inte om modellen för att dölja ett oklart kedjefel."
+      ]
+    ]
+  },
+  {
+    "title": "Jämför noggrannhet och gradienter",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Läs resultaten",
+        "Jämför anpassning mot originalmätningar, undanhållna data när sådana finns, modellförändring och fotografiska gradientdiagnoser. Träningsanpassning är inte oberoende validering. Granska motsvarande gradientbanor: ett medelvärde med olika inre täckning kan vilseleda."
+      ],
+      [
+        "Urval i Automatic B3",
+        "Med utvecklingskontroller prövar Automatic slutligt -r 0,5, 1 och 1,5 med hög tabellkvalitet. Urvalet väger noggrannhet mot jämnhet i flyttalsgradienter. Skydd kontrollerar försämring för patchar och gråtoner, krökning, reverseringar, täckning och färgomfång. Standardvalet tillåter 0,05 RMS försämring i noggrannhet vid minst 5% gradientförbättring. Detta är numeriska urvalsregler, inte godkännandekriterier för utskrift. Utan utvecklingskontroller byggs en kandidat utan påstående om överlägsenhet."
+      ],
+      [
+        "Välj medvetet",
+        "Jämförelsen bevarar B1 och lämnar arbetsflödets nuvarande ICC vald. För att använda en jämförd inställning anger du den i B2 och bygger med Manual B3. Förregularisering är fortfarande oförenlig med FWA/OBA-kompensation."
+      ]
+    ],
+    "lead": ""
+  },
+  {
+    "title": "Fotografisk gradientkonvertering",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Öppna diagnosen",
+        "Välj Photographic gradients i huvudfönstret efter ett lyckat profilbygge eller i RGB-gradientfönstret. Kontrollens exakta ICC används och JSON samt Markdown sparas i dess checks-mapp."
+      ],
+      [
+        "Vad som prövas",
+        "Nio banor med 1 025 prov konverteras från sRGB och Adobe RGB (1998) till skrivar-RGB och sedan genom relativ A2B till beräknat Lab. Relativ och perceptuell återgivning, BPC på/av samt flyttal, 16-bitars och 8-bitars in-/utbuffertar ger 216 kombinationer. LittleCMS utför konverteringarna; Photoshop och skrivardrivrutiner kan fungera annorlunda."
+      ],
+      [
+        "Läs kolumnerna",
+        "Curvature P95 mäter normaliserade andra differenser i Lab. L* reversals räknar minskande ljushetssteg i giltiga inre punkter; tolka dem i förhållande till vald bana. Unique RGB codes och Unchanged steps beskriver kvantiseringsplatåer. JSON innehåller också längsta platå och Lab-omfång. Stora tal är inte automatiskt synliga fel."
+      ],
+      [
+        "Kontrollens begränsningar",
+        "Hård klippning i enhets-RGB undantas från jämförelsemåtten, men detta är ingen bevisad mask för fysisk gamut. Kvantiseringsplatåer är förväntade, särskilt vid 8 bitar. Jämför samma banor och precision. Numerisk jämnhet intygar inte frånvaro av bandning; kontrollera utskrivna gradienter."
+      ]
+    ]
+  },
+  {
+    "title": "Certifikatunderlag",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Förregularisering i certifikatet",
+        "Certifikatet redovisar valt profiljobs recept, förregulariseringsmetod, dess antagna brus (avgdev) och slutligt colprof -r. Sparade resultat omfattar modellförändring när den finns. Råmätningarna bevaras. Modellförändring är inte utskriftsnoggrannhet. Den tidigare InkProf-rutnätsregulariseringen och dess mätvikter har tagits bort."
+      ],
+      [
+        "Gradientunderlag och ny rapport",
+        "En sparad fotografisk gradientrapport tas med endast om dess SHA-256 motsvarar certifikatets ICC. Certifikatet sammanfattar CMM, inställningar, provantal, inre täckning, reverseringar och krökning samt bäddar in fullständigt underlag per bana i JSON. Saknat underlag anges uttryckligen. Kör steg 14 igen för ett nytt certifikat; historiska och signerade certifikat bevaras."
+      ]
+    ]
+  },
+  {
+    "title": "En ICC, tre återgivningsmetoder",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Nya B2-recept",
+        "Nybyggda profiler stöder perceptuell, relativ kolorimetrisk och absolut kolorimetrisk återgivning i en ICC-fil. B2 har Perceptual compression (%), som överförs till colprof -s. Standardvärdet 20% generell kompression är en startinställning, inte ett uppmätt optimum. Automatic B3 för vidare detta B2-värde."
+      ],
+      [
+        "Vad ICC innehåller",
+        "Perceptuell återgivning använder en gamutanpassad B2A0-tabell. Relativ använder B2A1. Absolut använder den relativa tabellen tillsammans med mediets vitpunkt (wtpt); en separat B2A3-tabell behövs inte. Färghanteringsprogrammet väljer återgivningsmetod. Profilhuvudets standardval hindrar inte att välja en annan metod."
+      ],
+      [
+        "Byggkontroll och certifikat",
+        "Nya byggen kräver perceptuella och relativa tabeller med skilda data samt en giltig tagg för mediets vitpunkt innan profilen publiceras. Sparade jobb och certifikat redovisar återgivningsinställningarna. Strukturkontroll och numeriska konverteringar fastställer inte utskriftskvaliteten."
+      ],
+      [
+        "Uppdatera en befintlig profil",
+        "Starta om InkProf, spara ett nytt B2-recept och bygg B3 igen för den nya gamutanpassningen. Befintliga recept, ICC-filer och importerade profiler bevaras. Kontrollera profilen och dess utskrift igen före godkännande och leverans. C2-verifiering applicerar fortfarande ICC en gång, absolut utan BPC, följt av utskrift med färghantering avstängd."
+      ]
+    ],
+    "links": [
+      [
+        "ArgyllCMS colprof",
+        "https://www.argyllcms.com/doc/colprof.html"
+      ],
+      [
+        "ICC specification",
+        "https://www.color.org/icc1-v41.pdf"
+      ]
+    ]
+  },
+  {
+    "title": "TIFF: konvertering och inbäddad ICC",
+    "tag": "NYA FUNKTIONER | 2026-10-07",
+    "sections": [
+      [
+        "Läs textfilen bredvid bilden",
+        "PRINTING.txt bredvid moderna TIFF-mål och *-README.txt för den äldre exportfunktionen anger ICC conversion och Embedded ICC var för sig. Taggade filer identifierar skrivarprofilen och dess SHA-256. C2 har också PRINTING.txt på paketnivå; läs den tillsammans med print/PRINTING.txt."
+      ],
+      [
+        "Konvertering: vad ändrade pixlarna?",
+        "Grundmål och kompletteringsmål återger källans enhets-RGB direkt utan skrivar-ICC-konvertering i InkProf. Vanliga C2-färgreferensmål har redan passerat skrivarens ICC en gång, absolut kolorimetriskt utan BPC. C2 med enhets-RGB-referenser skriver i stället RGB oförändrat; ICC beräknar bara referens-Lab. Importerade källors tidigare historik kan vara okänd."
+      ],
+      [
+        "Tagg: vad identifierar filen?",
+        "Båda typerna av C2-TIFF bäddar in skrivarens ICC som identifierande tagg. Inbäddning ändrar i sig inga pixlar och är ingen instruktion att applicera ICC igen. En tagg bevisar inte att ingen annan konvertering har skett tidigare. InkProf dokumenterar sin egen bearbetning separat. Grundmål och kompletteringsmål saknar normalt inbäddad profil."
+      ],
+      [
+        "Skriv ut utan ytterligare konvertering",
+        "Skriv ut i 100% med färghantering avstängd i programmet, operativsystemets utskriftskedja och drivrutinen. Bevara eventuell inbäddad tagg utan konvertering. Tilldela ingen annan profil och konvertera inte TIFF till en arbetsfärgrymd. Ett program kan använda den inbäddade taggen om färghantering är på. Nya paket innehåller de tydligare instruktionerna; befintliga TIFF-filer och paket bevaras."
+      ]
+    ]
+  },
+  {
+    "title": "Bilaga: planera och skapa grundmålet",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "sections": [
+      [
+        "1. Bestäm vad ett bra resultat innebär",
+        "Kom överens om fotografisk användning eller en viss referens, betraktarljus, viktiga färger och gradienter samt acceptanskriterier. Registrera skrivare, bläck, papper, drivrutinspreset, kvalitet, upplösning, underlag och instrument. Kontrollera munstycken och använd jämförbar torktid. Ett eget RGB-mål visar inte i sig överensstämmelse med ISO-krav för provtryck."
+      ],
+      [
+        "2. Använd en befintlig ICC som första uppskattning",
+        "Välj en tillförlitlig RGB-skrivarprofil för samma skrivare, bläck, papper och inställningar, eller ett rimligt liknande system. Välj en Argyll-metod som stöder perceptuell placering och ange profilen för preconditioning. Argyll använder profilens förutsägelser för att fördela patchar i skrivarens RGB; grundmålet färgkonverteras inte genom profilen. En dålig eller orelaterad profil kan snedvrida urvalet. Saknas lämplig ICC, börja utan sådan styrning och förbättra urvalet efter första profilbygget."
+      ],
+      [
+        "3. Välj mätbudget",
+        "En praktisk startrekommendation är cirka 1 000 färgprover med bred RGB-täckning, neutrala toner, skuggor, hudtoner och spridda kontroller. För en noggrann full profil är 1 500–2 000 prover rimligt; den befintliga vägen med 2 000 patchar passar när mättiden tillåter. Ett pilotmål med 300–600 prover kan avslöja inställningsproblem före en större omgång. Detta är arbetsrekommendationer, inte ett universellt optimum eller appens standardvärde. Avsätt plats för repetitioner och flera mätningar av otryckt vitt; kontrollera verkligt antal inklusive kontroller i förhandsvisningen."
+      ],
+      [
+        "Beslut före sparandet",
+        "Behåll patchstorlek och instrumentets skanningsgeometri. Välj pappersmått och kontrollera de faktiska sidorna i förhandsvisningen. Spara TIFF16 tillsammans med matchande TI2, layout och PRINTING.txt. Bevara startprofilen och dess identitet i projektet. Profilen som styr målurvalet är skild från profilen som senare byggs från mätningarna."
+      ]
+    ]
+  },
+  {
+    "title": "Bilaga: skriv ut, mät och besluta om OBA",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "sections": [
+      [
+        "4. Skriv ut det färdigberedda RGB-målet",
+        "Följ dess PRINTING.txt. Välj Discard the embedded profile (don’t color manage) i Photoshops dialog för profilkonflikt. Stäng av färghantering i utskriftsprogrammet och färgjustering i drivrutinen. Skriv ut i 100% med registrerat preset. Konvertera inte till Adobe RGB och lägg inte på skrivarprofilen igen. En identifierande inbäddad ICC ändrar inte instruktionen. C2-referensmål har redan fått sin angivna beredning; även deras RGB-värden ska nå skrivaren oförändrade."
+      ],
+      [
+        "5. Mät och granska före B1",
+        "Kalibrera instrumentet, använd samma underlag och skanningsriktning och mät alla sidor. Spara varje mätomgång som en revision. Granska identiteter, vita kontroller, upprepade färger och avvikande mätningar; mät om misstänkta patchar eller en hel rad med rätt sida och forward/reverse. Rätta mätfel före utjämning. Välj och godkänn avsedd revision och lås sedan B1. Håll olika utskriftsomgångar identifierbara."
+      ],
+      [
+        "6. Avgör om FWA/OBA-kompensation behövs",
+        "Slå inte på kompensation enbart för att vitt ser gult ut eller papperet lyser under UV. Bedöm papperet, verifierad mätbetingelse och avsett betraktarljus. Den stödda i1Pro2 M0-vägen ger en D50-simulering från tillgängliga synliga spektra, inte en mätning av UV-excitation eller ett M1-resultat. Om papperet har lite OBA eller underlaget inte motiverar kompensation, behåll den okompenserade vägen och dokumentera beslutet."
+      ],
+      [
+        "Om kompensation väljs",
+        "Använd ursprungliga M0-spektra med verifierade instrumentuppgifter och tillräcklig spektral täckning. InkProf medelvärdesbildar tillgängliga vita patchar och registrerar antal och variation. Saknas användbar vitreferens erbjuder B2 mätning av tomt papper, sparad godkänd referens eller Cancel. Mät flera rena platser på samma papper med samma underlag. Medelvärdet kan minska slumpbrus men återskapar inte saknad excitationsinformation. Spara nytt B2-recept. Behåll samma kompensation och ljusantaganden genom jämförelser och slutkontroll; ändrat val gör senare resultat inaktuella."
+      ]
+    ]
+  },
+  {
+    "title": "Bilaga: bygg, förfina och avsluta",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "sections": [
+      [
+        "7. Välj utjämning och B3-väg",
+        "Börja med Argyll only (raw measurements) när repeterbarheten är god. Om mätbrus eller gradienter motiverar det, jämför Argyll colprof pre-smoothing (experimental) med rådatavägen. Assumed noise (%) och Smoothing at ICC build är separata inställningar; 0,5% är receptets startvärde, inte ett fastställt optimum för alla instrument. Kontrollera färgpassning och likvärdiga fotografiska gradientbanor. Välj RGB-gradienttest vid behov. Välj Manual i B3 för exakt sparat B2-recept; Automatic skapar egna recept och ärver inte alla B2-inställningar. Använd det nya stödda tvåpassreceptet när FWA kombineras med förutjämning."
+      ],
+      [
+        "8. Välj förfiningsmetod",
+        "Använd Argyll only som första förfiningsval: Argyll placerar nya patchar med den aktuella profilen. Current InkProf (Jacobian sampling) använder uppmätta lokala avvikelser och lokal respons för att föreslå fler RGB-prover. Båda vägarna bygger ICC med Argyll. Välj Jacobian sampling när en reproducerbar lokal avvikelse motiverar riktad undersökning; metoden gör inte ouppnåeliga färger möjliga. Spara valet med förslaget. Skriv ut och mät det tillagda RGB-målet oförändrat och bygg nästa iteration."
+      ],
+      [
+        "9. Jämför likvärdigt underlag",
+        "Använd rad 18 för Previous profile prediction vs current profile prediction vid gemensamma prover. Granska separat passningsfel, utvecklings-/undanhållna data när sådana finns, repeterbarhet, gradienter och Measured print vs desired colour. Lägre träningsfel räcker inte. Litet invers-rundgångsfel visar bara att modellen och inversen stämmer ihop. Vid stora uppmätta avvikelser: kontrollera profilidentitet, RGB-värden, utskriftsfärghantering, patchkoppling och mätbetingelser före slutsatser om gamut."
+      ],
+      [
+        "10. Avgör om en iteration till är värdefull",
+        "Fortsätt när en konkret uppmätt osäkerhet kan minskas. Avsluta när jämförbara fel och gradienter inte förbättras meningsfullt utöver repeterbarheten eller när mer förfining ger en olämplig avvägning mellan noggrannhet och jämnhet. En eller två jämförbara omgångar utan meningsfull förbättring är en praktisk granskningssignal, inte en automatisk godkännanderegel i InkProf. Registrera underlag, vald profil och stopporsak. Numerisk konvergens bevisar inte fysisk färgnoggrannhet eller standardöverensstämmelse."
+      ]
+    ]
+  },
+  {
+    "title": "Bilaga: slutkontroll och certifikat",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "sections": [
+      [
+        "11. Verifiera exakt den profil som ska levereras",
+        "Efter val av slutiteration, kör rad 8 (Fit, Grid and C1) och rad 9 (C2: save verification TIFF16) för aktuell profil. Gör en ny kontrollutskrift med dokumenterade inställningar och utan ytterligare färgkonvertering. Mät i rad 10, bevara revisionen och kör rad 11 (C3) och rad 12 (feedback). Gör detta även om utvecklings- eller träningsmätningar ser bra ut. En mätning som tränat ett senare bygge kan inte oberoende verifiera denna senare ICC."
+      ],
+      [
+        "12. Bedöm hela resultatet",
+        "Granska antal, medel, median, P95 och maximum för alla bedömda unika färger, inte bara de sämsta. Identifiera utmanande färger, kontroller och repeterbarhet. Jämför börvärdesfel med fel mot aktuell profils förutsägelse där det finns. Granska viktiga fotografier och gradienter. Modellnåbara, utanför modell/olöst invers och oklassificerade referenser beskriver modellunderlag, inte bevis för en fysisk gamutgräns. Kontrollera vitt, svart, neutralbalans och avsett betraktarljus."
+      ],
+      [
+        "13. Godkänn eller avstå för avsedd användning",
+        "Ange granskningsanteckningar, omfattning, utskriftsinställningar, begränsningar och beslut i rad 13. Godkänn bara när relevant mätunderlag och överenskomna kriterier stöder det. Om en obligatorisk standardgräns inte uppfylls ska det redovisas; skrivarens begränsningar upphäver inte kravet. Fotografisk användning kan godkännas med tydliga avtalade begränsningar samtidigt som annan standardbunden användning avslås. Ange när kvarstående orsak är olöst. Rad 14 exporterar vald ICC och engelskt mätcertifikat."
+      ],
+      [
+        "14. Bevara underlag och status",
+        "Kontrollera att certifikatet identifierar denna ICC, iteration, aktuell kontrollrevision, regularisering, FWA-referens och granskarbeslut. Bevara mål, TI2/layout, PRINTING.txt, råmätningar, recept, ICC och kompletta rapporter. Rad 19 är en numerisk leveransväg och ersätter inte ny mätt slutkontroll. Om ICC eller utskriftsinställningar ändras efter godkännande ska slutkontrollen göras om. Den försvarbara slutsatsen är mätt och godkänd för angiven användning med redovisade begränsningar, inte automatisk ISO-godkänd."
+      ]
+    ]
+  },
+  {
+    "title": "Bilaga: underlag för rekommendationerna",
+    "sections": [
+      [
+        "Argyll: urval och mätkvalitet",
+        "Dokumentationen för targen stöder att tidigare eller liknande ICC styr perceptuell patchplacering. printtarg förklarar instrumentberoende patchgeometri och slumpad placering, som hjälper identifiering och fördelar rumsliga utskriftseffekter. Behåll den skapade layouten; flytta inte patchar manuellt. Det finns inget universellt optimalt patchantal. Bilagans antal är arbetsrekommendationer för InkProf som ska bedömas mot repeterbarhet och oberoende resultat."
+      ],
+      [
+        "Argyll: utjämning är ett antagande om osäkerhet",
+        "colprof definierar -r som antagen medelavvikelse hos skrivarens och instrumentets mätvärden, med standardvärdet 0,5%. Ett högre värde ger mindre vikt åt enskilda mätningar och mer åt det samlade beteendet. Procent är inte ΔE00. Bedöm behovet från upprepade mätningar och jämför noggrannhet och gradienter; öka inte utjämningen bara för att dölja ett systematiskt utskriftsfel."
+      ],
+      [
+        "X-Rite: skilj M0-kompensation från M1",
+        "X-Rite beskriver M1 som föredragen betingelse för papper med OBA och förklarar att M0 inte fullt definierar UV-innehållet. i1Pro2-hårdvaran stöder M1, men den här InkProf-vägen använder verifierade M0-data. Spektralband nära eller under 400 nm mäter inte belysningens spektrum och visar inte kalibrerad UV-excitation. Medelvärde av vita mätningar förbättrar repeterbarheten, inte den fysikaliska definitionen av M0. Använd verkliga M1-mätningar i ett kompatibelt arbetsflöde när referensen eller ett överensstämmelsekrav kräver det."
+      ],
+      [
+        "Fogra: verifiering kräver rätt referens och kontroll",
+        "Fogra knyter provtrycksverifiering till definierad MediaWedge, tryckbetingelse och tillämpliga toleranser. InkProfs egna RGB-kontroll och granskarens godkännande är användbart underlag för angiven användning men ersätter inte hela den proceduren. Bilagans oberoende slututskrift är en rekommendation för kvalitetskontroll i InkProf."
+      ],
+      [
+        "Vad externa källor inte visar",
+        "Källorna visar inte att InkProfs Jacobian sampling överträffar Argyll only eller att föreslagna patchantal och stoppsignaler alltid är optimala. Dessa beslut kräver jämförbara lokala resultat. Källor granskade 8 oktober 2026; handboken skiljer aktuellt InkProf-beteende från extern vägledning."
+      ]
+    ],
+    "links": [
+      [
+        "Argyll: target placement and preconditioning",
+        "https://www.argyllcms.com/doc/targen.html"
+      ],
+      [
+        "Argyll: patch layout and randomisation",
+        "https://www.argyllcms.com/doc/printtarg.html"
+      ],
+      [
+        "Argyll: smoothing and profile building",
+        "https://www.argyllcms.com/doc/colprof.html"
+      ],
+      [
+        "X-Rite: measurement conditions and optical brighteners",
+        "https://www.xrite.com/resources/successful-color-management-of-papers-with-optical-brighteners"
+      ],
+      [
+        "Fogra: MediaWedge and contract-proof verification",
+        "https://fogra.org/en/shop/mediawedge-cmyk"
+      ]
+    ],
+    "tag": "COMPLETE PROFILING APPENDIX | SOURCES | 2026-10-08"
+  },
+  {
+    "title": "Bilaga: Torger och i1Profiler",
+    "tag": "COMPLETE PROFILING APPENDIX | COMPARISON",
+    "sections": [
+      [
+        "Torger: en användbar fotografisk startpunkt",
+        "Torger rekommenderar preconditioning, optimerad placering och extra gråprover. I hans Colormunki-exempel är cirka 840 patchar en praktisk balans; det är erfarenhet från det instrumentet och utskriftssystemet, inte en allmän gräns. Han använder colprof -r1.0 för att byta lite passningsnoggrannhet mot jämnhet och granskar diagnostiska gradienter och ett känt fotografi. Hans redovisade profilpassningsfel jämför förutsägelser med uppmätta RGB-patchar, inklusive träningsdatakontroller; de kan inte likställas med InkProf C3:s fel mot börfärger på en separat profilkonverterad utskrift. Artikeln beskriver främst grundprofilering och bevisar inte att InkProfs förfining återskapar en viss iterationsalgoritm."
+      ],
+      [
+        "i1Profiler: en mer omfattande mätväg",
+        "X-Rites rekommenderade RGB-flöde föreslår 2 033 eller 1 586 patchar, bredare patchar för bättre sampling, cirka en timmes torkning, instrumentkalibrering och sparade mätdata. Råden gäller dess egen programvara och layout: öka inte InkProfs patchbredd blint och anta inte att en timme ger stabilitet för varje papper. i1Profiler erbjuder också riktad optimering och kompensation för optiska vitmedel; dess interna motor är inte Argyll och dess OBC ska inte beskrivas som identisk med InkProfs M0-metod."
+      ],
+      [
+        "Samlad rekommendation för InkProf",
+        "För återkommande papper och noggrann i1Pro2-profilering, börja med cirka 1 500–2 000 patchar när det är möjligt. Cirka 800–1 000 är en rimlig start med mindre budget; ett pilotmål med 300–600 patchar används för inställningskontroll. Använd lämplig befintlig ICC för placeringen, fördela neutrala och vita kontroller och behåll tillförlitlig patchgeometri. Jämför rå Argyll-passning med motiverad utjämning på samma data. Välj fler patchar från mätunderlaget, inte av en fast skyldighet att iterera."
+      ],
+      [
+        "Slutbeslutet grundas fortfarande på mätning",
+        "Varken ett tilltalande fotografi eller lågt modellpassningsfel visar ensamt uppmätt noggrannhet för avsedd referens. Behåll kontroll med känt fotografi och gradientgranskning och gör sedan den oberoende slututskriften C2 med C3-mätning före granskarens godkännande och certifikatleverans. Det förenar praktisk fotografisk bedömning med spårbar mätning."
+      ]
+    ],
+    "links": [
+      [
+        "Torger: Inkjet printer profiling with Argyll and Colormunki",
+        "https://www.torger.se/anders/photography/argyll-print.html"
+      ],
+      [
+        "X-Rite: Recommended RGB Printer Profiling With i1Profiler",
+        "https://www.xrite.com/it-it/service-support/recommended_rgb_printer_profiling_with_i1profiler"
+      ],
+      [
+        "X-Rite: i1Profiler features and targeted optimisation",
+        "https://www.xrite.com/-/media/xrite/files/literature/l7/l7-700_l7-799/l7-760-i1-brochure/l7-760_i1_brochure_en.pdf"
+      ]
+    ]
+  },
+  {
+    "title": "Keith Cooper: testbilder och himmelsgradienter",
+    "tag": "COMPLETE PROFILING APPENDIX | VISUAL ASSESSMENT",
+    "sections": [
+      [
+        "Keith Cooper: fotografiska testbilder",
+        "Keith Cooper (Northlight Images) erbjuder testbilder och bedömningsråd, bland annat Datacolor-bilden som tillgängliggörs med Datacolors medgivande. Använd den för allmän fotografisk bedömning av hudtoner, neutrala toner, skuggor och mättade färger. Granska himmelsgradienten i InkProf-jämförelser för bandning eller ojämna övergångar vid bedömning av utjämningen; det är en visuell kontroll, inte bevis för en viss orsak. Jämför samma källa, ICC-väg, intent, BPC, utskriftspreset och betraktarljus. Det ursprungliga Adobe RGB-fotografiet behöver en avsedd konvertering genom skrivarprofilen; en redan konverterad RGB-version för skrivaren får ingen andra konvertering. Grundmålets öppningsinstruktioner gäller inte originalfotografiet. JPEG-kvantisering och klippning kan också ge steg; komplettera med syntetiska gradienter med hög precision. Hämta bilden från Keith Coopers sida; den distribueras inte i InkProfs kodarkiv."
+      ]
+    ],
+    "links": [
+      [
+        "Keith Cooper — Printer Test Images, Northlight Images",
+        "https://www.northlight-images.co.uk/printer-test-images/"
+      ]
+    ]
+  }
+]

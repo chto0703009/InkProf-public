@@ -1,10 +1,10 @@
-# RGB-target: iterativ förtätning och Argyll-alternativ
+# RGB target: iterative refinement and the Argyll alternative
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-Infört 2026-09-26 som en geometrisk prototyp. Ingen uppmätt färgmodell ingår och ingen profilnoggrannhet utlovas.
+Introduced 2026-09-26 as a geometric prototype. No measured colour model is included and no profile accuracy is promised.
 
-## Öppna fönstret
+## Open the window
 
 ```matlab
 cd('/Users/christer/Desktop/InkProf')
@@ -12,27 +12,27 @@ paths=setupInkProf();
 designer=inkprof.designTarget();
 ```
 
-Fönstret är på engelska. Välj **InkProf mesh refinement** eller **Argyll OFPS**. Namnet sparas som targetnamn i JSON och föreslås som filnamn vid sparning. Alla numeriska gränser är användarinställningar, inte fasta punktantal i algoritmen.
+The window is in English. Choose **InkProf mesh refinement** or **Argyll OFPS**. The name is saved as the target name in the JSON and is suggested as the file name when saving. All numerical limits are user settings, not fixed point counts in the algorithm.
 
-Ange namnet i **Target name / file name** överst till vänster. Ett separat sparområde längst ned visar **Not saved** och, efter generering, det föreslagna filnamnet. Generering sparar inte automatiskt. Knappen **Save definition: TI1 + JSON…** blir tillgänglig efter generering (även efter förhandsvisning av startnätet). Fildialogen låter dig välja både mapp och slutligt filnamn. Efter sparning stängs fönstret. Sökvägarna visas i MATLAB; inget TIFF-fönster öppnas.
+Enter the name in **Target name / file name** at the top left. A separate save area at the bottom shows **Not saved** and, after generation, the suggested file name. Generation does not save automatically. The **Save definition: TI1 + JSON…** button becomes available after generation (also after previewing the initial grid). The file dialog lets you choose both the folder and the final file name. After saving, the window closes. The paths are shown in MATLAB; no TIFF window is opened.
 
-För nätmetoden:
+For the mesh method:
 
-1. Ange **Initial levels per axis**: exempelvis 5, 7, 9 eller 11 ger 125, 343, 729 respektive 1331 kubpunkter före extra gråpunkter.
-2. Ange **Maximum total patches**. Gränsen omfattar anpassning, kontroll och extra upprepningar. Startnät plus extragrå och reserv för kontroll/upprepning måste rymmas.
-3. Välj **Preview initial grid**. Diagram och tabell visar tetraedrarnas tyngdpunkter som kandidater, sorterade efter avståndet till närmaste anpassningspunkt. Kubbilden visar de befintliga anpassningspunkterna.
-4. Ange vid behov **Max interior gap** i normaliserat RGB. Noll stänger av denna tröskel. Det maximala möjliga kubavståndet är sqrt(3), inte 1.
-5. **Initial gap ratio** är ett frivilligt geometriskt stoppvillkor. Noll stänger av det; annars måste värdet vara större än 1. Diagrammet bör granskas innan kriteriet aktiveras.
-6. Välj **Refine / generate**. **Stop generation** avbryter nätmetoden mellan tillägg utan att spara ett halvfärdigt mål. Varje ny generering utgår från det angivna startnätet; ändrad punktgräns kör om samma recept. Det är inte en dold fortsättning på ett annat target.
-7. **Save definition: TI1 + JSON…** öppnar en fildialog. Välj ett nytt namn; befintliga resultat skrivs inte över.
+1. Enter **Initial levels per axis**: for example 5, 7, 9 or 11 gives 125, 343, 729 and 1331 cube points respectively, before extra grey points.
+2. Enter **Maximum total patches**. The limit covers fitting, control and extra repeats. The initial grid plus extra grey points and a reserve for control/repeats must fit.
+3. Choose **Preview initial grid**. The plot and table show the centroids of the tetrahedra as candidates, sorted by distance to the nearest fitting point. The cube view shows the existing fitting points.
+4. If needed, enter **Max interior gap** in normalised RGB. Zero turns this threshold off. The maximum possible cube distance is sqrt(3), not 1.
+5. **Initial gap ratio** is an optional geometric stopping criterion. Zero turns it off; otherwise the value must be greater than 1. The plot should be reviewed before the criterion is activated.
+6. Choose **Refine / generate**. **Stop generation** interrupts the mesh method between additions without saving a half-finished target. Each new generation starts from the specified initial grid; a changed point limit reruns the same recipe. It is not a hidden continuation of another target.
+7. **Save definition: TI1 + JSON…** opens a file dialog. Choose a new name; existing results are not overwritten.
 
-Förvalet är 5 nivåer, totalt högst 575 positioner, 33 gråsteg, 64 kontroller och 12 extra upprepningar. Dessa är ändringsbara startvärden, inte ett påvisat optimum. Kontrollerna och upprepningarna räknas inte som nya punkter i förtätningsnätet.
+The window default is 5 levels, at most 575 positions in total, 33 grey steps, 64 controls and 40 extra repeats (`designRGBTarget` keeps 12 repeats; see [Repeat patches and noise estimation](#repeat-patches-and-noise-estimation)). These are changeable starting values, not a demonstrated optimum. The controls and repeats do not count as new points in the refinement mesh.
 
-## Om patchantalet inte räcker
+## If the patch count is not enough
 
-Felrutan visar nu valda total-, kontroll- och upprepningsantal, hela subtraktionen, hur många anpassningspunkter som krävs och vilken totalgräns som minst behövs. För nätmetoden räknas kubpunkter och ytterligare unika gråpunkter före generering; gråpunkter som redan finns i kubnätet räknas inte dubbelt.
+The error box now shows the chosen total, control and repeat counts, the full subtraction, how many fitting points are required and the minimum total limit needed. For the mesh method, cube points and additional unique grey points are counted before generation; grey points that already exist in the cube grid are not counted twice.
 
-Exempel med 5 nivåer, 33 gråsteg, 64 kontroller, 12 upprepningar och totalgräns 100:
+Example with 5 levels, 33 grey steps, 64 controls, 12 repeats and a total limit of 100:
 
 ```text
 Available fitting points: 100 - 64 - 12 = 24
@@ -40,66 +40,95 @@ Required fitting points: 153 (5^3 = 125 grid points + 28 additional gray points)
 Set Maximum total patches to at least 229 ...
 ```
 
-229 räcker här för startnätet och de extra rollerna; en större gräns behövs för att faktiskt lägga till förtätningspunkter. Med förvalet 575 återstår 499 anpassningspunkter, vilket ger utrymme för 346 tillägg utöver startmängdens 153.
+229 is sufficient here for the initial grid and the extra roles; a larger limit is needed to actually add refinement points. With a total of 575, 64 controls and 12 repeats (the `designRGBTarget` defaults), 499 fitting points remain, which leaves room for 346 additions beyond the initial set's 153. With the window's 40 repeats, 471 fitting points remain, room for 318 additions.
 
-Öka **Maximum total patches**, eller minska startnät, gråsteg, **Control patches** eller **Extra repeat patches**. De två senare kan sättas till noll för ett rent nätförsök, men kub och gråsteg måste fortfarande rymmas. Noll gråsteg innebär inga extra gråpunkter utöver dem som redan finns i kuben.
+Increase **Maximum total patches**, or reduce the initial grid, grey steps, **Control patches** or **Extra repeat patches**. The latter two can be set to zero for a pure mesh trial, but the cube and grey steps must still fit. Zero grey steps means no extra grey points beyond those already in the cube.
 
-Argyll-alternativet visar sin befintliga reservation för åtta hörn och valda gråsteg. Denna reservation är konservativ eftersom vissa punkter kan överlappa; det faktiska genererade antalet kontrolleras efteråt. Inga inställningar ändras automatiskt av felrutan.
+The Argyll alternative shows its existing reservation for eight corners and the chosen grey steps. This reservation is conservative because some points may overlap; the actual generated count is checked afterwards. No settings are changed automatically by the error box.
 
-## Vad iterationen gör
+## What the iteration does
 
-Ett Delaunay-tetraedernät byggs över de unika anpassningspunkterna i [0,1]^3 med MATLAB Base. Standardmetoden från algoritmversion 2.0 är **interior**:
+A Delaunay tetrahedral mesh is built over the unique fitting points in [0,1]^3 with MATLAB Base. The default method from algorithm version 2.0 is **interior**:
 
-1. Beräkna tyngdpunkten i varje tetraeder som medelvärdet av dess fyra hörn.
-2. Mät varje kandidats avstånd till närmaste befintliga anpassningspunkt.
-3. Sortera avstånden fallande och lägg till kandidaten med störst avstånd.
-4. Bygg om trianguleringen och upprepa.
+1. Compute the centroid of each tetrahedron as the mean of its four vertices.
+2. Measure each candidate's distance to the nearest existing fitting point.
+3. Sort the distances in descending order and add the candidate with the greatest distance.
+4. Rebuild the triangulation and repeat.
 
-Alla nytillkomna punkter ligger strikt inne i RGB-kuben. Startnätets ytor, kanter, hörn och gråpunkter behålls oförändrade. Metoden flyttar alltså förtätningsbudgeten till kubens inre. Den söker bland tetraedrarnas tyngdpunkter, inte kontinuerligt över hela kuben; därför garanterar den inte att varje ny punkt är centrum i det största möjliga tomrummet.
+All newly added points lie strictly inside the RGB cube. The initial grid's faces, edges, corners and grey points are kept unchanged. The method thus moves the refinement budget to the interior of the cube. It searches among the centroids of the tetrahedra, not continuously over the whole cube; it therefore does not guarantee that each new point is the centre of the largest possible void.
 
-`parentTetrahedra` sparar de fyra föräldrapunkterna för varje nytt prov. `historyColumns` beskriver historikens kolumner och `sortedRefinementDistances` innehåller kandidatavstånden. `sortedEdges` och `sortedDistances` finns kvar som separat kantdiagnostik. Det tidigare kantdelningsalternativet kan anropas med `Refinement="edge"` för jämförelser och äldre experiment, men används inte av fönstrets förval.
+`parentTetrahedra` stores the four parent points for each new sample. `historyColumns` describes the history's columns and `sortedRefinementDistances` contains the candidate distances. `sortedEdges` and `sortedDistances` remain as separate edge diagnostics. The earlier edge-splitting alternative can be invoked with `Refinement="edge"` for comparisons and older experiments, but is not used by the window's default.
 
-Metoden är inspirerad av nätförfining, men är ingen FEM-lösare eller fysikalisk felestimator. Kandidatmängden ändras när trianguleringen byggs om; kandidatmaximum behöver inte minska vid varje tillägg. Symmetriska nät kan trianguleras olika mellan MATLAB-versioner. Punktfördelning, metodversion och föräldrarelationer sparas därför. Skillnader i RGB-avstånd är inte uppmätta färgfel.
+The method is inspired by mesh refinement, but is not an FEM solver or a physical error estimator. The candidate set changes when the triangulation is rebuilt; the candidate maximum need not decrease with each addition. Symmetric meshes can be triangulated differently between MATLAB versions. Point distribution, method version and parent relationships are therefore saved. Differences in RGB distance are not measured colour errors.
 
-### Separata täckningsmått
+### Separate coverage measures
 
-`coverage` beskriver avstånd till närmaste anpassningspunkt på ett fast nät med 33³ provlägen. Prov på kubens yta och strikt inuti redovisas separat med medelvärde, 95-percentil och undersökt maximum. Även antalet anpassningspunkter på ytan respektive inuti visas i dialogen. Detta är ett reproducerbart stickprovsmått, inte ett bevisat maximum över en kontinuerlig volym. Kontroller och upprepningar ingår inte som stöd i täckningsmåtten.
+`coverage` describes the distance to the nearest fitting point on a fixed grid of 33³ sample positions. Samples on the surface of the cube and strictly inside it are reported separately with mean, 95th percentile and examined maximum. The number of fitting points on the surface and inside is also shown in the dialog. This is a reproducible sampling measure, not a proven maximum over a continuous volume. Controls and repeats are not included as support in the coverage measures.
 
-## Stoppvillkor
+## Stopping criteria
 
-Algoritmen stannar när anpassningsbudgeten är förbrukad eller det största kandidatavståndet är högst den aktiva avståndströskeln. En otillräcklig budget ger ett tydligt fel före generering. API-parametern `MaxEdge` behåller sitt äldre namn av kompatibilitetsskäl, men avser kandidatavstånd i `Refinement="interior"`. I fönstret heter inställningen **Max interior gap**.
+The algorithm stops when the fitting budget is used up or the largest candidate distance is at most the active distance threshold. An insufficient budget gives a clear error before generation. The API parameter `MaxEdge` retains its older name for compatibility reasons, but refers to candidate distance in `Refinement="interior"`. In the window the setting is called **Max interior gap**.
 
-Vid aktiverad gapdetektion beräknas kvoten d(k)/d(k+1) i det initiala sorterade spektrumet av kandidatavstånd. Den största kvoten måste nå användarens gräns. Den lägre nivån d(k+1) blir då en fryst avståndströskel: kandidaterna ovanför nivån förtätas tills även det största kandidatavståndet når nivån, eller punktbudgeten tar slut. Om ingen kvot uppfyller villkoret används punktgränsen och eventuell manuellt angiven tröskel. Om båda trösklarna används gäller den större, alltså det villkor som nås först.
+When gap detection is enabled, the ratio d(k)/d(k+1) is computed in the initial sorted spectrum of candidate distances. The largest ratio must reach the user's limit. The lower level d(k+1) then becomes a frozen distance threshold: the candidates above the level are refined until even the largest candidate distance reaches the level, or the point budget runs out. If no ratio satisfies the condition, the point limit and any manually specified threshold are used. If both thresholds are used, the larger applies, that is, the condition reached first.
 
-Att frysa nivån undviker att algoritmen hela tiden flyttar sitt mål till nya, mindre avstånd. Gapets kvot, index, övre/lägre nivå och om det användes lagras i JSON. Stopporsaken visas i fönstret. Detta första gapkriterium behöver jämföras med verkliga kontrollfel senare.
+Freezing the level avoids the algorithm continually moving its target to new, smaller distances. The gap's ratio, index, upper/lower level and whether it was used are stored in the JSON. The stopping reason is shown in the window. This first gap criterion needs to be compared with real verification errors later.
 
-## Extra gråprov, kontroll och upprepningar
+## Extra grey samples, controls and repeats
 
-- Gråstegen läggs på R=G=B, förenas med kubnätet och dubbletter tas bort. Detta är styrvärdesgrå, inte bevis för neutral utskrift.
-- Kontrollpunkterna kommer från en deterministisk sekvens med radikala inverser i baserna 2, 3 och 5. De väljs utanför anpassningsmängden och används aldrig till nätförfiningen. Detta är en enkel första kontrollfördelning, inte den slutliga perceptuella grå-/gamutkontrollen.
-- Extra upprepningar kopierar ett jämnt urval av index i anpassningsmängden. De har egna prov-ID och `repeatOf`-referenser. Urvalet är ännu inte en optimerad fördelning mellan vitt, svart och olika kulörer.
-- Definitionen sparar RGB som flyttal. TIFF16-kvantisering hör till det senare utskriftssteget.
+- The grey steps are placed on R=G=B, merged with the cube grid and duplicates are removed. This is control-value grey, not proof of a neutral print.
+- The control points come from a deterministic sequence of radical inverses in bases 2, 3 and 5. They are chosen outside the fitting set and are never used for mesh refinement. This is a simple first control distribution, not the final perceptual grey/gamut check.
+- Extra repeats copy an even selection of indices in the fitting set. They have their own sample IDs and `repeatOf` references. The selection is not yet an optimised distribution between white, black and different hues.
+- The definition saves RGB as floating point. TIFF16 quantisation belongs to the later printing step.
 
-Rollerna sparas som `fit`, `control` och `repeat`. Alla skrivs ut och mäts. **Profilbyggandet ska använda den sparade rollfilen för att skilja träning och kontroller.** En generell TI3 innehåller inte automatiskt denna policy. Nuvarande generella mätimport för inte automatiskt över designerrollerna; design-JSON måste bevaras och kopplas via den matchande layouten. Projektets iterationsflöde kopplar roller och kontrollerar dem före fortsatt profilering; fristående importer kräver rätt matchande underlag.
+The roles are saved as `fit`, `control` and `repeat`. All are printed and measured. **Profile building shall use the saved role file to separate training and controls.** A generic TI3 does not automatically contain this policy. The current generic measurement import does not automatically carry over the designer roles; the design JSON must be preserved and linked via the matching layout. The project's iteration workflow links roles and checks them before continued profiling; standalone imports require the correct matching data.
 
-## Argyll-alternativet
+## The Argyll alternative
 
-Välj **Argyll OFPS** för att låta targen välja anpassningspunkterna. Samma totalbudget, kontrollmängdsstorlek och antal upprepningar används. Nätparametrarna stängs av i fönstret. Targen körs med print-RGB, åtta kubhörn, den valda grårampen och önskad anpassningsbudget. De faktiska argumenten och versionsinformationen sparas. Den genererade mängden analyseras med samma Delaunay-kantmått, men förtätas inte av InkProf.
+Choose **Argyll OFPS** to let targen choose the fitting points. The same total budget, control set size and number of repeats are used. The mesh parameters are disabled in the window. targen is run with print RGB, eight cube corners, the selected grey ramp and the desired fitting budget. The actual arguments and version information are saved. The generated set is analysed with the same Delaunay edge measure, but is not refined by InkProf.
 
-Argyll-anropet sker synkront; ett avbrott registreras efter att det externa anropet lämnar tillbaka kontrollen. Det är inte samma omedelbara avbrott som mellan nätmetodens iterationer. Samma målantal innebär inte automatiskt samma färgkvalitet.
+### Argyll methods and preconditioning
 
-## Sparade filer och layout
+The **Method** drop-down contains, in addition to InkProf's mesh method, Argyll's placement algorithms for full-spread patches (`targen`):
 
-Om fildialogen anger `mitt-mal.ti1` skapas endast:
+| Choice | targen | Space |
+|---|---|---|
+| Argyll OFPS (default, adaptive) | default | adaptive, perceptual when preconditioned |
+| Argyll incremental far point | `-t` | device |
+| Argyll quasi-random, device / perceptual | `-q` / `-Q` | device / perceptual |
+| Argyll body-centred cubic, device / perceptual | `-i` / `-I` | device / perceptual |
+| Argyll random, device / perceptual | `-r` / `-R` | device / perceptual |
 
-- `mitt-mal.ti1`: matematiska RGB-punkter, utan mätvärden eller sidlayout.
-- `mitt-mal.json`: namn, parametrar, roller, punkter, föräldrarelationer, historik, sorterade kantavstånd, stopporsak och källinformation. `definition.ti1SHA256` kopplar JSON till TI1.
+**Pre-conditioning ICC** is passed to targen as `-c` and is optional. It is an existing RGB printer profile for the same or a similar paper, for example the paper manufacturer's profile or an earlier InkProf profile. targen uses it only to estimate perceptual distances, and then places more patches near the neutral axis and where the eye is sensitive. The profile is never used as measurement data.
 
-Mesh- och Argyll-generering sparas på samma sätt. Ingen TIFF eller TI2 skapas. DPI, sidstorlek, randomisering och seed väljs i det separata TIFF16-fönstret. Öppna där den sparade TI1-filen och behåll JSON bredvid den så att nätinformationen kan återläsas med hashkontroll. Originalets definition och JSON ändras inte när en utskrift skapas.
+The profile affects OFPS (adaptation 1.0 when a profile is present) and the perceptual methods. Perceptual methods without a profile give a notice, since Argyll's default model assumes a saturated device with high contrast. The profile is checked structurally: it must be an RGB printer profile with Lab or XYZ PCS. Its SHA-256 is saved in the JSON, and an exact copy is saved as `<name>-precondition.icc` next to the TI1 file.
 
-TIFF16-fönstret skapar en ny paketmapp med TIFF16, TI2 och utskriftens JSON. TI2 hör till den faktiska sidlayouten. Designens flyttals-RGB behålls i definitionen; layouten innehåller RGB16-värdena. Den tidigare kombinerade funktionen `saveRGBDesign` finns kvar för äldre skript, men anropas inte längre från mesh-fönstret.
+Argyll cannot use ICC v4 profiles for lookups. All Argyll pre-conditioning and profile-import routes use the same `iccV2Compatibility` routine: **Create v2 copy / Cancel**, preservation of the original, and the common approximate v2 reconstruction from a 17³ absolute A2B grid. The resulting v2 profile is cached by the original SHA-256 so every route uses identical ICC bytes. Relative/absolute validation results are recorded under `preconditioning.conversion`. This is an approximation, not an unchanged original profile; inverse and perceptual mapping are rebuilt. Synthetic samples never become measured training data.
 
-## Programanrop
+**Optimized points (-G)** is the default in the window and gives slower but better optimised points. The combination of preconditioning + `-G` + extra grey steps (`-g`) corresponds to Torger's recommended workflow (*Printer profiling with Argyll and Colormunki*): `targen -v -d2 -c <precond.icc> -G -g<n> -f<n>`. According to him, the difference from the default spread is small with many patches. Preconditioning is the optimisation he considers worthwhile.
+
+From MATLAB, without the window:
+
+```matlab
+d = inkprof.designRGBTarget(Method="argyll", PreconditionProfile="HFA_Baryta.icc", Optimized=true, ...
+    MaxPoints=575, GraySteps=33);
+```
+
+`Adaptation` (`-A`, 0–1) and `NeutralEmphasis` (`-N`, 0–1) are available as function options.
+
+The Argyll call is synchronous; an interruption is registered after the external call returns control. It is not the same immediate interruption as between the mesh method's iterations. The same target count does not automatically mean the same colour quality.
+
+## Saved files and layout
+
+If the file dialog specifies `mitt-mal.ti1`, only the following are created:
+
+- `mitt-mal.ti1`: mathematical RGB points, without measured values or page layout.
+- `mitt-mal.json`: name, parameters, roles, points, parent relationships, history, sorted edge distances, stopping reason and source information. `definition.ti1SHA256` links the JSON to the TI1.
+
+Mesh and Argyll generation are saved in the same way. No TIFF or TI2 is created. DPI, page size, randomisation and seed are chosen in the separate TIFF16 window. Open the saved TI1 file there and keep the JSON next to it so that the mesh information can be read back with hash checking. The original's definition and JSON are not changed when a print is created.
+
+The TIFF16 window creates a new package folder with TIFF16, TI2 and the print's JSON. The TI2 belongs to the actual page layout. The design's floating-point RGB is kept in the definition; the layout contains the RGB16 values. The earlier combined function `saveRGBDesign` remains for older scripts, but is no longer called from the mesh window.
+
+## Programmatic calls
 
 ```matlab
 d=inkprof.designRGBTarget(Name="RGB-mesh-575", ...
@@ -110,59 +139,69 @@ d=inkprof.designRGBTarget(Name="RGB-mesh-575", ...
 saved=inkprof.saveRGBDefinition(d, ...
     fullfile(paths.Projects,'RGB-mesh-575.ti1'));
 
-% Separat, när du vill skapa utskriften:
+% Separately, when you want to create the print:
 window=inkprof.renderTarget(saved.ti1);
 ```
 
-`Refine=false` ger startnätet utan förtätning. `Method="argyll"` väljer targen. Inga instrument startas.
+`Refine=false` gives the initial grid without refinement. `Method="argyll"` selects targen. No instruments are started.
 
-## Verifiering
+## Verification
 
-Automatiska tester kontrollerar bevarade startpunkter, mittpunktsrelationer, RGB-gränser, budget, stopp, upprepningsreferenser, åtskilda kontroller, sortering, avbrott, Argyll-alternativet, TIFF16/TI2/JSON-export och dialogens grundflöde. Fysisk mätning och jämförelse av profiler från nätmetoden respektive OFPS återstår.
+Automatic tests check preserved starting points, midpoint relationships, RGB limits, budget, stopping, repeat references, separated controls, sorting, interruption, the Argyll alternative, TIFF16/TI2/JSON export and the dialog's basic flow. Physical measurement and comparison of profiles from the mesh method and OFPS respectively remain to be done.
 
-Bakgrund: [utredning om RGB-täckning](../research/rgb-target-design.md). MATLAB:s [Delaunay-triangulering](https://www.mathworks.com/help/matlab/ref/delaunaytriangulation.html) ger tetraedernät och [edges](https://www.mathworks.com/help/matlab/ref/triangulation.edges.html) dess kanter. Gap- och förtätningspolicyn ovan är InkProfs egen prototyp.
+Background: [investigation of RGB coverage](../research/rgb-target-design.md). MATLAB's [Delaunay triangulation](https://www.mathworks.com/help/matlab/ref/delaunaytriangulation.html) provides tetrahedral meshes and [edges](https://www.mathworks.com/help/matlab/ref/triangulation.edges.html) their edges. The gap and refinement policy above is InkProf's own prototype.
 
-## Genomfört geometriskt exempel
+## Completed geometric example
 
-Ett historiskt prov med den tidigare kantdelningsmetoden (version 1.0) gav 153 initiala anpassningspunkter (5³ och extra gråsteg), 346 mittpunktstillägg och 499 slutliga anpassningspunkter. Med 64 kontroller och 12 upprepningar blev det 575 mätpositioner. Längsta nätkant minskade från 0,4330127 till 0,25. Stopporsaken var punktgränsen. Körningen tog cirka 6,8 sekunder inklusive uppdatering av dialogen på den aktuella datorn; detta är inte en plattformsoberoende tidsuppgift.
+A historical trial with the earlier edge-splitting method (version 1.0) gave 153 initial fitting points (5³ and extra grey steps), 346 midpoint additions and 499 final fitting points. With 64 controls and 12 repeats this became 575 measurement positions. The longest mesh edge decreased from 0.4330127 to 0.25. The stopping reason was the point limit. The run took about 6.8 seconds including dialog updates on the computer in question; this is not a platform-independent timing figure.
 
-Exemplet har sparats lokalt under `projects/RGB-mesh-575-demo.*` och `projects/RGB-mesh-575-demo-files/`. Paketkontrollen passerade. Ingen fysisk mätning har gjorts av detta nya mål.
+The example has been saved locally under `projects/RGB-mesh-575-demo.*` and `projects/RGB-mesh-575-demo-files/`. The package check passed. No physical measurement has been made of this new target.
 
-## Avbryt, spara och sidantal
+## Cancel, save and page count
 
-**Cancel** stänger fönstret utan att spara. Under beräkning eller rendering begär knappen avbrott vid nästa säkra kontrollpunkt; ett pågående externt Argyll-anrop måste först återvända. Tillfälliga utskriftsfiler städas bort och inget nytt paket publiceras vid avbrott. **Stop generation** i nätfönstret avbryter däremot endast förtätningen och låter fönstret vara kvar.
+**Cancel** closes the window without saving. During generation, the button requests interruption at the next safe checkpoint and then closes the window; an ongoing external Argyll call must return first. No half-finished definition is saved. **Stop generation**, on the other hand, interrupts only the refinement and leaves the window open. (Cancelling in the separate TIFF16 window is described in [the TIFF16 dialog](tiff16-dialog.md#cancel-save-and-page-count).)
 
-Efter lyckad sparning stängs mesh-fönstret automatiskt utan att öppna utskriftsfönster. Vid sparfel ligger det kvar. Sidantal och förhandsvisning hör enbart till det separata TIFF16-steget.
+After a successful save, the mesh window closes automatically without opening the print window. On a save error it remains. Page count and preview belong solely to the separate TIFF16 step.
 
-## Jämförelse med 575 positioner, version 2.0
+## Comparison with 575 positions, version 2.0
 
-Samma budget (499 anpassning, 64 kontroll, 12 upprepning), startnät 5³ och 33 gråsteg. Tätheten nedan mäts mot 33³ provlägen; endast de 29 791 strikt inre provlägena ingår i inremåtten.
+Same budget (499 fitting, 64 control, 12 repeat), initial grid 5³ and 33 grey steps. The density below is measured against 33³ sample positions; only the 29,791 strictly interior sample positions are included in the interior measures.
 
-| Mått | Tidigare kantdelning | Inre förtätning |
+| Measure | Earlier edge splitting | Interior refinement |
 |---|---:|---:|
-| Anpassningspunkter på ytan | 246 | 98 |
-| Anpassningspunkter inuti | 253 | 401 |
-| Medelavstånd inuti | 0,07405 | 0,06641 |
-| 95-percentil inuti | 0,11561 | 0,09882 |
-| Undersökt maxavstånd inuti | 0,13975 | 0,12614 |
-| Medelavstånd på ytan | 0,05974 | 0,06942 |
+| Fitting points on the surface | 246 | 98 |
+| Fitting points inside | 253 | 401 |
+| Mean distance inside | 0.07405 | 0.06641 |
+| 95th percentile inside | 0.11561 | 0.09882 |
+| Examined maximum distance inside | 0.13975 | 0.12614 |
+| Mean distance on the surface | 0.05974 | 0.06942 |
 
-Detta verifierar avsedd omfördelning och bättre geometrisk täckning inuti för just denna budget. Det bevisar inte lägre ΔE eller universell överlägsenhet. Ingen tidigare sparad målfil ändras automatiskt.
+This verifies the intended redistribution and better geometric coverage inside for this particular budget. It does not prove lower ΔE or universal superiority. No previously saved target file is changed automatically.
 
-## Val av inre placering, version 2.1
+## Choice of interior placement, version 2.1
 
-Fältet **Interior placement** ger tre val: **Centroids (default)**, **Sphere centers in tetrahedra** och **All interior sphere centers**. Argyll-läget stänger av valet.
+The **Interior placement** field gives three choices: **Centroids (default)**, **Sphere centers in tetrahedra** and **All interior sphere centers**. Argyll mode disables the choice.
 
-Omsfärscentrum är punkten med samma avstånd till tetraederns fyra hörn. Det första sfäralternativet accepterar bara centrum inom den egna tetraedern. Det andra accepterar även centrum utanför sin tetraeder, förutsatt att det ligger strikt inne i RGB-kuben. Båda behåller tyngdpunkter som reservkandidater. I samtliga fall väljs största kandidatavståndet till närmaste anpassningspunkt.
+The circumcentre is the point with equal distance to the tetrahedron's four vertices. The first sphere alternative accepts only centres within the tetrahedron itself. The second also accepts centres outside their tetrahedron, provided they lie strictly inside the RGB cube. Both keep centroids as fallback candidates. In all cases the largest candidate distance to the nearest fitting point is chosen.
 
-API-valet är `InteriorPlacement="centroid"`, `"contained-circumcenter"` eller `"circumcenter"`. JSON sparar vald metod och `insertionKinds` för varje anpassningspunkt samt `candidateKinds` för slutliga kandidater. För omsfärscentrum identifierar `parentTetrahedra` den definierande sfärens fyra hörn.
+The API choice is `InteriorPlacement="centroid"`, `"contained-circumcenter"` or `"circumcenter"`. The JSON saves the chosen method and `insertionKinds` for each fitting point as well as `candidateKinds` for final candidates. For circumcentres, `parentTetrahedra` identifies the four vertices of the defining sphere.
 
-Tyngdpunkter behålls som förval: de nya alternativen förbättrade inte alla täckningsmått. Se [resultat av jämförelsen](../research/interior-placement-comparison.md), inklusive ett oberoende prov med 100 000 slumpmässiga RGB-positioner.
+Centroids are kept as the default: the new alternatives did not improve all coverage measures. See the [comparison results](../research/interior-placement-comparison.md), including an independent test with 100,000 random RGB positions.
 
-## Planerad återkoppling från mätfel
+## Planned feedback from measurement errors
 
-Nästa etapp ska kunna koppla profilvalideringens ΔE00 och Lab-residualer tillbaka till enhets-RGB och nätversion, föreslå kompletteringar och behålla tidigare mätningar. Detta är ännu inte implementerat. [Plan och JSON-kontrakt](error-driven-refinement.md) beskriver separata profilrevisioner, permanent patchkoppling, mätvillkor, utvecklingsvalidering och låst slutkontroll. Den geometriska generatorn får inte beskrivas som felstyrd innan den kedjan finns.
+Measurement-driven refinement is implemented as a separate workflow: [error-driven refinement](error-driven-refinement.md), [verification feedback](verification-feedback.md), and [automatic profile iteration](automatic-profile-iteration.md). These link observations to device RGB, preserve earlier measurements and propose additional patches. The geometric target generator itself does not acquire measurement-error feedback simply by generating a mesh; use the matching refinement API and role/identity checks.
 
 ## v1.0.0 project settings
 
 Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.
+
+### Repeat patches and noise estimation
+
+The window suggests 40 **Extra repeat patches** (previously 12). The repeats are distributed across the fitting colours and end up in other places on the sheet. The difference between them is the measure of print and measurement noise on which `inkprof.estimateMeasurementNoise` and its approximate `colprof -r` suggestion are based; at least 5 repeated colours are required, and 30–50 gives a stable estimate. The function `designRGBTarget` retains the default value 12 for backward compatibility.
+
+## Patch budgets for a complete profiling job
+
+The [best-practice appendix](profiling-best-practice.md) recommends roughly 1,500–2,000 patches for a careful full i1Pro2 profiling job, or about 800–1,000 when budget is tighter. A 300–600-patch pilot primarily checks the setup. Count fitting samples, repeats and controls consistently and review the generated total; these are not new software defaults. X-Rite recommends 1,586 or 2,033 patches in its own [i1Profiler RGB workflow](https://www.xrite.com/it-it/service-support/recommended_rgb_printer_profiling_with_i1profiler), while [Torger](https://www.torger.se/anders/photography/argyll-print.html) describes approximately 840 as a useful Colormunki compromise. Instrument, paper and print system differ; neither count proves the optimum for InkProf.
+
+Use a suitable existing RGB printer ICC to guide perceptual Argyll target placement. This is preconditioning, not pixel conversion: the base fitting target remains device RGB and is printed without another profile transform. Preserve instrument patch geometry; X-Rite’s wider-patch suggestion is not a command to change an InkProf layout blindly. See [target printing](target-print-standard.md).

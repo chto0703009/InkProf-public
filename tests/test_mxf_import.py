@@ -5,7 +5,6 @@
 import sys, unittest, tempfile, copy, random
 from pathlib import Path
 import xml.etree.ElementTree as E
-import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'exchange'))
 from import_mxf import convert, N
 C='{'+N['c']+'}';P='{http://www.xrite.com/products/prism}'

@@ -17,21 +17,29 @@ settings=uigridlayout(root,[4 6]);settings.RowHeight={22,30,22,30};settings.Padd
 labels=["Target name / file name","Method","Initial levels per axis","Maximum total patches","Extra gray levels","Control patches"];
 for s=labels,uilabel(settings,'Text',s);end
 name=uieditfield(settings,'text','Value','RGB-refined','Tag','designName','ValueChangedFcn',@invalidate);
-method=uidropdown(settings,'Items',{'InkProf mesh refinement','Argyll OFPS'},'ItemsData',{'mesh','argyll'}, ...
-    'Value','mesh','Tag','designMethod','ValueChangedFcn',@invalidate);
+catalogue=inkprof.internal.targetMethods();
+method=uidropdown(settings,'Items',cellstr([catalogue.label]),'ItemsData',cellstr([catalogue.id]), ...
+    'Value','mesh','Tag','designMethod','ValueChangedFcn',@invalidate, ...
+    'Tooltip','Patch placement. Argyll methods run targen; "perceptual" methods and OFPS use the pre-conditioning ICC when given.');
 shadow=inkprof.internal.shadowSettings(struct);
 project=inkprof.internal.findProject(options.OutputFile);
 if project~="",record=jsondecode(fileread(fullfile(project,'inkprof-project.json')));shadow=inkprof.internal.shadowSettings(record.printing);end
 if shadow.enabled,method.Value='argyll';method.Enable='off';method.Tooltip='Matte shadow emphasis from Project details uses Argyll OFPS.';end
 levels=number('levels',5,2);limit=number('maxPoints',575,8);gray=number('graySteps',33,0);controls=number('controls',64,0);
-labels=["Extra repeat patches","Max interior gap (0 = off)","Initial gap ratio (0 = off)","Interior placement","",""];
+labels=["Extra repeat patches","Max interior gap (0 = off)","Initial gap ratio (0 = off)","Interior placement","Pre-conditioning ICC (optional, Argyll)","Argyll options"];
 for s=labels,uilabel(settings,'Text',s);end
-repeats=number('repeats',12,0);
+repeats=number('repeats',40,0);
 edgeLimit=uieditfield(settings,'numeric','Value',0,'Limits',[0 Inf],'Tag','maxEdge','ValueChangedFcn',@invalidate);
 gapRatio=uieditfield(settings,'numeric','Value',0,'Limits',[0 Inf],'Tag','gapRatio','ValueChangedFcn',@invalidate);
 placement=uidropdown(settings,'Items',{'Centroids (default)','Sphere centers in tetrahedra','All interior sphere centers'}, ...
     'ItemsData',{'centroid','contained-circumcenter','circumcenter'},'Value','centroid','Tag','interiorPlacement','ValueChangedFcn',@invalidate);
-for k=1:2,uilabel(settings,'Text','');end
+pc=uigridlayout(settings,[1 3]);pc.ColumnWidth={'1x',30,30};pc.Padding=[0 0 0 0];pc.ColumnSpacing=4;
+precondition=uieditfield(pc,'text','Value','','Editable','off','Tag','preconditionProfile','Placeholder','None', ...
+    'Tooltip','Existing ICC for this or a similar printer/paper (e.g. the paper maker''s). targen -c uses it only to estimate perceptual distances.');
+browse=uibutton(pc,'Text','…','Tag','browsePrecondition','Tooltip','Choose ICC profile','ButtonPushedFcn',@choosePrecondition);
+clearPrecondition=uibutton(pc,'Text','×','Tag','clearPrecondition','Tooltip','No pre-conditioning','ButtonPushedFcn',@(~,~)setPrecondition(""));
+optimized=uicheckbox(settings,'Text','Optimized points (-G)','Value',true,'Tag','argyllOptimized','ValueChangedFcn',@invalidate, ...
+    'Tooltip','targen -G: generate good optimized points rather than fast (slower).');
 actions=uigridlayout(root,[1 3]);actions.ColumnWidth={'1x','1x','1x'};actions.Padding=[0 0 0 0];
 base=uibutton(actions,'Text','Preview initial grid','Tag','previewBase','ButtonPushedFcn',@(~,~)generate(false));
 refine=uibutton(actions,'Text','Refine / generate','Tag','generate','ButtonPushedFcn',@(~,~)generate(true));
@@ -48,6 +56,7 @@ saveHint=uilabel(saving,'Text','Not saved. Enter Target name / file name above, 
 save=uibutton(saving,'Text','Save definition: TI1 + JSON…','Tag','saveDesign','Enable','off','ButtonPushedFcn',@saveDesign);
 uibutton(saving,'Text','Cancel','Tag','designCancel','ButtonPushedFcn',@closeWindow);
 uilabel(root,'Text','Distances describe device RGB geometry, not measured colour error. Save the RGB definition here; use the TIFF16 window for page layout and printing.','WordWrap','on');
+updateEnabled();
     function h=number(tag,value,minimum)
         h=uieditfield(settings,'numeric','Value',value,'Limits',[minimum Inf],'RoundFractionalValues','on','Tag',tag,'ValueChangedFcn',@invalidate);
     end
@@ -56,22 +65,41 @@ uilabel(root,'Text','Distances describe device RGB geometry, not measured colour
         save.Enable='off';
         saveHint.Text='Settings changed. Generate again, then save the new target.';
         if ~fig.UserData.busy,status.Text='Settings changed. Generate again before saving.';end
-        enabled='on';if string(method.Value)=="argyll",enabled='off';end
+        updateEnabled();
+    end
+    function updateEnabled()
+        isMesh=string(method.Value)=="mesh";enabled='on';argyll='off';if ~isMesh,enabled='off';argyll='on';end
         if shadow.enabled,method.Enable='off';end
         placement.Enable=enabled;levels.Enable=enabled;edgeLimit.Enable=enabled;gapRatio.Enable=enabled;base.Enable=enabled;
+        browse.Enable=argyll;clearPrecondition.Enable=argyll;optimized.Enable=argyll;precondition.Enable=argyll;
+    end
+    function choosePrecondition(~,~)
+        [file,folder]=inkprof.internal.withFocus(fig,@uigetfile,{'*.icc;*.icm','ICC profiles (*.icc, *.icm)'},'Choose pre-conditioning ICC (printer RGB profile)');
+        if isequal(file,0),return;end
+        setPrecondition(string(fullfile(folder,file)));
+    end
+    function setPrecondition(file)
+        if fig.UserData.busy,return;end
+        precondition.Value=char(file);precondition.Tooltip=char(file);invalidate();
     end
     function generate(doRefine)
         if fig.UserData.busy,return;end
         fig.UserData.busy=true;fig.UserData.cancelled=false;save.Enable='off';base.Enable='off';refine.Enable='off';cancel.Enable='on';
         % Freeze generation parameters while callbacks pump the UI.
-        inputs={name,method,levels,limit,gray,controls,repeats,edgeLimit,gapRatio,placement};
+        inputs={name,method,levels,limit,gray,controls,repeats,edgeLimit,gapRatio,placement,browse,clearPrecondition,optimized};
         for k=1:numel(inputs),set(inputs{k},'Enable','off');end
         try
-            d=inkprof.designRGBTarget(Name=string(name.Value),Method=string(method.Value),Levels=levels.Value, ...
+            argyllOptions={};
+            if string(method.Value)~="mesh"
+                argyllOptions={'PreconditionProfile',string(precondition.Value),'Optimized',optimized.Value};
+            end
+            d=inkprof.designRGBTarget(argyllOptions{:},Name=string(name.Value),Method=string(method.Value),Levels=levels.Value, ...
                 MaxPoints=limit.Value,GraySteps=gray.Value,ControlCount=controls.Value,RepeatCount=repeats.Value, ...
-                MaxEdge=edgeLimit.Value,GapRatio=gapRatio.Value,InteriorPlacement=string(placement.Value),Refine=doRefine,ShadowEmphasis=1+double(shadow.enabled)*(shadow.patchEmphasis-1),Progress=@progress);
+                MaxEdge=edgeLimit.Value,GapRatio=gapRatio.Value,InteriorPlacement=string(placement.Value),Refine=doRefine, ...
+                ShadowEmphasis=1+double(shadow.enabled)*(shadow.patchEmphasis-1),Progress=@progress);
             fig.UserData.design=d;fig.UserData.saved=[];
             render(d);
+            if ~isempty(d.warnings),status.Text=string(status.Text)+newline+"Note: "+strjoin(d.warnings," ");end
             suggest=regexprep(char(d.name),'[^a-zA-Z0-9_-]','-');
             saveHint.Text=sprintf('Not saved. Suggested file: %s.ti1. Click Save definition to save TI1 and JSON. Open the TI1 separately in the TIFF16 window.',suggest);
             save.Enable='on';
@@ -81,9 +109,7 @@ uilabel(root,'Text','Distances describe device RGB geometry, not measured colour
         end
         if fig.UserData.closePending,delete(fig);return;end
         fig.UserData.busy=false;cancel.Enable='off';refine.Enable='on';for k=1:numel(inputs),set(inputs{k},'Enable','on');end
-        enabled='on';if string(method.Value)=="argyll",enabled='off';end
-        if shadow.enabled,method.Enable='off';end
-        placement.Enable=enabled;levels.Enable=enabled;edgeLimit.Enable=enabled;gapRatio.Enable=enabled;base.Enable=enabled;
+        updateEnabled();
     end
     function yes=progress(s)
         status.Text=sprintf('Generating: %d fitting points · refinement distance %.5f',s.count,s.maxEdge);
@@ -121,7 +147,7 @@ uilabel(root,'Text','Distances describe device RGB geometry, not measured colour
         if isempty(fig.UserData.design)||fig.UserData.busy,return;end
         p=inkprof.paths();suggest=regexprep(char(fig.UserData.design.name),'[^a-zA-Z0-9_-]','-');
         if options.OutputFile==""
-            [file,folder]=uiputfile({'*.ti1','RGB patch definition (*.ti1)'},'Save RGB definition and JSON',fullfile(p.Projects,[suggest '.ti1']));
+            [file,folder]=inkprof.internal.withFocus(fig,@uiputfile,{'*.ti1','RGB patch definition (*.ti1)'},'Save RGB definition and JSON',fullfile(p.Projects,[suggest '.ti1']));
         else
             [folder,stem,ext]=fileparts(options.OutputFile);file=stem+ext;
         end

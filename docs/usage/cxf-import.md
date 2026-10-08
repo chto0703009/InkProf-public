@@ -1,14 +1,10 @@
-# CxF3-inläsning
+# CxF3 import
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-För RGB-patchdefinitioner rekommenderas TI1/TI2 i första hand och generell CGATS från andra program. CxF är ett kompletterande alternativ, särskilt för strukturerad metadata; se [formatprioriteringen](cgats-import-export.md#rekommenderade-importformat-för-rgb-patchdefinitioner).
+For RGB patch definitions, TI1/TI2 are recommended first, and generic CGATS from other programs. CxF is a complementary option, especially for structured metadata; see the [format priorities](cgats-import-export.md#recommended-import-formats-for-rgb-patch-definitions).
 
-Implementerad 2026-09-28. Inläsaren utgår från **ISO 17972-1:2015 / CxF3**.
-Den validerar med det oförändrade CxF3 core-schemat 3.0.018 och kontrollerar
-värden/referenser. Det är inte certifiering av samtliga ytterligare CxF/X-krav
-eller workflow-delar i ISO 17972. CxF/X-4 för dekorfärger ska inte likställas
-med allmän RGB-targetimport.
+Implemented 2026-09-28. The reader is based on **ISO 17972-1:2015 / CxF3**. It validates with the unchanged CxF3 core schema 3.0.018 and checks values and references. This is not certification of all further CxF/X requirements or workflow parts in ISO 17972. CxF/X-4 for spot colours is not to be equated with general RGB target import.
 
 ```matlab
 setupInkProf();
@@ -17,91 +13,52 @@ setupInkProf();
     OutputFile='/Users/christer/Desktop/InkProf-575-cxf.json');
 ```
 
-OutputFile är valfri; utelämna den för enbart inläsning i minnet. Befintlig
-utdata skrivs inte över. `inkprof.readCxF()` öppnar filval.
-För patchdefinition till målrenderingen:
+OutputFile is optional; leave it out to read into memory only. Existing output is not overwritten. `inkprof.readCxF()` opens a file chooser. For a patch definition for target rendering:
 
 ```matlab
 target = inkprof.importTarget('/Users/christer/Desktop/InkProf-575-from-TI2-v2.cxf');
-inkprof.renderTarget(); % välj samma CxF som input
+inkprof.renderTarget(); % choose the same CxF as input
 ```
 
-Detta skapar vid rendering en **ny** layout och matchande mätunderlag.
-Använd inte den nya layoutens TI2 för ett äldre utskrivet ark.
+Rendering creates a **new** layout and matching measurement files. Do not use the new layout's TI2 for an older printed sheet.
 
-## Vad bevaras och tolkas?
+## What is preserved and interpreted?
 
-- RGB med CxF-fältet MaxRange; om det saknas används CxF3:s standard 255.
-  Ett motsägande RGBScale-argument avvisas. Blandade MaxRange-värden läses
-  generellt men kräver explicit normalisering före målimport.
-- Lab och XYZ bevaras som filens värden med länk till ColorSpecification.
-  Ingen D50, observatör, profil eller mätroll antas när den saknas.
-- Reflektansspektrum bevaras i CxF-skala: **1 = 100 %**. Värden över 1 kan
-  förekomma; ingen klippning görs. Schemat tillåter intervallet (-0,1; 3).
-  Våglängder kommer från specifikationens StartWL/Increment med eventuell
-  StartWL-override på spektrumet. Saknad våglängdsdefinition markeras;
-  ingen integration sker då.
-- Objekt-ID, namn, ObjectType, färgspecifikationer, profiler, metadata,
-  egna resurser och ursprunglig XML sparas i JSON. Källfilens SHA256 följer med.
-  Ej numeriskt tolkade färgtyper bevaras med varning.
-- CMYK avvisas enligt InkProfs RGB-avgränsning. DTD/externa entiteter avvisas.
-  CxF1/CxF2 stöds inte. UTF-8 krävs av den semantiska Python-inläsaren.
-- MATLAB Base validerar XSD med Java; Python-standardbiblioteket avkodar data.
-  Inget extra Python-paket eller X-Rite SDK behövs. Direkt Python-anrop markerar
-  uttryckligen `xsdValidated=false`; den publika MATLAB-rutinen validerar först.
+- **RGB** uses the CxF field MaxRange; if it is missing, CxF3's default of 255 is used. A contradicting RGBScale argument is rejected. Mixed MaxRange values are read in general, but require explicit normalization before target import.
+- **Lab and XYZ** are kept as the file's values, linked to their ColorSpecification. No D50, observer, profile or measurement role is assumed when it is missing.
+- **Reflectance spectra** are kept in the CxF scale: **1 = 100 %**. Values above 1 can occur, and no clipping is done; the schema allows the interval (-0.1; 3). Wavelengths come from the specification's StartWL/Increment, with any StartWL override on the spectrum. A missing wavelength definition is flagged, and no integration is done.
+- **Object ID, name, ObjectType, colour specifications, profiles, metadata, custom resources and the original XML** are saved in JSON, together with the source file's SHA256. Colour types that are not interpreted numerically are kept, with a warning.
+- **Rejected:** CMYK, per InkProf's RGB scope; DTDs and external entities; CxF1/CxF2. The semantic Python reader requires UTF-8.
+- **Validation:** MATLAB Base validates the XSD with Java, and the Python standard library decodes the data. No extra Python package or X-Rite SDK is needed. A direct Python call explicitly marks `xsdValidated=false`; the public MATLAB routine validates first.
 
-Generell CxF läses till ett bevarande JSON-dokument, inte automatiskt till en
-färdig ICC-mätning. Mätvillkor, RGB-koppling och eventuell fysisk layout måste
-vara tillräckliga före senare export/profilering. Befintlig positioned MXF-import
-har fortsatt sitt särskilda kontrollerade flöde.
+Generic CxF is read into a preserving JSON document, not automatically into a finished ICC measurement. Measurement conditions, RGB link and any physical layout must be sufficient before later export or profiling. The existing positioned MXF import keeps its own controlled workflow.
 
-## Patch-ID kontra fysisk placering
+## Patch ID versus physical placement
 
-CxF-objektets ID är färgens identitet. Koordinaten på arket är en separat
-koppling. Pappersstorlek, patchstorlek, marginaler, antal rader/kolumner,
-placeringsordning, eventuell randomisering och tomma positioner behövs för
-att entydigt återskapa ett utskrivet mål. Mått räcker inte ensamma.
+The CxF object's ID is the colour's identity. The coordinate on the sheet is a separate link. To recreate a printed target unambiguously, you need the paper size, patch size, margins, number of rows and columns, placement order, any randomization, and empty positions. Dimensions alone are not enough.
 
-Den tillförda `InkProf-575-from-TI2-v2.cxf` innehåller 575 RGB-objekt, inga
-mätningar och inga individuella patchkoordinater. RGB-värden och ordning
-matchar tidigare PXF exakt. Prism-fälten anger bland annat 0 rader/kolumner,
-2 sidor och i1Pro 3; de bevaras som **källdata, inte verifierade uppgifter om
-utskriften eller instrumentet**. Den faktiskt kända ensidiga layouten kommer
-från tidigare MXF. Dess explicita positioner får länkas till CxF endast efter
-kontroll av samma färgsekvens. Gamla spektra ska inte kopieras till en ny mätning.
+The supplied `InkProf-575-from-TI2-v2.cxf` contains 575 RGB objects, no measurements and no individual patch coordinates. Its RGB values and order match the earlier PXF exactly. The Prism fields state, among other things, 0 rows/columns, 2 pages and i1Pro 3; they are kept as **source data, not verified information about the print or the instrument**. The actually known single-page layout comes from an earlier MXF. Its explicit positions may be linked to the CxF only after checking that the colour sequence is the same. Old spectra must not be copied into a new measurement.
 
-En korrekt filadapter kan inte förbättra kontrasten på det tryckta arket eller
-garantera att chartread särskiljer snarlika grannpatchar.
+A correct file adapter cannot improve the contrast of the printed sheet, or guarantee that chartread distinguishes similar neighbouring patches.
 
-## PXF och standardkällor
+## PXF and standard sources
 
-De PXF-exempel som hittills provats i InkProf är läsbar CxF3-baserad XML,
-inte krypterade. Filändelsen avgör inte innehållet; andra varianter kan finnas.
-Ingen dekryptering ingår i InkProf.
+The PXF examples tested in InkProf so far are readable CxF3-based XML, not encrypted. The file extension does not determine the content, and other variants may exist. No decryption is included in InkProf.
 
 - [ISO 17972-1:2015](https://www.iso.org/standard/61500.html)
-- [X-Rites CxF-resurser](https://www.xrite.com/page/cxf-color-exchange-format)
-- [CxF3 schema och licens, Colour Developers spegling](https://github.com/colour-science/colour-cxf)
-- Oförändrat schema och exakt ursprung: `schemas/cxf3/provenance.json`.
-- Separat schemalicens och attribution: `THIRD_PARTY_NOTICES.md`.
+- [X-Rite's CxF resources](https://www.xrite.com/page/cxf-color-exchange-format)
+- [CxF3 schema and licence, Colour Developers mirror](https://github.com/colour-science/colour-cxf)
+- Unchanged schema and exact origin: `schemas/cxf3/provenance.json`.
+- Separate schema licence and attribution: `THIRD_PARTY_NOTICES.md`.
 
-### Koppla en befintlig utskriftslayout
+### Linking an existing print layout
 
-`readCxF(..., LayoutFile=matchingMXF)` kan koppla en CxF-definition till explicita
-Target-positioner i en separat CxF3/MXF. Antal, RGB-värden och hela ordningen
-måste matcha. Inga färgnärmaste gissningar, omordningar eller gamla mätvärden
-används. Sidnummer och koordinater sparas under `layout.mapping` tillsammans
-med källhash. Det är användarens val av matchande utskrift, inte ett bevis från
-RGB-likhet ensamt. Inga tomma fält blir patchar. Detta skapar inte automatiskt
-en chartread-kompatibel TI2 för oregelbundna rader.
+`readCxF(..., LayoutFile=matchingMXF)` can link a CxF definition to explicit Target positions in a separate CxF3/MXF. The count, the RGB values and the whole order must match. No nearest-colour guesses, reorderings or old measurement values are used. Page numbers and coordinates are saved under `layout.mapping`, together with the source hash.
 
-## Verifierat 2026-09-28
+This is the user's choice of a matching print, not proof from RGB similarity alone. No empty fields become patches. This does not automatically create a chartread-compatible TI2 for irregular rows.
 
-Sex Python-tester och fyra MATLAB-tester passerade. Användarens 575-CxF
-passerade XSD-validering; RGB-värden och ordning matchar PXF exakt. Explicit
-MXF-layout ger 29 patchar på rad 1–15 och 28 på rad 16–20. Hela flödet
-CxF → målimport → ny TIFF/TI2 testades i arbetsmapp vid 100 ppi. Detta är
-ett programtest, inte en ny utskrift eller fysisk mätverifiering.
+## Verified 2026-09-28
 
-Källfil och JSON med layoutkoppling är sparade lokalt i
-`projects/Canon-575-20260927/sources/cxf-20260928/`.
+Six Python tests and four MATLAB tests passed. The user's 575 CxF passed XSD validation, and its RGB values and order match the PXF exactly. The explicit MXF layout gives 29 patches in rows 1–15 and 28 in rows 16–20. The whole flow CxF → target import → new TIFF/TI2 was tested in a working folder at 100 ppi. This is a software test, not a new print or physical measurement verification.
+
+The source file and the JSON with the layout link are saved locally in `projects/Canon-575-20260927/sources/cxf-20260928/`.

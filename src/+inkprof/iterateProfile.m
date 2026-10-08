@@ -15,6 +15,8 @@ arguments
  options.RoleFile (1,1) string = ""
  options.ContinuationFile (1,1) string = ""
  options.VerificationReport (1,1) string = ""
+ options.PaperWhiteReference (1,1) struct = struct
+ options.RefinementMode (1,1) string {mustBeMember(options.RefinementMode,["inkprof","argyll"])} = "argyll"
  options.Name (1,1) string = "Profile iteration"
  options.MaxNewPatches (1,1) double {mustBePositive,mustBeInteger} = 100
  options.NormTarget (1,1) double {mustBeFinite,mustBeNonnegative} = 1
@@ -22,6 +24,10 @@ arguments
  options.MaxPatchRegression (1,1) double {mustBeFinite,mustBeNonnegative} = 0.5
  options.MaxGrayRegression (1,1) double {mustBeFinite,mustBeNonnegative} = 0.25
  options.MinImprovement (1,1) double {mustBeFinite,mustBeNonnegative} = 0.01
+ options.PerceptualCompression (1,1) double {mustBePositive,mustBeFinite} = 20
+ options.SmoothingCandidates (1,:) double {mustBePositive,mustBeFinite} = [0.5 1 1.5]
+ options.GradientTolerance (1,1) double {mustBeFinite,mustBeNonnegative} = 0.25
+ options.MaxAccuracyTradeoff (1,1) double {mustBeFinite,mustBeNonnegative} = 0.05
  options.RepeatLimit (1,1) double {mustBeFinite,mustBePositive} = 1
  options.DPI (1,1) double {mustBePositive,mustBeInteger} = 300
  options.Paper (1,1) string = "A4-landscape"
@@ -106,23 +112,33 @@ try
  trainingRecord=jsondecode(fileread(fullfile(inputFolder,'profile-input.json')));
  assert(trainingRecord.patchCount>=8,'inkprof:IterationInput','At least eight total fitting patches required; supply prior training for a small supplementary batch.');
  event("input","completed",sprintf('Frozen %d fitting patches; %d development IDs. Source mappings and excluded controls preserved.',trainingRecord.patchCount,numel(devIds)));
- % Quality trial followed by smoothing trial: one factor changes per step.
- qualities=["medium","high","high"];smooth=[NaN NaN 0.1];
+ % Hold quality constant while comparing final colprof smoothing.
+ smooth=unique(options.SmoothingCandidates,'stable');qualities=repmat("high",1,numel(smooth));
  if isempty(devIds),qualities="high";smooth=NaN;end
+ if options.RefinementMode=="argyll",qualities="high";smooth=1;end
  proposals=cell(numel(qualities),1);jobs=strings(numel(qualities),1);proposalFolders=jobs;
  for k=1:numel(qualities)
   checkCancel();event("candidate-"+k,"started","Build A2B "+qualities(k)+"; B2A high. Profile fit is training error only.");
   [recipeFile,~]=inkprof.createProfileRecipe(inputFolder,Name=options.Name+" candidate "+k, ...
-   A2BQuality=qualities(k),Smoothing=smooth(k),B2AQuality="high",ShowDialog=false);
+   PaperWhiteReference=options.PaperWhiteReference,PreRegularization="off",A2BQuality=qualities(k),PerceptualCompression=options.PerceptualCompression,Smoothing=smooth(k),B2AQuality="high",ShowDialog=false);
   [job,status]=inkprof.runProfileJob(recipeFile,ShowDialog=options.ShowJobDialog);jobs(k)=job;
   assert(string(status.status)=="succeeded",'inkprof:IterationBuild','ICC build %s; inspect %s.',string(status.status),job);
   [fit,fitFile]=inkprof.checkProfileFit(job,ShowDialog=false);
   c=struct('job',relative(job),'profile',relative(fullfile(job,'result','profile.icc')),'sha256',status.profileSHA256, ...
    'quality',qualities(k),'smoothing',smooth(k),'fitReport',relative(fitFile),'trainingFit',fit.summary);
+  c.gradientEvidence=[];
+  try
+   [photo,photoFile]=inkprof.checkPhotoGradients(job,ShowDialog=false);
+   c.photoGradientReport=relative(photoFile);c.gradientEvidence=photo.comparisonMetrics;
+   c.gradientProfileSHA256=photo.profileSHA256;
+  catch gradientError
+   c.gradientWarning=string(gradientError.message);
+   event("gradient-"+k,"review-required",c.gradientWarning);
+  end
   if ~isempty(devIds)
    [proposal,pfolder]=inkprof.proposeRefinement(job,measurementFile,DevelopmentSampleIds=devIds, ...
-    UseJacobian=true,MaxNewPatches=options.MaxNewPatches,NormTarget=options.NormTarget,GrayWeight=options.GrayWeight,RepeatLimit=options.RepeatLimit,ShowDialog=false);
-   proposals{k}=proposal;proposalFolders(k)=pfolder;c.developmentReport=relative(fullfile(pfolder,'proposal.json'));c.errorNorm=proposal.errorNorm;
+    UseJacobian=options.RefinementMode=="inkprof",MaxNewPatches=options.MaxNewPatches,NormTarget=options.NormTarget,GrayWeight=options.GrayWeight,RepeatLimit=options.RepeatLimit,ShowDialog=false);
+   proposal.gradientEvidence=c.gradientEvidence;proposals{k}=proposal;proposalFolders(k)=pfolder;c.developmentReport=relative(fullfile(pfolder,'proposal.json'));c.errorNorm=proposal.errorNorm;
   end
   result.candidates{end+1}=c;
   message=sprintf('Training mean dE00 %.4f, max %.4f. Physical accuracy awaits a new print.',fit.summary.mean,fit.summary.max);
@@ -132,7 +148,7 @@ try
  if isempty(devIds)
   selected=1;result.selection=struct('selected',1,'basis',"High-quality candidate only; no independent development observations supplied. No evidence of superiority.");
  else
-  result.selection=inkprof.internal.selectIterationCandidate(proposals,options.MinImprovement,options.MaxPatchRegression,options.MaxGrayRegression);
+  result.selection=inkprof.internal.selectIterationCandidate(proposals,options.MinImprovement,options.MaxPatchRegression,options.MaxGrayRegression,options.GradientTolerance,options.MaxAccuracyTradeoff);
   selected=result.selection.selected;
  end
  result.selectedJob=relative(jobs(selected));result.profileFile=relative(fullfile(jobs(selected),'result','profile.icc'));
@@ -149,7 +165,9 @@ try
  assert(c1.allNegativeControlsDetected&&isempty(c1.grossFailureAlerts),'inkprof:IterationNumerical','Numerical checks require review; no print target produced.');
  event("numerical-checks","completed","Grid, inverse and CMM diagnostics saved. Success does not establish print quality or noise stability.");checkCancel();
  if ~isempty(devIds)
-  p=proposals{selected};result.refinement=struct('proposal',relative(fullfile(proposalFolders(selected),'proposal.json')), ...
+  p=proposals{selected};
+  if options.RefinementMode=="argyll",p.candidates=[];p.stopReason="Request a new Argyll target from the refinement dialog";end
+  result.refinement=struct('proposal',relative(fullfile(proposalFolders(selected),'proposal.json')), ...
    'newPatchCount',numel(p.candidates),'stopReason',p.stopReason,'errorNorm',p.errorNorm);
   if ~isempty(p.candidates)
    rawFolder=fullfile(iterationFolder,'refinement-print');

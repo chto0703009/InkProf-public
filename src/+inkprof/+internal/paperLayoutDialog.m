@@ -12,19 +12,19 @@ g=uigridlayout(f,[9 2]);g.ColumnWidth={'1x','1x'};g.RowHeight={55,30,32,'1x',32,
 t=uilabel(g,'Text',sprintf('%d source patches, including controls. Suggestions preserve patch size. Estimates use standard i1 geometry; preview confirms the actual pages.',count),'WordWrap','on');t.Layout.Column=[1 2];
 uilabel(g,'Text','Maximum sweep / target length (mm)');uilabel(g,'Text','Roll width (mm)');
 a=uigridlayout(g,[1 2]);a.Padding=[0 0 0 0];
-scan=uieditfield(a,'numeric','Value',prefs.MaxScanMm,'Limits',[65 Inf],'ValueChangedFcn',@refresh);
-len=uieditfield(a,'numeric','Value',prefs.MaxLengthMm,'Limits',[65 Inf],'ValueChangedFcn',@refresh);
-roll=uieditfield(g,'numeric','Value',prefs.RollWidthMm,'Limits',[65 Inf],'ValueChangedFcn',@refresh);
+scan=uieditfield(a,'numeric','ValueDisplayFormat','%.1f','Value',prefs.MaxScanMm,'Limits',[65 Inf],'ValueChangedFcn',@refresh);
+len=uieditfield(a,'numeric','ValueDisplayFormat','%.1f','Value',prefs.MaxLengthMm,'Limits',[65 Inf],'ValueChangedFcn',@refresh);
+roll=uieditfield(g,'numeric','ValueDisplayFormat','%.1f','Value',prefs.RollWidthMm,'Limits',[65 Inf],'ValueChangedFcn',@refresh);
 tab=uitable(g,'ColumnName',{'Source / cut','Sweep mm','Length mm','Est. pages','Stock sheets / strips','Used area cm2','Stock area cm2','Roll total mm'},'ColumnWidth',{330,75,75,80,115,100,100,100},'CellSelectionCallback',@select);tab.Layout.Column=[1 2];
 a=uigridlayout(g,[1 2]);a.Padding=[0 0 0 0];
-w=uieditfield(a,'numeric','Limits',[65 Inf],'Value',297);h=uieditfield(a,'numeric','Limits',[65 Inf],'Value',210);
+w=uieditfield(a,'numeric','ValueDisplayFormat','%.1f','Limits',[65 Inf],'Value',297);h=uieditfield(a,'numeric','ValueDisplayFormat','%.1f','Limits',[65 Inf],'Value',210);
 uilabel(g,'Text','Editable final target: sweep × length (mm)');
 note=uilabel(g,'Text','Choose a row, then edit the dimensions if needed. Print at 100%. Cut larger stock as described; the TIFF is one measurement piece.','WordWrap','on');note.Layout.Column=[1 2];
 status=uilabel(g,'Text','','WordWrap','on');status.Layout.Column=[1 2];
 previewButton=uibutton(g,'Text','Preview selected dimensions (actual pages)','ButtonPushedFcn',@preview);previewButton.Layout.Column=[1 2];
 if source=="",previewButton.Enable='off';end
 uibutton(g,'Text','Cancel','ButtonPushedFcn',@(~,~)delete(f));useButton=uibutton(g,'Text','Use these dimensions','ButtonPushedFcn',@accept);
-selected=[];proposals=[];refresh([],[]);useButton.Tag='usePaperDimensions';f.Visible='on';uiwait(f);if isvalid(f),delete(f);end
+selected=[];proposals=[];refresh([],[]);useButton.Tag='usePaperDimensions';f.Visible='on';topGuard=inkprof.internal.lowerTopWindows(f);if isvalid(f)&&isempty(choice),uiwait(f);end;delete(topGuard);if isvalid(f),delete(f);end
  function refresh(~,~)
   try
    proposals=inkprof.planTargetPaper(count,MaxScanMm=scan.Value,MaxLengthMm=len.Value,RollWidthMm=roll.Value);
@@ -33,7 +33,7 @@ selected=[];proposals=[];refresh([],[]);useButton.Tag='usePaperDimensions';f.Vis
   end
   useButton.Enable='on';
   rows=cell(numel(proposals),8);
-  for k=1:numel(proposals),p=proposals(k);rows(k,:)={char(p.description),p.sizeMm(1),p.sizeMm(2),p.estimatedPages,p.stockSheets,p.usedAreaMm2/100,p.stockAreaMm2/100,p.rollFeedMm};end
+  for k=1:numel(proposals),p=proposals(k);rows(k,:)={char(p.description),sprintf('%.1f',p.sizeMm(1)),sprintf('%.1f',p.sizeMm(2)),p.estimatedPages,p.stockSheets,sprintf('%.1f',p.usedAreaMm2/100),sprintf('%.1f',p.stockAreaMm2/100),sprintf('%.1f',p.rollFeedMm)};end
   tab.Data=rows;selected=proposals(1);w.Value=selected.sizeMm(1);h.Value=selected.sizeMm(2);
   status.Text='Sorted by target-piece area, then stock area. Leftover cut pieces can be kept. Wide rolls can be cut into several measurement pieces.';
  end

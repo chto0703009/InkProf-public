@@ -163,9 +163,15 @@ def run(request_file, output):
         raise ValueError('Unknown or incompatible measurement condition.')
     if len(m['data'].get('wavelengthNm',[])) < 2:
         raise ValueError('Spectral measurements required.')
-    from fwa import arguments as fwa_arguments
-    args=[req['profcheck'],'-v2','-k','-I','a','-i','D50','-o','1931_2',*fwa_arguments(color,m.get('measurementCondition',{}),ti3),str(ti3),str(profile)]
+    raw_ti3=ti3;fwa_evidence=None
+    from fwa import arguments as fwa_arguments, prepare as fwa_prepare
+    if color.get('fwaPreparation')=='white-reference-spec2cie-v1' and color.get('fwaCompensation'):
+        ti3,fwa_evidence=fwa_prepare(color,m.get('measurementCondition',{}),ti3,Path(output).parent/'fwa',Path(req['profcheck']).with_name('spec2cie'+Path(req['profcheck']).suffix))
+        args=[req['profcheck'],'-v2','-k','-I','a',str(ti3),str(profile)]
+    else:
+        args=[req['profcheck'],'-v2','-k','-I','a','-i','D50','-o','1931_2',*fwa_arguments(color,m.get('measurementCondition',{}),ti3),str(ti3),str(profile)]
     result=subprocess.run(args,capture_output=True,text=True,timeout=120,check=True)
+    if fwa_evidence and sha(ti3)!=fwa_evidence['compensatedTI3SHA256']:raise ValueError('Compensated basis changed during refinement analysis.')
     patches=parse_log(result.stdout,m['data'])
     selected=req.get('developmentSampleIds', [])
     if selected:
@@ -186,7 +192,7 @@ def run(request_file, output):
         createdUTC=datetime.now(timezone.utc).isoformat(),status='proposal-not-profile-approved',
         iteration=req['iteration'], iterationId=str(uuid.uuid4()), parentIterationId=req.get('parentIterationId',''), measurementRole='adaptive_validation',measurementCondition=m['measurementCondition'],
         printComparability='User must review print recipe and drift before measuring or merging.',
-        provenance=[dict(file=p.name,sha256=sha(p)) for p in [profile,mf,ti3,job/'engine.ti3']],
+        fwaPreparation=fwa_evidence,provenance=[dict(file=p.name,sha256=sha(p)) for p in [profile,mf,raw_ti3,job/'engine.ti3']],
         colorimetry=dict(intent='absolute',illuminant='D50',observer='1931_2',fwa=color.get('fwaCompensation',False),fwaIlluminant=color.get('fwaIlluminant'),engine='Argyll profcheck'),
         arguments=args)
     output=Path(output);output.mkdir(exist_ok=False)
@@ -199,7 +205,7 @@ def run(request_file, output):
     # Full input snapshots make proposals reproducible after moves or later edits.
     import shutil
     sources=output/'sources';sources.mkdir()
-    for p,name in [(mf,'measurement.json'),(ti3,'measurement.ti3'),(profile,'profile.icc'),(job/'engine.ti3','training.ti3'),(job/'recipe.json','recipe.json')]:shutil.copy2(p,sources/name)
+    for p,name in [(mf,'measurement.json'),(raw_ti3,'measurement.ti3'),(profile,'profile.icc'),(job/'engine.ti3','training.ti3'),(job/'recipe.json','recipe.json')]:shutil.copy2(p,sources/name)
     (output/'request.json').write_text(json.dumps(req,indent=2)+'\n')
     return record
 

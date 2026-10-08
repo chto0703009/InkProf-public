@@ -17,6 +17,9 @@ if recipeFile==""
 end
 recipeFile=inkprof.internal.absolutePath(recipeFile);recipe=jsondecode(fileread(recipeFile));recipeHash=inkprof.internal.sha256(recipeFile);
 assert(recipe.schemaVersion==1&&string(recipe.documentType)=="inkprof.profile-recipe",'inkprof:Recipe','Select a B2 recipe.');
+if isfield(recipe.engine,'preRegularization')&&isfield(recipe.engine.preRegularization,'method')&&string(recipe.engine.preRegularization.method)=="inkprof-grid-regularization"
+ error('inkprof:GridRegularizationRemoved','InkProf grid regularization (axial/Hessian) has been removed. Save a new B2 recipe. Existing ICC files and measurements are unchanged.');
+end
 inputFile=inkprof.internal.absolutePath(fullfile(fileparts(recipeFile),recipe.inputFile));
 assert(inkprof.internal.sha256(inputFile)==string(recipe.inputSHA256),'inkprof:Integrity','B1 metadata changed.');
 input=jsondecode(fileread(inputFile));base=fileparts(inputFile);
@@ -74,11 +77,11 @@ project=inkprof.internal.findProject(recipeFile);assert(project~="",'inkprof:Pro
 parent=fullfile(project,'profiles','jobs');if ~isfolder(parent),mkdir(parent);end
 jobFolder=fullfile(parent,string(java.util.UUID.randomUUID()));[ok,msg]=movefile(work,jobFolder);assert(ok,'inkprof:IO','%s',msg);clear cleanup
 inkprof.internal.recordProjectStep(jobFolder,"Prepared isolated ICC job (B3)");
-runtime=inkprof.checkPython();argv=java.util.ArrayList();
+runtime=inkprof.checkPython(RequiredModules=strings(1,0));argv=java.util.ArrayList();
 for a=[string(runtime.executable),fullfile(paths.Root,'profiles','profile_job.py'),jobFolder],argv.add(java.lang.String(char(a)));end
 builder=java.lang.ProcessBuilder(argv);builder.directory(java.io.File(char(jobFolder)));builder.redirectErrorStream(true);
 builder.redirectOutput(java.io.File(char(fullfile(jobFolder,'worker.log'))));process=builder.start();
-fig=[];label=[];logBox=[];
+fig=[];label=[];logBox=[];wait=[];started=tic;
 stopCleanup=onCleanup(@()stopWorker(process,jobFolder));
 if options.ShowDialog
  fig=uifigure('Name','InkProf - Profile job','Tag','InkProfProfileJob','Position',[170 120 900 640],'WindowStyle','alwaysontop');
@@ -87,14 +90,26 @@ if options.ShowDialog
  logBox=uitextarea(g,'Editable','off');uibutton(g,'Text','Cancel job','Tag','CancelProfileJob','ButtonPushedFcn',@(~,~)cancelJob(jobFolder));
  fig.CloseRequestFcn=@(~,~)cancelJob(jobFolder);drawnow;focus(fig);
 end
+if ~isempty(fig)
+ wait=uiprogressdlg(fig,'Title','Building ICC profile','Message','Argyll is working. Please wait.', ...
+  'Indeterminate','on','Cancelable','on');
+end
 figCleanup=onCleanup(@()closeFig(fig));
 while process.isAlive()
  if isfile(fullfile(jobFolder,'status.json'))
   status=jsondecode(fileread(fullfile(jobFolder,'status.json')));
   if ~isempty(label)&&isvalid(label),label.Text="Status: "+string(status.status);end
  end
- if ~isempty(logBox)&&isvalid(logBox)&&isfile(fullfile(jobFolder,'colprof.log'))
-  log=string(fileread(fullfile(jobFolder,'colprof.log')));log=replace(log,char(13),newline);
+ logFile=fullfile(jobFolder,'colprof.log');
+ if ~isfile(logFile),logFile=fullfile(jobFolder,'colprof-pre.log');end
+ log="";
+ if isfile(logFile),log=string(fileread(logFile));end
+ if ~isempty(wait)&&isvalid(wait)
+  wait.Message=char(inkprof.internal.profileJobProgressMessage(log,toc(started)));
+  if wait.CancelRequested,cancelJob(jobFolder);end
+ end
+ if ~isempty(logBox)&&isvalid(logBox)&&isfile(logFile)
+  log=string(fileread(logFile));log=replace(log,char(13),newline);
   if strlength(log)>16000,log=extractAfter(log,strlength(log)-16000);end
   logBox.Value=splitlines(log);
  end
@@ -109,7 +124,16 @@ closeFig(fig);clear figCleanup stopCleanup
 inkprof.internal.recordProjectStep(jobFolder,"ICC job "+string(status.status));
 fprintf('InkProf B3: %s\nJob: %s\n',status.status,jobFolder);
 if isfield(status,'error'),fprintf('%s\n',status.error);end
-if string(status.status)=="succeeded",fprintf('ICC candidate created; print/colour quality is not yet validated.\n');end
+if string(status.status)=="succeeded"
+ fprintf('ICC candidate created; print/colour quality is not yet validated.\n');
+ if options.ShowDialog&&isfield(recipe,'gradientPreview')&&recipe.gradientPreview.enabled
+  try
+   inkprof.internal.rgbGradientDialog(jobFolder);
+  catch err
+   warning('inkprof:GradientPreview','Profile built; gradient window could not open: %s',err.message);
+  end
+ end
+end
 end
 function cancelJob(folder)
 f=fopen(fullfile(folder,'cancel.request'),'w');if f>=0,fclose(f);end

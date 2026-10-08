@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # InkProf is free software under GNU GPL version 3 or later.
 # Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
-import importlib.util,json,os,subprocess,sys,tempfile,time,unittest
+import importlib.util,json,subprocess,sys,tempfile,time,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"bridge"))
@@ -19,7 +19,6 @@ class SpotTest(unittest.TestCase):
    p=subprocess.Popen([sys.executable,'-u',str(ROOT/'bridge/spotread_bridge.py'),d,str(ROOT/'tests/fixtures/fake_spotread.py')],stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True)
    try:
     states=[];candidate=False
-    import selectors
     # reader thread avoids text buffering and enforces an overall deadline.
     import queue,threading
     q=queue.Queue()

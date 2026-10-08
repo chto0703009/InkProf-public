@@ -1,23 +1,23 @@
-# Spektral analys med Python
+# Spectral analysis with Python
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-Implementerad 2026-09-26. MATLAB Base anropar en separat Python-process. Instrumentet används inte vid analysen.
+Implemented 2026-09-26. MATLAB Base calls a separate Python process. The instrument is not used during the analysis.
 
-## Installation per dator
+## Installation per computer
 
-Använd InkProfs befintliga konfigurerade Python eller projektets `.venv`. Analysens låsta paketuppsättning är provad med Python 3.13.6 på macOS Apple Silicon. Välj Python 3.11–3.13 för denna uppsättning; övriga operativsystem/versioner är inte kvalificerade genom detta test.
+Use InkProf's existing configured Python or the project's `.venv`. The analysis's locked package set has been tested with Python 3.13.6 on macOS Apple Silicon. Choose Python 3.11–3.13 for this set; other operating systems/versions are not qualified by this test.
 
-Från projektmappen, för den lokala miljön på macOS/Linux:
+From the project folder, for the local environment on macOS/Linux:
 
 ```bash
 .venv/bin/python -m pip install -r requirements-analysis.txt
 .venv/bin/python -m pip check
 ```
 
-På Windows används `.venv\Scripts\python.exe`. Installation görs i den miljö som MATLAB faktiskt väljer. Vid behov anges `PythonExecutable` direkt till anropet. Se [Python per dator](python-runtime.md). Inga nya paket behövs för att enbart använda den befintliga chartread-bryggan.
+On Windows use `.venv\Scripts\python.exe`. Installation is done in the environment that MATLAB actually selects. If necessary, specify `PythonExecutable` directly in the call. See [Python per computer](python-runtime.md). No new packages are needed to use only the existing chartread bridge.
 
-## Kör från MATLAB
+## Run from MATLAB
 
 ```matlab
 paths=setupInkProf();
@@ -28,11 +28,11 @@ if ~isequal(file,0)
 end
 ```
 
-Välj en sparad `measurement-....json` av typen `inkprof.chart-measurement`, inte chart.json, target.json eller själva TI3-filen. TI3 importeras först med befintlig `inkprof.importChartMeasurement`. Direkt MXF-import är inte tillagd av denna funktion; formatadaptern måste först leverera den kanoniska mätstrukturen.
+Select a saved `measurement-....json` of type `inkprof.chart-measurement`, not chart.json, target.json or the TI3 file itself. TI3 is imported first with the existing `inkprof.importChartMeasurement`. Direct MXF import is not added by this function; the format adapter must first deliver the canonical measurement structure.
 
-`SpectralScale` krävs uttryckligen. Värdet 100 betyder reflektans i procent; 1 betyder reflektans som bråktal. Skalan gissas inte från datans maximum. Välj den efter källformatets dokumentation och mätningens metadata. Funktionen är för reflektans, inte emissionsspektra.
+`SpectralScale` is explicitly required. The value 100 means reflectance in percent; 1 means reflectance as a fraction. The scale is not guessed from the data's maximum. Choose it according to the source format's documentation and the measurement's metadata. The function is for reflectance, not emission spectra.
 
-Resultatet skrivs till en ny tidsmärkt JSON bredvid originalet. `OutputPath` kan ange annat namn i en befintlig mapp. Befintliga filer skrivs aldrig över. Originalets spektra, XYZ och Lab ändras inte.
+The result is written to a new time-stamped JSON next to the original. `OutputPath` can specify another name in an existing folder. Existing files are never overwritten. The original's spectra, XYZ and Lab are not changed.
 
 ```matlab
 result=inkprof.analyzeMeasurement(measurementFile, ...
@@ -41,9 +41,9 @@ xyz=result.data.xyz100;
 lab=result.data.lab;
 ```
 
-De härledda koordinaterna är inte en ICC-profil eller en konvertering till skrivarens RGB. Enhets-RGB behålls som styrvärden och tolkas inte som sRGB.
+The derived coordinates are not an ICC profile or a conversion to the printer's RGB. Device RGB is retained as control values and is not interpreted as sRGB.
 
-## Jämföra två analyser
+## Comparing two analyses
 
 ```matlab
 result=inkprof.analyzeMeasurement(secondMeasurementFile, ...
@@ -52,61 +52,67 @@ disp(result.comparison.mean);
 disp(result.comparison.max);
 ```
 
-Referensen är en tidigare analys-JSON. Matchningen använder patch-ID och fysisk plats, inte radordning. Samma patchuppsättning och RGB-värden krävs. Illuminant, observatör, våglängdsunderlag, vitpunkt och beräkningsmetod ska vara identiska. Mätvillkoret måste vara känt och överensstämma: M0, M1 eller M2. Okänt villkor hindrar jämförelsen men inte själva spektrumberäkningen. Rapporten bevarar om villkoret ursprungligen rapporterades eller tolkades.
+The reference is an earlier analysis JSON. Matching uses patch ID and physical location, not row order. The same patch set and RGB values are required. Illuminant, observer, wavelength basis, white point and calculation method must be identical. The measurement condition must be known and agree: M0, M1 or M2. An unknown condition prevents the comparison but not the spectral calculation itself. The report preserves whether the condition was originally reported or interpreted.
 
-Resultatet innehåller ΔE00 per patch samt medel, median, 95-percentil och maximum. Statistiken omfattar samtliga tillförda uppmätta rader, även eventuella kontroll- eller layoutfält. Detta är en jämförelse mellan mätningar, inte automatiskt ett prov på profilnoggrannhet. Anpassning av profiler och separat kontrollutskrift återstår.
+The result contains ΔE00 per patch as well as mean, median, 95th percentile and maximum. The statistics cover all supplied measured rows, including any check or layout fields. This is a comparison between measurements, not automatically a test of profile accuracy. Profile fitting and a separate verification print remain.
 
-## Beräkningskonvention
+## Calculation convention
 
-- Illuminanter: D50 (förval), D65 och A. Observatörer: CIE 1931 2° och CIE 1964 10°.
-- Linjär interpolation till ett integrationsnät med högst 1 nm mellan punkter; ursprungliga mätvåglängder ingår. Trapezoidintegration på enbart uppmätt intervall.
-- Ingen extrapolation av reflektans. Avkortat intervall varnas för och dokumenteras. Detta är inte ASTM E308 eller ett löfte om exakt samma siffror som Argylls metod.
-- Gemensam normalisering så att perfekt diffus reflektor får Y=100. Ingen normalisering av enskilda patchars ljushet.
-- Lab beräknas med den valda belysningens vitpunkt på samma intervall. Ingen kromatisk adaptation.
-- Negativa eller icke-ändliga reflektansvärden avvisas. Reflektans över 1 bevaras med varning, eftersom bland annat fluorescens kan ge sådana värden. Inga värden klipps.
-- Ingen kompensation för optiska vitmedel. Mätvillkor och beräkningsbelysning är olika saker; D50 betyder inte att mätningen gjordes i M1.
+- Illuminants: D50 (default), D65 and A. Observers: CIE 1931 2° and CIE 1964 10°.
+- Linear interpolation to an integration grid with at most 1 nm between points; the original measurement wavelengths are included. Trapezoidal integration over the measured range only.
+- No extrapolation of reflectance. A truncated range is warned about and documented. This is not ASTM E308 or a promise of exactly the same numbers as Argyll's method.
+- Common normalisation so that a perfect diffuse reflector gets Y=100. No normalisation of individual patches' lightness.
+- Lab is calculated with the chosen illumination's white point over the same range. No chromatic adaptation.
+- Negative or non-finite reflectance values are rejected. Reflectance above 1 is preserved with a warning, since fluorescence, among other things, can give such values. No values are clipped.
+- No compensation for optical brighteners. Measurement condition and calculation illumination are different things; D50 does not mean that the measurement was made in M1.
 
-## JSON och spårbarhet
+## JSON and traceability
 
-Jobbet har `schemaVersion=1`, `measurementPath`, `outputPath`, `spectralScale`, `illuminant`, `observer` och valfri `referenceAnalysisPath`. Python-CLI:
+The job has `schemaVersion=1`, `measurementPath`, `outputPath`, `spectralScale`, `illuminant`, `observer` and optional `referenceAnalysisPath`. Python CLI:
 
 ```bash
 .venv/bin/python analysis/spectral_analysis.py analysis-job.json
 ```
 
-Resultatets `documentType` är `inkprof.spectral-analysis` och `schemaVersion=1`. Det innehåller källsökväg och SHA256, ursprunglig chart-/TI3-hash när de finns, mätvillkor, targetInfo när den finns, programversioner, beräkningskonvention, vitpunkt och härledda data. Råspektrum ligger kvar i den oförändrade mätfilen som refereras med hash; analysfilen ersätter inte råmätfilen. För transport eller arkivering ska båda behållas.
+The result's `documentType` is `inkprof.spectral-analysis` and `schemaVersion=1`. It contains source path and SHA256, original chart/TI3 hash when present, measurement condition, targetInfo when present, program versions, calculation convention, white point and derived data. The raw spectrum remains in the unchanged measurement file, which is referenced by hash; the analysis file does not replace the raw measurement file. For transport or archiving both should be kept.
 
-Analysen publiceras som en fullständigt skriven ny fil. Fel ger processkod 2 och ett felmeddelande, som MATLAB visar via sin befintliga processhantering. Körningen väljer inte automatiskt en annan Pythoninstallation.
+The analysis is published as a completely written new file. Errors give process code 2 and an error message, which MATLAB displays through its existing process handling. The run does not automatically choose another Python installation.
 
-## Verifiering
+## Verification
 
-Pythonproven omfattar fysisk vit/grå/svart, D50-vitpunkt, skalekvivalens, sex publicerade CIEDE2000-referenspar från Sharma/Wu/Dalal (2005), identitetsmatchning, oförenliga jämförelser, felaktiga spektra, enstaka patch, alternativa illuminanter/observatörer och skydd mot överskrivning. MATLAB-proven verifierar hela processanropet, sparning, referensjämförelse och oförändrad källfil.
+The Python tests cover physical white/grey/black, D50 white point, scale equivalence, six published CIEDE2000 reference pairs from Sharma/Wu/Dalal (2005), identity matching, incompatible comparisons, incorrect spectra, a single patch, alternative illuminants/observers and overwrite protection. The MATLAB tests verify the whole process call, saving, reference comparison and unchanged source file.
 
 ```bash
 .venv/bin/python -m unittest discover -s tests -p test_spectral_analysis.py -v
 ```
 
-För MATLAB-processproven sätts `INKPROF_TEST_PYTHON` till den aktuella miljön och `tests/testSpectralAnalysis.m` körs. Ett separat prov på en historisk 143-patchmätning lyckades; resultatet ligger i lokalt `work/spectral-analysis-acceptance/`. Dess mätvillkor saknas i ursprunglig JSON och har därför lämnats okänt. Ingen fysisk mätning har gjorts i denna implementation.
+For the MATLAB process tests `INKPROF_TEST_PYTHON` is set to the current environment and `tests/testSpectralAnalysis.m` is run. A separate test on a historical 143-patch measurement succeeded; the result is in the local `work/spectral-analysis-acceptance/`. Its measurement condition is missing from the original JSON and has therefore been left unknown. No physical measurement has been made in this implementation.
 
-Verifierad körning: 10 Python-analystester, 5 MATLAB-tester (analys och Python-anrop), 3 terminalmätningstester och 3 chartread-bryggtester passerade. Paketkontrollen `pip check` passerade. Dessa är utvalda tester, inte en körning av hela projektets testsamling.
+Verified run: 10 Python analysis tests, 5 MATLAB tests (analysis and Python calls), 3 terminal measurement tests and 3 chartread bridge tests passed. The package check `pip check` passed. These are selected tests, not a run of the whole project's test suite.
 
-## Återanvändbar PDF-rapport
+## Reusable PDF report
 
-Installera rapportberoenden i vald Pythonmiljö med `python -m pip install -r requirements-report.txt`.
+New measurement PDFs use English headings, explanations and table labels. Source filenames and recorded measurement conditions are preserved. Existing PDFs are not rewritten.
+
+Install the report dependencies in the chosen Python environment with `python -m pip install -r requirements-report.txt`.
 
 ```matlab
 pdfFile=inkprof.exportMeasurementReport(measurementFile,analysisFile, ...
     fullfile(outputFolder,'measurement-report.pdf'));
 ```
 
-Rapporten innehåller alla tillförda patchar med ID, koordinat (A4-format), utskriftssida, beräknade XYZ/Lab, ursprungliga XYZ, beräkningsskillnad dE00 samt en färgruta per patch. Mätning och analys matchas med SHA256 och patchidentiteter. Befintlig PDF ersätts inte. Körningen kräver chart.json bredvid mätfilen och använder ursprunglig layout.json när den är tillgänglig, annars TI2-sessionens sid-/radindelning. Kontrollmål med omnumrerade rader behöver tolkas enligt sin separata kontrollmappning.
+The report contains all supplied patches with ID, coordinate (in the form A4), print page, calculated XYZ/Lab, original XYZ, calculation difference dE00 and a colour swatch per patch. Measurement and analysis are matched with SHA256 and patch identities. An existing PDF is not replaced. The run requires chart.json next to the measurement file and uses the original layout.json when available, otherwise the TI2 session's page/row division. Check targets with renumbered rows need to be interpreted according to their separate check mapping.
 
-Första versionen kräver sparade XYZ och analys D50/1931_2, numrerade rader och bokstavskolumner. Den är avsedd för InkProfs vanliga radlayouter. Beräkningsskillnaden är inte profilnoggrannhet. Spektraltabeller ingår inte i PDF:en; spektra bevaras i mätfilen. Färgrutorna beräknas från analysens XYZ och vitpunkt, adapteras med Bradford till sRGB/D65 och klipps till sRGB-intervallet. De är ungefärliga förhandsvisningar, inte skrivarens RGB-styrvärden eller färgreferenser. Rapporten skapas i Python med ReportLab och medföljande portabla Vera-teckensnitt; inga macOS-specifika typsnitt krävs.
+The first version requires saved XYZ and analysis D50/1931_2, numbered rows and lettered columns. It is intended for InkProf's usual row layouts. The calculation difference is not profile accuracy. Spectral tables are not included in the PDF; spectra are preserved in the measurement file. The colour swatches are calculated from the analysis's XYZ and white point, adapted with Bradford to sRGB/D65 and clipped to the sRGB range. They are approximate previews, not the printer's RGB control values or colour references. The report is created in Python with ReportLab and bundled portable Vera fonts; no macOS-specific typefaces are required.
 
-### Grovkontroll mot TI2
+### Rough check against TI2
 
-`exportMeasurementReport(..., TargetWarningDeltaE=20)` lägger till kolumnen **dE TI2**. Värden över gränsen får `!` och röd understrykning. Förvalet 20 är en ändringsbar praktisk uppmärksamhetsgräns, inte en standard eller tolerans för profilnoggrannhet. Antal varningar visas på rapportsidan. Kolumnen **dE ber.** behåller den separata jämförelsen mellan Python- och Argyll-beräkning.
+`exportMeasurementReport(..., TargetWarningDeltaE=20)` adds the column **dE TI2**. Values above the limit get `!` and a red underline. The default of 20 is a changeable practical attention limit, not a standard or tolerance for profile accuracy. The number of warnings is shown on the report page. The column **dE calc.** retains the separate comparison between Python and Argyll calculation.
 
-TI2-estimaten hämtas ur chart.json och matchas med ID, position och RGB. XYZ antas följa TI2-skalan 100. `APPROX_WHITE_POINT` behandlas uttryckligen som uppskattningarnas referensvit och adapteras med Bradford till D50 före ΔE00. Detta är ett diagnostiskt antagande, inte en certifierad referens. Saknas XYZ eller entydig referensvit visas kontrollen som otillgänglig; RGB konverteras inte godtyckligt till Lab.
+The TI2 estimates are taken from chart.json and matched with ID, position and RGB. XYZ is assumed to follow the TI2 scale of 100. `APPROX_WHITE_POINT` is explicitly treated as the estimates' reference white and adapted with Bradford to D50 before ΔE00. This is a diagnostic assumption, not a certified reference. If XYZ or an unambiguous reference white is missing, the check is shown as unavailable; RGB is not converted arbitrarily to Lab.
 
-En separat `.target-check.json` bredvid rapporten sparar gräns, antaganden, identiteter, ΔE00 och flaggor. Inga mätvärden raderas eller ersätts. Stora skillnader kan bero på fel rad, fel layout eller på att TI2:s uppskattningar inte beskriver skrivarens färgåtergivning.
+A separate `.target-check.json` next to the report saves the limit, assumptions, identities, ΔE00 and flags. No measurement values are deleted or replaced. Large differences may be due to a wrong row, wrong layout, or to the TI2's estimates not describing the printer's colour reproduction.
+
+## Measurement figures and HTML companion
+
+Measurement PDF export also saves a standalone HTML companion. Both display actual measured-spectrum Lab points; PDF uses L*=50 +/-5, while HTML offers 2D/3D. If the chart is linked to a checksum-verified C2 target and ICC, an ICC gamut is generated for that exact profile. PDF shows the exact L*=50 surface intersection; HTML offers 2D/3D. Raw targets without a linked ICC report the gamut as unavailable rather than inferring one from the points. All axes are named L*, a*, b*; 2D fixes L* and plots a* horizontally and b* vertically. Gamut assets are saved beside the report for traceability.

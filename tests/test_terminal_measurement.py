@@ -115,8 +115,9 @@ class TerminalTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             folder=Path(tmp);(folder/'chart.json').write_text(json.dumps(chart()))
             run=prepare(folder,sys.executable)
+            # stdin must not inherit an interactive terminal, or the bridge waits for one.
             p=subprocess.run([sys.executable,str(ROOT/'bridge/measure_chart.py'),'run',run['record']],
-                             capture_output=True,text=True,timeout=5)
+                             stdin=subprocess.DEVNULL,capture_output=True,text=True,timeout=5)
             self.assertNotEqual(p.returncode,0)
             result=json.loads(Path(run['record']).read_text())
             self.assertEqual(result['status'],'failed')

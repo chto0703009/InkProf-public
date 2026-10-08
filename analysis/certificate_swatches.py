@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 import numpy as np
 
-LABELS = [('desiredHex', 'Börvärde'), ('predictedHex', 'Uppskattat'), ('hex', 'Uppmätt')]
+LABELS = [('desiredHex', 'Desired'), ('predictedHex', 'Predicted'), ('hex', 'Measured')]
 
 def lab_hex(lab):
     lab=np.asarray(lab,dtype=float)
@@ -54,7 +54,7 @@ def html_chips(patch):
     for key,label in LABELS:
         color=patch.get(key)
         box=('background:'+color) if color else 'background:repeating-linear-gradient(45deg,#eee,#eee 4px,#fff 4px,#fff 8px)'
-        cells.append('<div style="flex:1"><div style="height:40px;border:1px solid #777;print-color-adjust:exact;-webkit-print-color-adjust:exact;'+html.escape(box,quote=True)+'"></div>'+label+('' if color else ' (saknas)')+'</div>')
+        cells.append('<div style="flex:1"><div style="height:40px;border:1px solid #777;print-color-adjust:exact;-webkit-print-color-adjust:exact;'+html.escape(box,quote=True)+'"></div>'+label+('' if color else ' (unavailable)')+'</div>')
     return '<div style="display:flex;gap:3px">'+''.join(cells)+'</div>'
 
 def pdf_chips(patch):

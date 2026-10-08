@@ -4,18 +4,18 @@
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function r=fwaReportSummary(fit,verification,printing,profileHash)
 % Report actual processing evidence, never infer application from a UI choice.
-r=struct('applied',[],'status',"Ej dokumenterat",'projectChoice',false, ...
- 'illuminant',"Ej dokumenterat",'profileSHA256',string(profileHash), ...
+r=struct('applied',[],'status',"Not documented",'projectChoice',false, ...
+ 'illuminant',"Not documented",'profileSHA256',string(profileHash), ...
  'trainingResult',struct,'verificationResult',struct, ...
- 'effectComparedWithUncompensated',"Ej utvärderad. Ingen kontrollerad jämförelse med en motsvarande profil utan FWA redovisas. Dessa resultat visar inte i sig om FWA förbättrade återgivningen.");
+ 'effectComparedWithUncompensated',"Not assessed. No controlled comparison with an equivalent uncompensated profile is reported. These results alone do not show whether FWA compensation improved reproduction.");
 r.projectChoice=isfield(printing,'fwaCompensation')&&isequal(printing.fwaCompensation,true);
 if isfield(fit,'colorimetry')&&isfield(fit.colorimetry,'fwaCompensation')
  r.applied=logical(fit.colorimetry.fwaCompensation);
  if r.applied
-  r.status="Ja - FWA/OBA-kompensation användes";
+  r.status="Yes - FWA/OBA compensation used";
   if isfield(fit.colorimetry,'fwaIlluminant'),r.illuminant=string(fit.colorimetry.fwaIlluminant);end
  else
-  r.status="Nej - ingen FWA/OBA-kompensation användes";r.illuminant="Ej tillämpligt";
+  r.status="No - FWA/OBA compensation not used";r.illuminant="Not applicable";
  end
 end
 if ~isempty(r.applied)&&isfield(verification,'colorimetry')&&isfield(verification.colorimetry,'fwaCompensation')
@@ -24,21 +24,29 @@ if ~isempty(r.applied)&&isfield(verification,'colorimetry')&&isfield(verificatio
 end
 if isfield(fit,'summary'),r.trainingResult=fit.summary;end
 if isfield(verification,'summary'),r.verificationResult=verification.summary;end
-choice="Nej";if r.projectChoice,choice="Ja";end
-r.summaryText="Använd i den levererade profilen: "+r.status+newline+ ...
- "Projektets sparade FWA-val: "+choice+newline+ ...
- "Simulerad belysning: "+r.illuminant+newline+ ...
- "Resultat för profilen med ovanstående inställning:"+newline+ ...
- describe("Träningsanpassning (inte oberoende verifiering)",r.trainingResult)+newline+ ...
- describe("Kontrollutskrift",r.verificationResult)+newline+ ...
- "FWA-effekt jämfört med utan kompensation: "+r.effectComparedWithUncompensated;
+choice="No";if r.projectChoice,choice="Yes";end
+r.summaryText="Applied in the delivered profile: "+r.status+newline+ ...
+ "Saved project FWA choice: "+choice+newline+ ...
+ "Simulated illuminant: "+r.illuminant+newline+ ...
+ "Profile results with the above setting:"+newline+ ...
+ describe("Training fit (not independent verification)",r.trainingResult)+newline+ ...
+ describe("Verification print",r.verificationResult)+newline+ ...
+ "FWA effect compared with no compensation: "+r.effectComparedWithUncompensated;
 if ~isempty(r.applied)&&r.applied
- r.summaryText=r.summaryText+newline+"Kompensationen är en beräkning av simulerad D50-respons; råmätningen ometiketteras inte till uppmätt M1.";
+ r.summaryText=r.summaryText+newline+"Compensation calculates a simulated D50 response from native M0 spectra; this is not a direct UV excitation measurement or measured M1. White-spectrum averaging reduces random variation but cannot recover missing UV excitation. A weak fluorescence signal may remain uncertain.";
+ if isfield(fit,'fwaPreparation')&&isstruct(fit.fwaPreparation)&&isfield(fit.fwaPreparation,'white')
+  r.preparation=fit.fwaPreparation;
+  r.summaryText=r.summaryText+newline+"Training white reference: "+string(fit.fwaPreparation.white.source)+"; readings: "+string(fit.fwaPreparation.white.count)+". Compensation applied once before fitting/smoothing.";
+ end
+ if isfield(verification,'fwaPreparation')&&isstruct(verification.fwaPreparation)&&isfield(verification.fwaPreparation,'white')
+  r.verificationPreparation=verification.fwaPreparation;
+  r.summaryText=r.summaryText+newline+"Verification white reference: "+string(verification.fwaPreparation.white.source)+"; readings: "+string(verification.fwaPreparation.white.count)+".";
+ end
 end
 end
 function text=describe(label,s)
-text=label+": Ej redovisat";
+text=label+": Not reported";
 if ~all(isfield(s,{'count','mean','p95','max'})),return;end
 v=[s.count,s.mean,s.p95,s.max];if numel(v)~=4||any(~isfinite(v)),return;end
-text=label+sprintf(': %d patchar; ΔE00 medel %.3f, P95 %.3f, maximum %.3f.',v);
+text=label+sprintf(': %d patches; ΔE00 mean %.3f, P95 %.3f, maximum %.3f.',v);
 end

@@ -1,42 +1,50 @@
-# C1 – kompletterande numerisk profilkontroll
+# C1 – supplementary numerical profile check
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-`inkprof.checkProfileC1` kompletterar `checkProfileFit` och `checkProfileGrid` med flyttalsjämförelse mot LittleCMS, lokala inversprov och avsiktligt skadade testkopior.
+`inkprof.checkProfileC1` supplements `checkProfileFit` and `checkProfileGrid` with three checks: a floating-point comparison against LittleCMS, local tests of the inverse, and deliberately damaged test copies.
 
 ```matlab
 [report, reportFile] = inkprof.checkProfileC1(jobFolder);
 ```
 
-Utan argument väljs jobbets mapp i en dialog. `ShowDialog=false` sparar rapporten utan resultatfönster. JSON och Markdown sparas i jobbets `checks` och projektmanifestet uppdateras. Den godkända profilfilen ändras aldrig. Resultat innebär inte automatiskt godkänd utskriftskvalitet.
+Without an argument, a dialog asks for the job folder. `ShowDialog=false` saves the report without a results window. JSON and Markdown are saved in the job's `checks` folder and the project manifest is updated. The approved profile file is never changed. A result does not automatically mean approved print quality.
 
-## Flyttalsjämförelse
+## Floating-point comparison
 
-729 RGB-punkter, relativ kolorimetri och ingen svartpunktskompensation. LittleCMS offentliga C-API anropas med dubbelprecisionsbuffertar (`TYPE_RGB_DBL`, `TYPE_Lab_DBL`), RGB 0–1 och vanlig Lab. Ingen 8-bitarsomvandling görs. Optimering och pixelcache stängs av för att jämföra tabellutvärderingen. Interna beräkningar och ICC-tabeller har fortfarande ändlig precision; xicclu skriver sex decimaler.
+The comparison uses 729 RGB points, relative colorimetric intent and no black point compensation. The public LittleCMS C API is called with double-precision buffers (`TYPE_RGB_DBL`, `TYPE_Lab_DBL`), RGB 0–1 and ordinary Lab. No 8-bit conversion is done. Optimization and the pixel cache are turned off, so that the table evaluation itself is compared. The internal computations and ICC tables still have finite precision, and xicclu prints six decimals.
 
-Samma RGB respektive Lab skickas till båda motorerna. Vi rapporterar framåt-ΔE00, inversens RGB-skillnad samt färgskillnaden mellan inverslösningarna via samma Argyll-A2B. Det sista är en modelljämförelse, inte en oberoende utskriftsmätning.
+The same RGB or Lab values are sent to both engines. The report gives:
 
-Biblioteket söks via Pillow och därefter systemets LittleCMS. `INKPROF_LCMS2_LIBRARY` kan ange en explicit bibliotekssökväg med samma arkitektur som Python. API och version kontrolleras; saknat bibliotek ger ett tydligt fel och kontrollen hoppas inte över. Bibliotekssökväg/version sparas. Inga nya binärer distribueras. Licenser finns i `THIRD_PARTY_NOTICES.md`.
+- the forward ΔE00,
+- the RGB difference of the inverse,
+- the colour difference between the two inverse solutions, evaluated through the same Argyll A2B.
 
-## Inversens lokala beteende
+The last of these is a model comparison, not an independent print measurement.
 
-Vid varje nätpunkt störs en Lab-koordinat i taget med ±0,1, ±0,01 och ±0,001. Skillnaden mellan inversens RGB-värden redovisas för varje skala. När steget minskar bör ett lokalt ändligt lutande förlopp ge mindre utdataförändring. Detta är diagnostik, ingen global kontinuitetsgaranti. Störda PCS-värden kan ligga utanför gamut och klippas.
+The library is looked up via Pillow and then the system's LittleCMS. `INKPROF_LCMS2_LIBRARY` can give an explicit library path, which must have the same architecture as Python. The API and version are checked. A missing library gives a clear error; the check is never skipped. The library path and version are saved. No new binaries are distributed. Licences are listed in `THIRD_PARTY_NOTICES.md`.
 
-Dessutom följs 27 RGB-ramper med 1 025 punkter genom A2B→B2A. Rapporten visar RGB-steg, andra differenser och färgsteget efter A2B. En stor gradient eller ett LUT-knä är inte i sig en diskontinuitet. Provningen visar inte hur mätbrus påverkar en nyanpassad profil; det hör till ISSUE-001.
+## Local behaviour of the inverse
 
-## Avsiktligt felaktiga profiler
+At each grid point, one Lab coordinate at a time is perturbed by ±0.1, ±0.01 and ±0.001. The difference between the inverse's RGB values is reported for each scale. As the step shrinks, a locally finite slope should give a smaller output change. This is a diagnostic, not a guarantee of global continuity. Perturbed PCS values can lie outside the gamut and be clipped.
 
-Tillfälliga testkopior får:
+In addition, 27 RGB ramps with 1,025 points each are followed through A2B→B2A. The report shows the RGB steps, the second differences and the colour step after A2B. A large gradient or a LUT knee is not in itself a discontinuity. The test does not show how measurement noise affects a refitted profile; that belongs to ISSUE-001.
 
-1. trunkerat innehåll,
-2. fel ICC-signatur,
-3. fel färgrymd,
-4. nollställd B2A1-CLUT men fortsatt giltig yttre struktur.
+## Deliberately faulty profiles
 
-De tre första ska stoppas före beräkning. Den fjärde ska ge numeriskt grovfel. Gränsen 10 ΔE00 används endast som grovfelindikator i detta test, aldrig som acceptansgräns för utskriftskvalitet. Den numeriska mutationen stöder för närvarande mft2; andra LUT-typer rapporteras som en ej genomförd negativ kontroll. Det ska inte tolkas som att en godtycklig ICC är felaktig.
+Temporary test copies get:
+
+1. truncated content,
+2. a wrong ICC signature,
+3. a wrong colour space,
+4. a zeroed B2A1 CLUT with a still valid outer structure.
+
+The first three must be stopped before any computation. The fourth must give a gross numerical error.
+
+The limit of 10 ΔE00 is used only as a gross-error indicator in this test, never as an acceptance limit for print quality. The numerical mutation currently supports mft2. For other LUT types, it is reported as a negative control that was not carried out. This must not be read as meaning that an arbitrary ICC is faulty.
 
 ## Status
 
-Implementerad och provad 2026-09-27 med den tätare B2A-kandidaten. Se [C1-resultatet](../research/c1-verification-20260927.md). C1:s definierade numeriska kontroller är genomförda för denna kandidat; andra profiler och renderingsavsikter behöver egna kontroller. Oberoende utskriftsvalidering hör till C2. ISSUE-001 hålls öppen enligt användarens beslut.
+Implemented and tested 2026-09-27 with the denser B2A candidate; see the [C1 result](../research/c1-verification-20260927.md). C1's defined numerical checks are complete for this candidate. Other profiles and rendering intents need their own checks. Independent print validation belongs to C2. ISSUE-001 is kept open per the user's decision.
 
-API-referens: [LittleCMS lcms2.h](https://github.com/mm2/Little-CMS/blob/master/include/lcms2.h).
+API reference: [LittleCMS lcms2.h](https://github.com/mm2/Little-CMS/blob/master/include/lcms2.h).

@@ -96,8 +96,8 @@ def analyse(reference, measurement, readings):
         q = measured[printed_id(p)]; lab = np.asarray(q['measuredLab'])
         desired = np.asarray(p['referenceLabD50Absolute'])
         predicted = np.asarray(p['predictedLabD50Absolute'])
-        patches.append(dict(sampleId=str(p['id']), measurementSampleId=printed_id(p), coordinate=p['placement']['coordinate'], page=p['placement']['page'],
-                            role=p['role'], gamutAssessment=p['gamutAssessment'], repeatOf=p['repeatOf'] or None,
+        patches.append(dict(sampleId=str(p['id']), referenceName=p.get('referenceName'), measurementSampleId=printed_id(p), coordinate=p['placement']['coordinate'], page=p['placement']['page'],
+                            role=p['role'], gamutAssessment=p['gamutAssessment'], numericalInverseResidualDE00=p.get('numericalInverseResidualDE00'), repeatOf=p['repeatOf'] or None,
                             desiredLab=desired.tolist(), measuredLab=lab.tolist(), predictedLab=predicted.tolist(),
                             deltaE00=float(colour.delta_E(desired, lab, method='CIE 2000')),
                             predictedDeltaE00=float(colour.delta_E(predicted, lab, method='CIE 2000')),
@@ -142,14 +142,25 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
     artifacts += [(reference_file,sha(reference_file)),(measurement_file,sha(measurement_file))]
     output=Path(output);output.mkdir(parents=True,exist_ok=False)
     args=['-v2','-k','-I','a','-i','D50','-o','1931_2']
-    from fwa import arguments as fwa_arguments
-    args += fwa_arguments(reference,measurement.get('measurementCondition',{}),ti3)
+    from fwa import arguments as fwa_arguments, prepare as fwa_prepare
+    fwa_evidence=None; prepared_fwa=reference.get('fwaPreparation')=='white-reference-spec2cie-v1' and reference.get('fwaCompensation')
+    if prepared_fwa:
+        ti3,fwa_evidence=fwa_prepare(reference,measurement.get('measurementCondition',{}),ti3,output/'fwa',Path(executable).with_name('spec2cie'+Path(executable).suffix));args=['-v2','-k','-I','a']
+    else:args += fwa_arguments(reference,measurement.get('measurementCondition',{}),ti3)
+    if fwa_evidence:artifacts.append((ti3,fwa_evidence['compensatedTI3SHA256']))
     version=subprocess.run([str(executable),'-?'],capture_output=True,timeout=15)
     completed=subprocess.run([str(executable),*args,str(ti3),str(profile)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=120)
     log=completed.stdout.decode(errors='replace');(output/'profcheck.log').write_text(log)
     if completed.returncode:raise ValueError('profcheck failed; inspect profcheck.log.')
     readings=parse_log(log,expected)
     result=analyse(reference,measurement,readings)
+    from colour_management_check import check as cm_check
+    cm=cm_check(profile,reference,result['patches'])
+    from verification_chain import analyse as chain_analyse
+    chain=chain_analyse(reference,root,profile,Path(executable).with_name('xicclu'+Path(executable).suffix),result['patches'])
+    result['chainDiagnostics']=chain
+    result['fwaPreparation']=fwa_evidence
+    artifacts += [(Path(s['path']),s['sha256']) for s in chain['sources']]
     for path,digest in artifacts:
         if sha(path)!=digest:raise ValueError('Input changed during C3 analysis.')
     result.update(schemaVersion=1,documentType='inkprof.verification-check',createdUTC=datetime.now(timezone.utc).isoformat(),
@@ -158,7 +169,7 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
                   combinedTarget=bool(reference.get('combinedTarget')), excludedNonVerificationCount=len(reference.get('combinedTarget',{}).get('otherPatches',[])),
                   decisionReasons=['Print colour-management chain has not been verified.','Acceptance criteria have not been approved.'],
                   primaryMetric='CIEDE2000 against desired absolute D50 Lab; unique patches in main summary',
-                  colorimetry=dict(method='Argyll profcheck spectral integration',illuminant='D50',observer='1931_2',fwaCompensation=reference.get('fwaCompensation',False),fwaIlluminant=reference.get('fwaIlluminant'),labPrecision='six decimal places',measurementCondition=measurement.get('measurementCondition',{})),
+                  colorimetry=dict(method='Argyll spec2cie M0 FWA integration then XYZ profcheck' if prepared_fwa else 'Argyll profcheck spectral integration',illuminant='D50',observer='1931_2',fwaCompensation=reference.get('fwaCompensation',False),fwaIlluminant=reference.get('fwaIlluminant'),labPrecision='six decimal places',measurementCondition=measurement.get('measurementCondition',{})),
                   reportedPrintSettings=print_settings or {},printChainVerified=False,criteria=reference.get('criteria',{}),
                   limitations=['Model-reachable is a numerical classification, not proof of physical gamut.',
                                'Targets were screened using this profile, although separate from its training patches.',
@@ -168,14 +179,25 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
                                'Repeated printed patches combine positional print variation and measurement variation.',
                                'Any paperwhite patch is a compensation reference, excluded from independent scores.',
                                'Forward/reverse direction is operator-controlled; software does not independently verify it.'],
+                  colourManagementCheck=cm,
                   sources=[dict(path=str(p),sha256=h) for p,h in artifacts],
                   tool=dict(executable=str(executable),arguments=args,versionOutput=(version.stdout+version.stderr).decode(errors='replace'),colourVersion=colour.__version__))
     if reference.get('externalProfile'):
         result['purpose']='New-print verification of an imported ICC; training independence unknown; no automatic acceptance'
         result['limitations'][1]='Original training data unavailable; independence from training cannot be established. The control print is new and model-informed gamut screening is disclosed.'
         result['trainingIndependence']='unknown'
+    if cm.get('suspectedDoubleColourManagement'):
+        result['decisionReasons'].insert(0,cm['message'])
     (output/'verification-check.json').write_text(json.dumps(result,indent=2,allow_nan=False))
-    lines=['# C3 – verifieringsutskrift','', '**Status: otillräckligt underlag för profilgodkännande.** Utskriftens färghantering och acceptansgränser är ännu inte verifierade.','',
+    lines=['# C3 – verifieringsutskrift','', '**Status: otillräckligt underlag för profilgodkännande.** Utskriftens färghantering och acceptansgränser är ännu inte verifierade.','']
+    if cm.get('suspectedDoubleColourManagement'):
+        s=cm['simulated'][cm['bestMatch']]
+        lines+=['## ⚠ Misstänkt dubbel färghantering','',
+                f"Mätningen stämmer mycket bättre med TIFF-värdena tolkade som **{cm['bestMatch']}** och omvandlade med skrivarprofilen "
+                f"(medel ΔE00 {s['mean']:.1f}) än med de önskade färgerna (medel ΔE00 {cm['directMeanDeltaE00']:.1f}).",'',
+                'Troligen har programmet tilldelat eller omvandlat en profil vid öppning eller utskrift, t.ex. Photoshop som tilldelar sin arbetsfärgrymd. '
+                'Kontrollera att ingen profil tilldelades eller konverterades och att färghanteringen var avstängd. Skriv sedan ut och mät igen. Heuristik, inte bevis.','']
+    lines+=[
            'Primär jämförelse: önskat absolut D50-Lab mot spektralt uppmätt D50/2° Lab. Profilens förutsägelse används endast som separat diagnostik.', '',
            '## Resultat', '', '| Grupp | Antal | Medel ΔE00 | Median | P95 | Max |','|---|---:|---:|---:|---:|---:|']
     for name,s in result['groups'].items():
@@ -188,7 +210,7 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
             '## Alla patchar, störst avvikelse först','', '| Sida/koordinat | ID | Roll | Uppmätt ↔ önskat (ΔE00) | Modell ↔ mätning (ΔE00) | Önskat Lab | Uppmätt Lab |','|---|---|---|---:|---:|---|---|']
     for p in sorted(result['patches'],key=lambda p:-p['deltaE00']):
         vectors=[' / '.join(f'{x:.3f}' for x in p[k]) for k in ('desiredLab','measuredLab')]
-        lines.append(f"| {p['page']}/{p['coordinate']} | {p['sampleId']} | {p['role']} | {p['deltaE00']:.4f} | {p['predictedDeltaE00']:.4f} | {vectors[0]} | {vectors[1]} |")
+        lines.append(f"| {p['page']}/{p['coordinate']} | {p['sampleId']}{' ('+p['referenceName']+')' if p.get('referenceName') else ''} | {p['role']} | {p['deltaE00']:.4f} | {p['predictedDeltaE00']:.4f} | {vectors[0]} | {vectors[1]} |")
     lines+=['','## Spårbarhet','']+[f"- `{a['path']}` — SHA256 `{a['sha256']}`" for a in result['sources']]
     (output/'verification-check.md').write_text('\n'.join(lines)+'\n')
     from verification_feedback import run as feedback_run

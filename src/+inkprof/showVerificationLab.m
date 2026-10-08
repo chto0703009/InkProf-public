@@ -68,5 +68,6 @@ if ~isempty(worst)
  fig.UserData.worstTrainingPatch=worst;
  hold(ax,'off');
 end
+inkprof.internal.drawLabLightnessAxis(ax);
 rotate3d(fig,'on');
 end

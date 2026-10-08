@@ -48,8 +48,26 @@ function draw() {
             ctx.beginPath();ctx.arc(x, y, 2.5, 0, 2 * Math.PI);ctx.fill();
         });
     });
+    if (!slice.checked) {
+        ctx.globalAlpha=1;
+        for(const [from,to,label] of [[[0,-limit,0],[0,limit,0],'a*'],[[0,0,-limit],[0,0,limit],'b*']]){
+            const a=projectPoint(from),b=projectPoint(to);
+            for(const [colour,width] of [['white',4],['#183343',1.5]]){ctx.strokeStyle=colour;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke();}
+            ctx.fillStyle='#183343';ctx.font='13px system-ui';ctx.fillText(label,b[0]+6,b[1]-6);
+        }
+        ctx.globalAlpha=1;const start=projectPoint([0,0,0]),end=projectPoint([100,0,0]);
+        for (const [colour,width] of [['white',5],['#183343',2]]) {ctx.strokeStyle=colour;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(...start);ctx.lineTo(...end);ctx.stroke();}
+        ctx.font='13px system-ui';ctx.fillStyle='#183343';
+        for(let l=0;l<=100;l+=20){const p=projectPoint([l,0,0]);ctx.fillText(String(l),p[0]+7,p[1]+4);}
+        ctx.fillText('L* (a*=b*=0)',end[0]+7,end[1]-10);
+    }
     ctx.globalAlpha = 1;ctx.fillStyle = '#183343';ctx.font = '14px system-ui';
     ctx.fillText(slice.checked ? '2D a*/b* - L* ' + level + ' ± ' + half : words.rotate, 20, 20);
+    ctx.globalAlpha=1;ctx.font='14px system-ui';
+    for(const [index,label] of [words.previous,words.current].entries()){
+        const x=20+index*260;ctx.fillStyle=index?'#d67520':'#216bb0';ctx.fillRect(x,437,14,14);
+        ctx.fillStyle='#183343';ctx.fillText(label,x+22,449);
+    }
     document.getElementById('counts').textContent = words.visible + ': ' + words.previous + ' ' + counts[0] + ', ' + words.current + ' ' + counts[1] +
         '. ' + (slice.checked ? words.sparse : words.all);
 }

@@ -1,8 +1,8 @@
-# Verifieringsanalys som återkoppling till iterationen
+# Verification analysis as feedback to the iteration
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-`inkprof.analyseVerification` analyserar ett sparat C3 `verification-check.json`. Beräkningarna sker i Python; MATLAB Base ger anropet. Från och med denna ändring skapar även nya C3-körningar automatiskt `iteration-feedback.json`, `.md` och `feedback.log` med standardparametrar, tillsammans med C3-rapporten.
+`inkprof.analyseVerification` analyses a saved C3 `verification-check.json`. The computations are done in Python, and MATLAB Base provides the call. As of this change, new C3 runs also create `iteration-feedback.json`, `.md` and `feedback.log` automatically with default parameters, together with the C3 report.
 
 ```matlab
 [feedback, feedbackFile] = inkprof.analyseVerification(reportFile, ...
@@ -11,67 +11,79 @@
     MaxPriorityPatches=20);
 ```
 
-Utan filargument visas en filväljare. Parametrarna anges i anropet; någon parameterdialog finns ännu inte. Varje explicit analys sparas i en ny `feedback/<UUID>` under C3-kontrollen, inklusive källrapportens SHA-256 och använda parametrar. Originalmätningen ändras inte.
+Without a file argument, a file chooser is shown. The parameters are given in the call; there is no parameter dialog yet. Each explicit analysis is saved in a new `feedback/<UUID>` under the C3 check, including the source report's SHA-256 and the parameters used. The original measurement is not changed.
 
-## Tre avstånd, tre frågor
+## Three distances, three questions
 
-- Förutsagt fel: ΔE00 mellan önskat Lab och profilens Lab vid utskrivet RGB.
-- Uppmätt fel: ΔE00 mellan önskat och uppmätt Lab.
-- Modellavvikelse: ΔE00 mellan profilens Lab och uppmätt Lab.
+- **Predicted error:** ΔE00 between the desired Lab and the profile's Lab at the printed RGB.
+- **Measured error:** ΔE00 between the desired and the measured Lab.
+- **Model deviation:** ΔE00 between the profile's Lab and the measured Lab.
 
-Alla tre beräknas direkt från Lab; avstånden subtraheras inte. Modellen kan korrekt förutsäga ett stort fel mot en svår målfärg. Om modellen däremot lovar rätt färg och mätningen avviker behöver framåtmodellen eller utskriftsförhållandena undersökas.
+All three are computed directly from Lab; the distances are not subtracted from each other. The model can correctly predict a large error against a difficult target colour. If, on the other hand, the model promises the right colour and the measurement deviates, the forward model or the print conditions need to be investigated.
 
-## Diagnostiska regler
+## Diagnostic rules
 
-Gränserna är konfigurerbara. Medel 2,5 och max 5 är jämförelseriktvärden från provtryckskontroll; de ger inte ISO-godkännande av ett eget RGB-mål. GrayLimit och ModelTolerance är InkProf-val, inte ISO-krav. Se [färgtoleranser](../research/colour-difference-tolerances.md).
+The limits are configurable. Mean 2.5 and max 5 are comparison guide values from proof-print control; they do not give ISO approval of a custom RGB target. GrayLimit and ModelTolerance are InkProf choices, not ISO requirements. See [colour tolerances](../research/colour-difference-tolerances.md).
 
-Patchar med modellavvikelse över ModelTolerance markeras `model-or-print-chain-mismatch`. Om modellavvikelsen ligger inom denna nivå men uppmätt fel över patchgränsen markeras `predicted-limitation`; detta bevisar inte fysisk gamutgräns. Övriga markeras `within-diagnostic-limits`.
+| Label | Condition |
+|---|---|
+| `model-or-print-chain-mismatch` | model deviation above ModelTolerance |
+| `predicted-limitation` | model deviation within that level, but measured error above the patch limit; this does not prove a physical gamut limit |
+| `within-diagnostic-limits` | all others |
 
-Prioritet = max(modellavvikelse − ModelTolerance, 0), gånger GrayWeight för grå och gånger två när uppmätt fel överstiger patchgränsen. Detta är en transparent heuristik, inte en prognos för vinst eller en statistisk signifikansbedömning. MaxPriorityPatches begränsar antalet rapporterade prioriterade källpatchar; det är inte antalet nya RGB-prov.
+Priority = max(model deviation − ModelTolerance, 0), times GrayWeight for grays, and times two when the measured error exceeds the patch limit. This is a transparent heuristic, not a forecast of gain or a statistical significance assessment. MaxPriorityPatches limits the number of reported priority source patches; it is not the number of new RGB samples.
 
-Upprepningar redovisas separat och får inte dubbel vikt i urval eller huvudstatistik. Överskriden RepeatLimit ger rekommendation att granska repeterbarheten före anpassning. Saknade upprepningar rapporteras som `unavailable`. Tryckta upprepningar innehåller både positions- och mätvariation; de utgör inget isolerat instrumentbrusmått.
+Repeats are reported separately and do not get double weight in selection or main statistics. An exceeded RepeatLimit gives a recommendation to review repeatability before fitting. Missing repeats are reported as `unavailable`. Printed repeats contain both position and measurement variation; they are not an isolated measure of instrument noise.
 
-## Koppling till iterationsloggen
+## Link to the iteration log
 
 ```matlab
 [iterationFolder, result] = inkprof.iterateProfile(measurementFile, ...
     VerificationReport=reportFile);
 ```
 
-Detta sparar en länk, hash och prioriteringar i iterationen samt ett `verification-feedback`-steg i loggen. Befintliga BaseMeasurement/RoleFile och övriga parametrar måste fortfarande anges när de behövs. Återkopplingen ändrar ännu inte automatiskt träningsurval, kandidatval eller placeringen av nya punkter. För målproduktion används det separata anropet `refineVerification` nedan, med källpatcharnas utskrivna RGB. Granskning krävs, särskilt när repeterbarheten är dålig.
+This saves a link, a hash and the priorities in the iteration, plus a `verification-feedback` step in the log. Existing BaseMeasurement/RoleFile and other parameters must still be given when needed. The feedback does not yet change the training selection, candidate selection or placement of new points automatically. For target production, the separate call `refineVerification` below is used, with the source patches' printed RGB. Review is required, especially when repeatability is poor.
 
-Om C2 används för urval eller anpassning blir det utvecklingsdata. Slutlig verifiering behöver ett nytt oberoende mål. En kandidat måste utvärderas vid samma utskrivna RGB för att kunna jämföras med den befintliga mätningen; en ny invers ger andra RGB och kräver senare utskrift för fysisk kontroll.
+If C2 is used for selection or fitting, it becomes development data, and the final verification needs a new independent target. A candidate must be evaluated at the same printed RGB to be comparable with the existing measurement; a new inverse gives different RGB and requires a later print for a physical check.
 
-## Testfall från 2026-09-29
+## Test case from 2026-09-29
 
-116 unika patchar och 12 upprepningar. K3 och F5 har stora modellavvikelser och prioriteras. S1/Q1 har stora men huvudsakligen förutsedda fel. Resultatet ska aldrig sätta `qualityApproved=true` eller intyga ISO-överensstämmelse.
+116 unique patches and 12 repeats. K3 and F5 have large model deviations and are prioritized. S1/Q1 have large but mainly predicted errors. The result must never set `qualityApproved=true` or certify ISO conformance.
 
-## Genomförd koppling: Jacobian och nästa mål
+## Implemented link: Jacobian and the next target
 
-`inkprof.refineVerification` använder nu C3-rapporten för att föreslå nya RGB-prov. MATLAB Base gör SVD, regularisering, rangordning och urval. Python kontrollerar källhashar/identiteter och anropar Argyll `xicclu` för absolut D50-Lab och derivator.
+`inkprof.refineVerification` now uses the C3 report to propose new RGB samples. With `RefinementMode="inkprof"`, MATLAB Base does the SVD, regularization, ranking and selection, and Python checks source hashes and identities and calls Argyll `xicclu` for absolute D50 Lab and derivatives. The default `RefinementMode="argyll"` instead lets the checked ICC precondition Argyll targen, without Jacobian sampling; see [error-driven refinement](error-driven-refinement.md#choosing-argyll-or-inkprof-in-the-app). The Jacobian method described below requires `RefinementMode="inkprof"`.
 
 ```matlab
 [proposal, folder] = inkprof.refineVerification(reportFile, ...
-    Name="Iteration 3 - C3 refinement", ...
+    RefinementMode="inkprof", Name="Iteration 3 - C3 refinement", ...
     MaxNewPatches=100, NormTarget=1, ErrorThreshold=1, ...
     RadiusPercent=5, MinSpacingPercent=1, GrayWeight=2, ...
     CreatePrint=true);
 ```
 
-Utan filargument väljs `verification-check.json` i en dialog. Inställningarna anges som MATLAB-parametrar. Resultatfönstret visar vilka ursprungspatchar och riktningar som motiverade respektive förslag.
+Without a file argument, `verification-check.json` is chosen in a dialog. The settings are given as MATLAB parameters. The results window shows which source patches and directions motivated each proposal.
 
-Residualen är `uppmätt Lab − modell-Lab`. Jacobianen gäller Lab per RGB-procentenhet. För `J=U*S*V'` beräknas en regulariserad riktning `−V*diag(s/(s²+lambda²))*U'*residual`, där lambda är minst `RegularizationFraction` gånger största singularvärdet. Den används endast som samplingsriktning på båda sidor, inte som en färdig RGB-korrigering. Tre högra singularvektorer ger ytterligare provriktningar.
+### Directions and samples
 
-Prover skapas vid halv och hel radie. Radien kortas längs strålen vid RGB-kubens gräns; ingen koordinatvis klippning som förvränger riktningen används. Kandidater kvantiseras till RGB16 före kontroll av avstånd till träningsdata, redan mätta punkter och andra kandidater. MinSpacingPercent är euklidiskt RGB-avstånd i procentenheter. MaxNewPatches är övre gräns för nya unika RGB. Gråvikt avgörs från målets gråroll, inte lika device-RGB, eftersom neutral utskrift kan kräva olika kanalvärden.
+The residual is `measured Lab − model Lab`, and the Jacobian is Lab per RGB percentage point. For `J=U*S*V'`, a regularized direction `−V*diag(s/(s²+lambda²))*U'*residual` is computed, where lambda is at least `RegularizationFraction` times the largest singular value. It is used only as a sampling direction on both sides, not as a finished RGB correction. Three right singular vectors give further sampling directions.
 
-Urvalspoängen kombinerar överskjutande modellfel, gråvikt, samplingsriktningens Lab-svar i relation till residualen och avstånd till befintliga prov. Konditionstalet förstärker inte poängen obegränsat. Derivator jämförs med stegen h och h/2; grupper över MaxJacobianChange (standard 0,5 relativ Frobeniusnorm) stoppas för granskning. Standard h är 0,5 RGB-procentenheter. Upprepade RGB räknas en gång; oeniga upprepningar över RepeatLimit stoppas. Stopvillkor är uppnådd viktad RMS-norm, kandidatbudget eller slut på tillåtna kandidater. Gränserna är diagnostiska val, inte ISO-gränser.
+Samples are created at half and full radius. The radius is shortened along the ray at the RGB cube boundary; no coordinate-wise clipping that distorts the direction is used. Candidates are quantized to RGB16 before the distance to training data, already measured points and other candidates is checked. MinSpacingPercent is Euclidean RGB distance in percentage points. MaxNewPatches is the upper limit for new unique RGB. Gray weight is decided from the target's gray role, not from equal device RGB, because neutral printing can require different channel values.
 
-Förslag sparas i en ny `refinement/<UUID>` under C3-kontrollen, med `proposal.json`, `target.ti1` när punkter finns, `progress.log` och källkopior. `CreatePrint=true` skapar därutöver `refinement-print/print/target.tif`, matchande TI2 och en fryst rollplan med utvecklingsprov och upprepade kontroller. Kontroller tillkommer utöver budgeten för nya RGB. Detta är ett nytt karakteriseringsmål **utan applicerad ICC**, till skillnad från C2. Skriv ut vid 100 procent med samma inställningar och utan färgkonvertering.
+### Scoring and stopping
 
-Ingen profil ändras och inga mätningar slås ihop automatiskt. Jämför utskriftsförhållandena före användning. C2 som styr förtätningen är utvecklingsdata; en senare verifiering behöver vara oberoende. `iterateProfile(...,VerificationReport=...)` registrerar fortfarande endast diagnostiken; kör `refineVerification` explicit för denna målproduktion.
+The selection score combines excess model error, gray weight, the sampling direction's Lab response relative to the residual, and the distance to existing samples. The condition number does not amplify the score without limit.
 
-### Öppna ett sparat förslag igen
+Derivatives are compared at steps h and h/2; groups above MaxJacobianChange (default 0.5 relative Frobenius norm) are stopped for review. The default h is 0.5 RGB percentage points. Repeated RGB count once, and disagreeing repeats above RepeatLimit are stopped. The stop conditions are a reached weighted RMS norm, the candidate budget, or no remaining allowed candidates. The limits are diagnostic choices, not ISO limits.
 
-`inkprof.showRefinementProposal(folder)` visar tabellen från `proposal.json` utan att generera nya patchar eller TIFF-filer. Utan argument väljs mappen i en dialog. Textceller konverteras till `char` för kompatibilitet med MATLABs `uitable`.
+### Saved results
 
-Efter mätning av kompletteringsmålet kan hela kopplingen till ny profil och nytt C2 utföras med [`continueRefinement`](refinement-continuation.md).
+Proposals are saved in a new `refinement/<UUID>` under the C3 check, with `proposal.json`, `target.ti1` when there are points, `progress.log` and source copies. `CreatePrint=true` additionally creates `refinement-print/print/target.tif`, a matching TI2, and a frozen role plan with development samples and repeated controls. Controls come on top of the budget for new RGB. This is a new characterization target **without an applied ICC**, unlike C2. Print at 100 percent with the same settings and without colour conversion.
+
+No profile is changed and no measurements are merged automatically. Compare the print conditions before use. A C2 that drives the refinement is development data, and a later verification must be independent. `iterateProfile(...,VerificationReport=...)` still only records the diagnostics; run `refineVerification` explicitly for this target production.
+
+### Reopening a saved proposal
+
+`inkprof.showRefinementProposal(folder)` shows the table from `proposal.json` without generating new patches or TIFF files. Without an argument, the folder is chosen in a dialog. Text cells are converted to `char` for compatibility with MATLAB's `uitable`.
+
+After the supplementary target has been measured, the whole link to a new profile and a new C2 can be carried out with [`continueRefinement`](refinement-continuation.md).

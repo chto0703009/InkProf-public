@@ -1,18 +1,18 @@
-# Automatisk profiliteration från mätning
+# Automatic profile iteration from measurement
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-`inkprof.iterateProfile` kopplar ihop validerad inläsning, fryst träningsunderlag,
-Argyll-profilering, modelljämförelse, numerisk kontroll och utskrivbara TIFF16-mål.
-MATLAB Base styr flödet; Python och Argyll gör färgberäkningarna. Ingen koppling
-till Camera-41 eller SpectraLab krävs.
+`inkprof.iterateProfile` links together validated import, frozen training basis,
+Argyll profiling, model comparison, numerical checking and printable TIFF16 targets.
+MATLAB Base controls the workflow; Python and Argyll perform the colour calculations. No connection
+to Camera-41 or SpectraLab is required.
 
-Denna version använder spektrala mätdata och D50/2° med samma valbara FWA/D50-kompensation som projektets profilrecept.
-Rutinen tar **mätdata**, inte enbart patchdefinitioner. JSON, TI3 och MXF stöds
-via befintlig import. TI3 behöver matchande TI2 (`TargetFile`); en positionerad
-MXF använder sin egen layout. Ett mål utan mätningar kan inte ge en ICC.
+This version uses spectral measurement data and D50/2° with the same selectable FWA/D50 compensation as the project's profile recipe.
+The routine takes **measurement data**, not just patch definitions. JSON, TI3 and MXF are supported
+via the existing import. TI3 needs a matching TI2 (`TargetFile`); a positioned
+MXF uses its own layout. A target without measurements cannot give an ICC.
 
-## Enkel körning
+## Simple run
 
 ```matlab
 cd('/Users/christer/Desktop/InkProf')
@@ -20,12 +20,12 @@ setupInkProf();
 [iterationFolder, result] = inkprof.iterateProfile();
 ```
 
-Välj mätfilen. Den ska tillhöra ett InkProf-projekt; för en extern fil anges
-`ProjectFolder` uttryckligen. Resultatet är en **ICC-kandidat**, inte ett
-automatiskt godkännande av utskriftskvaliteten. Alla resultat får en ny mapp.
-Ingen fysisk utskrift skickas till skrivaren.
+Select the measurement file. It must belong to an InkProf project; for an external file,
+`ProjectFolder` is specified explicitly. The result is an **ICC candidate**, not an
+automatic approval of the print quality. Every result gets a new folder.
+No physical print is sent to the printer.
 
-## Kompletteringsmätning med tidigare träningsdata
+## Supplementary measurement with earlier training data
 
 ```matlab
 [iterationFolder, result] = inkprof.iterateProfile(measurementFile, ...
@@ -34,119 +34,129 @@ Ingen fysisk utskrift skickas till skrivaren.
     NormTarget=1, GrayWeight=2);
 ```
 
-Variablerna ska vara filvägar. `RoleFile` är en JSON med `patches`, där varje
-post har `sampleId`, `rgbPercent` och `role`. ID och RGB kontrolleras mot den
-inlästa mätningen. `placement-plan.json` upptäcks också automatiskt bredvid,
-eller en nivå ovanför, målets ursprungliga sökväg i mätningens `targetInfo`.
-Efter flytt kan sökvägen behöva anges explicit.
+The variables must be file paths. `RoleFile` is a JSON with `patches`, where each
+entry has `sampleId`, `rgbPercent` and `role`. ID and RGB are checked against the
+loaded measurement. `placement-plan.json` is also discovered automatically next to,
+or one level above, the target's original path in the measurement's `targetInfo`.
+After a move the path may need to be specified explicitly.
 
-- `fit` går till träning.
-- `adaptive_holdout` och `adaptive_validation` används för modellval och
-  kompletteringsförslag. De är därefter utvecklingsdata, inte orörd slutkontroll.
-- `control`, `repeat` och `final_holdout` tas inte med i träning eller modellval.
-  Deras originalvärden bevaras för separat drift-/slutkontroll.
-- En utvecklings-RGB som redan finns i träningen ger fel, så att ett läckande
-  kontrollurval inte presenteras som oberoende från träningen.
+- `fit` goes to training.
+- `adaptive_holdout` and `adaptive_validation` are used for model selection and
+  supplementation proposals. They are thereafter development data, not an untouched final check.
+- `control`, `repeat` and `final_holdout` are not included in training or model selection.
+  Their original values are preserved for separate drift/final checking.
+- A development RGB that already exists in the training gives an error, so that a leaking
+  check sample is not presented as independent of the training.
 
-Vid nästa iteration kan `BaseInputFolder=fullfile(previousIterationFolder,
-"training")` användas i stället för `BaseMeasurement`. Då återanvänds den
-föregående körningens sammansatta, frysta träningsunderlag. Ange bara ett av
-alternativen. Kombination kräver explicit eller upptäckt rollfil.
+For the next iteration `BaseInputFolder=fullfile(previousIterationFolder,
+"training")` can be used instead of `BaseMeasurement`. The previous run's composite,
+frozen training basis is then reused. Specify only one of the
+options. Combination requires an explicit or discovered role file.
 
-En sammansatt träningsmapp bevarar källpaketen under `sources/input-N/`.
-`measurement.json` och `chart.json` i **denna mapp** är dokument av typen
-`inkprof.profile-training-set`, inte en ny fysisk mätning eller ett nytt ark.
-Tränings-ID:n får källprefix; mappningen bevarar ursprungligt ID, koordinat och
-rad i mätfilen. Filerna används genom B2/B3, inte som mätfiler i ommätningsdialogen.
+A composite training folder preserves the source packages under `sources/input-N/`.
+`measurement.json` and `chart.json` in **this folder** are documents of type
+`inkprof.profile-training-set`, not a new physical measurement or a new sheet.
+Training IDs get a source prefix; the mapping preserves the original ID, coordinate and
+row in the measurement file. The files are used through B2/B3, not as measurement files in the re-measurement dialog.
 
-## Profilval och stopp
+## Profile selection and stopping
 
-Med utvecklingspunkter körs tre separata recept: medium A2B, high A2B och high
-A2B med Argylls `-r 0.1`. B2A är high i alla tre. Det sista är ett försök med
-lägre antaget mätbrus/utjämning; det är inte ett påstående om instrumentets
-verkliga brus. Defaultreceptets `-r` utelämnas helt. Exakta argument sparas.
+With development points and `RefinementMode="inkprof"`, candidates keep A2B and B2A quality high and vary final
+Argyll `-r` (0.5, 1.0 and 1.5 by default). The default `RefinementMode="argyll"` builds one
+high-quality candidate with final `-r 1.0`. Exact arguments and photographic-gradient
+reports are saved for every candidate.
 
-En kandidat ersätter den hittills valda om den viktade RMS-normen förbättras
-minst `MinImprovement` (0,01), ingen kontrollpatch försämras mer än
-`MaxPatchRegression` (0,5 dE00), och grågruppens medelfel inte ökar mer än
-`MaxGrayRegression` (0,25). Grågruppen definieras här av kanalspann högst två
-RGB-procentenheter; även antalet sådana kontrollpunkter loggas. Det är en
-prioriteringsregel, inte en garanti för hela gråskalan.
+A candidate replaces the baseline when development weighted RMS improves by at least
+`MinImprovement` (0.01), or mean relative gradient curvature improves by at least 5%
+with a development RMS increase no greater than `MaxAccuracyTradeoff` (0.05).
+`MaxPatchRegression` (0.5 dE00) and `MaxGrayRegression` (0.25) still apply.
+Matching floating-point photographic paths must also satisfy curvature, lightness-reversal
+and interior-coverage guardrails. Missing gradient evidence retains the baseline for review.
+These are numerical heuristics, not visibility or print-approval criteria.
+See [accuracy and gradient quality](profile-quality-tradeoffs.md) for details.
 
-Alla råa utvecklingsfel och regressioner bevaras. Upprepningar grupperas per
-RGB i normen; grupper med för stor inbördes avvikelse utesluts. Saknas
-utvecklingspunkter byggs en high-kandidat utan automatiskt jämförande modellval.
-Träningsfel används inte som ersättning för utvecklingskontroll.
+All raw development errors and regressions are preserved. Repeats are grouped per
+RGB in the norm; groups with too large mutual deviation are excluded. If development
+points are missing, a high candidate is built without automatic comparative model selection.
+Training errors are not used as a substitute for development checking.
 
-Nästa kompletteringsmål följer den befintliga felstödda mittpunktsmetoden:
-fel, lokalt mätstöd, avstånd, gråprioritet och riktad Jacobian-känslighet. Enbart stor Jacobian eller dåligt
-konditionstal startar inte förtätning. Jacobianen skattas med ±0,5 RGB-procentenheter (ensidigt vid kubens kant).
-En begränsad faktor mellan 1 och 2 prioriterar riktningar med större
-framåtförändring. Singulärvärden och konditionstal loggas som diagnostik;
-konditionstalet används inte som obegränsad vikt. Krökning och osäkerhet i
-derivatskattningen återstår att utveckla. `MaxNewPatches` är ett tak, inte ett krav
-att fylla budgeten. `NormTarget` kan stoppa förslag; det betyder inte att
-profilen är validerad över hela färgområdet.
+With `RefinementMode="inkprof"`, the next supplementary target follows the existing error-supported midpoint method
+(in the default Argyll mode no refinement print is created here; request a new Argyll target from the refinement dialog):
+error, local measurement support, distance, grey priority and directed Jacobian sensitivity. A large Jacobian alone or a poor
+condition number does not start densification. The Jacobian is estimated with ±0.5 RGB percentage points (one-sided at the cube's edge).
+A bounded factor between 1 and 2 prioritises directions with greater
+forward change. Singular values and condition numbers are logged as diagnostics;
+the condition number is not used as an unbounded weight. Curvature and uncertainty in
+the derivative estimate remain to be developed. `MaxNewPatches` is a cap, not a requirement
+to fill the budget. `NormTarget` can stop proposals; this does not mean that the
+profile is validated across the whole colour gamut.
 
-## Två olika utskriftspaket
+## Two different print packages
 
-1. `verification/print/`: C2, normalt 128 källpatchar, profilen applicerad en
-   gång med absolut kolorimetri och utan BPC. Tillhörande `verification.json`
-   innehåller önskade Lab och kopplingen till profilen.
-2. `refinement-print/print/`: skapas bara om nya punkter föreslås. Device-RGB
-   utan applicerad ICC. Var femte kandidat reserveras för utvecklingskontroll
-   när minst tio nya punkter finns. Upp till tio gamla RGB återkommer två
-   gånger för drift-/repeterbarhetskontroll. Dessa kontrollförekomster ligger
-   utöver taket för **nya** RGB-punkter; alla antal redovisas. Roller och layout
-   fryses i `refinement-print/placement-plan.json` före mätning.
+1. `verification/print/`: C2, normally 128 source patches, with the profile applied
+   once using absolute colorimetric and without BPC. The accompanying `verification.json`
+   contains the desired Lab and the link to the profile.
+2. `refinement-print/print/`: created only if new points are proposed. Device RGB
+   without an applied ICC. Every fifth candidate is reserved for development checking
+   when at least ten new points exist. Up to ten old RGB values recur twice
+   for drift/repeatability checking. These check occurrences are in
+   addition to the cap on **new** RGB points; all counts are reported. Roles and layout
+   are frozen in `refinement-print/placement-plan.json` before measurement.
 
-Båda har kontrastmarkörer, matchande TI2 och TIFF16 utan inbäddad ICC, A4
-liggande som standard. Skriv ut 100 % utan ytterligare färgomvandling. Bevara
-papper, skrivare och inställningar från mätunderlaget. Läs respektive pakets
-`PRINTING.txt`. Målen kan inte bytas sinsemellan vid mätning eller analys.
+Both have contrast markers and matching TI2/TIFF16, A4 landscape by default.
+C2 TIFFs embed the printer ICC as an identifying tag; refinement TIFFs normally
+have no embedded ICC. Embedding performs no pixel conversion. Print at 100% without further colour conversion. Preserve
+paper, printer and settings from the measurement basis. Read each package's
+`PRINTING.txt`. The targets cannot be swapped with each other during measurement or analysis.
 
-## Logg, fel och kvarstående granskning
+## Log, errors and remaining review
 
-Mappen `profiles/iterations/<UUID>/` innehåller:
+The folder `profiles/iterations/<UUID>/` contains:
 
-- `iteration.json`: status, parametrar, roller, länkar, källhashar, kandidater,
-  beslut, normer, kontroller och nästa steg. Uppdateras efter varje fas.
-- `progress.log`: läsbar händelselogg med UTC-tid.
-- `progress.jsonl`: motsvarande maskinläsbara händelser.
-- `training/`, rollkopia och utskriftspaketen.
+- `iteration.json`: status, parameters, roles, links, source hashes, candidates,
+  decisions, norms, checks and next steps. Updated after each phase.
+- `progress.log`: readable event log with UTC time.
+- `progress.jsonl`: corresponding machine-readable events.
+- `training/`, role copy and the print packages.
 
-Profiljobben har egna `colprof.log`, status, argument och ICC-hashar. Relativa
-länkar i iterationen pekar även på dessa jobb inom projektmappen. Bevara hela
-projektet för portabilitet. Ett byggfel loggas och stoppar kedjan; redan
-sparade artefakter finns kvar. Ctrl+C avbryter; `cancel.request` i iterationsmappen
-kontrolleras mellan faser. Med `ShowJobDialog=true` kan ett pågående profiljobb
-avbrytas i dess fönster. Ny körning skapar en ny iteration, ingen dold återstart.
+The profile jobs have their own `colprof.log`, status, arguments and ICC hashes. Relative
+links in the iteration also point to these jobs within the project folder. Preserve the whole
+project for portability. A build error is logged and stops the chain; already
+saved artefacts remain. Ctrl+C cancels; `cancel.request` in the iteration folder
+is checked between phases. With `ShowJobDialog=true` a running profile job can be
+cancelled in its window. A new run creates a new iteration, no hidden restart.
 
-Ingen profil installeras eller ersätter originalet. Status
-`ready-for-print-review` betyder att kandidaten och testfilerna finns, inte
-att utskriftsinställningar, drift, historiska ommätningar eller mätbrus är
-slutligt godkända. Samma M-villkor bevisar inte samma skriv-/mätkedja.
-Kontrollpunkterna för drift bevaras men automatisk driftspärr återstår.
-Intern lösarkonvergens påstås inte när Argyll bara rapporterar lyckad körning.
-Färg- och metamerismvalidering kräver fortsatt fysisk mätning.
+No profile is installed or replaces the original. Status
+`ready-for-print-review` means that the candidate and test files exist, not
+that print settings, drift, historical re-measurements or measurement noise are
+finally approved. The same M condition does not prove the same print/measurement chain.
+The check points for drift are preserved but an automatic drift lock remains to be done.
+Internal solver convergence is not claimed when Argyll only reports a successful run.
+Colour and metamerism validation still requires physical measurement.
 
-## Branschtoleranser och egna acceptansgränser
+## Industry tolerances and own acceptance limits
 
-Se [färgavvikelse och toleranser](../research/colour-difference-tolerances.md)
-för ISO 12647-2/-7, skillnaden mellan ΔE*ab och ΔE00 samt försiktig visuell
-tolkning. `MaxPatchRegression` begränsar ökningen av ett fel mellan kandidater;
-det är inte en absolut utskriftstolerans. Viktad RMS är inte detsamma som
-aritmetiskt medelfel. De nuvarande parametrarna är InkProfs projektregler,
-inte ISO-godkännandegränser.
+See [colour difference and tolerances](../research/colour-difference-tolerances.md)
+for ISO 12647-2/-7, the difference between ΔE*ab and ΔE00, and cautious visual
+interpretation. `MaxPatchRegression` limits the increase of an error between candidates;
+it is not an absolute print tolerance. Weighted RMS is not the same as the
+arithmetic mean error. The current parameters are InkProf's project rules,
+not ISO approval limits.
 
-## Återkoppling från en verifieringsutskrift
+## Feedback from a verification print
 
-C3 ger nu en maskinläsbar diagnostisk prioritering, med konfigurerbara gränser och separata förutsagda/uppmätta fel. `VerificationReport=reportFile` registrerar den i iterationsloggen. Den ändrar inte automatiskt träningsurval eller kandidatval. Se [verifieringsåterkoppling](verification-feedback.md) för anrop, regler och begränsningar.
+C3 now gives a machine-readable diagnostic prioritisation, with configurable limits and separate predicted/measured errors. `VerificationReport=reportFile` registers it in the iteration log. It does not automatically change training selection or candidate selection. See [verification feedback](verification-feedback.md) for call, rules and limitations.
 
-## Fortsätt efter kompletteringsmätning
+## Continue after supplementary measurement
 
-[`continueRefinement`](refinement-continuation.md) hittar förälderns låsta träningspaket och målets rollplan, validerar den nya mätningen och anropar profiliterationen med rätt kopplingar.
+[`continueRefinement`](refinement-continuation.md) finds the parent's locked training package and the target's role plan, validates the new measurement and calls the profile iteration with the correct links.
 
 ## v1.0.0 project settings
 
 Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.
+
+## Current accuracy and gradient selection
+
+Automatic candidates now hold A2B quality constant at high. In Current InkProf mode they vary final `colprof -r` (0.5, 1.0, 1.5 by default); the default Argyll mode builds one candidate with final `-r 1.0`. With reserved development measurements, selection includes relative photographic-gradient guardrails and an explicit small accuracy trade-off. Without development measurements, one default candidate is built; no superiority claim is made. See [accuracy and gradient quality](profile-quality-tradeoffs.md) for the current parameters and saved evidence.
+
+See [Profiling paths, regularisation and refinement](profiling-paths.md) for the current B2/B3 choices, refinement defaults and settings that are not inherited.

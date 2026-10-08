@@ -1,6 +1,6 @@
 # Paper suggestions and measurement-sled limits
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 InkProf proposes an editable target size from the actual number of source patches. Refinement counts include the new colours **and** repeated control patches. Patch size and contrast spacers are preserved; fewer patches can occupy a smaller piece of paper.
 
@@ -32,7 +32,7 @@ For a base target, open **Paper suggestions…** in the TIFF16 dialog. Workflow 
 - whole, half and quarter sheets, including half A3+;
 - roll pieces in both orientations, with feed length in 5 mm increments and, where useful, several pieces cut across the roll width.
 
-Suggestions are ranked by the estimated total area of the measurement pieces, then the stock area required. The table distinguishes **used area**, **stock area**, **stock sheets / roll strips**, and **total roll feed**. Remaining cut pieces can be saved for later. Select a row and edit its sweep and length before accepting. Editing dimensions turns the selection into a custom format: the original proposal's stock calculation is then only a reference, not a revised cutting plan.
+Suggestions are ranked by the estimated total area of the measurement pieces, then the stock area required. The table distinguishes **Used area cm2**, **Stock area cm2**, **Stock sheets / strips**, and **Roll total mm** (total roll feed). Remaining cut pieces can be saved for later. Select a row and edit its sweep and length before accepting. Editing dimensions turns the selection into a custom format: the original proposal's stock calculation is then only a reference, not a revised cutting plan.
 
 **Preview selected dimensions** renders a temporary target and shows the actual page count. The base-target dialog also has **Calculate / preview**. Final rendering always checks TIFF16 pixel values, patch identities, physical dimensions and layout. Suggestions estimate capacity from standard i1 geometry (10 mm patches along the sweep, 1 mm spacers and 8 mm row pitch), with room reserved for margins and headings. They are not a guarantee of the minimum possible paper consumption. Custom patch scales or spacers can change capacity.
 
@@ -47,3 +47,7 @@ Each TIFF represents one measurement piece. The app does not impose several TIFF
 When C2 already has a generated verification definition, InkProf creates a new layout from those frozen RGB/Lab values and updates only the placements and package references. It does not apply the ICC again. Existing target packages and measurements are retained.
 
 After measurement, use [ICC comparison](profile-comparison.md) for numerical differences between iterations, and independent print verification to assess whether measured print accuracy improved.
+
+## Fractional stock labels
+
+A suggestion such as **1/2 A4 (2 pieces per sheet)** describes one measurement piece cut from an A4 sheet. **Whole sheet** uses the entire stock size. The TIFF is one measurement piece. Dimensions and areas display one decimal; calculations retain the original precision.

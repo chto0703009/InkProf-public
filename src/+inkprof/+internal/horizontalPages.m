@@ -2,9 +2,18 @@
 % SPDX-License-Identifier: GPL-3.0-or-later
 % InkProf is free software under GNU GPL version 3 or later.
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
-function horizontalPages(folder,paperMm,outputFolder,targetInfo)
+function horizontalPages(folder,paperMm,outputFolder,targetInfo,iccFile)
 % Transpose native Argyll strips into horizontal left-to-right rows.
 % Preserve all patch/spacer pixels, redraw labels upright in whitespace.
+% iccFile (optional): printer ICC to embed as a tag only. Pixels are unchanged;
+% the tag stops applications from assigning a working space to untagged RGB.
+if nargin<5,iccFile="";end
+icc=uint8([]);
+if strlength(iccFile)>0
+    fid=fopen(iccFile,'r');assert(fid>=0,'inkprof:IO','Cannot read ICC to embed: %s',iccFile);
+    icc=fread(fid,Inf,'*uint8');fclose(fid);
+    assert(numel(icc)>=132&&isequal(char(icc(37:40))','acsp'),'inkprof:ICC','Not an ICC profile: %s',iccFile);
+end
 native=fullfile(folder,'argyll');
 pages=dir(fullfile(native,'target*.tif'));
 timestamp=string(datetime('now','Format','yyyy-MM-dd HH:mm'));
@@ -89,6 +98,7 @@ for k=1:numel(pages)
         'PlanarConfiguration',Tiff.PlanarConfiguration.Chunky,'Compression',Tiff.Compression.LZW, ...
         'RowsPerStrip',32,'XResolution',outDpi(1),'YResolution',outDpi(2), ...
         'ResolutionUnit',Tiff.ResolutionUnit.Inch,'Software','InkProf horizontal rows');
+    if ~isempty(icc),tags.ICCProfile=icc;end
     file.setTag(tags);file.write(output);clear c
 end
 inkprof.internal.writeJson(fullfile(folder,'page-placement.json'),struct('schemaVersion',1, ...

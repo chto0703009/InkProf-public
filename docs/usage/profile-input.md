@@ -1,10 +1,10 @@
-# B1 – välj och lås profileringsunderlag
+# B1 – select and lock the profiling input
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-**MXF-import:** kompletta mätvärden betyder inte att utskriftsuppgifterna är fullständiga. Kontrollera skrivare, pappersprodukt, drivrutinsinställningar, färghantering och mätvillkor; behåll obekräftade uppgifter som unknown. Se [varning och regler för komplettering](measurement-file-import.md#varning-mxf-kan-behöva-kompletterande-uppgifter).
+**MXF import:** complete measurement values do not mean that the print information is complete. Check the printer, paper product, driver settings, colour management and measurement conditions, and keep unconfirmed information as unknown. See the [warning and rules for completing information](measurement-file-import.md#warning-mxf-may-need-additional-information).
 
-Implementerad 2026-09-27; användaracceptans återstår. A1 och A2 är användargodkända.
+Implemented 2026-09-27; user acceptance remains. A1 and A2 have been accepted by the user.
 
 ```matlab
 cd('/Users/christer/Desktop/InkProf')
@@ -12,33 +12,58 @@ setupInkProf();
 [folder, input] = inkprof.prepareProfileInput();
 ```
 
-Välj uttryckligen en mätrevision (measurement-JSON). Dialogen visar filnamn och hash, antal RGB-patchar, spektralband, XYZ, mätvillkor med proveniens, registrerade utskriftsuppgifter och diagnostik. Ange namn och välj **Lock profile input** eller **Cancel**. Ingen senaste fil väljs automatiskt.
+Choose a measurement revision (measurement JSON) explicitly. The dialog shows:
 
-TI3/MXF kan också väljas och normaliseras då genom befintlig mätimport. För TI3 behövs den matchande målbeskrivningen; om den inte hittas i samma mapp anges den med `TargetFile`. Detta importsteg sparar en separat mätomgång även om den efterföljande låsningen avbryts. MXF använder sin egen layout.
+- file name and hash,
+- number of RGB patches,
+- spectral bands and XYZ,
+- measurement conditions with provenance,
+- recorded print information,
+- diagnostics.
+
+Enter a name and choose **Lock profile input** or **Cancel**. The most recent file is never chosen automatically.
+
+A TI3 or MXF can also be chosen; it is then normalized through the existing measurement import. A TI3 needs its matching target description; if it is not found in the same folder, give it with `TargetFile`. This import step saves a separate measurement session even if the subsequent locking is cancelled. MXF uses its own layout.
 
 ```matlab
 [folder, input] = inkprof.prepareProfileInput(measurementFile, ...
     ProjectFolder=projectFolder, Name="Epson 3880 - corrected 575");
 ```
 
-För skript finns `ShowDialog=false`, vilket uttryckligen godkänner att låsa den angivna revisionen efter kontroller. Det kringgår inte kontrollerna.
+For scripts there is `ShowDialog=false`, which explicitly approves locking the given revision after the checks. It does not bypass the checks.
 
-B1 kontrollerar mätningens fullständighet, chart-hash, motsvarande revisions-TI3, patchidentiteter, RGB-värden och överensstämmelse mellan JSON och TI3. Radriktningsdiagnostiken räknas om. Misstänkt omvänd rad blockerar. Om färgbaserad diagnostik saknas kan en positionerad MXF användas som alternativt identitetsunderlag: den bevarade originalfilens hash kontrolleras, filen importeras på nytt och dess patch-ID, positioner och RGB jämförs med den valda revisionen. Original-MXF följer med i den låsta mappen. Detta sparas som `layoutEvidence`; `rowDirectionCheck.available` förblir false och fysisk svepriktning betraktas inte som verifierad. Utan något av dessa underlag blockeras låsningen. Diagnostiken är heuristisk och omfattar bara de fullständiga rader som metoden kan pröva. Den certifierar inte alla patchars färgriktighet. Normal färgavvikelse mot målfilens uppskattningar är inte i sig ett profilfel eller blockeringsskäl. Ursprungliga fram-/bakåtsvepsvarningar redovisas som historisk mätkvalitet och kan föregå accepterade punktkorrigeringar.
+## Checks
 
-En unik mapp under `profiles/inputs` innehåller:
+B1 checks the measurement's completeness, the chart hash, the corresponding revision TI3, patch identities, RGB values, and agreement between JSON and TI3. The row-direction diagnostic is recomputed, and a suspected reversed row blocks locking.
 
-- `measurement.json`, `chart.json` och `source.ti3`: ögonblicksbilder av valt underlag.
-- `profiling.ti3`: endast källpatchar, utan utfyllnad; bibehållen ordning och mätvärden.
-- `profile-input.json`: namn, relativ filkoppling, SHA-256, källrevision, kvarhållna datarader, mätvillkor, utskriftsuppgifter och diagnostik.
+If colour-based diagnostics are not available, a positioned MXF can be used as alternative identity evidence:
 
-Manifestet uppdateras. Låst betyder en separat, hashidentifierad revision som rutinen inte skriver över; det är inte ett filsystemskrivskydd. Kommande byggsteg måste verifiera hashvärdena före användning. Ursprungliga absoluta sökvägar är proveniens, medan snapshotfilerna finns tillsammans i den nya mappen.
+1. The preserved original file's hash is checked.
+2. The file is imported again.
+3. Its patch IDs, positions and RGB are compared with the chosen revision.
 
-Detta skapar ingen ICC-profil. Val av spektral kontra XYZ-baserad beräkning och fullständigt utskriftsrecept hör till B2. Okänt papper eller andra saknade utskriftsuppgifter förblir okända.
+The original MXF goes into the locked folder. This is saved as `layoutEvidence`; `rowDirectionCheck.available` stays false, and the physical sweep direction is not considered verified. Without either kind of evidence, locking is blocked.
 
-Den rättade 575-revisionen `measurement-20260927-154833490-rows22-23.json` har provats i ett tillfälligt testprojekt: 575 källpatchar och inga misstänkt omvända rader. Testprojektet raderades efter kontroll; ingen permanent profilkörning har valts åt användaren.
+The diagnostic is heuristic and covers only the complete rows the method can test. It does not certify the colour correctness of all patches. Normal colour deviation from the target file's estimates is not in itself a profile error or a reason to block. Original forward/backward sweep warnings are reported as historical measurement quality and may predate accepted spot corrections.
 
-## Fönster och vänteläge
+## Result
 
-B1 visar statusmeddelanden under kontroll och sparning. Bekräftelsefönstret visas överst och får fokus innan funktionen väntar på **Lock profile input** eller **Cancel**. Det är inte modalt mot hela MATLAB-skrivbordet. Funktionen återkommer först när ett val görs; kryssknappen motsvarar Cancel.
+A unique folder under `profiles/inputs` contains:
 
-Om en äldre körning väntar bakom andra fönster: avbryt med Ctrl+C i MATLAB, stäng endast fönstret `InkProf - Select profile input`, kör `rehash` och starta om. Ingen profilinput publiceras innan låsningen bekräftats. Fönstrets accept/cancel-vägar har separata automatiska GUI-tester.
+| File | Content |
+|---|---|
+| `measurement.json`, `chart.json`, `source.ti3` | Snapshots of the chosen input. |
+| `profiling.ti3` | Source patches only, without padding; order and measured values kept. |
+| `profile-input.json` | Name, relative file links, SHA-256, source revision, retained data rows, measurement conditions, print information and diagnostics. |
+
+The manifest is updated. Locked means a separate, hash-identified revision that the routine does not overwrite; it is not file-system write protection. Later build steps must verify the hash values before use. The original absolute paths are provenance, while the snapshot files are kept together in the new folder.
+
+This step creates no ICC profile. The choice of spectral versus XYZ-based computation, and the full print recipe, belong to B2. An unknown paper or other missing print information stays unknown.
+
+The corrected 575 revision `measurement-20260927-154833490-rows22-23.json` has been tested in a temporary test project: 575 source patches and no suspected reversed rows. The test project was deleted after the check; no permanent profile run has been chosen for the user.
+
+## Window and waiting
+
+B1 shows status messages during checking and saving. The confirmation window is shown on top and gets focus before the function waits for **Lock profile input** or **Cancel**. It is not modal against the whole MATLAB desktop. The function returns only when a choice is made; the close button counts as Cancel.
+
+If an older run is waiting behind other windows: cancel with Ctrl+C in MATLAB, close only the window `InkProf - Select profile input`, run `rehash` and start again. No profile input is published before locking is confirmed. The window's accept and cancel paths have separate automatic GUI tests.

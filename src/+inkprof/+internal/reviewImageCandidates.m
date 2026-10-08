@@ -32,6 +32,7 @@ bar=uigridlayout(g,[1 2]);bar.Padding=[0 0 0 0];bar.RowHeight={'1x'};
 uibutton(bar,'Text','Cancel','ButtonPushedFcn',@cancel);
 add=uibutton(bar,'Text','Create TIFF16 target','ButtonPushedFcn',@accept);
 included=true(n,1);visible=[];refresh([],[]);
+topGuard=inkprof.internal.lowerTopWindows(f); %#ok<NASGU> keep the dialog above always-on-top windows
 if isgraphics(f),uiwait(f);end
 % Explicit destruction is required: nested callbacks retain this workspace,
 % so relying on onCleanup alone can leave a modal window blocking the app.

@@ -13,6 +13,7 @@ f=figure('Name','InkProf | ICC gamut','NumberTitle','off','Color','white');
 ax=axes(f,'Position',[.1 .19 .8 .72]);lab=data.vertices;
 patch(ax,'Vertices',lab(:,[2 3 1]),'Faces',data.triangles+1,'FaceVertexCData',data.rgb,'FaceColor','interp','EdgeColor','none');
 axis(ax,'equal');grid(ax,'on');view(ax,40,25);xlabel(ax,'a*');ylabel(ax,'b*');zlabel(ax,'L*');rotate3d(f,'on');
+inkprof.internal.drawLabLightnessAxis(ax);
 title(ax,'Predicted ICC gamut | CIELAB D50 | absolute colorimetric');
 [~,name,ext]=fileparts(profile);
 annotation(f,'textbox',[.05 .01 .9 .15],'String',string(name)+string(ext)+newline+ ...

@@ -1,18 +1,18 @@
-# TXF-export till i1Profiler: experimentell implementation
+# TXF export to i1Profiler: experimental implementation
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-## Verifierad PXF-import, utskrift och mätning – 2026-10-03
+## Verified PXF import, printing and measurement – 2026-10-03
 
-Christer Törnkvist har genomfört och godkänt ett manuellt mottagarprov med en ny PXF-testfil exporterad från InkProf med den nuvarande, minimala XML-mallen och `RGBEncoding="round8"`. I i1Profiler visades testnamnet, patchantalet och färgrutorna som förväntat. Användarens återkoppling var: ”Allt såg ut som frväntat. Accept”. Christer bekräftade därefter: ”Även utskrift och mätningen fungerade”. **PXF-import, utskrift och fysisk mätning är användarverifierade för detta prov.**
+Christer Törnkvist has carried out and approved a manual recipient test with a new PXF test file exported from InkProf with the current, minimal XML template and `RGBEncoding="round8"`. In i1Profiler the test name, patch count and colour cells were displayed as expected. The user's feedback was: "Everything looked as expected. Accept". Christer then confirmed: "Printing and measurement also worked". **PXF import, printing and physical measurement are user-verified for this test.**
 
-Detta är ett användarbekräftat praktiskt prov av import, visning, utskrift och mätning, utöver InkProfs automatiska återinläsningstester. Exakt i1Profiler-version och patchantal angavs inte i återkopplingen; versionen från äldre prov ska inte antas gälla detta prov. Återexport och exakt överensstämmelse med en tidigare InkProf-layout har inte redovisats. Godkännandet gäller den utskrift och mätning som användaren provade. `round8` tillåter avrundning till 8-bitars RGB; testfilen kvalificerar inte ett redan utskrivet RGB16-target som mätunderlag.
+This is a user-confirmed practical test of import, display, printing and measurement, in addition to InkProf's automatic reload tests. The exact i1Profiler version and patch count were not stated in the feedback; the version from older tests must not be assumed to apply to this test. Re-export and exact agreement with an earlier InkProf layout have not been reported. The approval applies to the print and measurement the user tried. `round8` allows rounding to 8-bit RGB; the test file does not qualify an already printed RGB16 target as measurement input.
 
-Nedan följer äldre TXF- och layoutprov med sina ursprungliga avgränsningar.
+Below follow the older TXF and layout tests with their original limitations.
 
-Status 2026-09-25: exportkod finns, och `createTiff16` kan lägga en experimentell `*-candidate.txf` bredvid den ensidiga 575-TIFF:en när RGB-värdena är exakt representerbara. **Samma utskrift är ännu inte kvalificerad för mätning i mottagarprogrammet.** Använd inte kandidatfilen som färdigt mätunderlag förrän dess importerade rutnät och ett praktiskt mätprov har verifierats.
+Status 2026-09-25: export code exists, and `createTiff16` can place an experimental `*-candidate.txf` next to the single-page 575 TIFF when the RGB values are exactly representable. **The same print is not yet qualified for measurement in the recipient program.** Do not use the candidate file as finished measurement input until its imported grid and a practical measurement test have been verified.
 
-Decimal-CGATS kan innehålla RGB16-värden som den testade heltals-TXF-varianten inte kan representera exakt. Då skapas ingen TXF-kandidat; paketets manifest förklarar precisionhindret. Ingen tyst avrundning görs.
+Decimal CGATS can contain RGB16 values that the tested integer TXF variant cannot represent exactly. In that case no TXF candidate is created; the package's manifest explains the precision obstacle. No silent rounding is done.
 
 ## API
 
@@ -24,68 +24,68 @@ report = inkprof.exportTxfTarget( ...
     Experimental=true);
 ```
 
-Funktionen verifierar det befintliga utskriftspaketet och skriver till en ny separat katalog. Den ändrar varken TIFF, TI2 eller paketets manifest. Utan `Experimental=true` avbryts körningen.
+The function verifies the existing print package and writes to a new, separate directory. It changes neither TIFF, TI2 nor the package's manifest. Without `Experimental=true` the run is aborted.
 
-En referens-TXF behövs för X-Rites privata Prism-struktur. Standard är `source/original.txf` i källpaketet; annars ange `Template='sokvag/till/referens.txf'`. Endast den observerade cc/xrp-serialiseringen stöds. Referensens övriga privata metadata och profilinställningar bevaras som mallinnehåll; de innebär ingen verifierad profilrekommendation. Mallen identifieras med SHA256 i rapporten.
+A reference TXF is needed for X-Rite's private Prism structure. The default is `source/original.txf` in the source package; otherwise specify `Template='sokvag/till/referens.txf'`. Only the observed cc/xrp serialisation is supported. The reference's other private metadata and profile settings are preserved as template content; they imply no verified profile recommendation. The template is identified by SHA256 in the report.
 
-Varje utskriftssida får en egen `page_NN.txf`, eftersom sista sidans radantal kan skilja sig. Alla faktiskt utskrivna patchar, även Argylls utfyllnad, tas med i ordning uppifrån och ned, vänster till höger. En separat JSON-karta sparar ursprungligt SAMPLE_ID, koordinat, sida, rad, kolumn, rektangel och RGB16. TXF-ID är lokala till respektive sida och får inte ensamma användas för att sammanfoga sidornas mätningar.
+Each print page gets its own `page_NN.txf`, because the last page's row count may differ. All patches actually printed, including Argyll's padding, are included in order from top to bottom, left to right. A separate JSON map saves the original SAMPLE_ID, coordinate, page, row, column, rectangle and RGB16. TXF IDs are local to each page and must not be used alone to join the pages' measurements.
 
 ## Precision
 
-För den prövade Prism-varianten måste RGB vara heltal 0–255. Exporten tillåter därför bara RGB16-koder som är exakt delbara med 257. Värden avrundas inte tyst. `inkprof:TXFPrecision` betyder att den befintliga utskriften inte kan beskrivas exakt med den provade varianten.
+For the tested Prism variant RGB must be integers 0–255. The export therefore allows only RGB16 codes that are exactly divisible by 257. Values are not silently rounded. `inkprof:TXFPrecision` means that the existing print cannot be described exactly with the tested variant.
 
-- Befintligt importerat 2033-target: alla patchar, inklusive utfyllnad, är exakt representerbara.
-- Befintligt genererat 256-target: 242 patchar har minst en kanal som inte är exakt representerbar. Exporten avbryts.
+- Existing imported 2033 target: all patches, including padding, are exactly representable.
+- Existing generated 256 target: 242 patches have at least one channel that is not exactly representable. The export is aborted.
 
-Att TIFF är 16-bitars motsäger inte detta: en TIFF16 kan innehålla antingen 8-bitarsrepresenterbara eller finare RGB-styrvärden. Om ett framtida i1Profiler-flöde kvantiserar styrvärden måste det ske före generering av ett nytt sammanhängande TIFF/TI2/TXF-paket och innebära en ny utskrift.
+That the TIFF is 16-bit does not contradict this: a TIFF16 can contain either 8-bit-representable or finer RGB control values. If a future i1Profiler workflow quantises control values, this must happen before generating a new coherent TIFF/TI2/TXF package and imply a new print.
 
-## Praktisk granskning
+## Practical review
 
-I i1Profiler 3.8.5 öppnades användarens oförändrade PXF. Ett prov som behöll referensfilens struktur och använde 273 heltals-RGB-objekt öppnades också; programmet visade 273 patchar och rätt provnamn. Samma struktur med RGB-decimaler avvisades med ”Cannot load patch set file”. Kompakta initiala XML-prov avvisades också; det är inte belagt vilken ytterligare detalj i den kompakta strukturen som utlöste felet.
+In i1Profiler 3.8.5 the user's unchanged PXF was opened. A sample that kept the reference file's structure and used 273 integer RGB objects was also opened; the program showed 273 patches and the correct sample name. The same structure with RGB decimals was rejected with "Cannot load patch set file". Compact initial XML samples were also rejected; it is not established which additional detail in the compact structure triggered the error.
 
-Programmet visade DEMO. Test Chart-försök gav ändrat filnamn men behöll den gamla geometrin; det räknas inte som lyckad layoutimport. Mätsteget var inaktivt. Användaren har tillfrågats om att återansluta licensdongeln. Original-PXF gick att öppna även i demoläget, så alla importfel får inte tillskrivas licensen.
+The program showed DEMO. Test Chart attempts changed the file name but kept the old geometry; this does not count as a successful layout import. The measurement step was inactive. The user has been asked to reconnect the licence dongle. The original PXF could be opened even in demo mode, so not all import errors may be attributed to the licence.
 
-## Kvarvarande verifiering
+## Remaining verification
 
-- Öppna den slutliga MATLAB-exporten i Test Chart och kontrollera att sidans rutnät och RGB verkligen används.
-- Kontrollera objektordning mot sidans fysiska placering och hur i1Profiler namnger rader/kolumner.
-- Fastställ hur Argylls färgade mellanrum ska hanteras. De observerade TXF-attributen beskriver inte godtyckliga separatorer mellan patchar. Patcharnas nominella mått räcker inte som bevis för samma fysiska karta.
-- Verifiera randfält, marginaler, sista sida och utfyllnad. Programmet får inte generera om ordningen.
-- Gör ett praktiskt radmätningsprov med i1Pro 2. Import och filkontroller är inte ett sådant prov.
+- Open the final MATLAB export in Test Chart and check that the page's grid and RGB are actually used.
+- Check object order against the page's physical placement and how i1Profiler names rows/columns.
+- Determine how Argyll's coloured gaps should be handled. The observed TXF attributes do not describe arbitrary separators between patches. The patches' nominal dimensions are not sufficient proof of the same physical map.
+- Verify edge fields, margins, last page and padding. The program must not regenerate the order.
+- Carry out a practical row-measurement test with i1Pro 2. Import and file checks are not such a test.
 
-Om Argylls layout inte kan uttryckas i i1Profiler krävs en gemensamt stödd layout och ny utskrift. Då ska InkProf tydligt skilja denna väg från att exportera mätunderlag för ett redan utskrivet ark.
+If Argyll's layout cannot be expressed in i1Profiler, a jointly supported layout and a new print are required. InkProf should then clearly distinguish this route from exporting measurement input for an already printed sheet.
 
-## Slutligt importprov och kvarvarande layoutfel
+## Final import test and remaining layout error
 
-Första sidan från MATLAB-exporten för 2033-targetet öppnades i Test Chart och identifierades som i1Pro 2 med 609 patchar. Referensmallens PaperFormat=16 fick programmet att använda Letter och två sidor trots angivna sidmått. Med PaperFormat=0 visades Custom Paper Size cirka 297 × 279,9 mm och en sida. Exportören använder därför nu 0.
+The first page from the MATLAB export of the 2033 target was opened in Test Chart and identified as i1Pro 2 with 609 patches. The reference template's PaperFormat=16 made the program use Letter and two pages despite specified page dimensions. With PaperFormat=0, Custom Paper Size of about 297 × 279.9 mm and one page were displayed. The exporter therefore now uses 0.
 
-**i1Profiler räknade ändå om rutnätet. Förhandsvisningen matchade inte InkProfs 21 kolumner × 29 rader.** Angivna NumberPatchColumns/Rows räcker alltså inte för att låsa den fysiska kartan. Filerna får inte användas för att mäta de befintliga utskrifterna. Det återstår att fastställa i1Profilers layoutregler och separatorhantering eller skapa ett nytt gemensamt target. Import är bekräftad för detta manuellt justerade prov, men exportören sätter fortsatt inga generella kompatibilitetsflaggor till true.
+**i1Profiler nevertheless recalculated the grid. The preview did not match InkProf's 21 columns × 29 rows.** Specified NumberPatchColumns/Rows are thus not enough to lock the physical map. The files must not be used to measure the existing prints. It remains to determine i1Profiler's layout rules and separator handling, or to create a new joint target. Import is confirmed for this manually adjusted sample, but the exporter still sets no general compatibility flags to true.
 
-Kodtestet för flersidighet, läsordning, utfyllnad, RGB16-återläsning, krav på experimentflagga, precision och skydd mot överskrivning passerar. Ingen fysisk radmätning är utförd.
+The code test for multi-page, reading order, padding, RGB16 re-read, requirement for the experiment flag, precision and overwrite protection passes. No physical row measurement has been performed.
 
-## Nytt prov med dongeln ansluten, 2026-09-25
+## New test with the dongle connected, 2026-09-25
 
-Dongeln gjorde det möjligt att gå vidare till mätsteget och att spara ut både TIFF och TXF. Programmet rapporterade däremot `i1Pro 2 not found`; ingen fysisk mätning utfördes.
+The dongle made it possible to proceed to the measurement step and to save out both TIFF and TXF. The program, however, reported `i1Pro 2 not found`; no physical measurement was performed.
 
-Återexport från i1Profiler 3.8.5 gav följande för första sidans 609 objekt:
+Re-export from i1Profiler 3.8.5 gave the following for the first page's 609 objects:
 
-| Prov | Patchmått efter återexport | Kolumner × rader |
+| Sample | Patch dimensions after re-export | Columns × rows |
 |---|---|---|
-| Anpassat papper, mallens procentvärden | 8,89 × 8,67 mm | 27 × 23 |
-| Korrigerade procentvärden | 10 × 8 mm | 24 × 26 |
-| Samma, med 30 mm högermarginal | 10 × 8 mm | 23 × 27 |
-| InkProfs befintliga TIFF/TI2 | 10 × 8 mm | 21 × 29 |
+| Custom paper, template's percentage values | 8.89 × 8.67 mm | 27 × 23 |
+| Corrected percentage values | 10 × 8 mm | 24 × 26 |
+| Same, with 30 mm right margin | 10 × 8 mm | 23 × 27 |
+| InkProf's existing TIFF/TI2 | 10 × 8 mm | 21 × 29 |
 
-609 RGB-objekt behöll sina värden och sin listordning i samtliga tre återexportprov. Det bevisar inte att deras fysiska positioner bevaras: i1Profiler räknar om rutnätet. Marginalprovet löste inte problemet.
+609 RGB objects retained their values and list order in all three re-export samples. This does not prove that their physical positions are preserved: i1Profiler recalculates the grid. The margin test did not solve the problem.
 
-För 10 × 8 mm i i1Pro 2-läget krävs även `PatchSizeWidthPercent=16.666666666666668` och `PatchSizeHeightPercent=0`. Exportören skriver nu dessa värden och begränsar den experimentella vägen till de verifierade patchmåtten. Nominella millimetervärden ensamma räcker inte. Mallens procentvärden avsåg ett annat instrument.
+For 10 × 8 mm in i1Pro 2 mode, `PatchSizeWidthPercent=16.666666666666668` and `PatchSizeHeightPercent=0` are also required. The exporter now writes these values and limits the experimental route to the verified patch dimensions. Nominal millimetre values alone are not sufficient. The template's percentage values referred to a different instrument.
 
-Argyll-targetets 1 mm färgade separatorer mellan patcharna är fortfarande inte representerade. En möjlig fortsatt undersökning är ett nytt gemensamt target utan separatorer (`printtarg -n`), med styrvärden kvantiserade före utskrift om i1Profiler kräver det. Detta är en oprövad väg och skulle kräva ny TIFF/TI2/TXF och ny utskrift.
+The Argyll target's 1 mm coloured separators between the patches are still not represented. One possible continued investigation is a new joint target without separators (`printtarg -n`), with control values quantised before printing if i1Profiler requires it. This is an untested route and would require a new TIFF/TI2/TXF and a new print.
 
-De tillfälliga lokala proven i `work/` har rensats. Den maskinläsbara provsammanställningen och den dokumenterade slutsatsen finns kvar i versionshanterad dokumentation. Importhinder från demoläget är undanröjt; den kvarvarande begränsningen är layoutkompatibilitet samt praktisk instrumentverifiering. Exporten är fortsatt experimentell.
+The temporary local tests in `work/` have been cleaned up. The machine-readable test summary and the documented conclusion remain in version-controlled documentation. The import obstacle from demo mode has been removed; the remaining limitation is layout compatibility and practical instrument verification. The export remains experimental.
 
-Efter korrigeringen passerade MATLAB-testet `testTxfExport` igen. Maskinläsbar provsammanställning med filhashar finns i `docs/research/i1profiler-interchange/licensed-txf-roundtrip-2026-09-25.json`.
+After the correction the MATLAB test `testTxfExport` passed again. A machine-readable test summary with file hashes is in `docs/research/i1profiler-interchange/licensed-txf-roundtrip-2026-09-25.json`.
 
-## Ny kontroll av sidmallen 2026-09-26
+## New check of the page template 2026-09-26
 
-`createTiff16`-kandidaternas kolumnordning har rättats efter import och bildåterexport. Fyra sidor matchar i RGB, patchstorlek och rutnät; mottagarens färgfält ligger dock 0,75 mm åt höger. Fysisk mätning återstår. Se [full verifiering](../research/i1profiler-interchange/txf-template-verification-2026-09-26.md). Äldre kandidater behöver genereras om.
+The column order of the `createTiff16` candidates has been corrected after import and image re-export. Four pages match in RGB, patch size and grid; however, the recipient's colour fields lie 0.75 mm to the right. Physical measurement remains. See [full verification](../research/i1profiler-interchange/txf-template-verification-2026-09-26.md). Older candidates need to be regenerated.

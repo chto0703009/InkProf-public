@@ -1,10 +1,10 @@
 # ICC gamut surface
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 The **View gamut** button becomes available when the current iteration has a valid ICC profile. It opens a separate rotatable surface in CIELAB D50. The existing 2D/3D sample-point views remain available and retain their own meaning.
 
-Both measurement certificate export paths include this surface: independently print-verified certificates and certificates for numerically checked iterations without separate print verification. HTML rotates automatically; clear the rotation checkbox to pause, or drag the surface to change the viewpoint. PDF contains a fixed view. The comparison point viewer still defaults to 2D at L*=50.
+Both measurement certificate export paths include this surface: independently print-verified certificates and certificates for numerically checked iterations without separate print verification. HTML defaults to 2D at L*=50 and offers a selector for 3D L*/a*/b*. In 3D, drag to rotate or enable automatic rotation. PDF contains an exact mesh-plane intersection at L*=50, with a* horizontal and b* vertical. The comparison point viewer still defaults to 2D at L*=50.
 
 The surface is calculated with the installed external ArgyllCMS `iccgamut` executable using `-d 5 -ff -ia -pl`: forward A2B, absolute colorimetric, CIELAB D50. The detail parameter is a sampling setting (approximately Delta E), **not an accuracy tolerance**. No convex hull of the measured patches is substituted. The display uses clipped sRGB previews, so the monitor cannot reproduce every colour on the surface.
 
@@ -21,3 +21,7 @@ The HTML viewer is included in the report and does not need a network connection
 References: [ArgyllCMS iccgamut](https://www.argyllcms.com/doc/iccgamut.html), [Argyll GAM file format](https://www.argyllcms.com/doc/File_Formats.html#gam).
 
 Tested on macOS with MATLAB R2025b and ArgyllCMS 3.5.0. Windows and Linux have not been tested.
+
+## Neutral lightness reference
+
+All 3D Lab views show a contrasting L* reference through a*=b*=0, labeled from 0 to 100. It remains visible over surfaces or points. Interactive report and fixed certificate figures use the same reference. The line is a coordinate guide, not a measured neutral ramp or a claim that every point lies inside the printer gamut. Existing reports require regeneration to receive it.

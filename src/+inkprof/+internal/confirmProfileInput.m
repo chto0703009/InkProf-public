@@ -17,6 +17,7 @@ uibutton(b,'Text','Cancel','Tag','CancelProfileInput','ButtonPushedFcn',@cancel)
 f.CloseRequestFcn=@cancel;
 f.Visible='on';drawnow;focus(f);
 fprintf('InkProf B1: review the Select profile input window; choose Lock profile input or Cancel.\n');
+topGuard=inkprof.internal.lowerTopWindows(f); %#ok<NASGU> keep the dialog above always-on-top windows
 if ~dismissed,uiwait(f);end
 if isvalid(f),name=string(field.Value);delete(f);end
  function accept(~,~)

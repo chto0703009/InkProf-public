@@ -56,3 +56,14 @@ for paper=[148 210;210 148]'
  end
 end
 end
+
+function testLongSummaryDoesNotBlockSmallTarget(tc)
+root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
+dpi=100;blank=repmat(uint16(65535),round(210*dpi/25.4),round(148*dpi/25.4),3);
+summary="Source: "+join(repmat("long-verification-source-",1,20),"")+" | 128 patches";
+a=inkprof.internal.drawPrintFurniture(blank,dpi,1,1,"2026-10-07 10:34","/short/target.tif",summary);
+verifyTrue(tc,any(a~=blank,'all'));
+first=ceil(20*dpi/25.4);last=floor((210-30)*dpi/25.4);
+verifyEqual(tc,a(first:last,:,:),blank(first:last,:,:));
+verifyEqual(tc,a(end-floor(8*dpi/25.4)+1:end,:,:),blank(end-floor(8*dpi/25.4)+1:end,:,:));
+end

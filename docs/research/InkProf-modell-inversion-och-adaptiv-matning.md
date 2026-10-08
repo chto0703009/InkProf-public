@@ -1,156 +1,156 @@
-# InkProf: modell, invers och mätstrategi
+# InkProf: model, inverse and measurement strategy
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Tekniskt diskussionsunderlag • 25 september 2026 • Version 1.0
+Technical discussion basis • 25 September 2026 • Version 1.0
 
-**Förslag:** beskriv den samlade utskriftskedjan med en uppmätt RGB-framåtmodell. Beräkna inversen lokalt med en approximerad Jacobian, dämpning och bra startvärden. Anpassa mätningen efter observerade fel och användarens prioriteringar.
+**Proposal:** describe the overall print chain with a measured RGB forward model. Compute the inverse locally with an approximated Jacobian, damping and good starting values. Adapt the measurement to observed errors and the user's priorities.
 
-Dokumentet sammanfattar diskussionen om Canon PRO-2600 och InkProf. Det beskriver en föreslagen metod, inte en implementerad eller experimentellt verifierad lösning. Prestanda, patchantal och tidsvinster återstår att mäta.
+The document summarises the discussion about the Canon PRO-2600 and InkProf. It describes a proposed method, not an implemented or experimentally verified solution. Performance, patch counts and time savings remain to be measured.
 
-### 1. Vad vi faktiskt kan styra
+### 1. What we can actually control
 
-> RGB → drivrutinens bläckseparation och rastrering → papper → uppmätt spektrum
+> RGB → driver ink separation and rasterisation → paper → measured spectrum
 
-Vi kan ange RGB och mäta utskriftens reflektans. Vi antar inte tillgång till enskilda bläckkanaler. Modellen gäller därför en bestämd kombination av skrivare, papper, mediatyp, kvalitetsläge och övriga utskriftsinställningar. Targetflödet måste bevara de avsedda enhetsvärdena utan en oavsiktlig extra profilomvandling.
+We can specify RGB and measure the print's reflectance. We do not assume access to individual ink channels. The model therefore applies to a specific combination of printer, paper, media type, quality mode and other print settings. The target workflow must preserve the intended device values without an unintended extra profile conversion.
 
-### 2. Yule-Nielsen/Neugebauer: relevant, men inte förstaval
+### 2. Yule-Nielsen/Neugebauer: relevant, but not the first choice
 
 $$
 \rho(\lambda)=\left[\sum_i a_i\,\rho_i(\lambda)^{1/n}\right]^n
 $$
 
-ρᵢ är spektra för papper och bläckövertryck, aᵢ deras yttäckningsandelar och n en anpassningsparameter. Utökade modeller har demonstrerats för bläckstråleutskrifter, bland annat med bläckspridning. Modellen är alltså inte principiellt olämplig för denna tryckteknik. [1]
+ρᵢ are spectra for paper and ink overprints, aᵢ their area coverage fractions and n a fitting parameter. Extended models have been demonstrated for inkjet prints, including with ink spreading. The model is thus not inherently unsuitable for this printing technology. [1]
 
-Svårigheten här är den dolda bläckseparationen. Vi kan inte utan vidare framställa alla enskilda primärer eller veta deras täckning. Parametrar kan anpassas numeriskt, men flera olika parameteruppsättningar kan förklara liknande mätningar. God anpassning innebär inte identifierad bläckfysik.
+The difficulty here is the hidden ink separation. We cannot readily produce all individual primaries or know their coverage. Parameters can be fitted numerically, but several different parameter sets can explain similar measurements. A good fit does not mean that the ink physics has been identified.
 
-Det finns också RGB-baserade, Yule-Nielsen-inspirerade modeller som inkluderar drivrutinens beteende. [2] De bör kunna prövas senare som jämförelse. För InkProf föreslås först en empirisk RGB-modell som inte kräver antaganden om Canons interna separation.
+There are also RGB-based, Yule-Nielsen-inspired models that include the driver's behaviour. [2] They should be possible to try later as a comparison. For InkProf, an empirical RGB model that requires no assumptions about Canon's internal separation is proposed first.
 
-## En lokal modell från RGB till färg
+## A local model from RGB to colour
 
-### 3. Framåtmodellen
+### 3. The forward model
 
 $$
 \mathbf u=(r,g,b),\quad 0\le r,g,b\le1,\qquad \rho(\lambda)=F_\lambda(\mathbf u)
 $$
 
-Träningsdata består av de RGB-värden som skickas till skrivaren och uppmätta spektra från motsvarande patchar. En spektral modell kan omräknas till XYZ och Lab för specificerad belysning och observatör. Fluorescerande papper kräver särskild försiktighet: en vanlig reflektansmätning beskriver inte all belysningsberoende fluorescens.
+Training data consist of the RGB values sent to the printer and measured spectra from the corresponding patches. A spectral model can be converted to XYZ and Lab for a specified illumination and observer. Fluorescent paper requires special care: an ordinary reflectance measurement does not describe all illumination-dependent fluorescence.
 
-### Taylorapproximation och polynomregression
+### Taylor approximation and polynomial regression
 
 $$
 F_\lambda(\mathbf u_0+\Delta\mathbf u)\approx F_\lambda(\mathbf u_0)+J_\lambda\Delta\mathbf u+\frac12\Delta\mathbf u^{\mathsf T}H_\lambda\Delta\mathbf u
 $$
 
-Taylorutvecklingen beskriver funktionen lokalt genom lutning och krökning. Praktiskt kan dessa uppskattas från en anpassad lokal polynommodell, i stället för genom differenser mellan enstaka brusiga mätningar.
+The Taylor expansion describes the function locally through slope and curvature. In practice, these can be estimated from a fitted local polynomial model, rather than through differences between individual noisy measurements.
 
 $$
 \hat\rho(\lambda)=\beta_0+\beta_1r+\beta_2g+\beta_3b+\beta_4r^2+\beta_5g^2+\beta_6b^2+\beta_7rg+\beta_8rb+\beta_9gb
 $$
 
-Ett andragradspolynom har tio koefficienter per våglängd. Tio mätningar är inte ett rekommenderat target: stabil anpassning och oberoende validering kräver fler och välplacerade patchar. Koefficienterna kan skattas med viktad, regulariserad minsta kvadrat. För en fast polynombas är denna skattning linjär i koefficienterna; den kräver inte i sig en icke-linjär inverslösare.
+A second-degree polynomial has ten coefficients per wavelength. Ten measurements are not a recommended target: a stable fit and independent validation require more and well-placed patches. The coefficients can be estimated with weighted, regularised least squares. For a fixed polynomial basis, this estimation is linear in the coefficients; it does not in itself require a non-linear inverse solver.
 
-Lokala modeller begränsar risken för svängningar och stora fel som ett enda globalt höggradspolynom kan ge. Lokal viktad polynomregression för RGB till reflektans har stöd i tidigare forskning. [3]
+Local models limit the risk of oscillations and large errors that a single global high-degree polynomial can give. Local weighted polynomial regression for RGB to reflectance is supported by earlier research. [3]
 
-### Arbetsantagandet: lokalt jämnt beteende
+### The working assumption: locally smooth behaviour
 
-En bra skrivare bör ge jämna färgövergångar vid små RGB-förändringar. Detta motiverar lokal jämnhet som arbetsantagande på relevant mät- och korrigeringsskala. Det är inte ett bevis för kontinuerliga derivator på varje digital nivå. Bläckväxlingar kan ändra lutningen utan synliga färgsprång.
+A good printer should give smooth colour transitions for small RGB changes. This motivates local smoothness as a working assumption at the relevant measurement and correction scale. It is not proof of continuous derivatives at every digital level. Ink switching can change the slope without visible colour jumps.
 
-**Första implementation:** börja med lokal linjär approximation. Inför kvadratiska termer där kontrollmätningarna visar att krökningen är betydelsefull. En exakt Hessian är inget startkrav.
+**First implementation:** start with a local linear approximation. Introduce quadratic terms where the control measurements show that the curvature is significant. An exact Hessian is not a starting requirement.
 
-## En hanterbar och stabil invers
+## A manageable and stable inverse
 
-### 4. Från önskad färg till RGB
-
-$$
-\min_{\mathbf u\in[0,1]^3}\frac12\left\|F(\mathbf u)-\mathbf y_{\mathrm{mål}}\right\|^2
-$$
-
-F kan här avse XYZ, Lab eller ett viktat spektrum. Valet bestämmer felmåttets betydelse. Vanligt kvadratiskt Lab-avstånd är inte samma sak som ΔE00. Ett godtyckligt målspektrum behöver inte vara reproducerbart med skrivarens tre RGB-styrvärden.
-
-Startvärdet hämtas från närliggande patchar eller en preliminär inverterad tabell. Med ett bra startvärde kan en lokal korrigering räcka. Det är en arbetshypotes att verifiera, inte en generell garanti.
+### 4. From desired colour to RGB
 
 $$
-\begin{aligned}\mathbf e&=F(\mathbf u)-\mathbf y_{\mathrm{mål}}\\(J^{\mathsf T}J+\mu I)\Delta\mathbf u&=-J^{\mathsf T}\mathbf e\end{aligned}
+\min_{\mathbf u\in[0,1]^3}\frac12\left\|F(\mathbf u)-\mathbf y_{\mathrm{target}}\right\|^2
 $$
 
-Detta visar ett dämpat Gauss-Newton-steg. Stor μ begränsar korrigeringen. Dämpningen minskas när steget ger den förbättring som modellen förutsäger. En trust-region-metod begränsar på liknande sätt området där den lokala modellen används. [4] RGB-gränser ska hanteras i lösningen, inte bara genom okontrollerad klippning efteråt.
+F can here refer to XYZ, Lab or a weighted spectrum. The choice determines the meaning of the error measure. An ordinary squared Lab distance is not the same as ΔE00. An arbitrary target spectrum need not be reproducible with the printer's three RGB control values.
 
-### Approximerad Jacobian och successiva delmål
-
-En approximerad Jacobian kan behållas så länge den ger tillräckligt bra korrigeringar. Den beräknas från modellen; nya utskrifter behövs inte vid varje numeriskt steg. Vid svårigheter kan målet flyttas successivt från en känd, reproducerad färg:
+The starting value is taken from nearby patches or a preliminary inverted table. With a good starting value, a local correction may suffice. This is a working hypothesis to be verified, not a general guarantee.
 
 $$
-\mathbf y(t)=(1-t)F(\mathbf u_0)+t\mathbf y_{\mathrm{mål}},\qquad 0\le t\le1
+\begin{aligned}\mathbf e&=F(\mathbf u)-\mathbf y_{\mathrm{target}}\\(J^{\mathsf T}J+\mu I)\Delta\mathbf u&=-J^{\mathsf T}\mathbf e\end{aligned}
 $$
 
-Föregående lösning blir startpunkt för nästa delmål. Mindre steg används vid svårigheter. En sådan väg kan dock passera områden som skrivaren inte kan återge, även om ändpunkterna är åtkomliga; metoden garanterar därför inte konvergens.
+This shows a damped Gauss-Newton step. A large μ limits the correction. The damping is reduced when the step gives the improvement the model predicts. A trust-region method similarly limits the region where the local model is used. [4] RGB limits are to be handled in the solution, not merely through uncontrolled clipping afterwards.
 
-### Vad närhet till lösningen inte löser
+### Approximated Jacobian and successive sub-goals
 
-Liten residual gör ofta Gauss-Newton-approximationen av målfunktionens Hessian bättre. Men närhet innebär inte automatiskt låg känslighet för mät- eller modellfel. Nära ett plant eller mättat område kan olika RGB-värden ge nästan samma färg: den lokala inversen blir då dåligt bestämd.
+An approximated Jacobian can be retained as long as it gives sufficiently good corrections. It is computed from the model; new prints are not needed at every numerical step. In case of difficulties, the target can be moved successively from a known, reproduced colour:
 
-Dämpning, RGB-gränser och kontinuitet mellan närliggande lösningar ger ett praktiskt val bland flera likvärdiga svar. Målet är en användbar invers, inte nödvändigtvis en unik matematisk invers. Iterationerna görs när profilen byggs; resultatet lagras därefter som en interpolerad ICC-tabell.
+$$
+\mathbf y(t)=(1-t)F(\mathbf u_0)+t\mathbf y_{\mathrm{target}},\qquad 0\le t\le1
+$$
 
-## Profilens prioriteringar och glesa områden
+The previous solution becomes the starting point for the next sub-goal. Smaller steps are used in case of difficulties. However, such a path may pass through regions the printer cannot reproduce, even if the endpoints are reachable; the method therefore does not guarantee convergence.
 
-### 5. Definiera vad en bra profil betyder
+### What proximity to the solution does not solve
+
+A small residual often makes the Gauss-Newton approximation of the objective function's Hessian better. But proximity does not automatically mean low sensitivity to measurement or model errors. Near a flat or saturated region, different RGB values can give almost the same colour: the local inverse is then poorly determined.
+
+Damping, RGB limits and continuity between neighbouring solutions give a practical choice among several equivalent answers. The aim is a useful inverse, not necessarily a unique mathematical inverse. The iterations are done when the profile is built; the result is then stored as an interpolated ICC table.
+
+## The profile's priorities and sparse regions
+
+### 5. Define what a good profile means
 
 $$
 E(\theta)=\sum_i w_i\,\Delta E_{00,i}(\theta)^2+\lambda S(\theta)
 $$
 
-θ betecknar här den valda inversens eller profilens parametrar. Vikterna wᵢ anger prioriteringar och S straffar oönskad ojämnhet. Hög vikt för gråskalan kan förbättra den på bekostnad av andra färger. Redovisa därför fel separat för olika färgområden, inte bara ett viktat medelvärde.
+θ here denotes the parameters of the chosen inverse or profile. The weights wᵢ express priorities and S penalises undesired irregularity. A high weight for the greyscale may improve it at the expense of other colours. Errors should therefore be reported separately for different colour regions, not just a weighted mean.
 
-Gråskalans krav bör delas i neutralitet, ljushet och ett jämnt, monotont tonförlopp. Referensvitpunkten måste anges. Ett absolut kvalitetskrav kan uttryckas som en tolerans i stället för en hög vikt, om skrivaren kan uppfylla toleransen.
+The greyscale's requirements should be divided into neutrality, lightness and a smooth, monotonic tone progression. The reference white point must be stated. An absolute quality requirement can be expressed as a tolerance instead of a high weight, if the printer can meet the tolerance.
 
-**Skilj beskrivning från prioritering:** framåtmodellen ska återge mätningarna trovärdigt. Användarens preferenser styr främst invers, gamutmappning och fördelning av extra mätningar. Samma framåtmodell kan då ge flera profilalternativ.
+**Distinguish description from prioritisation:** the forward model is to reproduce the measurements credibly. The user's preferences primarily govern the inverse, gamut mapping and distribution of extra measurements. The same forward model can then give several profile alternatives.
 
-### 6. Förtäta där information saknas
+### 6. Densify where information is missing
 
-En stor gradient betyder att små RGB-steg ger stora färgskillnader. Den kan kräva tätare provtagning för önskad perceptuell upplösning. Men en brant, linjär funktion kan interpoleras exakt. Interpolationsfelet beror särskilt på krökning och avstånd mellan punkterna:
+A large gradient means that small RGB steps give large colour differences. It may require denser sampling for the desired perceptual resolution. But a steep, linear function can be interpolated exactly. The interpolation error depends particularly on curvature and the distance between points:
 
 $$
-\text{Lokalt försummat bidrag}\approx\frac12\Delta\mathbf u^{\mathsf T}H\Delta\mathbf u
+\text{Locally neglected contribution}\approx\frac12\Delta\mathbf u^{\mathsf T}H\Delta\mathbf u
 $$
 
-Kompletterande patchar bör placeras där det finns stora luckor, snabbt ändrad Jacobian eller stora oberoende kontrollfel. För gråskalor behövs punkter både längs neutralaxeln och omkring den. Högre vikt kan inte ersätta saknade data.
+Additional patches should be placed where there are large gaps, a rapidly changing Jacobian or large independent control errors. For greyscales, points are needed both along the neutral axis and around it. A higher weight cannot replace missing data.
 
-En gles modell kan själv missa ett problem. Därför behövs också kontrollpunkter som inte enbart valts utifrån modellens egen uppskattning. När fel upptäcks läggs nya träningspatchar till, medan en separat slutlig kontrollmängd behålls.
+A sparse model may itself miss a problem. Control points that are not chosen solely from the model's own estimate are therefore also needed. When errors are discovered, new training patches are added, while a separate final control set is retained.
 
-ArgyllCMS targen kan använda en preliminär ICC- eller MPP-profil för uppskattning av perceptuella avstånd och krökning vid targetgenerering. Verktyget erbjuder även koncentration kring neutralaxeln och mörka områden. [5] Detta är en användbar grund, men inte samma sak som en färdig felstyrd återkopplingsloop för InkProf.
+ArgyllCMS targen can use a preliminary ICC or MPP profile to estimate perceptual distances and curvature during target generation. The tool also offers concentration around the neutral axis and dark regions. [5] This is a useful basis, but not the same as a finished error-driven feedback loop for InkProf.
 
-## Verifiering, kostnad och nästa steg
+## Verification, cost and next steps
 
-### 7. Två upplösningar och två återkopplingar
+### 7. Two resolutions and two feedback loops
 
-**Mätunderlag:** fler relevanta mätningar förbättrar kunskapen om skrivaren. **ICC-tabell:** fler tabellpunkter kan minska interpolationsförlusten när en redan känd modell lagras. En tät tabell kan inte skapa saknad mätinformation. ArgyllCMS colprof har val för tabellupplösning, även för inversen. [6]
+**Measurement basis:** more relevant measurements improve knowledge of the printer. **ICC table:** more table points can reduce interpolation loss when an already known model is stored. A dense table cannot create missing measurement information. ArgyllCMS colprof has options for table resolution, also for the inverse. [6]
 
-Snabba numeriska iterationer sker inom modellen. Verklig återkoppling kräver utskrift, stabilisering och mätning. Den senare är normalt den tidskrävande delen. En möjlig besparing kommer därför från bra startvärden och riktade kompletteringar, men måste jämföras experimentellt med ett vanligt targetflöde.
+Fast numerical iterations take place within the model. Real feedback requires printing, stabilisation and measurement. The latter is normally the time-consuming part. A possible saving therefore comes from good starting values and targeted supplements, but must be compared experimentally with an ordinary target workflow.
 
-### Föreslagen ordning i InkProf
+### Proposed order in InkProf
 
-1. Lås utskrifts- och mätförhållanden. Mät ett bas-target med upprepade patchar.
-2. Bygg och validera en enkel framåtmodell. Behåll en Argyll-profil som referens.
-3. Beräkna en dämpad lokal invers med valbara prioriteringar.
-4. Mät kontrollpatchar och komplettera target där felen motiverar det.
-5. Bygg ICC-tabellen och kontrollera även färger mellan dess noder.
-6. Jämför färgfel, spektralfel, tonförlopp, patchantal och total arbetstid.
+1. Lock print and measurement conditions. Measure a base target with repeated patches.
+2. Build and validate a simple forward model. Keep an Argyll profile as a reference.
+3. Compute a damped local inverse with selectable priorities.
+4. Measure control patches and supplement the target where the errors justify it.
+5. Build the ICC table and also check colours between its nodes.
+6. Compare colour errors, spectral errors, tone progression, patch count and total working time.
 
-Använd upprepade patchar för att uppskatta brus och variation, och gärna en separat utskriftsomgång för slutkontroll. Stoppa förtätningen när den önskade toleransen nås eller när förbättringen inte längre kan skiljas från variationen. Yule-Nielsen-inspirerade modeller tas in först när de kan prövas mot samma kontrollunderlag.
+Use repeated patches to estimate noise and variation, and preferably a separate print run for final control. Stop the densification when the desired tolerance is reached or when the improvement can no longer be distinguished from the variation. Yule-Nielsen-inspired models are introduced only when they can be tested against the same control basis.
 
-### Källor
+### Sources
 
-[1] Rossier, Bugnon & Hersch (2010). Introducing Ink Spreading Within the Cellular Yule-Nielsen Modified Neugebauer Model. [Öppna källa](https://lspwww.epfl.ch/publications/colour/iiswtcynmnm_10.pdf).
+[1] Rossier, Bugnon & Hersch (2010). Introducing Ink Spreading Within the Cellular Yule-Nielsen Modified Neugebauer Model. [Open source](https://lspwww.epfl.ch/publications/colour/iiswtcynmnm_10.pdf).
 
-[2] Zuffi, Schettini & Mauri (2005). Spectral-Based Printer Modeling and Characterization. Journal of Electronic Imaging 14(2). [Öppna källa](https://boa.unimib.it/handle/10281/2557).
+[2] Zuffi, Schettini & Mauri (2005). Spectral-Based Printer Modeling and Characterization. Journal of Electronic Imaging 14(2). [Open source](https://boa.unimib.it/handle/10281/2557).
 
-[3] Shen m.fl. (2013). Adaptive Characterization Method for Desktop Color Printers. Journal of Electronic Imaging 22(2), 023012. [Öppna källa](https://doi.org/10.1117/1.JEI.22.2.023012).
+[3] Shen et al. (2013). Adaptive Characterization Method for Desktop Color Printers. Journal of Electronic Imaging 22(2), 023012. [Open source](https://doi.org/10.1117/1.JEI.22.2.023012).
 
-[4] MathWorks. Least-Squares (Model Fitting) Algorithms. Metoderna beskrivs här; färdiga lösare hör till Optimization Toolbox. En egen liten lösare kan byggas med MATLAB Base. [Öppna källa](https://www.mathworks.com/help/optim/ug/least-squares-model-fitting-algorithms.html).
+[4] MathWorks. Least-Squares (Model Fitting) Algorithms. The methods are described here; ready-made solvers belong to the Optimization Toolbox. A small solver of one's own can be built with MATLAB Base. [Open source](https://www.mathworks.com/help/optim/ug/least-squares-model-fitting-algorithms.html).
 
-[5] ArgyllCMS. targen: adaptiv targetgenerering och förkonditionering. [Öppna källa](https://www.argyllcms.com/doc/targen.html).
+[5] ArgyllCMS. targen: adaptive target generation and pre-conditioning. [Open source](https://www.argyllcms.com/doc/targen.html).
 
-[6] ArgyllCMS. colprof: ICC-profiler och tabellupplösning. [Öppna källa](https://www.argyllcms.com/doc/colprof.html).
+[6] ArgyllCMS. colprof: ICC profiler and table resolution. [Open source](https://www.argyllcms.com/doc/colprof.html).
 
-Källorna stödjer metodprinciperna. Den föreslagna kombinationen och dess lämplighet för Canon PRO-2600 är InkProf-arbetets hypoteser, inte resultat från dessa publikationer.
+The sources support the method principles. The proposed combination and its suitability for the Canon PRO-2600 are hypotheses of the InkProf work, not results from these publications.

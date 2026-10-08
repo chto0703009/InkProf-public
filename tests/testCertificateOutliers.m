@@ -34,3 +34,24 @@ function testSRGBPreview(tc)
 verifyEqual(tc,rgb(1,:),[0 0 0],'AbsTol',1e-8);verifyEqual(tc,rgb(2,:),[1 1 1],'AbsTol',.001);
 verifyTrue(tc,clipped(3));
 end
+
+function testReachabilityIsNotPhysicalGamutProof(tc)
+p=struct('sampleId',"a",'coordinate',"A1",'page',1,'role',"colour",'deltaE00',6,'predictedDeltaE00',.5,'measuredLab',[50 0 0],'gamutAssessment',"model-reachable");
+q=p;q.sampleId="b";q.role="challenge";q.gamutAssessment="outside-or-inversion-unresolved";q.deltaE00=30;
+r=inkprof.internal.certificatePatchOutliers(struct('patches',[p q]));
+verifyTrue(tc,contains(r.contextText,'model-reachable: 1 unique patches'));
+verifyTrue(tc,contains(r.contextText,'not confirmed outside the physical gamut'));
+verifyTrue(tc,contains(r.patches(1).reachabilityLabel,'Challenge colour'));
+verifyEqual(tc,r.patches(2).predictedDeltaE00,.5);
+end
+
+function testOverviewIncludesGoodColoursAndExactBoundaries(tc)
+p=struct('sampleId',"a",'coordinate',"A1",'page',1,'role',"colour",'deltaE00',0,'measuredLab',[50 0 0]);
+patches=repmat(p,1,6);v=[0 1 2 5 6 100];
+for k=1:6,patches(k).deltaE00=v(k);end
+patches(6).role="repeat";
+r=inkprof.internal.certificatePatchOutliers(struct('patches',patches));
+verifyEqual(tc,[r.distribution.count],[2 1 1 1]);
+verifyEqual(tc,numel(r.allPatches),5);verifyEqual(tc,r.count,1);
+verifyEqual(tc,sum([r.distribution.percent]),100,'AbsTol',1e-10);
+end

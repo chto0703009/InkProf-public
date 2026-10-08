@@ -8,6 +8,7 @@ function [proposal,folder]=refineVerification(reportFile,options)
 % Python verifies C3 sources and calls Argyll for absolute ICC derivatives.
 arguments
  reportFile (1,1) string = ""
+ options.RefinementMode (1,1) string {mustBeMember(options.RefinementMode,["inkprof","argyll"])} = "argyll"
  options.Name (1,1) string = "C3 Jacobian refinement"
  options.MaxNewPatches (1,1) double {mustBePositive,mustBeInteger} = 100
  options.NormTarget (1,1) double {mustBeFinite,mustBeNonnegative} = 1
@@ -37,16 +38,26 @@ reportFile=inkprof.internal.absolutePath(reportFile);paths=inkprof.paths();
 project=inkprof.internal.findProject(reportFile);assert(project~="",'inkprof:Project','C3 report must belong to an InkProf project.');
 work=string(tempname);mkdir(work);cleanup=onCleanup(@()rmdir(work,'s'));
 bin=inkprof.internal.argyllBin("");exe=fullfile(bin,'xicclu');if ispc,exe=exe+".exe";end
-fprintf('InkProf: validating C3 sources and calculating local ICC Jacobians...\n');
+args=[reportFile,exe,fullfile(work,'context.json'),"--step",string(options.DerivativeStepPercent)];
+if options.RefinementMode=="argyll",args(end+1)="--no-jacobian";end
+fprintf('InkProf: validating C3 sources; refinement mode %s...\n',options.RefinementMode);
 inkprof.runPython(fullfile(paths.Root,'analysis','verification_refinement_context.py'), ...
- [reportFile,exe,fullfile(work,'context.json'),"--step",string(options.DerivativeStepPercent)], ...
+ args, ...
  RequiredModules=["numpy","scipy","colour","PIL"],TimeoutSeconds=180);
 context=jsondecode(fileread(fullfile(work,'context.json')));
 job=fullfile(project,string(context.profileJob));trainingFile=fullfile(job,'engine.ti3');
 assert(inkprof.internal.sha256(trainingFile)==string(context.trainingTI3SHA256),'inkprof:Hash','Training source changed.');
 assert(inkprof.internal.sha256(fullfile(job,'result','profile.icc'))==inkprof.internal.sha256(context.profileFile),'inkprof:Hash','Profile job differs from C3 profile.');
 v=inkprof.cgatsData(inkprof.importCgats(trainingFile),RGBScale=100);
-proposal=inkprof.internal.verificationCandidates(context.observations,v.rgb,options);
+if options.RefinementMode=="argyll"
+ design=inkprof.designRGBTarget(Method="argyll",PreconditionProfile=string(context.profileFile),Optimized=true, ...
+  MaxPoints=options.MaxNewPatches,GraySteps=min(32, max(2,floor(options.MaxNewPatches/4))),ControlCount=0,RepeatCount=0);
+ proposal=inkprof.internal.argyllRefinementCandidates(design,v.rgb,options.MinSpacingPercent);
+ proposal.argyllGeneration=design.argyllRun;
+else
+ proposal=inkprof.internal.verificationCandidates(context.observations,v.rgb,options);
+end
+proposal.refinementMode=options.RefinementMode;
 proposal.schemaVersion=1;proposal.documentType="inkprof.verification-refinement";
 proposal.name=options.Name;proposal.iterationId=string(java.util.UUID.randomUUID());
 proposal.createdUTC=string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'"));
@@ -59,6 +70,10 @@ proposal.limitations=["Sampling probes, not predicted correction or error reduct
  "Review print comparability before printing or merging. No physical gamut or ISO certification.", ...
  "Steering C2 is development data; retain fresh independent final validation.", ...
  "Jacobian is derived from the imperfect model. Step-sensitive observations are excluded."];
+if options.RefinementMode=="argyll"
+ proposal.method="Argyll preconditioned targen -G; no Jacobian; next build colprof -r1.0 without InkProf pre-regularization.";
+ proposal.limitations=["Argyll placement; target size and rendering settings are recorded separately.","New print and independent verification still required."];
+end
 parent=fullfile(fileparts(reportFile),'refinement');if ~isfolder(parent),mkdir(parent);end
 folder=fullfile(parent,proposal.iterationId);mkdir(folder);mkdir(fullfile(folder,'sources'));
 copyfile(fullfile(work,'context.json'),fullfile(folder,'sources','context.json'));

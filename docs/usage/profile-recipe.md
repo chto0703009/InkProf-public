@@ -1,29 +1,48 @@
-# B2 – profileringsrecept
+# B2 – profiling recipe
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-**MXF-import:** kompletta mätvärden betyder inte att utskriftsuppgifterna är fullständiga. Kontrollera skrivare, pappersprodukt, drivrutinsinställningar, färghantering och mätvillkor; behåll obekräftade uppgifter som unknown. Se [varning och regler för komplettering](measurement-file-import.md#varning-mxf-kan-behöva-kompletterande-uppgifter).
+**MXF import:** complete measurement values do not mean that the print information is complete. Check the printer, paper product, driver settings, colour management and measurement conditions, and keep unconfirmed information as unknown. See the [warning and rules for completing information](measurement-file-import.md#warning-mxf-may-need-additional-information).
 
-B2-flödet är användargodkänt 2026-09-27. Separat B2A-kvalitet tillagd samma dag.
+The B2 workflow was accepted by the user on 2026-09-27. A separate B2A quality was added the same day.
 
 ```matlab
 [recipeFile, recipe] = inkprof.createProfileRecipe(folder);
 ```
 
-`folder` är mappen som B1 returnerade. Utan argument öppnas ett filval för `profile-input.json`. Ingen senaste revision väljs automatiskt.
+`folder` is the folder that B1 returned. Without an argument, a file chooser for `profile-input.json` opens. The most recent revision is never chosen automatically.
 
-Dialogen visar namn, beskrivning, skrivare, pappersprodukt, Glossy/Matte/unknown, drivrutinens medieinställning, utskriftskvalitet, drivrutin/version, utskriftsprogram/-väg och färghantering vid utskrift. Projektets aktuella gemensamma uppgifter fylls i och ändras i Project details. Låst B1 och tidigare mätdata ändras inte retroaktivt. Tomma utskriftsuppgifter blir unknown.
+The dialog shows:
 
-Beräkningsvalen är:
+- name and description,
+- printer and paper product,
+- Glossy/Matte/unknown,
+- the driver's media setting, print quality, driver/version,
+- printing application/path,
+- colour management when printing.
 
-- **Spectra (D50 / 2 degrees)**: Argyll-integration vid profilbygget med `-i D50 -o 1931_2`, med valbar `-f D50` från projektdefinitionen. Detta är förvalet och kräver spektra.
-- **Stored XYZ**: lagrade XYZ bevaras. Byggsteget måste skapa en separat indatafil utan spektral-/Lab-kolumner och spektralmetadata för att förhindra att motorn väljer annan kolorimetri. B2 påstår inte att lagrad XYZ har verifierad D50/2°-proveniens.
+The project's current shared information is filled in, and is changed in Project details. The locked B1 and earlier measurement data are not changed retroactively. Empty print fields become unknown.
 
-M0/M1/M2 beskriver mätvillkor, inte belysningen för spektralintegrationen. Utskriftskvalitet hålls skild från profilberäkningens kvalitet, med A2B medium och Lab cLUT. Dialogens **Inverse table (B2A)** väljer **High (denser)** eller **Medium (baseline)**. High är förval för nya recept; `B2AQuality="medium"` väljer jämförelsealternativet. Detta ändrar inte mätdata eller framåtmodellens kvalitetsval. Profilversion väljs inte i detta steg; den ska läsas från motorns faktiska resultat. Glossy/Matte är en deklarerad pappersyta, inte ett pappersnamn. Unknown kvarstår i receptet även om motorn har egna standardattribut.
+## Computation choices
 
-**Save recipe** sparar en ny UUID-mapp under B1:s `recipes`, stänger fönstret och uppdaterar projektmanifestet. **Cancel** eller kryssknappen sparar inget. Ingen ICC genereras av B2. Receptet innehåller relativ länk till B1, SHA-256, mätvillkor, utskriftsdeklarationer, beräkningsval och planerade motorargument. B1-filerna kontrolleras före dialog och före sparning. B3 måste åter verifiera dessa hashvärden och verkställa vald indataförberedelse innan motorn startar.
+- **Spectra (D50 / 2 degrees):** Argyll integration during the profile build with `-i D50 -o 1931_2`. With the optional FWA/OBA compensation, Argyll spec2cie instead integrates and compensates once (`-i D50 -o 1931_2 -f D50`) before colprof. This is the default and requires spectra.
+- **Stored XYZ:** the stored XYZ values are kept. The build step must create a separate input file without spectral/Lab columns and spectral metadata, to prevent the engine from choosing other colorimetry. B2 does not claim that stored XYZ has verified D50/2° provenance.
 
-Skriptanvändning:
+M0/M1/M2 describe the measurement condition, not the illuminant used for spectral integration.
+
+Print quality is kept separate from the quality of the profile computation, which uses A2B medium and Lab cLUT. The dialog's **Inverse table (B2A)** chooses **High (denser)** or **Medium (baseline)**. High is the default for new recipes; `B2AQuality="medium"` chooses the comparison alternative. This does not change the measurement data or the forward model's quality choice.
+
+The profile version is not chosen in this step; it is to be read from the engine's actual result. Glossy/Matte is a declared paper surface, not a paper name. Unknown remains in the recipe even if the engine has its own default attributes.
+
+For the optional pre-regularization of the measured data before the build, see [pre-regularization](pre-regularization.md).
+
+## Saving
+
+**Save recipe** saves a new UUID folder under B1's `recipes`, closes the window and updates the project manifest. **Cancel**, or the close button, saves nothing. B2 generates no ICC.
+
+The recipe contains a relative link to B1, SHA-256, measurement conditions, print declarations, computation choices and the planned engine arguments. The B1 files are checked before the dialog and before saving. B3 must verify these hash values again and carry out the chosen input preparation before the engine starts.
+
+Script use:
 
 ```matlab
 [recipeFile, recipe] = inkprof.createProfileRecipe(folder, ...
@@ -31,20 +50,30 @@ Skriptanvändning:
     DataMode="spectral", B2AQuality="high", ShowDialog=false);
 ```
 
-Aktuell projektdefinition används före B1:s äldre uppgiftssnapshot. Uttryckligen angivna `Printing`-fält i skript kan ersätta motsvarande receptfält. Sparade recept återläses med `jsondecode(fileread(recipeFile))`; redigering/öppna befintligt recept i GUI är ännu inte implementerad.
+The current project definition is used before B1's older snapshot of the information. `Printing` fields given explicitly in a script can replace the corresponding recipe fields. Saved recipes are read back with `jsondecode(fileread(recipeFile))`; editing or opening an existing recipe in the GUI is not yet implemented.
 
-## Verifiering
+## Verification
 
-Integrationstest täcker sparning/återläsning, B1-koppling och avvisning av spectral när data saknas. GUI-tester täcker Save och Cancel. B1-kontroller skyddar mot ändrat låst underlag.
+Integration tests cover saving and reloading, the B1 link, and rejection of spectral mode when data are missing. GUI tests cover Save and Cancel. The B1 checks protect against a changed locked input.
 
-Installerad colprof 3.5.0 provades separat med rättade 575-data och explicit spektralintegration. När en testkopia fick halverade lagrade XYZ men oförändrade spektra blev A2B/B2A-tabellernas byte identiska. Det bekräftar spektralvägens dataval i detta prov. Experimentet använde låg kvalitet och är ingen accepterad användarprofil. Resultatet finns i `docs/research/colprof-b2-spectral-probe.json`, tillfälliga filer i `work/b2-probe`.
+The installed colprof 3.5.0 was tested separately with the corrected 575 data and explicit spectral integration. When a test copy got halved stored XYZ but unchanged spectra, the bytes of the A2B/B2A tables were identical. This confirms the spectral path's choice of data in this test. The experiment used low quality and is not an accepted user profile. The result is in `docs/research/colprof-b2-spectral-probe.json`, with temporary files in `work/b2-probe`.
 
-Argyll beskriver `-i`/`-o` för spektralintegration och `-f` för FWA. Se [officiell colprof-dokumentation](https://www.argyllcms.com/doc/colprof.html). Lagrade XYZ-vägens filförberedelse och fullständiga profilbyggen verifieras i B3/B4.
+Argyll describes `-i`/`-o` for spectral integration and `-f` for FWA; see the [official colprof documentation](https://www.argyllcms.com/doc/colprof.html). The file preparation of the stored-XYZ path and complete profile builds are verified in B3/B4.
 
-B2A-valet sparas som `engine.b2aQuality` och explicit `-bh`/`-bm` i motorargumenten. Äldre recept utan fältet körs med sina ursprungliga argument och ändras inte automatiskt. Ett nytt recept och jobb krävs för tätare B2A. Tätare tabell minskar approximationsfel men garanterar inte en entydig invers eller fysisk utskriftskvalitet.
+The B2A choice is saved as `engine.b2aQuality` and as an explicit `-bh`/`-bm` in the engine arguments. Older recipes without the field run with their original arguments and are not changed automatically. A new recipe and job are needed for a denser B2A. A denser table reduces approximation error but does not guarantee a unique inverse or physical print quality.
 
-FWA/OBA kan väljas direkt i receptdialogen. När ett ändrat val sparas uppdateras även projektdefinitionen och beroende resultat blir inaktuella. Råmätningen och låst B1 bevaras. Se [FWA/OBA och senare val](optical-brighteners.md).
+FWA/OBA can be chosen directly in the recipe dialog. When a changed choice is saved, the project definition is updated too, and dependent results become out of date. The raw measurement and the locked B1 are preserved. See [FWA/OBA and later choices](optical-brighteners.md).
 
 ## v1.0.0 project settings
 
 Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.
+
+## Smoothing and optional gradient review
+
+B2 separates **Measurement data smoothing** (optional pre-regularization) from **Smoothing at ICC build** (final `colprof -r`). Empty final smoothing uses 0.5%. Percentage display uses one decimal without rounding stored values. The optional RGB gradient window opens after a successful Manual B3 build with pre-regularization enabled; saving B2 does not open it, and Automatic B3 uses its own recipes. See [the workflow update](../releases/2026-10-07-workflow-update.md).
+
+## Current rendering and weighting settings (2026-10-07)
+
+**Perceptual compression (%)** requests a dedicated gamut-mapped perceptual B2A0 with `colprof -s`; 20% is a configurable starting value. Relative uses B2A1; absolute uses the relative table and media white. Automatic B3 carries forward this B2 compression setting, while pre-regularization and its gradient checkbox belong to Manual B3. Existing recipes are preserved; save a new B2 recipe and rebuild B3 for the new mapping.
+
+See [quality tradeoffs](profile-quality-tradeoffs.md) for comparison tools, safeguards and diagnostic limitations.

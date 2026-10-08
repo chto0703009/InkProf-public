@@ -1,24 +1,24 @@
-# Struktur i Chart 2033 Patches.txt
+# Structure of Chart 2033 Patches.txt
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Undersökt 2026-09-28. RGB-värdena i denna fil är på skalan 0–255.
+Investigated 2026-09-28. The RGB values in this file are on the 0–255 scale.
 
-De första 1872 patcharna bildar ett komplett kartesiskt nät med 12 R-nivåer, 13 G-nivåer och 12 B-nivåer. R/B-steget är ungefär 23,18/255 = 9,09 procentenheter och G-steget 21,25/255 = 8,33 procentenheter. Detta är generell förtätning utan att känna skrivarens individuella fel.
+The first 1872 patches form a complete Cartesian grid with 12 R levels, 13 G levels and 12 B levels. The R/B step is approximately 23.18/255 = 9.09 percentage points and the G step is 21.25/255 = 8.33 percentage points. This is general densification without knowledge of the individual printer's errors.
 
-Totalt finns 2033 patchar men 2027 unika RGB-värden. Av de 161 ytterligare raderna upprepar sex nätpunkter och 155 ligger utanför grundnätet. Hela filen innehåller 43 exakt neutrala RGB-rader. 41 av de unika tilläggspunkterna är neutrala och kompletterar svart/vitt till en tätare gråramp. Syftet med resterande tillägg kan inte fastställas enbart från filen; ingen proprietär algoritm härleds.
+There are 2033 patches in total but 2027 unique RGB values. Of the 161 additional rows, six repeat grid points and 155 lie outside the base grid. The whole file contains 43 exactly neutral RGB rows. 41 of the unique additional points are neutral and complement black/white to form a denser grey ramp. The purpose of the remaining additions cannot be determined from the file alone; no proprietary algorithm is inferred.
 
-För våra lokala centrum är närmaste RGB-avstånd 5,154 procentenheter kring O6 och 2,235 kring U5. Inom ±3 procentenheter per kanal finns noll respektive en punkt. Ingen punkt finns i det smala R-intervallet 48,038–49,804 procent med G/B inom ±10 procentenheter från rampens G=85,490 och B=42,745.
+For our local centres, the nearest RGB distance is 5.154 percentage points around O6 and 2.235 around U5. Within ±3 percentage points per channel there are zero and one points, respectively. There is no point in the narrow R interval 48.038–49.804 percent with G/B within ±10 percentage points of the ramp's G=85.490 and B=42.745.
 
-2033-målet täcker därför generellt tätare än 575, men fångar inte säkert den observerade smala övergången. Felstyrd förtätning kan placera ett litet antal prov där informationen faktiskt saknas. Det är inte visat här vilken profilkvalitet 2033-målet skulle ge efter utskrift och mätning.
+The 2033 target therefore covers more densely than 575 in general, but does not reliably capture the observed narrow transition. Misdirected densification may place a small number of samples where information is actually missing. It has not been shown here what profile quality the 2033 target would give after printing and measurement.
 
-## Förkunskap före mätning
+## Prior knowledge before measurement
 
-Användarens fråga gäller konstruktörens erfarenhetsbaserade prioritering före någon mätning, inte enbart efterhandskontroll mot vårt felområde. Filen visar regelbunden grundtäckning och särskild gråprovtagning. Den visar inte varför axlarna fått 12/13/12 nivåer; detta kan inte tillskrivas grönkänslighet utan ytterligare källa. Återstående tillägg behöver kartläggas innan de kallas hudtoner, mörkerprov eller gamutprov. För InkProf bör sådana generella startprioriteringar hållas åtskilda från mätbaserad adaptiv förtätning och deras ursprung anges.
+The user's question concerns the designer's experience-based prioritisation before any measurement, not merely a post-hoc check against our error region. The file shows regular base coverage and dedicated grey sampling. It does not show why the axes were given 12/13/12 levels; this cannot be attributed to green sensitivity without a further source. The remaining additions need to be mapped before they are called skin tones, shadow samples or gamut samples. For InkProf, such general starting priorities should be kept separate from measurement-based adaptive densification, and their origin should be stated.
 
-## InkProfs föreslagna startfördelning
+## InkProf's proposed starting distribution
 
-Se [Startmål för nytt papper – 2033 patchar](../planning/new-paper-2033-target.md)
-för ett separat försöksförslag grundat på iteration 2. Det beskriver inte
-fördelningen i den importerade fil som analyseras ovan och är ännu inte
-implementerat som standardläge.
+See [Starting target for new paper – 2033 patches](../planning/new-paper-2033-target.md)
+for a separate trial proposal based on iteration 2. It does not describe the
+distribution in the imported file analysed above and is not yet
+implemented as a default mode.

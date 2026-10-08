@@ -1,116 +1,116 @@
-# Datautbyte mellan i1Profiler, InkProf och ChromIQ
+# Data interchange between i1Profiler, InkProf and ChromIQ
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Datum: 2026-09-25. Status: underlag för implementation, inte implementerat formatstöd.
+Date: 2026-09-25. Status: basis for implementation, not implemented format support.
 
-## Syfte och avgränsning
+## Purpose and scope
 
-InkProfs [formatbeslut 004](../../decisions/004-argyll-primary-json-intermediate.md) anger JSON som intern modell och TI1/TI2/TI3 som primära utbytesformat. Dessa i1Profiler-kontrakt beskriver adaptrar till och från det arbetsflödet.
+InkProf's [format decision 004](../../decisions/004-argyll-primary-json-intermediate.md) specifies JSON as the internal model and TI1/TI2/TI3 as the primary interchange formats. These i1Profiler contracts describe adapters to and from that workflow.
 
-InkProf ska kunna återanvända target och mätningar från andra program och exportera data tillbaka. Import och export ska skilja mellan att bevara mätinnehåll och att återskapa ett programs hela arbetsflöde. En fil som går att öppna är inte automatiskt en förlustfri konvertering.
+InkProf should be able to reuse targets and measurements from other programs and export data back. Import and export must distinguish between preserving measurement content and recreating a program's entire workflow. A file that can be opened is not automatically a lossless conversion.
 
-Detta paket innehåller fyra formatbeskrivningar:
+This package contains four format descriptions:
 
-- [PXF: patchuppsättning](pxf.md)
-- [TXF: target och layout](txf.md)
-- [MXF: styrvärden och mätningar](mxf.md)
-- [CMXF: mätningar av ett target](cmxf.md)
+- [PXF: patch set](pxf.md)
+- [TXF: target and layout](txf.md)
+- [MXF: control values and measurements](mxf.md)
+- [CMXF: measurements of a target](cmxf.md)
 
-De är praktiska läs-/skrivkontrakt för InkProf, inte fullständiga officiella X-Rite-specifikationer. **Källbelagt** betyder att uppgiften stöds av angiven dokumentation; **kodobserverat** avser den granskade ChromIQ-versionen; **föreslaget** anger hur InkProf bör fungera. En första [praktisk verifiering i i1Profiler 3.8.5](ui-verification-3.8.5.md) har nu gjorts: MXF-import, spektral CGATS-export och TIFF-export. InkProf-genererade filer har ännu inte kompatibilitetstestats.
+They are practical read/write contracts for InkProf, not complete official X-Rite specifications. **Source-backed** means the statement is supported by the cited documentation; **code-observed** refers to the reviewed ChromIQ version; **proposed** states how InkProf should work. A first [practical verification in i1Profiler 3.8.5](ui-verification-3.8.5.md) has now been carried out: MXF import, spectral CGATS export and TIFF export. InkProf-generated files have not yet been compatibility-tested.
 
-Ett verkligt [referensfall med 2 033 patchar i PXF och CGATS-TXT](chart-2033-inspection.md) har granskats och visar en precisionsskillnad mellan filerna. Även [motsvarande TXF har nu granskats](chart-2033-txf-inspection.md): samma patchvärden som PXF, kompletterade med layoutparametrar. Fullständig fysisk rendering och mätkompatibilitet återstår att verifiera.
+A real [reference case with 2,033 patches in PXF and CGATS-TXT](chart-2033-inspection.md) has been reviewed and shows a difference in precision between the files. The [corresponding TXF has now also been reviewed](chart-2033-txf-inspection.md): the same patch values as the PXF, supplemented with layout parameters. Full physical rendering and measurement compatibility remain to be verified.
 
-## Gemensam grund: CxF3
+## Common foundation: CxF3
 
-Mätimporten har nu även [tre granskade MXF-referensfall](mxf-examples-inspection.md). De visar både spektrala och enbart kolorimetriska data samt faktisk platsinformation för patchkoppling. Full export-/återimportverifiering återstår.
+The measurement import now also has [three reviewed MXF reference cases](mxf-examples-inspection.md). They show both spectral and colorimetric-only data, as well as the actual location information used for patch matching. Full export/re-import verification remains to be done.
 
-X-Rite publicerar CxF3:s XML-schema och dokumentation. Kärnan organiserar färgobjekt och deras värden i `Resources`. `CustomResources` använder egna namnrymder och kan tillföra programspecifik betydelse. XML-prefixet, exempelvis `cc`, är valfritt; namnrymdens URI och elementnamnet identifierar elementet. [S1, S2]
+X-Rite publishes the CxF3 XML schema and documentation. The core organises colour objects and their values in `Resources`. `CustomResources` use their own namespaces and can add application-specific meaning. The XML prefix, for example `cc`, is optional; the namespace URI and the element name identify the element. [S1, S2]
 
-Exempel på namn som förekommer i underlaget är `CxF`, `ObjectCollection`, `Object`, `DeviceColorValues`, `ColorRGB`, `ColorValues`, `ReflectanceSpectrum` och `ColorSpecification`. Detta är en läskarta, inte ett komplett XSD. En hänvisning till en färgspecifikation behöver lösas innan skalor, våglängder eller mätvillkor tolkas. [S2, S3]
+Examples of names that occur in the source material are `CxF`, `ObjectCollection`, `Object`, `DeviceColorValues`, `ColorRGB`, `ColorValues`, `ReflectanceSpectrum` and `ColorSpecification`. This is a reading guide, not a complete XSD. A reference to a colour specification must be resolved before scales, wavelengths or measurement conditions are interpreted. [S2, S3]
 
-CxF3:s öppna kärna innebär inte att alla i1Profiler-tillägg är fullständigt offentligt specificerade. BabelColors AN-10 beskriver de fyra filrollerna, men bygger delvis på observationer och gäller äldre i1Profiler-versioner. Fullständigt stöd måste därför styrkas med versionsmärkta referensfiler. [S4]
+The open core of CxF3 does not mean that all i1Profiler extensions are fully publicly specified. BabelColor's AN-10 describes the four file roles, but is partly based on observations and applies to older i1Profiler versions. Full support must therefore be substantiated with version-labelled reference files. [S4]
 
-## Föreslagen intern representation
+## Proposed internal representation
 
-Beräkningar mellan spektra, XYZ, Lab och andra representationer beskrivs separat i [återanvändning av färgberäkningar från SpectraLab och Camera-41](../colorimetry-reuse-camera41-spectralab.md). Filadaptrarna ska inte införa egna parallella färgberäkningar. Beräkningsrutinerna ska ingå i InkProf, utan körberoende till de andra projekten.
+Calculations between spectra, XYZ, Lab and other representations are described separately in [reuse of colour calculations from SpectraLab and Camera-41](../colorimetry-reuse-camera41-spectralab.md). The file adapters must not introduce their own parallel colour calculations. The calculation routines are to be part of InkProf, without a runtime dependency on the other projects.
 
-Följande namn är InkProfs föreslagna interna begrepp, inte XML-taggar eller externa API-kontrakt.
+The following names are InkProf's proposed internal concepts, not XML tags or external API contracts.
 
-| Del | Information att bevara |
+| Part | Information to preserve |
 |---|---|
-| Ursprung | Originalfil, kontrollsumma, producent, version, datum och importlogg. |
-| Patch | Intern identitet, ursprungligt ID, namn och ordningsnummer. |
-| Styrvärden | Kanalnamn, kanalordning, ursprunglig skala och normaliserade värden. |
-| Layout | Sida, rad, kolumn, läsriktning, dimensioner och eventuell randomisering. Okänt anges som okänt. |
-| Mätning | Koppling till patch, eget mät-ID, datum, instrument och upprepningsnummer. |
-| Spektrum | Våglängdsvektor i nm, värden, storhet och skala. |
-| Kolorimetri | XYZ/Lab samt belysning, observatör, normalisering och uppmätt/härlett ursprung. |
-| Mätvillkor | Exempelvis M0/M1/M2/M3, geometri och XRGA/GMDI där det faktiskt framgår. |
-| Utökningar | Oförstådda metadata och XML-resurser samt deras referenser till objekt. |
+| Origin | Original file, checksum, producer, version, date and import log. |
+| Patch | Internal identity, original ID, name and sequence number. |
+| Control values | Channel names, channel order, original scale and normalised values. |
+| Layout | Page, row, column, reading direction, dimensions and any randomisation. Unknown is recorded as unknown. |
+| Measurement | Link to patch, own measurement ID, date, instrument and repetition number. |
+| Spectrum | Wavelength vector in nm, values, quantity and scale. |
+| Colorimetry | XYZ/Lab plus illuminant, observer, normalisation and measured/derived origin. |
+| Measurement conditions | For example M0/M1/M2/M3, geometry and XRGA/GMDI where actually stated. |
+| Extensions | Unrecognised metadata and XML resources, and their references to objects. |
 
-Flera mätvillkor och upprepningar ska lagras som separata mätningar. Samma RGB-värde kan förekomma på flera patchar: RGB-trippeln är därför ingen unik nyckel.
+Multiple measurement conditions and repetitions must be stored as separate measurements. The same RGB value can occur on several patches: the RGB triplet is therefore not a unique key.
 
-## Föreslagna konverteringsvägar
+## Proposed conversion paths
 
-| Från | Till | Villkor och möjliga förluster |
+| From | To | Conditions and possible losses |
 |---|---|---|
-| PXF | TI1 | Bevara patchar och styrvärden. Eventuella extra Argyll-tabeller genereras av ett verifierat verktygsflöde. |
-| TI1 | PXF | Kodning och avrundning väljs uttryckligt för mottagaren. Uppskattad kolorimetri får inte bli mätdata. |
-| TXF | TI2 | Kräver en verifierad översättning av layout och instrumentrelaterad information. Annars skapas ett nytt target; det gamla får inte användas för radmätning med den nya layouten. |
-| TI2 | TXF | Kräver mer än en lista med RGB-värden; målprogrammets layout måste verifieras. |
-| MXF | TI3 | Para styrvärden och mätningar säkert; exportera spektra när de finns. Separera mätvillkor vid behov. |
-| TI3 | MXF | Kräver kända skalor, metadata och en utprovad i1Profiler-variant. Saknade spektra kan inte återskapas från XYZ/Lab. |
-| CMXF + känt target | TI3/MXF | Kräver verifierad koppling till targetets styrvärden. |
-| TI3/MXF | CMXF | En mätdataexport; styrvärdenas koppling måste sparas separat om den ska kunna återställas. |
+| PXF | TI1 | Preserve patches and control values. Any extra Argyll tables are generated by a verified tool flow. |
+| TI1 | PXF | Encoding and rounding are chosen explicitly for the recipient. Estimated colorimetry must not become measurement data. |
+| TXF | TI2 | Requires a verified translation of layout and instrument-related information. Otherwise a new target is created; the old one must not be used for strip measurement with the new layout. |
+| TI2 | TXF | Requires more than a list of RGB values; the target program's layout must be verified. |
+| MXF | TI3 | Pair control values and measurements reliably; export spectra when they exist. Separate measurement conditions where necessary. |
+| TI3 | MXF | Requires known scales, metadata and a tested i1Profiler variant. Missing spectra cannot be recreated from XYZ/Lab. |
+| CMXF + known target | TI3/MXF | Requires a verified link to the target's control values. |
+| TI3/MXF | CMXF | A measurement-data export; the link to the control values must be stored separately if it is to be restorable. |
 
-Se även [Argyll-formaten](../argyll-ti1-ti2-ti3.md) och [CGATS](../cgats-format.md). Tabellen är InkProfs planerade beteende, inte en garanti för befintliga konverteringsverktyg.
+See also [the Argyll formats](../argyll-ti1-ti2-ti3.md) and [CGATS](../cgats-format.md). The table is InkProf's planned behaviour, not a guarantee for existing conversion tools.
 
-## Gemensamma regler för läsning och skrivning
+## Common rules for reading and writing
 
-1. Identifiera XML-variant, namnrymd och datainnehåll; lita inte enbart på filändelsen. XML-läsaren ska inte hämta externa entiteter eller godtyckliga externa scheman.
-2. Bevara originaldata. Normalisering är en spårbar operation; skalan får inte härledas enbart från största observerade värde.
-3. Kontrollera ID, referenser, antal patchar, kanaler och mätningar. Ordning får användas för koppling endast när den aktuella variantens ordningskontrakt är dokumenterat och verifierat.
-4. Saknade metadata förblir okända. Ange inte M0, ett instrumentnamn, en våglängdsstart eller ett intervall enbart för att mottagaren kräver ett värde.
-5. Separera beräkningsbelysning/observatör från instrumentets mätvillkor. D50 och M1 betyder olika saker. XRGA-konvertering är inte ett byte av etikett.
-6. Bevara alla tillgängliga spektra och mätvillkor i projektet. Vid export till ett mer begränsat format ska varje bortvald del redovisas.
-7. Logga varje avrundning, omsampling, härledd XYZ/Lab-beräkning och ändrad ordning. Inför inte färgrymdskonvertering på enhets-RGB av misstag.
-8. Okända XML-utökningar bevaras i originalet. De får endast följa med i en modifierad export om objektreferenserna fortfarande är giltiga; annars markeras de som ej överförda.
+1. Identify the XML variant, namespace and data content; do not rely on the file extension alone. The XML reader must not fetch external entities or arbitrary external schemas.
+2. Preserve the original data. Normalisation is a traceable operation; the scale must not be derived solely from the largest observed value.
+3. Check IDs, references, number of patches, channels and measurements. Order may be used for matching only when the ordering contract of the variant in question is documented and verified.
+4. Missing metadata remains unknown. Do not state M0, an instrument name, a wavelength start or an interval merely because the recipient demands a value.
+5. Separate the calculation illuminant/observer from the instrument's measurement condition. D50 and M1 mean different things. XRGA conversion is not a change of label.
+6. Preserve all available spectra and measurement conditions in the project. When exporting to a more limited format, every omitted part must be reported.
+7. Log every rounding, resampling, derived XYZ/Lab calculation and changed order. Do not introduce colour-space conversion of device RGB by mistake.
+8. Unknown XML extensions are preserved in the original. They may accompany a modified export only if the object references are still valid; otherwise they are marked as not transferred.
 
-## Förlustrapport och verifiering
+## Loss report and verification
 
-Varje föreslagen konvertering ska ge en rapport med bevarade data, härledda data, avrundning, bortfall, olösta metadata och vald målvariant. Skilj mellan **byteidentisk arkivering**, **semantiskt likvärdigt mätinnehåll** och **begränsad kompatibilitetsexport**.
+Each proposed conversion must produce a report of preserved data, derived data, rounding, losses, unresolved metadata and the chosen target variant. Distinguish between **byte-identical archiving**, **semantically equivalent measurement content** and **limited compatibility export**.
 
-Minsta framtida testuppsättning:
+Minimum future test set:
 
-- En liten RGB-uppsättning med olika patch-ID:n, upprepade RGB-värden och en kontrollerad ordning.
-- En layout med flera rader/sidor och en dokumenterad permutation.
-- Mätfiler med olika mätvillkor, upprepningar, Lab utan spektra och spektra med explicit våglängdsinformation.
-- En fil med ofullständiga metadata och en med okända utökningar: ingen tyst gissning tillåts.
-- Läs → skriv → läs: jämför identiteter, värden, skalor, villkor och layout inom en i förväg angiven numerisk tolerans.
-- Öppna exporten i den faktiska i1Profiler-/ChromIQ-versionen. Kontrollera patchantal, utvalda värden och fysisk läsordning, inte bara att filen accepteras.
+- A small RGB set with different patch IDs, repeated RGB values and a controlled order.
+- A layout with several rows/pages and a documented permutation.
+- Measurement files with different measurement conditions, repetitions, Lab without spectra and spectra with explicit wavelength information.
+- A file with incomplete metadata and one with unknown extensions: no silent guessing is allowed.
+- Read → write → read: compare identities, values, scales, conditions and layout within a numerical tolerance stated in advance.
+- Open the export in the actual i1Profiler/ChromIQ version. Check the patch count, selected values and physical reading order, not merely that the file is accepted.
 
-Schema-validering kompletterar dessa prov men ersätter inte semantisk kontroll eller prov i mottagarprogrammet. Den första versionsbundna UI-granskningen verifierar vissa originalfiler och exportvägar, men inte en färdig InkProf-adapter.
+Schema validation complements these tests but does not replace semantic checking or testing in the receiving program. The first version-bound UI review verifies certain original files and export paths, but not a finished InkProf adapter.
 
-## Kodobservationer i lokal ChromIQ
+## Code observations in local ChromIQ
 
-Granskad revision: `92e6ead022fd57f4ecb80bf03670361b1b882247`, 2026-09-25. Observationerna gäller denna kod, inte alla ChromIQ-versioner.
+Reviewed revision: `92e6ead022fd57f4ecb80bf03670361b1b882247`, 2026-09-25. The observations apply to this code, not to all ChromIQ versions.
 
-- `workflow/i1profiler_export.py`: RGB-exporten till PXF omvandlar TI1:s 0–100 till heltal 0–255. Detta kan ändra styrvärdena och är inte en förlustfri 16-bitarsväg. CMYK och flerkanal hanteras med andra grenar och delvis uppskattade specialvärden.
-- `workflow/i1profiler_import.py`, `parse_pxf`: den granskade patchimporten extraherar RGB och går vidare till skalning; den är inte en fullständig bevarande import av XML-resurser, layout och mätningar.
-- `workflow/reference_convert.py`, `cxf_measurement_to_ti3`: kopplar target och mätningar efter ordning, väljer en mätvillkorsgrupp, antar 10 nm intervall och 0–255 RGB. Den beräknar XYZ och skriver TI3 utan spektrala kolumner.
+- `workflow/i1profiler_export.py`: the RGB export to PXF converts TI1's 0–100 to integers 0–255. This can change the control values and is not a lossless 16-bit path. CMYK and multichannel are handled by other branches and partly with estimated special values.
+- `workflow/i1profiler_import.py`, `parse_pxf`: the reviewed patch import extracts RGB and proceeds to scaling; it is not a complete preserving import of XML resources, layout and measurements.
+- `workflow/reference_convert.py`, `cxf_measurement_to_ti3`: links target and measurements by order, selects one measurement-condition group, assumes 10 nm intervals and 0–255 RGB. It calculates XYZ and writes TI3 without spectral columns.
 
-**Konsekvens för InkProf:** en TI3 från den sistnämnda vägen räcker inte för att återställa ursprungsspektra. Bevara original-MXF/CxF och använd en separat, verifierad spektral import. Antagandena ovan får inte bli generella formatregler i InkProf. Inget ChromIQ-program har ändrats eller körts för konvertering här.
+**Consequence for InkProf:** a TI3 from the last-mentioned path is not sufficient to restore the original spectra. Preserve the original MXF/CxF and use a separate, verified spectral import. The assumptions above must not become general format rules in InkProf. No ChromIQ program was modified or run for conversion here.
 
-Kodreferenser: [PXF-export](https://github.com/itsab1989/ChromIQ/blob/92e6ead022fd57f4ecb80bf03670361b1b882247/workflow/i1profiler_export.py), [PXF-import](https://github.com/itsab1989/ChromIQ/blob/92e6ead022fd57f4ecb80bf03670361b1b882247/workflow/i1profiler_import.py), [mätkonvertering](https://github.com/itsab1989/ChromIQ/blob/92e6ead022fd57f4ecb80bf03670361b1b882247/workflow/reference_convert.py).
+Code references: [PXF export](https://github.com/itsab1989/ChromIQ/blob/92e6ead022fd57f4ecb80bf03670361b1b882247/workflow/i1profiler_export.py), [PXF import](https://github.com/itsab1989/ChromIQ/blob/92e6ead022fd57f4ecb80bf03670361b1b882247/workflow/i1profiler_import.py), [measurement conversion](https://github.com/itsab1989/ChromIQ/blob/92e6ead022fd57f4ecb80bf03670361b1b882247/workflow/reference_convert.py).
 
-## Källor och öppna frågor
+## Sources and open questions
 
-- **S1:** [X-Rite: CxF-resurser och XML-schema](https://www.xrite.com/page/cxf-color-exchange-format). Publicerat schema finns; någon lokal XSD-validering har inte gjorts här.
-- **S2:** [X-Rite: CxF3 Schema Overview](https://www.xrite.com/-/media/xrite/files/literature/misc/c/cxf3_schema_overview_en.pdf). Kärnresurser och egna utökningar. Webbsökningens indexerade utdrag var tillgängligt; direkt PDF-hämtning nekades vid granskningen.
-- **S3:** [X-Rite: CxF Standard 3.0](https://www.xrite.com/-/media/xrite/files/literature/misc/c/cxf_standard_en.pdf). Indexerade exempel och lokal ChromIQ-kod har använts för elementnamn; full normativ fältgranskning återstår.
-- **S4:** [BabelColor: AN-10, oktober 2013](https://babelcolor.com/index_htm_files/AN-10%20Exporting%20to%20the%20CxF3%20and%20i1Profiler%20file%20formats%20with%20PatchTool.pdf). Praktisk interoperabilitet för äldre versioner; ingen garanti för dagens program.
-- **S5:** [X-Rite: i1Profiler release notes 1.6.3 och tidigare](https://www.xrite.com/es/service-support/releasenotesfori1profiler163andprevious). Bekräftar filroller och import-/exportalternativ.
-- **S6:** [X-Rite: mätdata och CGATS-export](https://www.xrite.com/es/service-support/measure_single_colors_with_i1profiler). Alternativ väg för utbyte.
+- **S1:** [X-Rite: CxF resources and XML schema](https://www.xrite.com/page/cxf-color-exchange-format). A published schema exists; no local XSD validation has been done here.
+- **S2:** [X-Rite: CxF3 Schema Overview](https://www.xrite.com/-/media/xrite/files/literature/misc/c/cxf3_schema_overview_en.pdf). Core resources and custom extensions. The indexed excerpt from the web search was available; direct PDF retrieval was denied during the review.
+- **S3:** [X-Rite: CxF Standard 3.0](https://www.xrite.com/-/media/xrite/files/literature/misc/c/cxf_standard_en.pdf). Indexed examples and local ChromIQ code have been used for element names; a full normative field review remains to be done.
+- **S4:** [BabelColor: AN-10, October 2013](https://babelcolor.com/index_htm_files/AN-10%20Exporting%20to%20the%20CxF3%20and%20i1Profiler%20file%20formats%20with%20PatchTool.pdf). Practical interoperability for older versions; no guarantee for current programs.
+- **S5:** [X-Rite: i1Profiler release notes 1.6.3 and earlier](https://www.xrite.com/es/service-support/releasenotesfori1profiler163andprevious). Confirms file roles and import/export options.
+- **S6:** [X-Rite: measurement data and CGATS export](https://www.xrite.com/es/service-support/measure_single_colors_with_i1profiler). Alternative path for interchange.
 
-Före implementation behövs versionsmärkta originalfiler för alla fyra roller, dokumenterade målprogram och beslut om första stödda delmängden. Första målet föreslås vara RGB-reflektans; CMYK och flerkanal definieras och provas separat. Specifika XML-obligatorier, defaults och privata resurser ska därefter fastställas från XSD och referensfiler, inte uppfinnas.
+Before implementation, version-labelled original files are needed for all four roles, documented target programs and a decision on the first supported subset. The first target is proposed to be RGB reflectance; CMYK and multichannel are defined and tested separately. Specific XML requirements, defaults and private resources are then to be established from the XSD and reference files, not invented.

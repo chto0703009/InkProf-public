@@ -1,74 +1,74 @@
-# Acceptans av provat RGB-utbyte – 2026-09-27
+# Acceptance of the tested RGB interchange – 2026-09-27
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Christer har accepterat det provade utbytet mellan InkProf och i1Profiler.
-Acceptansen gäller nedanstående konkreta flöden, inte alla programversioner,
-filvarianter, instrument eller mätvillkor.
+Christer has accepted the tested interchange between InkProf and i1Profiler.
+The acceptance applies to the concrete flows below, not to all program versions,
+file variants, instruments or measurement conditions.
 
-| Flöde | Verifiering |
+| Flow | Verification |
 |---|---|
-| TI2 → InkProf PXF → i1Profiler | Användaren importerade, skrev ut och mätte 575 patchar. |
-| TI1 → InkProf PXF → i1Profiler | Användaren bekräftade lyckad import av `InkProf-575-from-TI1.pxf`. RGB och patchordning är identiska med den godkända TI2-exporten. |
-| i1Profiler MXF → InkProf JSON/TI3 | Samtliga 575 spektra verifierade genom MATLAB-importen. |
-| InkProf-mätning → MXF → i1Profiler | Användaren bekräftade import av `InkProf-575-M0-updated.mxf`; referensens metadata/layout behölls och spektra ersattes. |
-| Importerad MXF → punktrevision → TI3 → återimport | Automatiserat test med syntetisk kandidat: endast vald patch ändras, original och historik bevaras. Inte ett fysiskt instrumentprov av hela denna kedja. |
+| TI2 → InkProf PXF → i1Profiler | The user imported, printed and measured 575 patches. |
+| TI1 → InkProf PXF → i1Profiler | The user confirmed successful import of `InkProf-575-from-TI1.pxf`. RGB and patch order are identical to the approved TI2 export. |
+| i1Profiler MXF → InkProf JSON/TI3 | All 575 spectra verified through the MATLAB import. |
+| InkProf measurement → MXF → i1Profiler | The user confirmed import of `InkProf-575-M0-updated.mxf`; the reference's metadata/layout was retained and the spectra were replaced. |
+| Imported MXF → spot revision → TI3 → re-import | Automated test with a synthetic candidate: only the selected patch changes, original and history are preserved. Not a physical instrument test of this whole chain. |
 
-## Godkänd exportväg och begränsningar
+## Approved export path and limitations
 
-`exportPxfTarget` använder RGB8-kompatibel PXF. Godkännandet gäller
-heltalsvärdena i detta prov; fraktionella RGB och alla andra mottagarvarianter
-är inte kvalificerade.
+`exportPxfTarget` uses RGB8-compatible PXF. The approval applies to the
+integer values in this test; fractional RGB and all other recipient variants
+are not qualified.
 
-`exchange/export_reference_mxf.py` gör den godkända spektrala exportvägen
-återanvändbar. Den reproducerar den accepterade filen byte för byte från
-samma källor. Den kräver M0/XRGA, 36 band 380–730 nm och entydiga TargetN/ID,
-RGB- och positionskopplingar. JSON-sidecar anger verklig källa och hashvärden.
-Referensens Creator, datum, privata inställningar och layout bevaras av
-kompatibilitetsskäl och beskriver **inte** InkProf-originalets utskrift.
-Exporten är inte en instruktion för att mäta om originalutskriften.
+`exchange/export_reference_mxf.py` makes the approved spectral export path
+reusable. It reproduces the accepted file byte for byte from the
+same sources. It requires M0/XRGA, 36 bands 380–730 nm and unambiguous TargetN/ID,
+RGB and position links. A JSON sidecar states the actual source and hash values.
+The reference's Creator, date, private settings and layout are preserved for
+compatibility reasons and do **not** describe the print of the InkProf original.
+The export is not an instruction to re-measure the original print.
 
-`exchange/export_mxf.py` är den äldre experimentella exportören som ändrar
-layout och metadata. Dess tidigare filer avvisades; den är inte den
-mottagarverifierade exportvägen. Creator-fältet ensamt är inte bevisat som
-orsak till de tidigare importfelen.
+`exchange/export_mxf.py` is the older experimental exporter that changes
+layout and metadata. Its earlier files were rejected; it is not the
+recipient-verified export path. The Creator field alone is not proven
+to be the cause of the earlier import failures.
 
-## Korrigerad mätning och jämförelse
+## Corrected measurement and comparison
 
-Punktkontroller av A22/U22 och efterföljande framåtriktad ommätning av hela
-rad 22–23 gav stöd för att tidigare sparad radordning var fel. En ny komplett
-revision ersätter 42 patchar och bevarar övriga 533 oförändrade. Original och
-separata punktrevisioner finns kvar. Ny revision:
-`measurement-20260927-154833490-rows22-23.json` och motsvarande TI3.
+Spot checks of A22/U22 and the subsequent forward re-measurement of all of
+rows 22–23 supported the conclusion that the previously saved row order was wrong. A new complete
+revision replaces 42 patches and preserves the other 533 unchanged. The original and
+the separate spot revisions remain. New revision:
+`measurement-20260927-154833490-rows22-23.json` and the corresponding TI3.
 
-Direkt jämförelse av rättad TI3 med i1Profilers ursprungliga MXF, med gemensam
-D50/2°-beräkning från spektra:
+Direct comparison of the corrected TI3 with i1Profiler's original MXF, using a common
+D50/2° calculation from the spectra:
 
-- 575 patchar, samma RGB inom decimalavrundning och samma 36 våglängder.
-- Medel ΔE00 0,5616; median 0,5266; P95 1,0507; maximum 1,7035.
-- 536 patchar under 1 ΔE00; alla 575 under 2.
-- Spektralt RMS-fel 0,8001 procentenheter reflektans.
+- 575 patches, the same RGB within decimal rounding and the same 36 wavelengths.
+- Mean ΔE00 0.5616; median 0.5266; P95 1.0507; maximum 1.7035.
+- 536 patches below 1 ΔE00; all 575 below 2.
+- Spectral RMS error 0.8001 percentage points of reflectance.
 
-Detta är olika utskrifter: resultatet omfattar både utskriftsvariation och
-mätvariation. Det är inte isolerad instrumentrepeterbarhet eller en
-verifiering av en färdig ICC-profil. Den tidigare accepterade MXF-exporten
-innehåller fortfarande den äldre radordningen; den är kompatibilitetsbevis,
-inte den aktuella korrigerade profileringsmätningen.
+These are different prints: the result includes both print variation and
+measurement variation. It is not isolated instrument repeatability or a
+verification of a finished ICC profile. The previously accepted MXF export
+still contains the older row order; it is compatibility evidence,
+not the current corrected profiling measurement.
 
-## Kvarstående gränser
+## Remaining limits
 
-Automatisk dubbelriktad radidentifiering kan fortfarande misstolka vissa
-icke-randomiserade rader. Ny kod varnar för misstänkt omvänd ordning; den
-vänder inte data automatiskt. Import utan entydig layout/koppling avvisas.
-Andra MXF-varianter, fysisk punktommätning efter MXF-import samt ICC-generering
-och profilvalidering kräver fortsatt provning.
+Automatic bidirectional row identification can still misinterpret some
+non-randomised rows. New code warns about suspected reversed order; it does not
+reverse data automatically. Import without an unambiguous layout/link is rejected.
+Other MXF variants, physical spot re-measurement after MXF import and ICC generation
+and profile validation require further testing.
 
-## Kontroller inför commit
+## Checks before commit
 
-- 31 Python-tester passerade (`unittest discover`, `test_*.py`).
-- 7 MATLAB-tester passerade: PXF-export, mätimport/ersättning/återimport,
-  punktmätning med simulerat instrument samt parade svep.
-- Den återanvändbara MXF-kompatibilitetsexportören reproducerade användarens
-  accepterade MXF byte för byte (SHA-256
+- 31 Python tests passed (`unittest discover`, `test_*.py`).
+- 7 MATLAB tests passed: PXF export, measurement import/replacement/re-import,
+  spot measurement with a simulated instrument, and paired sweeps.
+- The reusable MXF compatibility exporter reproduced the user's
+  accepted MXF byte for byte (SHA-256
   `6a5a4f5d8dd7151878558108412607a09c78ac0558308dcd73ec40f6ab8c782a`).
-- `git diff --check` utan fel. Fysiska mätningar ingår inte i automatiska tester.
+- `git diff --check` without errors. Physical measurements are not part of the automated tests.

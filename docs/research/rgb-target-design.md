@@ -1,123 +1,123 @@
-# InkProf: antal patchar och täckning av RGB-rummet
+# InkProf: number of patches and coverage of the RGB space
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Datum: 2026-09-26. Första utredningen. Rekommendationerna är försöksförslag, inte verifierade kvalitetslöften. Inga nya utskrifter eller instrumentmätningar har genomförts för denna analys.
+Date: 2026-09-26. First investigation. The recommendations are trial proposals, not verified quality promises. No new prints or instrument measurements have been made for this analysis.
 
-## Rekommendation
+## Recommendation
 
-Behåll det befintliga 575-målet som ett första empiriskt underlag. För ett nytt standardförsök rekommenderas en budget på **882 mätpositioner**, med tydlig uppdelning mellan anpassning, oberoende kontroll och upprepningar. Välj slutligt patchantal efter uppmätt modellfel, gråbalans och variation — inte enbart efter en jämn fördelning i RGB.
+Keep the existing 575 target as a first empirical basis. For a new standard trial, a budget of **882 measurement positions** is recommended, with a clear division between fitting, independent checks and repeats. Choose the final patch count according to measured model error, grey balance and variation — not merely according to an even distribution in RGB.
 
-882 är en praktisk budget, inte ett matematiskt optimum. Den aktuella A4-layouten med kontrastfält har 21 patchar per rad och 21 rader på en full sida: 441 positioner. Två sidor rymmer 882. De nyligen skapade 575-målen upptar 28 rader på två sidor, inklusive 13 utfyllnadspositioner. Ett fullt 882-mål kräver 42 rader: cirka 50 procent fler radsvep, trots samma antal pappersark. Detta är inte samma layout som den äldre 29 × 20-mallen.
+882 is a practical budget, not a mathematical optimum. The current A4 layout with contrast fields has 21 patches per row and 21 rows on a full page: 441 positions. Two pages hold 882. The recently created 575 targets occupy 28 rows on two pages, including 13 filler positions. A full 882 target requires 42 rows: about 50 percent more row sweeps, despite the same number of paper sheets. This is not the same layout as the older 29 × 20 template.
 
-## Vad ska täckas?
+## What should be covered?
 
-Styrvariabeln är u=(R,G,B) i [0,1]^3. Vi modellerar hela den låsta kedjan från RGB genom utskriftsprogram, drivrutin, medieläge, bläck och papper till spektrum eller XYZ. Antalet patroner gör inte detta till ett tolvdimensionellt styrproblem: InkProf kan här bara välja tre ingångsvärden.
+The control variable is u=(R,G,B) in [0,1]^3. We model the whole locked chain from RGB through print software, driver, media mode, ink and paper to spectrum or XYZ. The number of cartridges does not make this a twelve-dimensional control problem: InkProf can here only choose three input values.
 
-Tre mål måste skiljas:
+Three goals must be kept apart:
 
-1. Geometrisk täckning av RGB-kuben, inklusive hörn, kanter, ytor och inre.
-2. Tillräcklig upplösning i den faktiskt utskrivna färgrymden.
-3. Noggrannhet där användaren prioriterar den, exempelvis gråbalans, skuggor och mjuka tonförlopp.
+1. Geometric coverage of the RGB cube, including corners, edges, faces and interior.
+2. Sufficient resolution in the colour space actually printed.
+3. Accuracy where the user sets priorities, for example grey balance, shadows and smooth tonal transitions.
 
-Likformigt RGB innebär inte likformigt Lab. R=G=B är en diagonal i styrvärdesrummet, inte bevis för neutral utskrift. Den uppmätta neutralbanan kan ligga vid olika kanalvärden. Punkter i diagonalens närhet behövs därför också. Provtagning av kubens ytor hjälper gränsbeskrivningen, men räcker inte som bevis för den verkliga gamutgränsen i en icke-linjär utskriftskedja.
+Uniform RGB does not mean uniform Lab. R=G=B is a diagonal in the control-value space, not proof of a neutral print. The measured neutral path may lie at different channel values. Points near the diagonal are therefore also needed. Sampling the faces of the cube helps describe the boundary but is not sufficient proof of the real gamut boundary in a non-linear print chain.
 
-Spektra kan integreras till XYZ och Lab utan ICC-profil när illuminant, observatör, skala och referensvit är definierade. För denna studie används inga sådana antaganden: jämförelsen nedan gäller enbart enhets-RGB.
+Spectra can be integrated to XYZ and Lab without an ICC profile when illuminant, observer, scale and reference white are defined. For this study no such assumptions are used: the comparison below concerns device RGB only.
 
-## Vad gör Argyll och InkProf idag?
+## What do Argyll and InkProf do today?
 
-Argylls skrivarguide anger 400–1000 patchar som en allmän utgångspunkt för RGB, beroende på beteende och ambitionsnivå. Det är ingen garanti för vår skrivare. [1]
+Argyll's printer guide gives 400–1000 patches as a general starting point for RGB, depending on behaviour and level of ambition. It is no guarantee for our printer. [1]
 
-`targen` erbjuder OFPS, regelbundna kubpunkter och gråramp. En tidigare ICC/MPP kan styra perceptuell placering; utan sådan används en generell modell. `-f` anger totalbudget inklusive redan valda punkter. Profilbaserad neutralbetoning är relevant först när neutralbanan kan uppskattas. [2]
+`targen` offers OFPS, regular cube points and a grey ramp. An earlier ICC/MPP can steer perceptual placement; without one, a general model is used. `-f` specifies the total budget including points already chosen. Profile-based neutral emphasis is relevant only when the neutral path can be estimated. [2]
 
-Nuvarande `createTarget` använder `-d2`, vita/svarta upprepningar, gråramp och `-f`. Standardvärdena i InkProf är 100 patchar, 9 gråsteg samt 4 vita och 4 svarta positioner. Detta är ett tekniskt standardvärde, inte ett godkänt profileringsrecept. Anpassning med tidigare profil, explicit kubfördelning och rollindelning för validering är ännu inte exponerade som färdiga användarval.
+The current `createTarget` uses `-d2`, white/black repeats, grey ramp and `-f`. InkProf's default values are 100 patches, 9 grey steps and 4 white and 4 black positions. This is a technical default, not an approved profiling recipe. Adaptation with an earlier profile, explicit cube distribution and role division for validation are not yet exposed as ready-made user options.
 
-Blanda inte algoritmen för att välja RGB-punkter med randomisering av deras plats på papperet. Placering och kontrastfält hjälper mätningen; de tillför inte nya färgprov.
+Do not mix the algorithm for choosing RGB points with randomisation of their position on the paper. Placement and contrast fields help the measurement; they add no new colour samples.
 
-## Faktisk kontroll av 575-filen
+## Actual check of the 575 file
 
-Kontrollerad källa: `projects/Chart 575 Patches.pxf`.
+Checked source: `projects/Chart 575 Patches.pxf`.
 SHA-256: `f54d05bb1c6b5898a3e30f8342a3361f166a4faa43aaad2d4ef9e67e32ad4fa3`.
 
-Två jämförelsemängder skapades med installerad ArgyllCMS 3.5.0:
+Two comparison sets were created with the installed ArgyllCMS 3.5.0:
 
 ```sh
 targen -d2 -e4 -B4 -g33 -m3 -f575 baseline-575
 targen -d2 -e4 -B4 -g33 -m3 -f882 baseline-882
 ```
 
-Detta är kandidater för geometrisk jämförelse, inte de slutliga rollindelade recepten. Båda kommandona har körts och deras faktiska patchantal kontrollerats. `-m3` lägger ett glest kubnät som ankare; det ersätter inte spridningen mellan ankarna. Grårampen och hörnen kan överlappa andra val, så faktisk unik mängd måste alltid räknas efter generering.
+These are candidates for geometric comparison, not the final role-divided recipes. Both commands have been run and their actual patch counts checked. `-m3` places a sparse cube grid as anchors; it does not replace the spread between the anchors. The grey ramp and corners may overlap other choices, so the actual unique set must always be counted after generation.
 
-| Egenskap | Befintlig PXF 575 | Argyll-kandidat 575 | Argyll-kandidat 882 |
+| Property | Existing PXF 575 | Argyll candidate 575 | Argyll candidate 882 |
 |---|---:|---:|---:|
-| Mätpositioner | 575 | 575 | 882 |
-| Unika RGB | 569 | 569 | 876 |
-| Extra positioner med redan förekommande RGB | 6 | 6 | 6 |
-| Kubhörn | 8/8 | 8/8 | 8/8 |
-| Unika R=G=B | 23 | 33 | 33 |
-| Unika punkter på kubens rand | 299 | 217 | 292 |
-| p95 för avstånd till närmaste RGB-prov | 0,09672 | 0,09210 | 0,07761 |
-| Största avstånd i probnätet | 0,11823 | 0,11644 | 0,10017 |
+| Measurement positions | 575 | 575 | 882 |
+| Unique RGB | 569 | 569 | 876 |
+| Extra positions with already occurring RGB | 6 | 6 | 6 |
+| Cube corners | 8/8 | 8/8 | 8/8 |
+| Unique R=G=B | 23 | 33 | 33 |
+| Unique points on the cube boundary | 299 | 217 | 292 |
+| p95 of distance to nearest RGB sample | 0.09672 | 0.09210 | 0.07761 |
+| Largest distance in the probe grid | 0.11823 | 0.11644 | 0.10017 |
 
-Avstånden är euklidiska i normaliserat RGB, inte ΔE, procent färgfel eller profileringsfel. Ett regelbundet nät med 33³=35 937 kontrollpunkter, inklusive kubgränserna, användes. För varje punkt beräknades närmaste avstånd till targetmängden. Dubbletter räknades efter avrundning till åtta decimaler. Nätets största avstånd är en uppskattning underifrån av det kontinuerliga värsta avståndet; mellan nätpunkterna kan större luckor finnas. Råresultat, kommandoutdata och reproduktionsskript ligger i `rgb-target-study/`.
+Distances are Euclidean in normalised RGB, not ΔE, percent colour error or profiling error. A regular grid of 33³=35,937 check points, including the cube boundaries, was used. For each point the nearest distance to the target set was computed. Duplicates were counted after rounding to eight decimals. The grid's largest distance is an estimate from below of the continuous worst-case distance; larger gaps may exist between grid points. Raw results, command output and reproduction scripts are in `rgb-target-study/`.
 
-Slutsats: 575-filen har goda grundegenskaper och är inte uppenbart olämplig. Ungefär hälften av dess unika punkter ligger på randen. Argyll-kandidaten med samma antal flyttar fler punkter till andra delar av kuben och har något mindre luckor enligt detta mått. 882 ger tydligare förbättring av täckningen. Inget av detta visar vilket target som ger lägst uppmätt ΔE00.
+Conclusion: the 575 file has good basic properties and is not obviously unsuitable. About half of its unique points lie on the boundary. The Argyll candidate with the same count moves more points to other parts of the cube and has somewhat smaller gaps according to this measure. 882 gives a clearer improvement in coverage. None of this shows which target gives the lowest measured ΔE00.
 
-## Förslag till första standardrecept
+## Proposed first standard recipe
 
-Fördelningen nedan är InkProfs försöksförslag, inte en Argyll-rekommendation:
+The distribution below is InkProf's trial proposal, not an Argyll recommendation:
 
-| Roll | Positioner | Användning |
+| Role | Positions | Use |
 |---|---:|---|
-| Anpassning | 738 | Framåtmodell och första profil |
-| Låst kontroll | 120 | Modellval och redovisad första kontroll; aldrig in i anpassningen |
-| Extra upprepningar | 24 | Två extra kopior av 12 representativa anpassningspatchar |
-| Summa | 882 | Två fulla sidor i aktuell layout |
+| Fitting | 738 | Forward model and first profile |
+| Locked check | 120 | Model selection and reported first check; never enters the fitting |
+| Extra repeats | 24 | Two extra copies of 12 representative fitting patches |
+| Total | 882 | Two full pages in the current layout |
 
-Anpassningsmängden ska innehålla alla hörn, cirka 33 diagonalnivåer och ett glest kubnät. Komplettera med väl spridda punkter; fördelningen nära neutralområdet ska prövas snarare än låsas till en obevisad procentsats. Upprepningarnas 12 grundfärger bör omfatta vitt, svart, flera mellangrå och representativa kulörer. Fördela kopiorna mellan sidor och positioner. Tre exemplar per vald färg ger en grov variationsbild, inte en exakt osäkerhetsmodell.
+The fitting set should contain all corners, about 33 diagonal levels and a sparse cube grid. Complement with well-spread points; the distribution near the neutral region should be tested rather than locked to an unproven percentage. The 12 base colours for the repeats should include white, black, several mid-greys and representative hues. Distribute the copies across pages and positions. Three copies per chosen colour give a rough picture of variation, not an exact uncertainty model.
 
-Kontrollmängdens 120 färger väljs separat: förslagsvis 96 brett spridda och 24 längs eller nära diagonalområdet. Undvik RGB som redan finns i anpassningen. Dessa tal och placeringar behöver pilotutvärderas. Om kontrollmängden används för att styra nästa förbättring blir den utvecklingsdata; ett nytt orört sluttest behövs för den slutliga kvalitetsuppgiften.
+The check set's 120 colours are chosen separately: tentatively 96 widely spread and 24 along or near the diagonal region. Avoid RGB that already exists in the fitting. These numbers and placements need pilot evaluation. If the check set is used to steer the next improvement, it becomes development data; a new untouched final test is needed for the final quality statement.
 
-Rollerna måste finnas i intern JSON och följas vid export till profilbyggaren. Att skriva alla 882 till en TI3 och låta `colprof` använda dem alla skulle förstöra denna uppdelning. Upprepade RGB ska ha egna prov-ID, gemensamt färg-ID och koppling till varandra. Kontrastfält och utfyllnad är separata layoutobjekt.
+The roles must exist in the internal JSON and be respected on export to the profile builder. Writing all 882 to one TI3 and letting `colprof` use them all would destroy this division. Repeated RGB must have their own sample IDs, a common colour ID and a link to each other. Contrast fields and filler are separate layout objects.
 
-För den redan utskrivna 575-kartan: mät och använd den, bygg ett första underlag och skapa därefter ett separat kontrollmål. Spara kostnaden för en ny första utskrift; det finns ännu ingen evidens för att kasta bort 575-materialet.
+For the already printed 575 chart: measure and use it, build a first basis and then create a separate check target. Save the cost of a new first print; there is as yet no evidence for discarding the 575 material.
 
-## Hur väljs ett tillräckligt antal?
+## How is a sufficient number chosen?
 
-Ett fullständigt regelbundet nät kostar n³ prov: 5³=125, 7³=343, 9³=729 och 11³=1331. Sådana nät är begripliga jämförelsealternativ, men kräver fortfarande extra gråprov, upprepningar och kontroll. OFPS är en rimlig referens att jämföra med, inte automatiskt vinnaren för alla felmått.
+A full regular grid costs n³ samples: 5³=125, 7³=343, 9³=729 and 11³=1331. Such grids are understandable comparison alternatives, but still require extra grey samples, repeats and checks. OFPS is a reasonable reference to compare with, not automatically the winner for all error measures.
 
-Försök med växande, helst nästlade anpassningsmängder, exempelvis cirka 400, 575, 750 och 1100 unika färger. Nästlade betyder att tidigare prov behålls. Två separata targen-körningar med olika `-f` ger inte automatiskt nästlade mängder. InkProf måste äga kompletteringslistan eller välja dokumenterade delmängder ur en gemensam mätt mängd. De lokala 575- och 882-kandidaterna ovan är inte påstått nästlade.
+Try growing, preferably nested fitting sets, for example about 400, 575, 750 and 1100 unique colours. Nested means that earlier samples are kept. Two separate targen runs with different `-f` do not automatically give nested sets. InkProf must own the completion list or choose documented subsets from a common measured set. The local 575 and 882 candidates above are not claimed to be nested.
 
-Vid jämförelse ska skrivare, papper, inställningar, torktid och mätvillkor vara lika. Upprepade avläsningar av samma tryck mäter främst läsvariation; upprepade tryck behövs för utskriftsvariation. Fram- och retursvep på samma rad är användbara men ersätter inte nya tryck.
+In comparison, printer, paper, settings, drying time and measurement conditions must be equal. Repeated readings of the same print mainly measure reading variation; repeated prints are needed for print variation. Forward and return sweeps on the same row are useful but do not replace new prints.
 
-Redovisa median, p95 och max ΔE00 på kontrollmängden, samt gråbalans, ljushetsfel och tonförlopp separat. Spektralfel kan komplettera, med explicit skala. Rapportera stickprovsstorlek: med 120 kontrollfärger bestäms p95 av bara ungefär de sex största felen. Små skillnader i p95 kräver därför försiktighet och upprepade försök.
+Report median, p95 and max ΔE00 on the check set, as well as grey balance, lightness error and tonal transitions separately. Spectral error can complement, with an explicit scale. Report sample size: with 120 check colours, p95 is determined by only about the six largest errors. Small differences in p95 therefore require caution and repeated trials.
 
-Stoppa förtätningen när de överenskomna kvalitetskraven uppfylls och nästa utökning inte ger en förbättring som går att skilja från tryck-/mätvariationen. Toleranser ska bestämmas utifrån användning; denna utredning hittar inte på ett generellt godkänt ΔE00-tal.
+Stop the densification when the agreed quality requirements are met and the next extension gives no improvement that can be distinguished from print/measurement variation. Tolerances should be decided from the intended use; this investigation does not invent a generally approved ΔE00 figure.
 
-## Adaptiv fortsättning
+## Adaptive continuation
 
-När ett första uppmätt samband finns kan nästa RGB-punkter väljas med stöd av en preliminär modell. Beakta geometriska luckor, lokala kontrollfel, ändrad lutning/krökning och osäkerhet. Stor gradient ensam innebär inte stort interpolationsfel: en brant linjär funktion kan interpoleras exakt. Mättade områden med liten respons kan däremot göra inversen instabil.
+When a first measured relationship exists, the next RGB points can be chosen with the support of a preliminary model. Consider geometric gaps, local check errors, changed slope/curvature and uncertainty. A large gradient alone does not mean a large interpolation error: a steep linear function can be interpolated exactly. Saturated areas with small response, on the other hand, can make the inverse unstable.
 
-Blanda riktad komplettering med fortsatt bred utforskning. Annars riskerar modellen att bara förbättra områden där den redan kan upptäcka sina egna fel. Neutralitet ska efter första mätningen styras av den uppmätta neutralbanan, inte enbart av R=G=B. Viktning i en anpassning kan inte ersätta saknade prover.
+Mix targeted completion with continued broad exploration. Otherwise the model risks improving only areas where it can already detect its own errors. After the first measurement, neutrality should be steered by the measured neutral path, not only by R=G=B. Weighting in a fit cannot replace missing samples.
 
-Fler patchar ökar inte skrivarens fysiska gamut. De kan förbättra beskrivningen av dess gräns och möjliggöra en bättre invers/gamutmappning. Att använda en preliminär profil för patchval är inte samma sak som att färghantera testutskriften: styrvärdena måste fortfarande skickas oförändrade genom den valda utskriftskedjan.
+More patches do not increase the printer's physical gamut. They can improve the description of its boundary and enable a better inverse/gamut mapping. Using a preliminary profile for patch selection is not the same as colour-managing the test print: the control values must still be sent unchanged through the chosen print chain.
 
-## Nästa implementation
+## Next implementation
 
-1. Ett granskningskommando för target: unika färger, hörn, diagonal/rand, luckor och roller.
-2. Explicit genereringsrecept i JSON: algoritm, verktygsversion, parametrar, originalpatchar och filhashar. Layoutens slumpfrö är inte i sig ett frö för targens punktgenerering.
-3. Separata roller för anpassning, kontroll och upprepning genom hela kedjan TI1 → TI2 → mät-JSON → profilunderlag.
-4. Valbar basgenerering och senare profilbaserad generering. Faktiskt antal och ankare valideras efter verktygskörning, inte bara från önskat `PatchCount`.
-5. Först därefter automatisk komplettering och stoppkriterier.
+1. A review command for targets: unique colours, corners, diagonal/boundary, gaps and roles.
+2. Explicit generation recipe in JSON: algorithm, tool version, parameters, original patches and file hashes. The layout's random seed is not in itself a seed for the target's point generation.
+3. Separate roles for fitting, check and repeat throughout the chain TI1 → TI2 → measurement JSON → profile basis.
+4. Selectable base generation and later profile-based generation. Actual count and anchors are validated after the tool run, not only from the desired `PatchCount`.
+5. Only then automatic completion and stopping criteria.
 
-Detta dokument ändrar inga produktionsförval och genererar inga nya utskriftsmål. Befintlig 575-PXF och de två lokala Argyll-kandidaterna är analysunderlag.
+This document changes no production defaults and generates no new print targets. The existing 575 PXF and the two local Argyll candidates are analysis material.
 
-## Källor och anknytning
+## Sources and context
 
-[1] [ArgyllCMS: Profiling Printers, Creating a print profile test chart](https://www.argyllcms.com/doc/Scenarios.html). Hämtad 2026-09-26.
+[1] [ArgyllCMS: Profiling Printers, Creating a print profile test chart](https://www.argyllcms.com/doc/Scenarios.html). Retrieved 2026-09-26.
 
-[2] [ArgyllCMS: targen](https://www.argyllcms.com/doc/targen.html). Hämtad 2026-09-26; lokal verktygsversion 3.5.0.
+[2] [ArgyllCMS: targen](https://www.argyllcms.com/doc/targen.html). Retrieved 2026-09-26; local tool version 3.5.0.
 
-Tidigare InkProf-underlag: [modell, invers och adaptiv mätning](InkProf-modell-inversion-och-adaptiv-matning.md), [utskriftsstandard](../usage/target-print-standard.md). Matematiken, budgetfördelningen och slutsatserna från lokala data ovan är denna utrednings egna analyser.
+Earlier InkProf material: [model, inverse and adaptive measurement](InkProf-modell-inversion-och-adaptiv-matning.md), [print standard](../usage/target-print-standard.md). The mathematics, budget distribution and conclusions from the local data above are this investigation's own analyses.
 
-Efter denna utredning har en första [interaktiv geometrisk förtätning](../usage/rgb-target-designer.md) implementerats. Det är ett jämförelsealternativ till OFPS; ännu ingen uppmätt färgfelstyrning.
+After this investigation, a first [interactive geometric densification](../usage/rgb-target-designer.md) has been implemented. It is a comparison alternative to OFPS; there is not yet any control by measured colour error.

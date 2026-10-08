@@ -1,6 +1,6 @@
 # InkProf v1.0.0 workflow guide
 
-Source build **1.0.0-rc.1**, prepared 2026-10-03. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with `setupInkProf(CheckPython=true); startInkProfApp();` from the source folder.
+Source build **1.0.0-rc.2**, updated 2026-10-08. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with `setupInkProf(CheckPython=true); startInkProfApp();` from the source folder.
 
 ## One project, one source of settings
 
@@ -24,7 +24,7 @@ Rename through Project details to rename the project folder too. External folder
 | 10 | Measure verification | Saved verification revision |
 | 11 | C3: compare model and print | Desired vs measured and predicted vs measured errors |
 | 12 | Review feedback | Recorded feedback/decision, not merely opening a window |
-| 13 | Approve intended use | Explicit scope, notes and confirmation tied to current evidence |
+| 13 | Approve intended use | Selecting this available step opens the review dialog; enter scope and notes, then confirm explicitly |
 | 14 | Save ICC and certificate | Delivery copies plus PDF/HTML measurement certificate |
 | 15 | Save refinement TIFF16 | Added fitting patches, development checks and controls |
 | 16 | Measure refinement | Reviewable additional measurements |
@@ -65,3 +65,15 @@ After row 17, run row 8. Then either perform current-iteration C2/C3 and approve
 InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only preparation build: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.0.0.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits.
 
 Existing ICC profiles can be tested in the separate **Verify existing ICC** project mode. See [Verify an existing printer ICC](verify-existing-icc.md).
+
+## Final measured approval after refinement
+
+When refinement no longer gives useful improvement, document the stopping decision using comparable evidence. Run rows 8 and 9, print C2 without further colour conversion, then run rows 10-12. Row 13 records intended use, limitations and explicit user approval; row 14 exports the ICC and certificate tied to current physical verification. Training fit or convergence alone does not establish print accuracy. Row 19 is the numerical-only route. See the handbook section “Finish with a measured and approved profile”.
+
+For stopping decisions, system limitations and final measured approval, see [Best practice for profiling](profiling-best-practice.md). Failure to meet an applicable standard requirement must remain disclosed, even when a reviewer accepts the result for a different stated use.
+
+See [Profiling paths, regularisation and refinement](profiling-paths.md) for the current B2/B3 choices, refinement defaults and settings that are not inherited.
+
+## Complete profiling best practice
+
+The [best-practice guide](profiling-best-practice.md) and matching handbook appendices (pages 38–44, updated 2026-10-08) follow the full job and decision points: existing-ICC target placement, measurement budget, printing, revisions and white references, smoothing, refinement selection, stopping, independent final print and reviewer approval. Source guidance from Torger and i1Profiler is compared with the actual InkProf route. Practical stopping recommendations are not automatic approval rules; row 19 does not replace measured final verification.

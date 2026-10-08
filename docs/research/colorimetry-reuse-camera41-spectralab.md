@@ -1,77 +1,77 @@
-# Återanvändning av färgberäkningar från SpectraLab och Camera-41
+# Reuse of colour calculations from SpectraLab and Camera-41
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Datum: 2026-09-25. Status: inventering och föreslaget integrationskontrakt; ingen InkProf-integration är implementerad här.
+Date: 2026-09-25. Status: inventory and proposed integration contract; no InkProf integration is implemented here.
 
-## Syfte
+## Purpose
 
-InkProf ska ha egna, gemensamma och verifierade färgberäkningar, utan körberoende till SpectraLab eller Camera-41. Inventeringen är kunskapsunderlag och möjliga licenskontrollerade kodkällor, inte en lista över nödvändiga installationer. Filkonvertering och färgberäkning är separata operationer. En exporterad fil ska normalt återge redan tolkade data, inte räkna om färger utan ett uttryckligt beräkningsbeslut.
+InkProf is to have its own, shared and verified colour calculations, without a runtime dependency on SpectraLab or Camera-41. The inventory is a knowledge base and a list of possible licence-checked code sources, not a list of necessary installations. File conversion and colour calculation are separate operations. An exported file should normally reproduce already interpreted data, not recalculate colours without an explicit calculation decision.
 
-Denna inventering bygger på läsning av lokal kod i SpectraLab v1.2.1-dev och Camera-41 v0.9.0-dev. Den visar vilka rutiner som finns, men innebär inte att deras fullständiga beroenden eller numeriska riktighet har testats på nytt. Vid eventuell kodadaptation ska ursprungsversion och licens dokumenteras; rutiner och testunderlag ska ingå i InkProf.
+This inventory is based on reading local code in SpectraLab v1.2.1-dev and Camera-41 v0.9.0-dev. It shows which routines exist, but does not mean that their full dependencies or numerical correctness have been retested. In any code adaptation, the original version and licence are to be documented; routines and test data are to be included in InkProf.
 
-## Identifierade rutiner
+## Identified routines
 
-| Behov | Befintlig rutin | Kontrakt och begränsning i granskad kod |
+| Need | Existing routine | Contract and limitation in reviewed code |
 |---|---|---|
-| Reflektans och belysning till XYZ, xyY och Lab | `spectralab.analysis.colorimetry` | Tar spektrala objekt/samlingar/arkiv och explicit illuminant-SPD. En gemensam referensvitskala bevarar patcharnas relativa ljushet. Nu stöds `CIE1931_2`. |
-| Spektral integration till XYZ | `spectralab.analysis.xyz` | Integrerar med CIE 1931 2°-funktioner. En lägre nivå än den kompletta reflektansberäkningen. |
-| XYZ till Lab | `spectralab.analysis.lab` | Kräver prov-XYZ och referensvit-XYZ i kanoniska strukturer med samma normalisering. |
-| XYZ till xyY | `spectralab.analysis.xyY` | Bevarar Y; noll eller ogiltig tristimulussumma avvisas. |
-| Kromatisk adaptation | `camera41.profile.adaptXYZWhitePoint` | Bradford med explicit källvitpunkt och valbar målvitpunkt; standardmål är D50. |
-| Färgskillnad | `camera41.negative.deltaE00` | CIEDE2000 mellan motsvarande ändliga Lab-rader. Detta är ett felmått, inte en färgrymdskonvertering. |
-| XYZ D50 till linjär ACEScg | `camera41.negative.convertXYZD50ToACEScg` | Anpassar till D60 och använder AP1-primärer. Ingen klippning eller tonkurva. Finns för möjliga bildflöden, inte som generell skrivarinvers. |
+| Reflectance and illumination to XYZ, xyY and Lab | `spectralab.analysis.colorimetry` | Takes spectral objects/collections/archives and an explicit illuminant SPD. A common reference white scale preserves the patches' relative lightness. `CIE1931_2` is now supported. |
+| Spectral integration to XYZ | `spectralab.analysis.xyz` | Integrates with CIE 1931 2° functions. A lower level than the complete reflectance calculation. |
+| XYZ to Lab | `spectralab.analysis.lab` | Requires sample XYZ and reference white XYZ in canonical structures with the same normalisation. |
+| XYZ to xyY | `spectralab.analysis.xyY` | Preserves Y; zero or invalid tristimulus sum is rejected. |
+| Chromatic adaptation | `camera41.profile.adaptXYZWhitePoint` | Bradford with explicit source white point and selectable target white point; the default target is D50. |
+| Colour difference | `camera41.negative.deltaE00` | CIEDE2000 between corresponding finite Lab rows. This is an error measure, not a colour space conversion. |
+| XYZ D50 to linear ACEScg | `camera41.negative.convertXYZD50ToACEScg` | Adapts to D60 and uses AP1 primaries. No clipping or tone curve. Exists for possible image workflows, not as a general printer inverse. |
 
-Inventeringen är inte ett påstående om stöd för alla inversa omvandlingar. Lab → XYZ, xyY → XYZ, valfria observatörer och godtyckliga RGB-arbetsrymder behöver inventeras eller implementeras och verifieras separat när de krävs.
+The inventory is not a claim of support for all inverse conversions. Lab → XYZ, xyY → XYZ, arbitrary observers and arbitrary RGB working spaces need to be inventoried or implemented and verified separately when required.
 
-## Kritisk normaliseringsregel
+## Critical normalisation rule
 
-SpectraLabs granskade reflektansväg lagrar reflektansfaktor i procent och räknar med `r = R / 100`. Den viktar med vald illuminant och färgmatchningsfunktionerna. Samma skalfaktor, bestämd av illuminantens referensvit, används för alla patchar:
+SpectraLab's reviewed reflectance path stores reflectance factor in percent and calculates with `r = R / 100`. It weights with the chosen illuminant and the colour-matching functions. The same scale factor, determined by the illuminant's reference white, is used for all patches:
 
 ```text
-prov-SPD = r(lambda) * S(lambda)
-vit-SPD  = S(lambda)
-k        = 100 / Y_vit_raw
-XYZ_prov = k * XYZ_prov_raw
-XYZ_vit  = k * XYZ_vit_raw
+sample-SPD = r(lambda) * S(lambda)
+white-SPD  = S(lambda)
+k          = 100 / Y_white_raw
+XYZ_sample = k * XYZ_sample_raw
+XYZ_white  = k * XYZ_white_raw
 ```
 
-**Normalisera inte varje patch separat till Y = 100.** Den lägre nivåns `xyz(..., Normalization="Y100")` gör just en normalisering av det enskilda indatat och ska därför inte användas direkt för varje reflektanspatch. Då försvinner ljushetsskillnaderna. Använd den samlade reflektansvägen och ett explicit belysningsspektrum.
+**Do not normalise each patch separately to Y = 100.** The lower level's `xyz(..., Normalization="Y100")` does exactly a normalisation of the individual input and must therefore not be used directly for each reflectance patch. The lightness differences would then disappear. Use the collective reflectance path and an explicit illumination spectrum.
 
-## Föreslaget beräkningskontrakt i InkProf
+## Proposed calculation contract in InkProf
 
-- Bevara ursprungsspektrum, våglängder, storhet och skala. Dokumentera eventuell omsampling och integrationsområde.
-- Ange illuminant-SPD, observatör, referensvit och XYZ-normalisering tillsammans med resultatet. Den granskade implementationen stöder inte automatiskt exempelvis 10° bara för att formatet kan beskriva det.
-- Bevara importerat XYZ/Lab som ursprungsdata. Nya beräkningar skapar en separat, versionsmärkt representation och skriver inte över originalet.
-- Separera instrumentrapporterad kolorimetri från den kanoniska beräkningen. SpectraLabs beteende utan explicit illuminant är en särskild väg; InkProf bör ge en uttrycklig SPD för reproducerbara reflektansberäkningar.
-- Skilj en omräkning av samma koordinater från kromatisk adaptation. Beräkning under en annan belysning från spektra och Bradford-adaptation är olika operationer.
-- Använd endast jämförbara Lab-värden för ΔE00 och redovisa referensvillkoren. Funktionens matematiska inmatningskontroll ersätter inte denna semantiska kontroll.
-- Bevara enhets-RGB som styrvärden. Behandla dem inte automatiskt som sRGB, ACEScg eller någon annan standardiserad bildrymd.
-- En färgberäkning till standard-RGB ersätter inte inversion av skrivarens uppmätta framåtmodell eller en ICC-transform.
-- Spara beräkningsversion, använda indata och funktionsversion. Exportörer serialiserar resultatet; de ska inte ha egna dolda färgberäkningar.
+- Preserve the original spectrum, wavelengths, quantity and scale. Document any resampling and integration range.
+- State illuminant SPD, observer, reference white and XYZ normalisation together with the result. The reviewed implementation does not automatically support, for example, 10° just because the format can describe it.
+- Preserve imported XYZ/Lab as original data. New calculations create a separate, version-marked representation and do not overwrite the original.
+- Separate instrument-reported colorimetry from the canonical calculation. SpectraLab's behaviour without an explicit illuminant is a special path; InkProf should provide an explicit SPD for reproducible reflectance calculations.
+- Distinguish a recalculation of the same coordinates from chromatic adaptation. Calculation under a different illumination from spectra and Bradford adaptation are different operations.
+- Use only comparable Lab values for ΔE00 and state the reference conditions. The function's mathematical input check does not replace this semantic check.
+- Preserve device RGB as control values. Do not automatically treat them as sRGB, ACEScg or any other standardised image space.
+- A colour calculation to standard RGB does not replace inversion of the printer's measured forward model or an ICC transform.
+- Save calculation version, inputs used and function version. Exporters serialise the result; they must not have their own hidden colour calculations.
 
-Mätvillkor som M0/M1 och beräkningsbelysning som D50 ska registreras separat. Reflektansberäkningen innebär inte i sig att ett mätflöde är kvalificerat enligt ett visst mätvillkor.
+Measurement conditions such as M0/M1 and calculation illumination such as D50 are to be recorded separately. The reflectance calculation does not in itself mean that a measurement workflow is qualified according to a particular measurement condition.
 
-## Integration och verifiering
+## Integration and verification
 
-Enligt [beslut 007](../decisions/007-independent-inkprof.md) ska beräkningsrutinerna finnas i InkProf. Kunskap eller licensmässigt förenlig kod från tidigare projekt kan återanvändas med ursprungsnotis, men deras API:er får inte bli körberoenden. Egen kolorimetri är planerad och inte färdigställd i denna dokumentationsuppgift.
+According to [decision 007](../decisions/007-independent-inkprof.md), the calculation routines are to reside in InkProf. Knowledge or licence-compatible code from earlier projects may be reused with an origin notice, but their APIs must not become runtime dependencies. Own colorimetry is planned and not completed in this documentation task.
 
-Föreslagna acceptansprov inför implementation (även på en installation utan de andra projekten):
+Proposed acceptance tests before implementation (also on an installation without the other projects):
 
-1. En ideal reflektans på 100 procent får samma XYZ som referensvitt. En konstant 50-procentsreflektans får halva XYZ under samma villkor.
-2. Samma prov ger samma kolorimetri oavsett om det kommer från MXF, TI3 eller ett SpectraLab-arkiv, när spektra och villkor är lika.
-3. XYZ/Lab och adaptation verifieras mot oberoende referensvärden. Kontrollera även noll, neutrala färger och relevanta gränsfall.
-4. ΔE00 verifieras mot en publicerad referensuppsättning; jämförelse med sig själv räcker inte.
-5. Läs-/skrivcykler bevarar originaldata. Avrundning och förändringar i härledda koordinater får angivna toleranser.
+1. An ideal reflectance of 100 percent gives the same XYZ as the reference white. A constant 50 percent reflectance gives half the XYZ under the same conditions.
+2. The same sample gives the same colorimetry regardless of whether it comes from MXF, TI3 or a SpectraLab archive, when spectra and conditions are equal.
+3. XYZ/Lab and adaptation are verified against independent reference values. Also check zero, neutral colours and relevant edge cases.
+4. ΔE00 is verified against a published reference set; comparison with itself is not enough.
+5. Read/write cycles preserve original data. Rounding and changes in derived coordinates have stated tolerances.
 
-## Kodunderlag för inventeringen
+## Code basis for the inventory
 
-Lokala källrötter vid granskningen:
+Local source roots at the time of review:
 
 - SpectraLab: `/Users/christer/Desktop/SpectraLab/SpectraLab_v1.2.1-dev`
 - Camera-41: `/Users/christer/Desktop/Camera-41/Camera-41_v0.9.0-dev`
 
-Filer relativt respektive rot:
+Files relative to each root:
 
 ```text
 SpectraLab:
@@ -87,4 +87,4 @@ Camera-41:
   src/+camera41/+negative/convertXYZD50ToACEScg.m
 ```
 
-Dokumentet kompletterar [datautbyteskontraktet för i1Profiler och ChromIQ](i1profiler-interchange/README.md). Formatbeskrivningarna anger hur data lagras; detta dokument anger vilka befintliga beräkningar som kan återanvändas och under vilka villkor.
+The document complements the [data interchange contract for i1Profiler and ChromIQ](i1profiler-interchange/README.md). The format descriptions state how data is stored; this document states which existing calculations can be reused and under what conditions.

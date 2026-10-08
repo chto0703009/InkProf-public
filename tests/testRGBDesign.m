@@ -76,6 +76,25 @@ d=inkprof.designRGBTarget(Method="argyll",MaxPoints=45,GraySteps=5,ControlCount=
 verifyLessThanOrEqual(tc,size(d.rgb,1),45);verifyEqual(tc,d.fitCount,39);
 verifyEqual(tc,d.stopReason,"Argyll generation complete");verifyNotEmpty(tc,d.argyllRun.version);
 end
+function testArgyllPlacementMethods(tc)
+catalogue=inkprof.internal.targetMethods();
+verifyEqual(tc,numel(unique([catalogue.id])),numel(catalogue));verifyEqual(tc,catalogue(1).id,"mesh");
+for spec=catalogue([catalogue.flag]~="")
+    d=inkprof.designRGBTarget(Method=spec.id,MaxPoints=45,GraySteps=5,ControlCount=4,RepeatCount=2,Optimized=true);
+    args=string(d.argyllRun.arguments);
+    verifyTrue(tc,any(args==spec.flag)&&any(args=="-G"),spec.id);
+    verifyLessThanOrEqual(tc,d.fitCount,39);verifyEqual(tc,d.methodLabel,spec.label);
+    verifyEqual(tc,~isempty(d.warnings),spec.perceptual,spec.id);
+    verifyTrue(tc,contains(inkprof.internal.targetInfoText(d.targetInfo),spec.short));
+end
+end
+function testPreconditionValidation(tc)
+verifyError(tc,@()inkprof.designRGBTarget(Method="mesh",PreconditionProfile="x.icc"),'inkprof:Design');
+verifyError(tc,@()inkprof.designRGBTarget(Method="argyll",MaxPoints=45,GraySteps=5,ControlCount=4,RepeatCount=2, ...
+    PreconditionProfile=fullfile(tempdir,"missing-inkprof-precondition.icc")),'inkprof:Precondition');
+bad=string(tempname)+".icc";fid=fopen(bad,'w');fwrite(fid,uint8(zeros(1,200)));fclose(fid);c=onCleanup(@()delete(bad));
+verifyError(tc,@()inkprof.designRGBTarget(Method="argyll",MaxPoints=45,GraySteps=5,ControlCount=4,RepeatCount=2,PreconditionProfile=bad),'inkprof:PythonRun');
+end
 function testDialog(tc)
 f=inkprof.designTarget();cleanup=onCleanup(@()delete(f));
 set(findobj(f,'Tag','levels'),'Value',2);set(findobj(f,'Tag','graySteps'),'Value',3);

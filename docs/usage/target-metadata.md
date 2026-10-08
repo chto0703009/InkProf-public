@@ -1,43 +1,46 @@
-# Gemensam targetinformation i JSON och TIFF
+# Shared target information in JSON and TIFF
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-Infört 2026-09-26. Import och generering använder samma toppnivåfält: **`targetInfo`**. Det gäller importerade PXF/TXF/CxF, TI1, TI2 och RGB-CGATS samt mål från Argyll och InkProfs nätförfining. Äldre filer skrivs inte om automatiskt.
+Introduced 2026-09-26. Import and generation use the same top-level field: **`targetInfo`**. This applies to imported PXF/TXF/CxF, TI1, TI2 and RGB CGATS, and to targets from Argyll and from InkProf's mesh refinement. Older files are not rewritten automatically.
 
-## Gemensam struktur
+## Shared structure
 
-- `schemaVersion`: metadataformatets version.
-- `source.fileName`, `source.path`, `source.format`, `source.sha256`: källfilens ursprungliga namn, fullständiga sökväg, format och kontrollsumma. De ersätts inte av renderingsstegets tillfälliga filnamn. Före första sparning av ett eget mål saknas en fysisk källfil; vid sparning registreras den slutliga TI1-filen.
-- `source.declaredMetadata`: uppgifter som faktiskt finns i källans CGATS-huvud eller XML-attribut. De hålls åtskilda från beräknade nätmått.
-- `generation.method` och `generation.settings`: känd metod och parametrar. En vanlig import får `unknown` som metod om den inte kan beläggas. En filändelse bevisar inte genereringsalgoritmen.
-- Egna nätförsök sparar också initialnivåer, ursprungligt nät, föräldrarelationer, iterationshistorik, gapvillkor och stopporsak under `generation`. Argyll-körningar sparar sina argument/versioner när de finns.
-- `patchCount`, `uniqueRGBCount`: källpatchar och unika RGB. Layoutens utfyllnad ingår inte. Jämförelsen av unika färger använder tolv decimaler i normaliserat RGB.
-- `network`: omfattning (`scope`), punktantal, unika punkter, affin dimension, antal kanalnivåer, om hela den kartesiska produkten finns och om kanalstegen är likformiga, antal kubhörn och diagonalgrå, samt antal Delaunay-kanter, största och genomsnittlig kantlängd. Ett rent gråmål är endimensionellt och får inga påhittade tredimensionella nätmått. För egna designer beräknas nätmåtten på anpassningspunkterna, utan kontroll och upprepning.
-- `footerText`: den korta sammanfattning som renderas i TIFF.
-- `upstream`: tidigare metadata när en återimport har ett tillhörande InkProf-design-JSON vars filhash stämmer. Metod och roller från ett sådant underlag bevaras; nätmåtten beräknas för de faktiskt importerade RGB-värdena. En identifierad men felmatchad sidecar avvisas.
+| Field | Content |
+|---|---|
+| `schemaVersion` | The version of the metadata format. |
+| `source.fileName`, `source.path`, `source.format`, `source.sha256` | The source file's original name, full path, format and checksum. They are not replaced by the rendering step's temporary file names. Before your own target is saved for the first time there is no physical source file; on saving, the final TI1 file is recorded. |
+| `source.declaredMetadata` | Information actually present in the source's CGATS header or XML attributes. It is kept apart from computed mesh measures. |
+| `generation.method`, `generation.settings` | The known method and parameters. An ordinary import gets `unknown` as its method unless it can be substantiated; a file extension does not prove the generation algorithm. Own mesh attempts also save initial levels, the original mesh, parent relations, iteration history, gap conditions and stop reason. Argyll runs save their arguments and versions when available. |
+| `patchCount`, `uniqueRGBCount` | Source patches and unique RGB. Layout padding is not included. The comparison of unique colours uses twelve decimals in normalized RGB. |
+| `network` | Scope, number of points, unique points, affine dimension, number of channel levels, whether the full Cartesian product is present and whether the channel steps are uniform, number of cube corners and diagonal grays, and the number of Delaunay edges with the largest and mean edge length. A pure gray target is one-dimensional and gets no invented three-dimensional mesh measures. For own designs, the mesh measures are computed on the fitting points, without controls and repeats. |
+| `footerText` | The short summary rendered in the TIFF. |
+| `upstream` | Earlier metadata, when a re-import has an associated InkProf design JSON whose file hash matches. Method and roles from such a record are preserved; the mesh measures are computed for the RGB values actually imported. An identified but mismatched sidecar is rejected. |
 
-Geometriska RGB-avstånd är inte uppmätta färgfel eller ΔE. Standardfältet säger inget om en okänd källfil faktiskt genererades med ett regelbundet nät.
+Geometric RGB distances are not measured colour errors or ΔE. The default field says nothing about whether an unknown source file was actually generated with a regular grid.
 
-## Var samma fält finns
+## Where the same field appears
 
-`targetInfo` används i importens targetstruktur, `target.json`, renderingspaketets layout-JSON och manifest, designerfönstrets sparade JSON och nyskapad `chart.json`. Mätimport för sedan vidare fältet om sessionens chart-JSON har det. En verifieringsrapport behöver inte duplicera denna beskrivning.
+`targetInfo` is used in the import's target structure, `target.json`, the render package's layout JSON and manifest, the designer window's saved JSON and a newly created `chart.json`. The measurement import then carries the field forward if the session's chart JSON has it. A verification report does not need to duplicate this description.
 
-TI1/TI2-filerna behåller respektive standardformat. Vid direkt återimport av en sparad designer-TI1/TI2 kontrolleras filhashen mot motsvarande `<namn>.json` innan genereringsmetadata används. Att en fristående fil saknar denna sidecar är inte ett fel: dess faktiska RGB och deklarerade metadata används, men okänd genereringshistorik hittas inte på.
+The TI1/TI2 files keep their respective standard formats. On direct re-import of a saved designer TI1/TI2, the file hash is checked against the corresponding `<name>.json` before generation metadata is used. A standalone file without this sidecar is not an error: its actual RGB and declared metadata are used, but no unknown generation history is invented.
 
-## TIFF-sidfot
+## TIFF footer
 
-Ovanför den fullständiga TIFF-sökvägen står en centrerad sammanfattning:
+A centred summary is printed above the full TIFF path:
 
 `Source: Chart 575 Patches.pxf | imported PXF | 575 patches / 569 unique | RGB edge max …`
 
-För nätförfining tillkommer startnät och antal tillägg, exempelvis `start 5^3, +346`. Detaljerna kan inte alla rymmas på papper; de finns i `targetInfo`. Informationsraden är normalt 7 punkter och anpassas ned till 6 om det behövs. Text kapas inte tyst; en alltför lång rad ger ett tydligt fel.
+For mesh refinement, the starting mesh and the number of additions are added, for example `start 5^3, +346`. For profile tests and verification targets, the line states the applied ICC (name and start of its hash), that it was applied absolute colorimetric without BPC, that the print is to be made with colour management off, and the reference set. Not every detail fits on paper; the rest is in `targetInfo`.
 
-Informationsraden centreras cirka 8,8 mm från nederkanten. Sökväg, datum och sidnummer ligger cirka 3,5 mm från nederkanten. Sökvägen kan radbrytas till två rader. Argyll-renderingen reserverar 12 mm nedtill. Den fasta sidmallen behåller sina patchpositioner och bildmått; texten måste rymmas i dess befintliga marginal. All text kontrolleras mot befintliga bildpixlar före publicering.
+The information line is normally 7 points and is reduced to 6 if needed. If it still does not fit, only this supplementary line is shortened with an ellipsis; the full details remain in `targetInfo`. The TIFF path is never cut: a path that does not fit gives a clear error.
 
-Både `createTarget` och `createTiff16` använder samma metadatafält och formatteringsrutin. Nya utskrifter måste alltid mätas med sitt eget TI2-underlag.
+In current full-page Argyll targets the information line is centred about 17.3 mm and the path, date and page number about 12 mm from the bottom edge; the path can wrap to two lines. Targets narrower than 240 mm use 27 mm (information line), 19 mm (path, up to four lines) and 10 mm (date and page number). The fixed 263 × 195 mm page template keeps about 8.8 mm and 3.5 mm. Current Argyll rendering reserves 22 mm at the bottom, or 30 mm for widths below 240 mm. The native capacity is reduced accordingly; see [print geometry](target-print-standard.md). The fixed page template keeps its patch positions and image dimensions; the text must fit in its existing margin. All text is checked against existing image pixels before publication.
 
-Separat sparade nätdefinitioner använder `definition.ti1SHA256` i design-JSON. Äldre kombinerade paket med `print.ti1SHA256`/`print.ti2SHA256` kan fortfarande läsas. Vid rendering arkiveras även den verifierade design-JSON-filen bredvid källans TI1, så att roller och fullständig näthistorik finns kvar i utskriftspaketet.
+Both `createTarget` and `createTiff16` use the same metadata field and formatting routine. New prints must always be measured with their own TI2.
 
-## Planerad återkoppling från mätfel
+Separately saved mesh definitions use `definition.ti1SHA256` in the design JSON. Older combined packages with `print.ti1SHA256`/`print.ti2SHA256` can still be read. When rendering, the verified design JSON is also archived next to the source TI1, so that roles and the full mesh history remain in the print package.
 
-Nästa etapp ska kunna koppla profilvalideringens ΔE00 och Lab-residualer tillbaka till enhets-RGB och nätversion, föreslå kompletteringar och behålla tidigare mätningar. Detta är ännu inte implementerat. [Plan och JSON-kontrakt](error-driven-refinement.md) beskriver separata profilrevisioner, permanent patchkoppling, mätvillkor, utvecklingsvalidering och låst slutkontroll. Den geometriska generatorn får inte beskrivas som felstyrd innan den kedjan finns.
+## Planned feedback from measurement errors
+
+Measurement-driven refinement is implemented as a separate workflow: [error-driven refinement](error-driven-refinement.md), [verification feedback](verification-feedback.md), and [automatic profile iteration](automatic-profile-iteration.md). These link observations to device RGB, preserve earlier measurements and propose additional patches. The geometric target generator itself does not acquire measurement-error feedback simply by generating a mesh; use the matching refinement API and role/identity checks.

@@ -1,66 +1,66 @@
-# 004 - Intern JSON och Argyll som primära utbytesformat
+# 004 - Internal JSON and Argyll as primary exchange formats
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Datum: 2026-09-25. Uppdaterat: 2026-09-26. Status: beslutad datamodell; targetflöde och mätprototyp finns, full mätexport återstår.
+Date: 2026-09-25. Updated: 2026-09-26. Status: data model decided. The target workflow and a measurement prototype exist; full measurement export remains.
 
-## Beslut
+## Decision
 
-**JSON är InkProfs auktoritativa interna modell för chart, mätningar och härledda resultat.** MATLAB använder strukturer och numeriska arrayer under beräkning. ArgyllCMS `.ti1`, `.ti2` och `.ti3` är primära utbytesformat. Filadaptrar omvandlar mellan dessa och den interna modellen; importerade original bevaras som proveniens.
+**JSON is InkProf's authoritative internal model for charts, measurements and derived results.** MATLAB uses structs and numeric arrays during computation. ArgyllCMS `.ti1`, `.ti2` and `.ti3` are the primary exchange formats. File adapters convert between these and the internal model, and imported originals are kept as provenance.
 
-| Format | Primär roll i InkProf |
+| Format | Primary role in InkProf |
 |---|---|
-| `.ti1` | Patchdefinition och enhetsstyrvärden före layout. |
-| `.ti2` | Slutlig targetdefinition med patcharnas placering, kopplad till utskriftsbilden. |
-| `.ti3` | Styrvärden och mätresultat, inklusive spektra när sådana finns. |
-| `.json` | Intern chart-/mätmodell, resultat, beräkningsvillkor, spårbarhet och manifest. |
-| TIFF16 | Utskrivbar bild som motsvarar TI2. |
-| Generell CGATS | Neutralt utbyte av källpatchar, fysisk layout och senare mätdata; inte primär projektsanning. |
-| TXF-kandidat | Valbart kompatibilitetsunderlag före mätning när värdena kan representeras exakt; inte godkänt förrän mottagarens layout har verifierats. |
+| `.ti1` | Patch definition and device control values before layout. |
+| `.ti2` | Final target definition with the patch placement, linked to the print image. |
+| `.ti3` | Control values and measurement results, including spectra where available. |
+| `.json` | Internal chart/measurement model, results, computation conditions, traceability and manifest. |
+| TIFF16 | Printable image corresponding to the TI2. |
+| Generic CGATS | Neutral exchange of source patches, physical layout and later measurement data; not the primary project truth. |
+| TXF candidate | Optional compatibility file before measurement, when the values can be represented exactly; not approved until the recipient's layout has been verified. |
 
-PXF/TXF/MXF/CMXF och andra CGATS-varianter hanteras genom import-/exportadaptrar i takt med att de implementeras och verifieras; alla beskrivna format har ännu inte fullständigt stöd. De är inte InkProfs primära arbetsformat. Originalfilerna bevaras ändå oförändrade för spårbarhet och för information som Argyll-formaten inte kan representera.
+PXF/TXF/MXF/CMXF and other CGATS variants are handled through import/export adapters as these are implemented and verified; not all described formats are fully supported yet. They are not InkProf's primary working formats. The original files are nevertheless kept unchanged, for traceability and for information that the Argyll formats cannot represent.
 
-## Första leveransen
+## First delivery
 
 ```text
-Argyll targen eller importerad patchdefinition
+Argyll targen or imported patch definition
                   ↓
-TI1 + JSON med importmetadata och kontroller
+TI1 + JSON with import metadata and checks
                   ↓
-Layout och valbar randomisering
+Layout and optional randomization
                   ↓
-TIFF16 + matchande TI2 + CGATS-utbyte + JSON-manifest
+TIFF16 + matching TI2 + CGATS exchange + JSON manifest
                   ↓
-valbar TXF-kandidat när precision och mall tillåter
+optional TXF candidate when precision and template allow
 ```
 
-Mätprototypen läser TI2 till `chart.json`, exporterar TI2 från JSON vid start av chartread och läser TI3-resultat till nya JSON-resultat. Se [mätanvisningen](../usage/chart-measurement.md). Full export av mätresultat till andra format återstår. Skilda mätvillkor ska bevaras och vid behov exporteras i separata filer.
+The measurement prototype reads the TI2 into `chart.json`, exports TI2 from JSON when chartread starts, and reads TI3 results into new JSON results. See the [measurement guide](../usage/chart-measurement.md). Full export of measurement results to other formats remains. Different measurement conditions are to be kept apart and, if needed, exported in separate files.
 
-## Regler för JSON
+## Rules for JSON
 
-Följande är krav för det schema som ska fastställas vid implementation:
+The following are requirements for the schema to be defined during implementation:
 
-- Versionsmärkt dokumenttyp och schema.
-- Referenser till ursprungsfiler med innehållskontrollsummor, samt patch-ID och eventuell ordnings-/positionsmappning.
-- Angivna kanalnamn, enheter, värdeskalor och våglängder där dessa behövs.
-- För färgberäkningar: belysning, observatör, referensvit, normalisering och beräkningsversion.
-- Numerisk serialisering som bevarar MATLAB `double` vid återinläsning; detta ska provas. Export till ett annat formats lägre precision redovisas separat.
-- Saknade värden representeras med en uttrycklig status och vid behov `null`. JSON ska inte innehålla ostandardiserade `NaN`- eller `Infinity`-tal.
-- Härledda resultat hålls skilda från originalmätningar. Ett resultat ersätter inte sin källa.
+- A versioned document type and schema.
+- References to source files with content checksums, plus patch IDs and any order/position mapping.
+- Stated channel names, units, value scales and wavelengths where needed.
+- For colour computations: illuminant, observer, reference white, normalization and computation version.
+- Numeric serialization that preserves MATLAB `double` on reload; this is to be tested. Export to another format's lower precision is reported separately.
+- Missing values are represented by an explicit status and, if needed, `null`. JSON must not contain non-standard `NaN` or `Infinity` numbers.
+- Derived results are kept separate from original measurements. A result does not replace its source.
 
-Exporterade filer får inte bli en konkurrerande projektsanning. Varje export binds till en bestämd JSON-version; importer binds även till originalfilens hash. Ändrad patchordning, layout eller kvantisering skapar en ny sammanhängande uppsättning filer; gamla beräkningar ska kunna identifieras som inaktuella.
+Exported files must not become a competing project truth. Each export is bound to a specific JSON version, and imports are also bound to the original file's hash. A changed patch order, layout or quantization creates a new coherent set of files, and old computations must be identifiable as out of date.
 
-## Information som inte får förloras
+## Information that must not be lost
 
-TI2 och TIFF16 ska ha identisk slutlig patchplacering även efter randomisering. JSON-manifestet bevarar dessutom slumpfrö, verktygsversion och faktisk koppling mellan logiska patchar och fysiska positioner.
+TI2 and TIFF16 must have identical final patch placement, also after randomization. The JSON manifest additionally preserves the random seed, the tool version, and the actual mapping between logical patches and physical positions.
 
-Vid mätkonvertering ska spektra behållas i TI3 när den valda exporten stöder dem. JSON och originalfilen kan bevara ytterligare metadata, men en export som tappar spektra får inte betecknas som förlustfri.
+When measurements are converted, spectra are kept in the TI3 when the chosen export supports them. JSON and the original file can preserve further metadata, but an export that drops spectra must not be called lossless.
 
-Ingen konvertering av koordinater, vitpunkt eller RGB-arbetsrymd ska ske enbart därför att filformatet ändras. Sådana beräkningar görs separat och dokumenteras i JSON.
+No conversion of coordinates, white point or RGB working space is to happen merely because the file format changes. Such computations are done separately and documented in JSON.
 
-## Relaterade dokument
+## Related documents
 
-- [Första leveransen: TIFF16 och mätunderlag](../planning/first-delivery-target-tiff16.md)
-- [Argylls TI1, TI2 och TI3](../research/argyll-ti1-ti2-ti3.md)
-- [Datautbyte med i1Profiler och ChromIQ](../research/i1profiler-interchange/README.md)
-- [Återanvändning av färgberäkningar](../research/colorimetry-reuse-camera41-spectralab.md)
+- [First delivery: TIFF16 and measurement files](../planning/first-delivery-target-tiff16.md)
+- [Argyll's TI1, TI2 and TI3](../research/argyll-ti1-ti2-ti3.md)
+- [Data exchange with i1Profiler and ChromIQ](../research/i1profiler-interchange/README.md)
+- [Reuse of colour computations](../research/colorimetry-reuse-camera41-spectralab.md)

@@ -40,6 +40,10 @@ for k=1:numel(result.chartIndex)
     assert(index>=1&&index<=n&&index==fix(index)&&measured(index)==0,'inkprof:Identity','Invalid measurement mapping.');
     measured(index)=k;
 end
+rowReplaced=false(n,1);
+if isfield(result,'rowOverrides')
+ for override=reshape(result.rowOverrides,1,[]),rowReplaced(double(override.chartIndices))=true;end
+end
 spotLab=nan(n,3);spotChange=nan(n,1);spotReplaced=false(n,1);
 if isfield(result,'patchOverrides')
     for replacement=reshape(result.patchOverrides,1,[])
@@ -73,11 +77,12 @@ fig.UserData=struct('folder',folder,'chartIndex',result.chartIndex);
 grid=uigridlayout(fig,[6 1]);grid.RowHeight={35,32,'1x',70,125,36};grid.Padding=[18 14 18 14];
 uilabel(grid,'Text',sprintf('Saved measurement – %d of %d source patches',result.measuredSourcePatches,result.expectedSourcePatches), ...
     'FontSize',21,'FontWeight','bold','FontColor',[.1 .22 .3]);
-bar=uigridlayout(grid,[1 5]);bar.ColumnWidth={45,110,'1x',155,80};bar.Padding=[0 0 0 0];
+bar=uigridlayout(grid,[1 6]);bar.ColumnWidth={45,90,'1x',140,140,80};bar.Padding=[0 0 0 0];
 uilabel(bar,'Text','Page');
 pageChoice=uidropdown(bar,'Items',cellstr(string(1:numel(passes))),'Value','1','ValueChangedFcn',@(~,~)drawPage());
 uilabel(bar,'Text','Click a patch to view its coordinate and measurement values.');
 remeasure=uibutton(bar,'Text','Remeasure patch','Enable','off','Tag','remeasurePatch','ButtonPushedFcn',@openSpot);
+remeasureRow=uibutton(bar,'Text','Remeasure row','Enable','off','Tag','remeasureRow','ButtonPushedFcn',@openRow);
 uibutton(bar,'Text','Close','ButtonPushedFcn',@(~,~)delete(fig));
 body=uigridlayout(grid,[1 2]);body.ColumnWidth={'1x',475};body.Padding=[0 0 0 0];
 ax=uiaxes(body);ax.Toolbar.Visible='off';disableDefaultInteractivity(ax);
@@ -106,6 +111,7 @@ if isfield(result,'pairedReadings') && isfield(result.pairedReadings,'directionC
             if isfield(result,'patchOverrides') && any(string({result.patchOverrides.sampleLoc})==string(p(i).sampleLoc))
                 state="Spot replaced";
             end
+            if rowReplaced(i)&&~spotReplaced(i),state="Row replaced";end
             change='—';if isfinite(spotChange(i)),change=sprintf('%.3f',spotChange(i));end
             tableData(rank,:)={char(columns(i)+rows(i)),pageOfRow(rowIndex(i)),round(patchDelta(i),3),change,char(state)};
         end
@@ -131,6 +137,9 @@ end
 if any(spotReplaced)
     notice="Spot replacement saved: "+strjoin(columns(spotReplaced)+rows(spotReplaced),", ")+". Scan dE00 still describes the ORIGINAL sweeps. Spot change compares the replacement with the previous value. Swatch colours remain target RGB.";
     noticeColor=[.1 .3 .4];
+end
+if any(rowReplaced)
+ notice=notice+" Whole-row replacements saved. Scan ΔE00 describes the ORIGINAL sweeps; new row readings are retained separately.";
 end
 if isfield(result,'rowDirectionCheck')
  check=result.rowDirectionCheck;
@@ -175,7 +184,8 @@ if ~isempty(rankedIndices),showRankedPatch(rankedIndices(1));end
         selectPatch(selected(1));
     end
     function selectPatch(i)
-        selectedPatch=i;remeasure.Enable='off';
+        selectedPatch=i;remeasure.Enable='off';remeasureRow.Enable='off';
+        if strlength(measurementFile)>0&&isfield(result,'measurementCondition')&&isfield(result.measurementCondition,'settings'),remeasureRow.Enable='on';end
         if strlength(measurementFile)>0 && measured(i)>0 && ~p(i).isPadding,remeasure.Enable='on';end
         delete(findall(ax,'Tag','patchSelectionContrast'));
         boxes=findall(ax,'Tag','measurementPatch');
@@ -226,7 +236,15 @@ if ~isempty(rankedIndices),showRankedPatch(rankedIndices(1));end
                 lines(end+1)="Accepted spot replacement. Original paired readings and warnings remain historical evidence.";
                 if isfinite(spotChange(i)),lines(end+1)=sprintf('CHANGE from previous measurement: %.4f dE00 (ΔE00, overall colour difference; not profile accuracy).',spotChange(i));end
             end
-            if isfield(result,'pairedReadings') && ~overridden
+            if rowReplaced(i)
+                lines(end+1)="Accepted whole-row replacement using the original scan mode. Original sweep statistics above are historical.";
+                latest=find(arrayfun(@(q)any(double(q.chartIndices)==i),result.rowOverrides),1,'last');
+                q=result.rowOverrides(latest);lines(end+1)="Row reread: page "+q.page+" row "+string(q.row)+" | mode "+string(q.scanMode);
+                if isfield(q.directionComparison,'available')&&q.directionComparison.available
+                    lines(end+1)=sprintf('New row forward/reverse maximum: %.4f dE00.',q.directionComparison.maxDeltaE00);
+                end
+            end
+            if isfield(result,'pairedReadings') && ~overridden && ~rowReplaced(i)
                 pair=find(result.pairedReadings.originalChartIndex==i);
                 if isscalar(pair)
                     lines(end+1)="Mean of two readings. Spectral RMS difference: "+string(result.pairedReadings.spectralRmsDifference(pair))+" (TI3 spectral units).";
@@ -244,6 +262,11 @@ if ~isempty(rankedIndices),showRankedPatch(rankedIndices(1));end
             end
         end
         info.Value=cellstr(lines);
+    end
+    function openRow(~,~)
+        try
+            inkprof.remeasureRow(measurementFile,pageOfRow(rowIndex(selectedPatch)),rows(selectedPatch),ParentPreview=fig);
+        catch err,uialert(fig,err.message,'Cannot remeasure row');end
     end
     function openSpot(~,~)
         try

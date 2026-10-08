@@ -154,28 +154,29 @@ verifyEqual(tc,string(r.profile.sha256),inkprof.internal.sha256(w.output('export
 verifyEqual(tc,string(r.iterationId),string(w.State.iterationId));verifyEqual(tc,r.iteration,1);
 verifyEqual(tc,string(r.reportUser),"Christer Törnkvist");verifyEqual(tc,string(r.pageHeader),"InkProf Quality Profiling RGB printer");
 verifyEqual(tc,r.results.c3_report.summary.mean,1.25);verifyFalse(tc,r.printing.verifiedByApp);
-verifyTrue(tc,isfield(r,'fwa'));verifyTrue(tc,contains(r.fwa.summaryText,'FWA-effekt'));
-verifyEqual(tc,string(r.documentTitle),"InkProf - mätcertifikat");verifyNotEmpty(tc,r.certificateId);
-verifyTrue(tc,contains(r.reproductionLiability,'enbart beror'));verifyTrue(tc,contains(r.reproductionLiability,'tvingande lag'));
-verifyTrue(tc,contains(r.licensingNotice,'ersätter inte tillstånd'));
-verifyTrue(tc,contains(r.clientPrintResponsibility,'Om beställaren'));verifyTrue(tc,contains(r.clientPrintResponsibility,'tvingande lag'));
-verifyEqual(tc,string(r.signature.status),"unsigned");verifyTrue(tc,contains(r.reproductionLimits,'skrivare, papper och bläck'));
-verifyEqual(tc,string(r.projectDetails(string({r.projectDetails.label})=="Skrivare").value),"Certificate printer <demo>");
-verifyTrue(tc,contains(fileread(w.output('export','reportText')),'Ort och datum:'));
+verifyTrue(tc,isfield(r,'fwa'));verifyTrue(tc,contains(r.fwa.summaryText,'FWA effect'));
+verifyEqual(tc,string(r.documentTitle),"InkProf - Measurement certificate");verifyEqual(tc,string(r.language),"en");verifyNotEmpty(tc,r.certificateId);verifyTrue(tc,contains(r.resultInterpretation,"rather than the profile alone"));verifyTrue(tc,contains(r.resultInterpretation,"not proof of the physical gamut"));
+verifyTrue(tc,contains(r.reproductionLiability,'caused solely'));verifyTrue(tc,contains(r.reproductionLiability,'mandatory law'));
+verifyTrue(tc,contains(r.licensingNotice,'do not replace permissions'));
+verifyTrue(tc,contains(r.clientPrintResponsibility,'If the client'));verifyTrue(tc,contains(r.clientPrintResponsibility,'mandatory law'));
+verifyEqual(tc,string(r.signature.status),"unsigned");verifyTrue(tc,contains(r.reproductionLimits,'printer, paper and ink'));
+verifyEqual(tc,string(r.projectDetails(string({r.projectDetails.label})=="Printer").value),"Certificate printer <demo>");
+verifyTrue(tc,contains(fileread(w.output('export','reportText')),'Place and date:'));
 
-h=fileread(w.output('export','finalReport'));verifyTrue(tc,contains(h,'Mätresultat – färgprov och ΔE00'));verifyFalse(tc,contains(h,'<th>Grupp</th>'));verifyTrue(tc,contains(h,'1.250'));
-verifyTrue(tc,contains(h,'Underskrift av mätcertifikat'));
-verifyGreaterThan(tc,strfind(h,'Licenser och tredjepartsrättigheter'),strfind(h,'Bilaga B – Juridiska villkor'));
+h=fileread(w.output('export','finalReport'));verifyTrue(tc,contains(h,"lang='en'"));verifyFalse(tc,contains(h,'Mätcertifikat'));verifyTrue(tc,contains(h,'Whole-target result overview'));verifyFalse(tc,contains(h,'<th>Grupp</th>'));verifyTrue(tc,contains(h,'1.250'));
+verifyTrue(tc,contains(h,'Measurement certificate signature'));
+verifyGreaterThan(tc,strfind(h,'Licences and third-party rights'),strfind(h,'Appendix B - Legal terms'));
 verifyFalse(tc,r.standardsReference.isCertification);
-verifyTrue(tc,contains(h,'≤ 2,5'));verifyTrue(tc,contains(h,'≤ 5,0'));
-verifyGreaterThan(tc,strfind(h,'Bilaga A - Referenser och förklaringar'),strfind(h,'Underskrift av mätcertifikat'));
-verifyGreaterThan(tc,strfind(h,'Bilaga B – Juridiska villkor'),strfind(h,'Bilaga A - Referenser och förklaringar'));
-verifyGreaterThan(tc,strfind(h,'Bilaga B – Juridiska villkor'),strfind(h,'Underskrift av mätcertifikat'));
-verifyEqual(tc,numel(strfind(h,'Ansvar för utrustningens och materialens begränsningar')),1);
-txt=fileread(w.output('export','reportText'));verifyGreaterThan(tc,strfind(txt,'BILAGA B – JURIDISKA VILLKOR'),strfind(txt,'UNDERSKRIFT'));verifyTrue(tc,contains(h,'Certificate printer &lt;demo&gt;'));
-verifyTrue(tc,contains(h,"class='lab-canvas'"));verifyTrue(tc,contains(h,'requestAnimationFrame'));
-plot=regexp(h,"<script type='application/json' class='lab-data'>(.*?)</script>",'tokens','once');
-points=jsondecode(plot{1});verifyEqual(tc,size(points.lab),[12 3]);verifyEqual(tc,size(points.rgb),[12 3]);
+verifyTrue(tc,contains(h,'≤ 2.5'));verifyTrue(tc,contains(h,'≤ 5.0'));
+verifyGreaterThan(tc,strfind(h,'Appendix A - References and explanations'),strfind(h,'Measurement certificate signature'));
+verifyGreaterThan(tc,strfind(h,'Appendix B - Legal terms'),strfind(h,'Appendix A - References and explanations'));
+verifyGreaterThan(tc,strfind(h,'Appendix B - Legal terms'),strfind(h,'Measurement certificate signature'));
+verifyEqual(tc,numel(strfind(h,'Responsibility for equipment and material limitations')),1);
+txt=fileread(w.output('export','reportText'));verifyGreaterThan(tc,strfind(txt,'APPENDIX B - LEGAL TERMS'),strfind(txt,'SIGNATURE'));verifyTrue(tc,contains(h,'Certificate printer &lt;demo&gt;'));
+verifyTrue(tc,contains(h,'class="lab-mode"'));verifyTrue(tc,contains(h,'requestAnimationFrame'));
+verifyTrue(tc,contains(h,'Actual measurements'));
+verifyEqual(tc,size(r.measuredColours.lab),[3 3]);verifyEqual(tc,size(r.measuredColours.rgb),[3 3]);
+verifyEqual(tc,r.measuredColours.lab(:,1),[51;52;53]);
 verifyTrue(tc,contains(h,'report-page'));verifyTrue(tc,contains(h,'Christer Törnkvist'));verifyTrue(tc,contains(h,'&lt;test&gt;'));verifyFalse(tc,contains(h,'Synthetic <test>'));
 verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.txt')),'finalReport'));
 f=inkprof.app(w.Root);verifyEqual(tc,string(findobj(f,'Tag','openFinalReport').Enable),"on");delete(f);
@@ -199,6 +200,10 @@ for k=1:size(pairs,1)
  inkprof.internal.writeJson(file,struct('summary',summary,'status','synthetic-test-only'));
  s.steps.(key).outputs.(name)=w.relative(file);
 end
+c3file=w.resolve(s.steps.c3.outputs.report);c3=jsondecode(fileread(c3file));
+p=struct('sampleId',"",'coordinate',"",'page',1,'role',"colour",'deltaE00',1.25,'measuredLab',[50 0 0]);
+for i=1:3,p.sampleId=string(i);p.coordinate="A"+i;p.measuredLab=[50+i i 2*i];c3.patches(i)=p;end
+inkprof.internal.writeJson(c3file,c3);
 profile=fullfile(folder,'test.icc');f=fopen(profile,'w','ieee-be');
 fwrite(f,zeros(160,1),'uint8');fseek(f,0,'bof');fwrite(f,160,'uint32');
 fseek(f,8,'bof');fwrite(f,[4 32],'uint8');fseek(f,12,'bof');fwrite(f,'prtrRGB Lab ','char');
@@ -298,10 +303,13 @@ w=finalReportFixture(tc);profile=w.output('profile','profile');digest=inkprof.in
 a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
 w.editDetails(struct('Name',a.name,'User',"Tester",'Printing',struct('fwaCompensation',true)));
 fresh=inkprof.ProjectWorkflow(w.Root);
+verifyTrue(tc,fresh.valid('input'));verifyTrue(tc,fresh.ready('recipe'));verifyFalse(tc,fresh.valid('recipe'));
 verifyTrue(tc,fresh.valid('measurement'));verifyFalse(tc,fresh.valid('profile'));verifyFalse(tc,fresh.ready('export'));
 verifyEqual(tc,inkprof.internal.sha256(profile),digest);
 a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));verifyTrue(tc,a.printing.fwaCompensation);
 verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.jsonl')),'fwaCompensation'));
+fresh.editDetails(struct('Name',a.name,'User',"Tester",'Printing',struct('fwaCompensation',false)));
+fresh.reload();verifyTrue(tc,fresh.valid('input'));verifyTrue(tc,fresh.ready('recipe'));
 end
 
 function testLaterFWAChoiceUpdatesProjectAndKeepsInput(tc)
@@ -319,12 +327,12 @@ s=struct('count',12,'mean',1.2,'p95',2,'max',3);
 fit=struct('summary',s,'colorimetry',struct('fwaCompensation',true,'fwaIlluminant',"D50"));
 c3=fit;r=inkprof.internal.fwaReportSummary(fit,c3,struct('fwaCompensation',false),"hash");
 verifyTrue(tc,r.applied);verifyFalse(tc,r.projectChoice);verifyEqual(tc,r.trainingResult.mean,1.2);
-verifyTrue(tc,contains(r.summaryText,'Ja -'));verifyTrue(tc,contains(r.summaryText,'1.200'));
-verifyTrue(tc,contains(r.effectComparedWithUncompensated,'Ej utvärderad'));
+verifyTrue(tc,contains(r.summaryText,'Yes -'));verifyTrue(tc,contains(r.summaryText,'1.200'));
+verifyTrue(tc,contains(r.effectComparedWithUncompensated,'Not assessed'));
 fit.colorimetry.fwaCompensation=false;
 verifyError(tc,@()inkprof.internal.fwaReportSummary(fit,c3,struct,"hash"),'inkprof:FinalReport');
-c3=fit;r=inkprof.internal.fwaReportSummary(fit,c3,struct,"hash");verifyFalse(tc,r.applied);verifyTrue(tc,contains(r.summaryText,'Nej -'));
-r=inkprof.internal.fwaReportSummary(struct,struct,struct('fwaCompensation',true),"hash");verifyEmpty(tc,r.applied);verifyEqual(tc,r.status,"Ej dokumenterat");
+c3=fit;r=inkprof.internal.fwaReportSummary(fit,c3,struct,"hash");verifyFalse(tc,r.applied);verifyTrue(tc,contains(r.summaryText,'No -'));
+r=inkprof.internal.fwaReportSummary(struct,struct,struct('fwaCompensation',true),"hash");verifyEmpty(tc,r.applied);verifyEqual(tc,r.status,"Not documented");
 end
 
 function testExplicitFWAOffIsRecordedWithoutInvalidation(tc)
@@ -358,19 +366,19 @@ w.run('numericalExport',struct('Confirmed',true,'Notes',"Satisfied with iteratio
 verifyTrue(tc,w.valid('numericalExport'));verifyFalse(tc,w.valid('approve'));
 r=jsondecode(fileread(w.output('numericalExport','reportJSON')));
 verifyFalse(tc,r.verification.separatePrintVerified);verifyFalse(tc,r.verification.isoCertification);
-verifyEqual(tc,string(r.documentTitle),"InkProf - mätcertifikat");verifyTrue(tc,isfield(r,'certificateId'));
-verifyEqual(tc,string(r.scopeStatement),"Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.");
+verifyEqual(tc,string(r.documentTitle),"InkProf - Measurement certificate");verifyEqual(tc,string(r.language),"en");verifyTrue(tc,isfield(r,'certificateId'));
+verifyEqual(tc,string(r.scopeStatement),"Numerically checked; this iteration has not been verified by a separate print and measurement.");
 verifyFalse(tc,isfield(r.sources,'c3'));verifyFalse(tc,isfield(r,'approval'));
 verifyTrue(tc,isfile(w.output('numericalExport','reportPDF')));
-verifyTrue(tc,contains(r.legalAppendix.licensingNotice,'ersätter inte tillstånd'));
-verifyTrue(tc,contains(fileread(w.output('numericalExport','finalReport')),'Licenser och tredjepartsrättigheter'));
-h=fileread(w.output('numericalExport','finalReport'));verifyGreaterThan(tc,strfind(h,'Bilaga B - Juridiska villkor'),strfind(h,'<h1>Underskrift</h1>'));
+verifyTrue(tc,contains(r.legalAppendix.licensingNotice,'do not replace permissions'));
+verifyTrue(tc,contains(fileread(w.output('numericalExport','finalReport')),'Licences and third-party rights'));
+h=fileread(w.output('numericalExport','finalReport'));verifyTrue(tc,contains(h,"lang='en'"));verifyFalse(tc,contains(h,'Mätcertifikat'));verifyGreaterThan(tc,strfind(h,'Appendix B - Legal terms'),strfind(h,'<h1>Signature</h1>'));
 verifyTrue(tc,isfield(r,'legalAppendix'));
 verifyFalse(tc,r.standardsReference.isCertification);
-verifyTrue(tc,contains(h,'≤ 2,5'));verifyTrue(tc,contains(h,'ISO 12647-7:2016'));
-verifyGreaterThan(tc,strfind(h,'Bilaga A - Referenser och förklaringar'),strfind(h,'<h1>Underskrift</h1>'));
-verifyGreaterThan(tc,strfind(h,'Bilaga B - Juridiska villkor'),strfind(h,'Bilaga A - Referenser och förklaringar'));
-verifyTrue(tc,contains(fileread(w.output('numericalExport','finalReport')),'inte verifierad genom separat utskrift'));
+verifyTrue(tc,contains(h,'≤ 2.5'));verifyTrue(tc,contains(h,'ISO 12647-7:2016'));
+verifyGreaterThan(tc,strfind(h,'Appendix A - References and explanations'),strfind(h,'<h1>Signature</h1>'));
+verifyGreaterThan(tc,strfind(h,'Appendix B - Legal terms'),strfind(h,'Appendix A - References and explanations'));
+verifyTrue(tc,contains(fileread(w.output('numericalExport','finalReport')),'not been verified by a separate print'));
 f=inkprof.app(w.Root);verifyEqual(tc,string(findobj(f,'Tag','openFinalReport').Enable),"on");delete(f);
 file=w.output('checks','c1');fid=fopen(file,'a');fprintf(fid,' ');fclose(fid);
 % Fixture checks have no artifact list; register one to verify dependency invalidation.
@@ -417,7 +425,7 @@ inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),state);w.reload();
 w.run('export',struct('ReportUser',"External verification test"));
 r=jsondecode(fileread(w.output('export','reportJSON')));
 verifyEqual(tc,string(r.workflowMode),"verification");
-verifyTrue(tc,contains(r.certificateScope,'träningsdata saknas'));
+verifyTrue(tc,contains(r.certificateScope,'training data are unavailable'));
 verifyTrue(tc,contains(r.results.checks_fit.status,'Not assessed'));
 verifyFalse(tc,isfield(r.sources,'checks_fit'));
 verifyTrue(tc,isfile(w.output('export','reportPDF')));

@@ -1,47 +1,47 @@
-# Ny M0-referens från i1Profiler, 2026-09-27
+# New M0 reference from i1Profiler, 2026-09-27
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Aktuell status: se [acceptans 2026-09-27](acceptance-20260927.md).
-Daterade uppgifter om väntande importprov nedan beskriver tidigare felsökning.
+Current status: see [acceptance 2026-09-27](acceptance-20260927.md).
+Dated statements below about pending import tests describe earlier troubleshooting.
 
-Källa i projektet: `projects/Canon-575-20260927/exports/InkProf-575-from-TI2-v2_i1profile.mxf`.
+Source in the project: `projects/Canon-575-20260927/exports/InkProf-575-from-TI2-v2_i1profile.mxf`.
 SHA-256: `f8686e81cd3aa6a9a200d76d50e15e93a46c274cc650f4f6610f956cfcb9ca27`.
-Originalfilen har inte ändrats.
+The original file has not been changed.
 
-## Verifierat genom filanalys
+## Verified through file analysis
 
-- 575 Target-objekt och 575 M0_Measurement-objekt; inga M1/M2-objekt.
-- Alla target-RGB och deras listordning matchar exakt InkProfs genererade
-  `InkProf-575-from-TI2-v2.pxf`. Därmed finns ett konkret mottagarflöde från
-  vår PXF till en sparad mätfil, inte bara intern XML-återläsning.
-- 575 unika positionsnycklar `(Page, Column, Row)` i respektive grupp;
-  positionsmängderna matchar entydigt. `SampleID=-1` och tomt SampleName kan
-  inte användas som unika identiteter i denna fil.
-- Varje spektrum har 36 ändliga värden. Specifikationen anger start 380 nm,
-  steg 10 nm, XRGA, Filter_None och M0_Incandescent; slutet är 730 nm.
-- Reflektansfaktorintervallet är 0,002413–1,049892. Värden över 1 har inte
-  klippts eller normaliserats bort.
-- Layout: en sida, 29 kolumner och 20 rader. Första 20 patcharna ligger i
-  kolumn 0, rader 0–19. Det är kolumnvis fyllning, till skillnad från den
-  separata InkProf-utskriftens två sidor med 21 patchar per rad.
+- 575 Target objects and 575 M0_Measurement objects; no M1/M2 objects.
+- All target RGB values and their list order match exactly InkProf's generated
+  `InkProf-575-from-TI2-v2.pxf`. There is thus a concrete recipient flow
+  from our PXF to a saved measurement file, not just internal XML re-reading.
+- 575 unique position keys `(Page, Column, Row)` in each group;
+  the position sets match unambiguously. `SampleID=-1` and empty SampleName cannot
+  be used as unique identities in this file.
+- Each spectrum has 36 finite values. The specification states start 380 nm,
+  step 10 nm, XRGA, Filter_None and M0_Incandescent; the end is 730 nm.
+- The reflectance-factor range is 0.002413–1.049892. Values above 1 have not
+  been clipped or normalised away.
+- Layout: one page, 29 columns and 20 rows. The first 20 patches are in
+  column 0, rows 0–19. This is column-wise filling, unlike the
+  separate InkProf print's two pages with 21 patches per row.
 
-## Skillnader mot den avvisade MXF-v2-exporten
+## Differences from the rejected MXF v2 export
 
-Referensen anger MeasurementMode=1 i användarens Single Scan/M0-flöde;
-den tidigare exporten ärvde MeasurementMode=2 från en M0/M1/M2-referens.
-Den nya referensen har heltals-RGB, SampleID=-1, tomt SampleName, privata
-ProfileSettings och originalets layout/skrivarattribut. Den tidigare
-exporten ändrade flera sådana fält samtidigt och skrev fraktionella RGB.
-Skillnaderna är kandidater för isolerade importprov, inte bevisade orsaker
-till meddelandet `Error reading CxF version information`.
+The reference states MeasurementMode=1 in the user's Single Scan/M0 flow;
+the earlier export inherited MeasurementMode=2 from an M0/M1/M2 reference.
+The new reference has integer RGB, SampleID=-1, empty SampleName, private
+ProfileSettings and the original's layout/printer attributes. The earlier
+export changed several such fields at once and wrote fractional RGB.
+The differences are candidates for isolated import tests, not proven causes
+of the message `Error reading CxF version information`.
 
-Nästa steg är återimport av den nya, oförändrade i1Profiler-filen som
-positiv kontroll. Därefter bör en separat exportkandidat ändra enbart
-spektral nyttolast med verifierad targetkoppling, före fler metadataändringar.
-En referenslayout får inte beskrivas som InkProf-originalets fysiska layout;
-båda positionssystemen måste då dokumenteras i JSON.
+The next step is re-import of the new, unchanged i1Profiler file as a
+positive control. After that, a separate export candidate should change only the
+spectral payload with verified target linking, before further metadata changes.
+A reference layout must not be described as the InkProf original's physical layout;
+both position systems must then be documented in JSON.
 
-Inspektionsresultatet finns i projektets
-`exports/i1profiler-reference-inspection.json`. De nya fysiska mätvärdena
-har inte slagits ihop med eller ersatt InkProfs tidigare mätningar.
+The inspection result is in the project's
+`exports/i1profiler-reference-inspection.json`. The new physical measurement values
+have not been merged with or replaced InkProf's earlier measurements.

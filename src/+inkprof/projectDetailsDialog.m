@@ -73,6 +73,7 @@ note=uilabel(outer,'Text','Renaming also changes the project folder name. Correc
 buttons=uigridlayout(outer,[1 2]);buttons.Padding=[0 0 0 0];
 uibutton(buttons,'Text','Cancel','Tag','cancelProjectDetails','ButtonPushedFcn',@cancel);
 uibutton(buttons,'Text','Save','Tag','saveProjectDetails','ButtonPushedFcn',@save);
+topGuard=inkprof.internal.lowerTopWindows(fig); %#ok<NASGU> keep the dialog above always-on-top windows
 uiwait(fig);
 % Nested callbacks retain this workspace; release cleanup explicitly so the
 % modal window closes before returning the saved details to the app.

@@ -1,31 +1,31 @@
-# ISSUE-001 – Inversens känslighet för mätbrus
+# ISSUE-001 – Sensitivity of the inverse to measurement noise
 
-Status: **Öppen**. Registrerad 2026-09-27 på användarens begäran.
-Berör C1/C2 (validering) och D4 (egen invers).
+Status: **Open**. Recorded 2026-09-27 at the user's request.
+Affects C1/C2 (validation) and D4 (own inverse).
 
-## Problem och belägg
+## Problem and evidence
 
-575-profilens framåtmodell uppvisar svaga riktningar och alternativa RGB-lösningar, främst i undersökta gröna/cyana områden. Ett undersökt lokalt Jacobian-konditionstal är cirka 48; andra punkter har högre och mer stegberoende värden. Detta indikerar möjlig känslighet för mätbrus. Faktisk brusförstärkning genom hela kedjan mätning → modell → invers är ännu inte kvantifierad.
+The 575-patch profile's forward model shows weak directions and alternative RGB solutions, mainly in the green/cyan regions examined. One examined local Jacobian condition number is about 48; other points have higher values that depend more on the step size. This indicates possible sensitivity to measurement noise. The actual noise amplification through the whole chain, measurement → model → inverse, has not yet been quantified.
 
-Tätare B2A minskar tabellens approximationsfel men stänger inte denna issue. Stor RGB-avvikelse ensam är inte bevis för stort färgfel. Se [inversundersökningen](../research/inverse-error-investigation.md).
+A denser B2A reduces the table's approximation error but does not close this issue. A large RGB deviation alone is not proof of a large colour error. See the [inverse investigation](../research/inverse-error-investigation.md).
 
-## Undersökning som återstår
+## Remaining investigation
 
-- Upprepa mätningar av samma patchar under kontrollerade villkor, inklusive känsliga gröna/cyana områden, gråskala och stabila referenspunkter. Skilj instrumentets repeterbarhet från utskriftens variation.
-- Uppskatta mätvariation i spektra och Lab; dokumentera mätvillkor, antal upprepningar och relevanta korrelationer.
-- Perturbera mätunderlaget med en empiriskt motiverad brusmodell och bygg om profilerna med oförändrade inställningar. Bevara frön, indatarevisioner, recept och resultat i JSON. Enbart störning av PCS-indata till en redan byggd profil räcker inte för denna kontroll.
-- Utvärdera färgfel, RGB-spridning och eventuella hopp mellan närliggande inverslösningar separat. Kontrollera olika differenssteg och skalning vid bedömning av Jacobianen.
-- Jämför vid behov upprepning/medelvärdesbildning, kompletterande patchar, modellutjämning och regulariserad invers. Kontrollera avvägningen mellan stabilitet och färgnoggrannhet mot oberoende mätningar.
+- Repeat measurements of the same patches under controlled conditions. Include the sensitive green/cyan regions, the gray scale and stable reference points. Separate instrument repeatability from print variation.
+- Estimate measurement variation in spectra and Lab. Document measurement conditions, number of repeats and relevant correlations.
+- Perturb the measurement data with an empirically motivated noise model and rebuild the profiles with unchanged settings. Keep seeds, input revisions, recipes and results in JSON. Perturbing only the PCS input to an already built profile is not enough for this check.
+- Evaluate colour error, RGB spread and any jumps between nearby inverse solutions separately. Check different difference steps and scaling when assessing the Jacobian.
+- Where needed, compare repetition/averaging, supplementary patches, model smoothing and a regularized inverse. Check the trade-off between stability and colour accuracy against independent measurements.
 
-## Kriterier för stängning
+## Criteria for closing
 
-1. Repeterbarhet och brusförstärkning har kvantifierats med spårbara data.
-2. Toleranser för färgfel och inversens jämnhet har bestämts och motiverats för användningen; inget godtyckligt konditionstal används som ensam gräns.
-3. Kandidaten uppfyller dessa toleranser på oberoende verifieringsdata, eller har tydligt avgränsade begränsningar som användaren accepterar.
-4. Resultat, åtgärd eller accepterad kvarvarande risk dokumenteras och frågan stängs uttryckligen.
+1. Repeatability and noise amplification have been quantified with traceable data.
+2. Tolerances for colour error and for the smoothness of the inverse have been set and justified for the intended use. No arbitrary condition number is used as the sole limit.
+3. The candidate meets these tolerances on independent verification data, or has clearly bounded limitations that the user accepts.
+4. The result, the action taken or the accepted residual risk is documented, and the issue is closed explicitly.
 
-ICC-utvecklingen kan fortsätta medan frågan är öppen. Robusthet mot mätbrus får inte betraktas som verifierad enbart genom lågt träningsfel, bättre roundtrip eller tätare B2A.
+ICC development may continue while the issue is open. Robustness against measurement noise must not be considered verified on the basis of a low training error, a better roundtrip or a denser B2A alone.
 
-## Beslut 2026-09-27
+## Decision 2026-09-27
 
-Användaren vill låta frågan ligga kvar tills avvikelser kan kopplas bättre till konditionstal och brus. C1 får fortsätta och avslutas inom sin numeriska omfattning utan att en full brusstudie utförs nu. Flyttalsjämförelse och lokala PCS-störningsprov ger inte i sig belägg för mätbrusorsakade fel. Ingen sådan orsak har verifierats i detta steg.
+The user wants the issue to remain open until deviations can be linked more clearly to condition numbers and noise. C1 may continue and be completed within its numerical scope without a full noise study now. Floating-point comparison and local PCS perturbation tests do not in themselves give evidence of errors caused by measurement noise. No such cause has been verified in this step.

@@ -1,62 +1,62 @@
-# Referensfall: Chart 2033 Patches
+# Reference case: Chart 2033 Patches
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Granskat 2026-09-25. Originalfiler tillhandahållna av Christer från i1Profiler. Exakt i1Profiler-version är ännu inte angiven. Ingen import tillbaka i i1Profiler eller fysisk mätning har genomförts.
+Reviewed 2026-09-25. Original files provided by Christer from i1Profiler. The exact i1Profiler version has not yet been stated. No re-import into i1Profiler or physical measurement has been carried out.
 
-**Senare komplettering samma dag:** en TXF har nu tillkommit och granskats separat i [TXF-anteckningen](chart-2033-txf-inspection.md). Uppgifter nedan om avsaknad av TXF beskriver det första underlaget med två filer.
+**Later addition the same day:** a TXF has since been added and reviewed separately in the [TXF note](chart-2033-txf-inspection.md). Statements below about the absence of a TXF describe the first material with two files.
 
-## Filer och bevarande
+## Files and preservation
 
-Originalen finns oförändrade under `tests/fixtures/i1profiler/chart-2033/` i InkProf:
+The originals are kept unchanged under `tests/fixtures/i1profiler/chart-2033/` in InkProf:
 
 - `Chart 2033 Patches.pxf`
 - `Chart 2033 Patches.txt`
 
-Filerna är targetdefinitioner, inte mätresultat. Referensdata från ett externt program ska inte betraktas som InkProf-kod eller ges nya rättighetsanspråk genom kopieringen.
+The files are target definitions, not measurement results. Reference data from an external program must not be regarded as InkProf code or be given new rights claims through copying.
 
-## Kontrollerade resultat
+## Checked results
 
-| Kontroll | Resultat |
+| Check | Result |
 |---|---|
-| PXF-format | XML med namnrymden `http://colorexchangeformat.com/CxF3-core`. |
-| PXF-producent | `X-Rite - Prism`. |
-| TXT-format | `CGATS.17`, producent `i1Profiler - X-Rite, Inc.`. |
-| Patchantal | 2 033 i båda; TXT deklarerar också 2 033 rader. |
-| ID | PXF `c1`–`c2033`, TXT `1`–`2033`, i följd. |
-| Kanaler | RGB, värden i intervallet 0–255 i detta referensfall. |
-| Helt lika RGB-rader | 23 av 2 033. |
-| Avvikande kanalvärden | 4 861 av 6 099. |
-| Största absolutavvikelse | 0,96 på skalan 0–255, ungefär 0,3765 procentenheter på skalan 0–100. |
-| Samband mellan filerna | Alla PXF-kanaler är exakt heltalsdelen av motsvarande icke-negativa TXT-värde. Detta är trunkering, inte avrundning till närmaste heltal. |
-| Unika RGB-tripplar | 2 027 i vardera filen; upprepade patchar ska bevaras. |
-| PXF-platselement | Inga `Location`-element hittades. |
-| Spektra | Inga; TXT har bara ID, namn och RGB. |
+| PXF format | XML with the namespace `http://colorexchangeformat.com/CxF3-core`. |
+| PXF producer | `X-Rite - Prism`. |
+| TXT format | `CGATS.17`, producer `i1Profiler - X-Rite, Inc.`. |
+| Patch count | 2,033 in both; the TXT also declares 2,033 rows. |
+| IDs | PXF `c1`–`c2033`, TXT `1`–`2033`, consecutive. |
+| Channels | RGB, values in the range 0–255 in this reference case. |
+| Identical RGB rows | 23 of 2,033. |
+| Differing channel values | 4,861 of 6,099. |
+| Largest absolute deviation | 0.96 on the 0–255 scale, about 0.3765 percentage points on the 0–100 scale. |
+| Relationship between the files | All PXF channels are exactly the integer part of the corresponding non-negative TXT value. This is truncation, not rounding to the nearest integer. |
+| Unique RGB triplets | 2,027 in each file; repeated patches must be preserved. |
+| PXF location elements | No `Location` elements were found. |
+| Spectra | None; the TXT has only ID, name and RGB. |
 
-Exempel: patch 2 har R = 23 i PXF och R = 23,18 i TXT. Patch 5 har R = 92 respektive 92,73. Filernas ID-sekvens och kanalvisa trunkeringssamband stödjer att de beskriver samma ordnade patchuppsättning med olika numerisk precision.
+Example: patch 2 has R = 23 in the PXF and R = 23.18 in the TXT. Patch 5 has R = 92 and 92.73 respectively. The files' ID sequence and the channel-by-channel truncation relationship support that they describe the same ordered patch set with different numerical precision.
 
-Detta verifierar sambandet i just dessa filer. Det bevisar inte hur alla i1Profiler-exporter fungerar eller vilka av värdena som används internt när i1Profiler skriver ut.
+This verifies the relationship in these particular files. It does not prove how all i1Profiler exports work or which of the values are used internally when i1Profiler prints.
 
-## PXF-metadata ska inte övertolkas
+## PXF metadata must not be over-interpreted
 
-Egna Prism-resurser innehåller bland annat `NumberPatchPages="2"`, men `NumberPatchColumns="0"` och `NumberPatchRows="0"`. Patchmåttens värdefält är också noll. Där finns även `ScramblePatches="False"` och diverse pappers- och profilinställningar. Tillsammans ger detta inte en fullständig fysisk patchkarta.
+Custom Prism resources contain, among other things, `NumberPatchPages="2"`, but `NumberPatchColumns="0"` and `NumberPatchRows="0"`. The value fields of the patch dimensions are also zero. There is also `ScramblePatches="False"` and various paper and profile settings. Taken together, this does not give a complete physical patch map.
 
-`MeasurementDevice="i1Pro 3"` och serienummer `0` förekommer. Detta är exporterad inställningsinformation, inte bevis för ett faktiskt använt eller kalibrerat instrument. Numeriska koder som `MeasurementMode="1"`, `SelectedMeasurementCondition="-1"` och `DimensionUnit="2"` bevaras utan gissad tolkning.
+`MeasurementDevice="i1Pro 3"` and serial number `0` occur. This is exported setting information, not evidence of an instrument actually used or calibrated. Numeric codes such as `MeasurementMode="1"`, `SelectedMeasurementCondition="-1"` and `DimensionUnit="2"` are preserved without guessed interpretation.
 
-`BitDepth` är 16 under `ProfileSettings`, medan själva RGB-patchvärdena är heltal i intervallet 0–255. Denna profilinställning ger alltså inget belägg för högre precision i patchvärdena eller för att en TIFF har exporterats.
+`BitDepth` is 16 under `ProfileSettings`, while the RGB patch values themselves are integers in the range 0–255. This profile setting therefore gives no evidence of higher precision in the patch values or that a TIFF has been exported.
 
-## Konsekvenser för första leveransen
+## Consequences for the first delivery
 
-1. Dessa filer räcker som verkliga referensfall för PXF-import och en i1Profiler-CGATS-variant.
-2. TXT-varianten får inte behandlas som TI3 med RGB-procent. I detta fall används 0–255, trots att formatet är CGATS-baserat.
-3. PXF och TXT ska importeras var för sig med sina faktiska värden. De får inte slås samman eller tyst göras lika.
-4. För att behålla den högre tillgängliga numeriska upplösningen vid ny TIFF16-generering kan TXT väljas. Det ger inte ett löfte om exakt reproduktion av en tidigare i1Profiler-utskrift.
-5. Utan TXF eller annan komplett layoutbeskrivning skapar vi en ny instrumentanpassad layout och matchande TI2. Ingen ursprunglig fysisk layout hävdas vara bevarad.
-6. TIFF16 från PXF återställer inte de decimaler som saknas. Exakt återgivning av källvärden och exportens kvantisering kontrolleras separat.
-7. Den genererade kartans senare i1Profiler-kompatibilitet återstår att verifiera; filerna löser patchimporten, inte hela layoututbytet.
+1. These files suffice as real reference cases for PXF import and one i1Profiler CGATS variant.
+2. The TXT variant must not be treated as TI3 with RGB percentages. In this case 0–255 is used, even though the format is CGATS-based.
+3. PXF and TXT must be imported separately with their actual values. They must not be merged or silently made equal.
+4. To retain the higher available numerical resolution when generating a new TIFF16, the TXT can be chosen. This does not promise exact reproduction of an earlier i1Profiler print.
+5. Without a TXF or other complete layout description we create a new instrument-adapted layout and a matching TI2. No original physical layout is claimed to be preserved.
+6. A TIFF16 from the PXF does not restore the decimals that are missing. Exact reproduction of source values and the export's quantisation is checked separately.
+7. The generated map's later i1Profiler compatibility remains to be verified; the files solve the patch import, not the whole layout interchange.
 
-## Föreslagna regressionsförväntningar
+## Proposed regression expectations
 
-Importören ska få 2 033 patchar och bevara alla upprepningar. ID-mappning, filernas separata precision och ovanstående differensresultat ska kunna återskapas. Saknad full layout ska rapporteras. `BitDepth=16` får inte ändra tolkningen av RGB-kodningen.
+The importer must obtain 2,033 patches and preserve all repetitions. ID mapping, the files' separate precision and the difference results above must be reproducible. A missing full layout must be reported. `BitDepth=16` must not change the interpretation of the RGB encoding.
 
-Granskningen gjordes med separat XML- och tabelläsning samt decimalaritmetik. Den är ingen full XSD-validering eller test av en färdig InkProf-importör.
+The review was done with separate XML and table reading and decimal arithmetic. It is not a full XSD validation or a test of a finished InkProf importer.

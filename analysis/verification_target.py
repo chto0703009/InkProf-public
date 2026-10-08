@@ -10,6 +10,7 @@ import colour
 from profile_grid import lookup,sha
 from profile_c1 import require_profile
 from lcms_float import LittleCMS
+import reference_sets
 
 
 def select_indices(rgb,training,count,min_distance,used=None):
@@ -92,8 +93,15 @@ def generate(job,exe,request,out):
         if status['status']!='succeeded' or sha(profile)!=status['profileSHA256']: raise ValueError('Profile integrity failure.')
         if sha(job/'recipe.json')!=status['recipeSHA256']:raise ValueError('Profile recipe integrity failure.')
     require_profile(profile.read_bytes())
-    counts=[request[k] for k in ('colourPatches','grayPatches','challengePatches','repeats')]
-    if any(type(x)!=int or x<0 for x in counts) or not 8<=sum(counts)<=2000 or counts[0]<1 or counts[1]<2 or counts[3]>sum(counts[:3]):
+    reference=None
+    if request.get('referenceSet'):
+        reference=reference_sets.load(request['referenceSet']['file'])
+        if not 1<=reference['count']<=2000:raise ValueError('Reference set must have 1..2000 patches.')
+        counts=[0,0,0,request.get('repeats',0)]
+        if type(counts[3])!=int or not 0<=counts[3]<=reference['count']:raise ValueError('Repeats must be 0..number of reference patches.')
+    else:
+        counts=[request[k] for k in ('colourPatches','grayPatches','challengePatches','repeats')]
+    if reference is None and (any(type(x)!=int or x<0 for x in counts) or not 8<=sum(counts)<=2000 or counts[0]<1 or counts[1]<2 or counts[3]>sum(counts[:3])):
         raise ValueError('Invalid patch counts; require colours, at least two grays, and repeats <= unique patches.')
     train=np.asarray(request['trainingRGB'],float)
     if external and not train.size:train=np.empty((0,3))
@@ -102,7 +110,10 @@ def generate(job,exe,request,out):
     if not 0<separation<.1:raise ValueError('Invalid training separation.')
     seed=request['seed']
     if not isinstance(seed,(int,float)) or not np.isfinite(seed) or seed!=int(seed) or not 0<=seed<=2147483647:raise ValueError('Invalid seed.')
-    rng=np.random.default_rng(int(seed));n=max(4096,sum(counts)*20)
+    rng=np.random.default_rng(int(seed))
+    if reference is not None:
+        return generate_reference(job,exe,request,out,profile,status,recipe,external,train,reference,counts[3],rng)
+    n=max(4096,sum(counts)*20)
     # PCS coordinates are chosen without using measured training Lab or model predictions.
     candidates=np.column_stack((rng.uniform(18,90,n),rng.uniform(-75,75,n),rng.uniform(-75,75,n)))
     gray=np.column_stack((np.linspace(18,90,max(300,counts[1]*10)),np.zeros((max(300,counts[1]*10),2))))
@@ -143,6 +154,11 @@ def generate(job,exe,request,out):
             minTrainingRGBDistance=float(np.min(np.max(abs(train-output_rgb[j]),axis=1))) if train.size else None))
     if external:
         for patch,rec in zip(patches,records):patch['selectionCategory']=rec.get('selectionCategory','repeat')
+    return write_definition(job,exe,request,out,profile,status,recipe,external,patches,output_rgb,predicted,
+                            selection_summary if external else None)
+
+
+def write_definition(job,exe,request,out,profile,status,recipe,external,patches,output_rgb,predicted,selection_summary=None,reference=None):
     if recipe['colorimetry'].get('fwaCompensation'):
         white=lookup(exe,profile,np.ones((1,3)),intent='a')[0]
         patches.append(dict(id=str(len(patches)+1),role='paperwhite',repeatOf=None,
@@ -159,19 +175,72 @@ def generate(job,exe,request,out):
     record=dict(schemaVersion=1,documentType='inkprof.verification-target',name=request['name'],status='definition-created-not-printed',
         sourceColourSpace='ICC Lab D50 absolute; direct PCS coordinates',sourceProfile=dict(file='source-Lab-D50.icc',sha256=sha(out/'source-Lab-D50.icc'),role='reference encoding; xicclu receives Lab directly'),
         printerProfile=dict(file='printer.icc',sha256=sha(profile)),intent='absolute colorimetric',bpc=False,profileApplications=1,
-        pipeline='Desired absolute D50 Lab -> xicclu -fb -ia -pl -> device RGB -> 16-bit quantization -> layout only -> print with ALL further colour conversion OFF',
+        pipeline='Desired absolute D50 Lab -> xicclu -fb -ia -pl -> device RGB -> 16-bit quantization -> layout only (printer ICC embedded as TIFF tag, pixels unchanged) -> print with ALL further colour conversion OFF',
         trainingTI3SHA256=None if external else sha(job/'engine.ti3'),generation={k:v for k,v in request.items() if k!='trainingRGB'},printing=recipe['printing'],
         measurementCondition=recipe.get('measurementCondition'),illuminant='D50',observer='1931_2',
-        fwaCompensation=recipe['colorimetry'].get('fwaCompensation',False),fwaIlluminant=recipe['colorimetry'].get('fwaIlluminant'),
+        fwaCompensation=recipe['colorimetry'].get('fwaCompensation',False),fwaIlluminant=recipe['colorimetry'].get('fwaIlluminant'),fwaPreparation=recipe['colorimetry'].get('fwaPreparation'),paperWhiteReference=recipe['colorimetry'].get('paperWhiteReference'),
         criteria=dict(status='awaiting user acceptance before ranking profiles',deltaE00Limit=None,grayBalanceLimit=None),
         classification='Model reachability diagnostic only: numerical inverse residual <=0.5 dE00. Failure does not prove outside gamut. Challenge residual >3. Not a print acceptance threshold.',
         independence='New device RGB separated from training; model-informed gamut screening is disclosed. Independent measured validation remains to be performed. Any paperwhite patch is a model reference, excluded from independent scores.',
         referencePolicy='Compare measured absolute D50 Lab against referenceLabD50Absolute; predictedLabD50Absolute is diagnostic only. Stratify gamutAssessment and role; do not score padding or contrast bars.',
         definitions=dict(file='verification.ti1',sha256=sha(out/'verification.ti1')),patches=patches)
     if external:
-        record.update(selection=dict(method='inkprof-balanced-photographic-v1',groups=selection_summary,reference='Own synthetic Lab selection; not a reproduction of ColorChecker SG.'),externalProfile=True,trainingIndependence='unknown: original training data unavailable',
+        record.update(externalProfile=True,trainingIndependence='unknown: original training data unavailable',
             independence='New verification print; original training data unavailable, so independence from training cannot be established. Model-informed gamut screening is disclosed.')
+        if selection_summary is not None:
+            record['selection']=dict(method='inkprof-balanced-photographic-v1',groups=selection_summary,reference='Own synthetic Lab selection; not a reproduction of ColorChecker SG.')
+    if reference is not None:
+        source=Path(request['referenceSet']['file'])
+        stored='reference-set'+(source.suffix or '.txt')
+        shutil.copy2(source,out/stored)
+        if sha(out/stored)!=reference['sha256']:raise ValueError('Reference set changed while copying.')
+        kind=reference['kind']
+        record['referenceSet']=dict(name=request['referenceSet'].get('name') or source.stem,file=stored,originalFileName=reference['fileName'],
+            sha256=reference['sha256'],kind=kind,basis=reference['basis'],patchCount=reference['count'],notes=reference['notes'],
+            comparison=('Measured Lab vs the reference Lab: tests B2A, print and measurement together (round trip).' if kind=='lab' else
+                        'Device RGB printed as-is; reference Lab = profile A2B prediction: tests the forward model (A2B) against the print.'))
+        record['selection']=dict(method='reference-set-'+kind,reference=record['referenceSet']['name'],
+            roles='gray: reference C*ab <= 2.5; challenge: numerical inverse residual > 3 dE00 (likely outside gamut); otherwise colour')
+        if kind=='rgb':
+            record['referencePolicy']=('Reference Lab is the profile A2B prediction for the given device RGB (absolute colorimetric); '
+                                       'deltaE00 is the forward-model error at these RGB values. Stratify by role; do not score padding or contrast bars.')
+            record['pipeline']='Given device RGB -> 16-bit quantization -> layout only (printer ICC embedded as TIFF tag, pixels unchanged) -> print with ALL further colour conversion OFF; reference = A2B(RGB)'
+            record['profileApplications']=0
     (out/'verification.json').write_text(json.dumps(record,indent=2,allow_nan=False));return record
+
+
+def generate_reference(job,exe,request,out,profile,status,recipe,external,train,reference,repeats,rng):
+    """C2 from a fixed reference set (Lab or device RGB); IDs keep the set's patch names."""
+    values=np.asarray(reference['values'],float)
+    if reference['kind']=='lab':
+        all_lab=values
+        raw=lookup(exe,profile,all_lab,'b',intent='a')
+        if np.any((raw<0)|(raw>1)):raise ValueError('Inverse returned out-of-range device RGB.')
+        rgb=np.rint(raw*65535)/65535
+        numerical=lookup(exe,profile,all_lab,'if',intent='a')
+        reach=colour.delta_E(all_lab,lookup(exe,profile,numerical,intent='a'),method='CIE 2000')
+    else:
+        rgb=np.rint(values/100*65535)/65535
+        all_lab=lookup(exe,profile,rgb,intent='a')
+        reach=np.zeros(len(rgb))
+    chroma=np.hypot(all_lab[:,1],all_lab[:,2])
+    records=[]
+    for i in range(len(all_lab)):
+        role='challenge' if reach[i]>3 else ('gray' if chroma[i]<=2.5 else 'colour')
+        records.append(dict(sourceIndex=i,role=role,repeatOf=None))
+    candidates=[k for k,r in enumerate(records)]
+    for i in (rng.choice(len(candidates),size=repeats,replace=False) if repeats else []):
+        records.append(dict(sourceIndex=records[int(i)]['sourceIndex'],role='repeat',repeatOf=int(i)+1))
+    output_rgb=np.array([rgb[p['sourceIndex']] for p in records]);predicted=lookup(exe,profile,output_rgb,intent='a')
+    patches=[]
+    for j,rec in enumerate(records):
+        i=rec['sourceIndex']
+        patches.append(dict(id=str(j+1),referenceName=reference['names'][i],role=rec['role'],repeatOf=None if rec['repeatOf'] is None else str(rec['repeatOf']),
+            referenceLabD50Absolute=all_lab[i].tolist(),deviceRGB16=np.rint(output_rgb[j]*65535).astype(int).tolist(),deviceRGB=output_rgb[j].tolist(),
+            predictedLabD50Absolute=predicted[j].tolist(),numericalInverseResidualDE00=float(reach[i]),
+            gamutAssessment='model-reachable' if reach[i]<=.5 else 'outside-or-inversion-unresolved',
+            minTrainingRGBDistance=float(np.min(np.max(abs(train-output_rgb[j]),axis=1))) if train.size else None))
+    return write_definition(job,exe,request,out,profile,status,recipe,external,patches,output_rgb,predicted,reference=reference)
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('job');p.add_argument('executable');p.add_argument('request');p.add_argument('output');a=p.parse_args();generate(a.job,a.executable,json.loads(Path(a.request).read_text()),a.output)

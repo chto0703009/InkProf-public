@@ -11,7 +11,7 @@ assert(digest==inkprof.internal.sha256(w.output('profile','profile')),'inkprof:I
 user=string(java.lang.System.getProperty('user.name'));if isfield(project,'user'),user=string(project.user);end
 r=struct('schemaVersion',1,'documentType',"inkprof.numerical-report", ...
  'status',"numerically-checked-not-separately-print-verified", ...
- 'scopeStatement',"Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.", ...
+ 'scopeStatement',"Numerically checked; this iteration has not been verified by a separate print and measurement.", ...
  'createdUTC',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")), ...
  'reportDate',string(datetime('now','Format','yyyy-MM-dd')),'reportUser',user, ...
  'pageHeader',"InkProf Quality Profiling RGB printer",'project',struct('id',project.projectId,'name',project.name), ...
@@ -20,14 +20,17 @@ r=struct('schemaVersion',1,'documentType',"inkprof.numerical-report", ...
  'verification',struct('separatePrintVerified',false,'isoCertification',false), ...
  'decision',struct('confirmed',true,'notes',notes,'user',user,'meaning',"Use current ICC without claiming separate print verification"),'sources',struct);
 r.shadow=inkprof.internal.shadowReportSummary(w);
-r.documentTitle="InkProf - mätcertifikat";
+r.regularization=inkprof.internal.regularizationReportSummary(w);
+r.language="en";
+r.documentTitle="InkProf - Measurement certificate";
 r.certificateId=string(java.util.UUID.randomUUID());
-r.certificateScope="Mätcertifikatet dokumenterar profilunderlag, numeriska kontroller och användarens beslut. Omfattningen för aktuell iteration anges nedan. Dokumentet är inte en ackrediterad certifiering eller ett intyg om ISO-överensstämmelse.";
+r.certificateScope="This certificate documents profiling evidence, numerical checks and the user decision. The scope for the current iteration is stated below. It is not accredited certification or a declaration of ISO conformity.";
+r.certificateScope=r.certificateScope+inkprof.internal.certificateAcceptanceContext();
 r.signature=struct('status',"unsigned",'method',"handwritten on printed PDF");
 r.historicalCertificate=inkprof.internal.previousCertificate(w,folder);
 fit=jsondecode(fileread(w.output('checks','fit')));
 r.fwa=inkprof.internal.fwaReportSummary(fit,struct,project.printing,digest);
-r.legalAppendix=inkprof.internal.reportLegalText();
+r.legalAppendix=inkprof.internal.reportLegalText("en");
 r.standardsReference=inkprof.internal.certificateStandards();
 for key=["fit","grid","c1"]
  src=w.output('checks',key);check=jsondecode(fileread(src));
@@ -41,7 +44,7 @@ if w.valid('compare')
  src=w.output('compare','comparison');copyfile(src,fullfile(folder,'comparison.json'));
  r.sources.comparison=struct('file',"comparison.json",'sha256',inkprof.internal.sha256(src));
  r.visualization=struct('source',"comparison.json",'defaultView',"2d",'defaultLightness',50,'halfWidth',5, ...
-  'pdfView',"3d",'scope',"Predicted shared RGB samples in CIELAB D50, not measured gamut boundaries");
+  'pdfView',"2d-lightness-slice",'scope',"Predicted shared RGB samples in CIELAB D50, not measured gamut boundaries");
 end
 r.decisionEvidence=inkprof.internal.numericalDecisionEvidence(w,folder,digest);
 copyfile(fullfile(w.Root,'workflow.json'),fullfile(folder,'workflow-snapshot.json'));

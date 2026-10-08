@@ -1,108 +1,108 @@
-# Import av mätfil inför analys och profilering
+# Importing a measurement file for analysis and profiling
 
-> v1.0.0 preparation (1.0.0-rc.1), reviewed 2026-10-03. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.2, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
-Status: grundflöde implementerat 2026-09-27. `inkprof.importMeasurement`
-öppnar filval för TI3/MXF och använder samma interna mätmodell och
-punktmätningsrevisioner. Begränsningar och kvarstående verifiering anges nedan.
+Status: basic workflow implemented 2026-09-27. `inkprof.importMeasurement`
+opens a file chooser for TI3/MXF and uses the same internal measurement model and
+spot-measurement revisions. Limitations and remaining verification are stated below.
 
-## Varning: MXF kan behöva kompletterande uppgifter
+## Warning: MXF may need additional information
 
-**En importerad MXF kan innehålla kompletta mätvärden men ändå sakna uppgifter som behövs för en spårbar och reproducerbar profilering.** Kontrollera och komplettera vid behov:
+**An imported MXF may contain complete measurement values yet still lack information needed for traceable and reproducible profiling.** Check and, where necessary, supplement:
 
-- Skrivarmodell och exakt pappersprodukt; Glossy/Matte anger bara pappersytan.
-- Drivrutin/version, medietyp, utskriftskvalitet och relevanta utskriftsalternativ.
-- Utskriftsprogram och färghantering: om utskriften var utan profilkonvertering eller vilken profil som applicerades och hur.
-- Mätvillkor, instrument och kalibreringsstandard när dessa inte framgår entydigt.
+- Printer model and exact paper product; Glossy/Matte only indicates the paper surface.
+- Driver/version, media type, print quality and relevant print options.
+- Print application and colour management: whether the print was made without profile conversion, or which profile was applied and how.
+- Measurement conditions, instrument and calibration standard when these are not stated unambiguously.
 
-Saknade uppgifter ska redovisas som **unknown**, inte fyllas i genom antaganden. Generiska eller motsägelsefulla metadatafält ska inte behandlas som bekräftade utskriftsinställningar. Kompletteringar ska avse den faktiska utskrift som mättes, inte en senare utskrift eller programmets nuvarande standardval.
+Missing information must be reported as **unknown**, not filled in by assumption. Generic or contradictory metadata fields must not be treated as confirmed print settings. Supplements must refer to the actual print that was measured, not a later print or the application's current default choices.
 
-Dokumentationskrav: användarens kompletteringar ska sparas i JSON med tydligt ursprung som användaruppgift, åtskilda från källfilens metadata. Original-MXF och tidigare mätvärden ska bevaras oförändrade. Fullständigt patchantal är inte i sig bekräftelse på fullständig utskriftsproveniens.
+Documentation requirement: the user's supplements must be saved in JSON with a clear origin as user-supplied information, kept separate from the source file's metadata. The original MXF and earlier measurement values must be preserved unchanged. A complete patch count is not in itself confirmation of complete print provenance.
 
-I nuvarande arbetsflöde granskas uppgifterna i B1 och utskriftsuppgifter kompletteras i [B2:s receptdialog](profile-recipe.md). Dessa tillägg gäller det nya receptet och ändrar inte det låsta B1-underlaget. Kravet ovan beskriver också önskad tydlighet i importdialogen; denna dokumentationsändring inför ingen ny dialogfunktion.
+In the current workflow the information is reviewed in B1 and print details are supplemented in [B2's recipe dialog](profile-recipe.md). These additions apply to the new recipe and do not change the locked B1 basis. The requirement above also describes the desired clarity of the import dialog; this documentation change introduces no new dialog feature.
 
-## Användaren väljer mätfilen
+## The user selects the measurement file
 
-InkProf ska låta användaren välja en mätfil, normalt **TI3 eller MXF**.
-Användaren ska inte behöva hitta eller ange en JSON-fil. JSON är InkProfs
-interna datamodell och skapas efter validerad import.
+InkProf should let the user select a measurement file, normally **TI3 or MXF**.
+The user should not have to find or specify a JSON file. JSON is InkProf's
+internal data model and is created after validated import.
 
-**TI2** beskriver normalt targetets patchdefinition och layout, inte den
-utförda mätningen. En TI2 kan användas som kompletterande targetunderlag.
-Om användaren väljer en TI2 utan mätdata ska programmet förklara detta och
-be om mätfilen. Filändelsen ensam är inte bevis på filens innehåll.
+**TI2** normally describes the target's patch definition and layout, not the
+measurement performed. A TI2 can be used as supplementary target information.
+If the user selects a TI2 without measurement data, the program should explain this and
+ask for the measurement file. The file extension alone is not proof of the file's content.
 
-## Kontroll före import
+## Checks before import
 
-InkProf ska kontrollera:
+InkProf should check:
 
-- Att filen går att tolka och att innehållet motsvarar ett stött format.
-- Att styrvärdena är RGB. CMYK ska rapporteras som fel färgformat för InkProf.
-- Patchantal, identiteter, dubbletter och koppling mellan styrvärden och
-  mätvärden. Upprepade RGB-värden är tillåtna men får inte användas som
-  ensamma unika identiteter.
-- Att uppmätta spektra och/eller XYZ/Lab finns, med deklarerade eller
-  verifierbart härledda skalor och numeriskt giltiga värden. Reflektans över
-  100 procent får inte klippas automatiskt; orsak och mätvillkor måste beaktas.
-- Våglängder, spektralintervall och tillhörande färgspecifikationer.
-- Mätvillkor såsom M0/M1/M2, instrument och kalibreringsstandard när dessa
-  finns. Saknade eller härledda uppgifter ska redovisas som sådana.
-- Patcharnas ordning, koordinater och sidindelning när dessa finns i källan.
-  Saknad layout får inte ersättas med en gissning om hur utskriften såg ut.
-- Överensstämmelse med projektets target, om ett sådant finns: patchidentitet,
-  RGB och tillgänglig fysisk layout. Vid olika layouter krävs en verifierad
-  koppling mellan definitionerna.
+- That the file can be parsed and that its content corresponds to a supported format.
+- That the control values are RGB. CMYK should be reported as the wrong colour format for InkProf.
+- Patch count, identities, duplicates and the link between control values and
+  measured values. Repeated RGB values are allowed but must not be used as
+  sole unique identities.
+- That measured spectra and/or XYZ/Lab exist, with declared or verifiably
+  derived scales and numerically valid values. Reflectance above
+  100 percent must not be clipped automatically; the cause and measurement conditions must be considered.
+- Wavelengths, spectral range and associated colour specifications.
+- Measurement conditions such as M0/M1/M2, instrument and calibration standard when these
+  are present. Missing or derived information must be reported as such.
+- The order of the patches, coordinates and page division when these are present in the source.
+  Missing layout must not be replaced by a guess about what the print looked like.
+- Agreement with the project's target, if there is one: patch identity,
+  RGB and available physical layout. If the layouts differ, a verified
+  mapping between the definitions is required.
 
-Flera mätvillkor eller upprepade mätningar ska bevaras separat och identifieras.
-Programmet får inte tyst välja den första gruppen eller medelvärdesbilda dem.
-Misstänkt omvänd rad ska ge en diagnos, inte automatisk omordning av mätdata.
+Multiple measurement conditions or repeated measurements must be preserved separately and identified.
+The program must not silently pick the first group or average them.
+A suspected reversed row should produce a diagnosis, not automatic reordering of measurement data.
 
-## Resultat i importfönstret
+## Result in the import window
 
-Fönstret ska visa källfil, format, antal patchar, tillgängliga mätvärden,
-mätvillkor och resultat av targetmatchning, samt fel och varningar.
+The window should show source file, format, number of patches, available measurement values,
+measurement conditions and the result of target matching, as well as errors and warnings.
 
-Om filen innehåller tillräckliga och entydiga targetuppgifter ska ingen extra
-fil krävas. Saknas nödvändiga uppgifter ska användaren få välja en
-kompletterande targetfil, exempelvis TI2. En tvetydig patchkoppling ska stoppa
-importen som användbart profileringsunderlag tills den har lösts.
+If the file contains sufficient and unambiguous target information, no extra
+file should be required. If necessary information is missing, the user should be able to choose a
+supplementary target file, for example TI2. An ambiguous patch mapping should stop the
+import as usable profiling input until it has been resolved.
 
-En lyckad import betyder att data har tolkats och kopplats korrekt. Det är
-inte ett bevis på mätkvalitet eller på att en ICC-profil blir korrekt.
-Olösta kvalitetsvarningar ska följa med till senare analys och profilering.
-Alla texter i det implementerade användargränssnittet ska vara på engelska.
+A successful import means that data has been parsed and correctly mapped. It is
+not proof of measurement quality or that an ICC profile will be correct.
+Unresolved quality warnings should follow along to later analysis and profiling.
+All texts in the implemented user interface must be in English.
 
-## Intern JSON och spårbarhet
+## Internal JSON and traceability
 
-Efter godkänd import ska InkProf spara data i projektets gemensamma interna
-JSON-modell och uppdatera projektmanifestet. Följande ska bevaras:
+After approved import, InkProf should save data in the project's common internal
+JSON model and update the project manifest. The following must be preserved:
 
-- Originalfil och dess hash, ursprungligt filnamn och källsökväg.
-- Styrvärden, mätvärden, skalor och en explicit patchkoppling.
-- Källans ordning, koordinater, sidor och metadata, inklusive papperstyp.
-- Mätvillkor och instrumentuppgifter, med skillnad mellan rapporterat,
-  härlett och okänt.
-- Importörens version, importtid, valideringsresultat och varningar.
-- Eventuella transformationer, exempelvis skalomräkning, med spårbarhet till
-  originalvärden. Okänd metadata ska bevaras utan att kallas verifierad.
+- The original file and its hash, original file name and source path.
+- Control values, measured values, scales and an explicit patch mapping.
+- The source's order, coordinates, pages and metadata, including paper type.
+- Measurement conditions and instrument information, distinguishing between reported,
+  derived and unknown.
+- The importer's version, import time, validation result and warnings.
+- Any transformations, for example scale conversion, with traceability to
+  original values. Unknown metadata must be preserved without being called verified.
 
-Originalfilen ska inte ändras. Användaren fortsätter arbeta med projektet och
-mätningen; JSON behöver inte exponeras som obligatoriskt filval.
+The original file must not be modified. The user continues working with the project and
+the measurement; JSON need not be exposed as a mandatory file choice.
 
-## Verifiering
+## Verification
 
-TI3 → JSON och MXF → JSON ska verifieras mot kända referensfiler, med kontroll
-av samtliga patchkopplingar, RGB-värden, spektra och relevant metadata.
-Testerna ska även täcka dubblettfärger, omordnade objekt, flera mätvillkor,
-saknade uppgifter och felaktiga kopplingar.
+TI3 → JSON and MXF → JSON should be verified against known reference files, with checking
+of all patch mappings, RGB values, spectra and relevant metadata.
+The tests should also cover duplicate colours, reordered objects, multiple measurement conditions,
+missing information and incorrect mappings.
 
-Det lyckade importprovet av InkProfs exporterade MXF i i1Profiler verifierar
-inte ensamt den omvända importkedjan MXF → JSON. Den kräver egna tester.
+The successful import test of InkProf's exported MXF in i1Profiler does not
+by itself verify the reverse import chain MXF → JSON. That requires its own tests.
 
-Se även [MXF-formatet](../research/i1profiler-interchange/mxf.md) och
-[kontroll av svepriktning](row-direction-check.md).
+See also [the MXF format](../research/i1profiler-interchange/mxf.md) and
+[row direction check](row-direction-check.md).
 
-## Körning i MATLAB
+## Running in MATLAB
 
 ```matlab
 cd('/Users/christer/Desktop/InkProf')
@@ -110,59 +110,59 @@ paths = setupInkProf();
 [result, measurementFile, sessionFolder] = inkprof.importMeasurement();
 ```
 
-Välj TI3 eller MXF. Färgkartan öppnas efter import; markera en patch och välj
-ommätning på samma sätt som för InkProfs egna mätningar. `measurementFile`
-returneras för skriptbruk men behöver inte väljas av användaren.
+Select TI3 or MXF. The colour map opens after import; select a patch and choose
+re-measurement in the same way as for InkProf's own measurements. `measurementFile`
+is returned for scripting but need not be selected by the user.
 
-Med angivna filer, utan förhandsvisning:
+With specified files, without preview:
 
 ```matlab
 [result, measurementFile, sessionFolder] = inkprof.importMeasurement( ...
     'measurement.ti3', TargetFile='printed-target.ti2', ShowPreview=false);
 ```
 
-TI3 kräver matchande TI2; intilliggande TI2 hittas automatiskt och kontrolleras.
-I det interaktiva flödet öppnas ett kompletterande filval om ingen finns.
-`SessionFolder` kan anges; den måste vara ny. Annars skapas en unik mätmapp
-i källans InkProf-projekt, eller under den konfigurerade projektkatalogen.
-Projektmanifestet uppdateras när importen ligger i ett registrerat projekt.
+TI3 requires a matching TI2; an adjacent TI2 is found automatically and checked.
+In the interactive workflow a supplementary file chooser opens if none exists.
+`SessionFolder` can be specified; it must be new. Otherwise a unique measurement folder is created
+in the source's InkProf project, or under the configured project directory.
+The project manifest is updated when the import is located in a registered project.
 
-## Implementerad MXF-variant och ommätning
+## Implemented MXF variant and re-measurement
 
-Den första adaptern stöder RGB CxF3/Prism med reflektansspektra, explicita
-Page/Row/Column och deklarerad spektralspecifikation. RGB 0–255 omvandlas till
-procent, reflektansfaktorer till procent utan klippning eller omsampling.
-XYZ beräknas med InkProfs dokumenterade D50/2°-integration; ursprungliga
-färgvärden och metadata bevaras i originalfilen och objektens XML i JSON.
+The first adapter supports RGB CxF3/Prism with reflectance spectra, explicit
+Page/Row/Column and declared spectral specification. RGB 0–255 is converted to
+percent, reflectance factors to percent without clipping or resampling.
+XYZ is calculated with InkProf's documented D50/2° integration; original
+colour values and metadata are preserved in the original file and the objects' XML in JSON.
 
-Varje mätgrupp måste ha en entydig positionskoppling till targetet. Ingen
-matchning görs enbart på färg eller objektens ordning. Käll-ID, namn, fysisk
-sida/rad/kolumn och den interna ID-kopplingen sparas. Sidornas radnummer
-översätts till InkProfs globala radnummer; originalsidan bevaras. Tomma
-layoutpositioner markeras som presentationsutfyllnad, inte uppmätta patchar.
+Each measurement group must have an unambiguous positional mapping to the target. No
+matching is done on colour alone or on object order. Source ID, name, physical
+page/row/column and the internal ID mapping are saved. The pages' row numbers
+are translated to InkProf's global row numbers; the original page is preserved. Empty
+layout positions are marked as presentation padding, not measured patches.
 
-Om flera M-villkor finns måste `Condition="M0"`, `"M1"` eller `"M2"` anges
-uttryckligen. Andra grupper bevaras i originalfilen och som separat käll-XML
-i importinformationen; de blandas inte med den valda mätningen.
+If multiple M conditions exist, `Condition="M0"`, `"M1"` or `"M2"` must be specified
+explicitly. Other groups are preserved in the original file and as separate source XML
+in the import information; they are not mixed with the selected measurement.
 
-MXF utan säker layout, blandade spektralnät/kalibreringsstandarder eller enbart
-kolorimetriska värden avvisas i denna första adapter med ett felmeddelande.
-Kompletterande layoutmatchning för sådana MXF-varianter återstår; programmet
-ska inte gissa. Den konverterade TI2-filen beskriver importlayouten, men är
-inte en verifierad instruktion för att skanna om hela det externa targetet.
+MXF without a reliable layout, mixed spectral grids/calibration standards or only
+colorimetric values is rejected in this first adapter with an error message.
+Supplementary layout matching for such MXF variants remains to be done; the program
+must not guess. The converted TI2 file describes the import layout, but
+is not a verified instruction for rescanning the whole external target.
 
-Punktommätning stöder för närvarande i1Pro 2, M0 utan FWA och kompatibel
-kalibreringsstandard/våglängdsuppsättning. Känt serienummer måste stämma.
-Andra importer kan analyseras men får inte punktmätas med denna M0-rutin.
-TI3 med okänt mätvillkor förblir okänt; ett uttryckligt `Condition`-val loggas
-som användaruppgift och får inte motsäga källans rapporterade villkor.
+Spot re-measurement currently supports i1Pro 2, M0 without FWA and a compatible
+calibration standard/wavelength set. A known serial number must match.
+Other imports can be analysed but must not be spot-measured with this M0 routine.
+A TI3 with unknown measurement condition remains unknown; an explicit `Condition` choice is logged
+as user-supplied information and must not contradict the condition reported by the source.
 
-Efter **Accept replacement** sparas en ny JSON-revision och en uppdaterad
-TI3 som kan användas som mätunderlag för Argylls ICC-generering. Original-MXF,
-original-TI3 och tidigare revisioner bevaras. Korrekt filformat ersätter inte
-granskning av kvarstående mätvarningar före profilering.
+After **Accept replacement** a new JSON revision and an updated
+TI3 are saved, which can be used as measurement input for Argyll's ICC generation. The original MXF,
+original TI3 and earlier revisions are preserved. A correct file format does not replace
+review of remaining measurement warnings before profiling.
 
-Automatiserade tester använder syntetiska spektra och simulerad ommätning;
-de kontaktar inte instrumentet. Tester täcker dubbeluppsättningar av RGB,
-omordnade objekt, flera sidor, villkorsval, felaktiga koordinater och skalor,
-serienummerkontroll, enskild ersättning samt återimport av den nya TI3-filen.
+Automated tests use synthetic spectra and simulated re-measurement;
+they do not contact the instrument. Tests cover duplicate sets of RGB,
+reordered objects, multiple pages, condition selection, incorrect coordinates and scales,
+serial number check, single replacement and re-import of the new TI3 file.

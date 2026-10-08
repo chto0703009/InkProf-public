@@ -80,3 +80,17 @@ verifyTrue(tc,isfile(info.ti2));verifyFalse(tc,info.profileApplied);
 roles=string({plan.patches.role});verifyEqual(tc,sum(roles=="control"),16);
 verifyEqual(tc,numel(unique(string({plan.patches.sampleId}))),36);
 end
+
+function testGradientSelectionGuard(tc)
+a=proposal([2 2 2],2);b=proposal([1.8 1.8 1.8],1.8);
+v=struct('key','sRGB | relative | false | sky','curvatureP95',100,'curvatureMax',200,'lightnessReversals',0,'interiorFraction',.8,'labSpan',50);
+a.gradientEvidence=v;b.gradientEvidence=v;b.gradientEvidence.curvatureP95=150;
+r=inkprof.internal.selectIterationCandidate({a,b},.01,.5,.25,.25,.05);verifyEqual(tc,r.selected,1);
+verifyFalse(tc,r.decisions{2}.gradientAccepted);
+b.gradientEvidence=v;r=inkprof.internal.selectIterationCandidate({a,b},.01,.5,.25,.25,.05);verifyEqual(tc,r.selected,2);
+b=proposal([2.02 2.02 2.02],2.02);b.gradientEvidence=v;b.gradientEvidence.curvatureP95=80;
+r=inkprof.internal.selectIterationCandidate({a,b},.01,.5,.25,.25,.05);verifyEqual(tc,r.selected,2);
+b.gradientEvidence.interiorFraction=.6;r=inkprof.internal.selectIterationCandidate({a,b},.01,.5,.25,.25,.05);verifyEqual(tc,r.selected,1);
+b.gradientEvidence=v;b.gradientEvidence.labSpan=0;r=inkprof.internal.selectIterationCandidate({a,b},.01,.5,.25,.25,.05);verifyEqual(tc,r.selected,1);
+b.gradientEvidence=[];r=inkprof.internal.selectIterationCandidate({a,b},.01,.5,.25,.25,.05);verifyEqual(tc,r.selected,1);
+end

@@ -1,3 +1,49 @@
+InkProf v1.0.0-rc.2 — public release candidate
+Date: 2026-10-08 | Internal version: 1.0.0-rc.2
+
+RC2 RELEASE RECHECK
+- Full Python unittest discovery: 172 passed, 0 failures in development
+  (21.654 s); 172 passed, 0 failures in the separate public checkout
+  (20.686 s), using the installed development Python dependencies.
+- Selected public MATLAB suite: 71 passed, 0 failed, 0 incomplete.
+  Selection: testArgyllDiscovery, testArgyllRefinementCandidates,
+  testCertificateOutliers, testCombinedRefinement, testCxF,
+  testDeviationRanking, testDialogText, testInstrumentIdentity,
+  testInteriorRefinement, testMeasurementRevisions,
+  testNumericalDecisionEvidence, testPairedMeasurement,
+  testPreviousCertificate, testPrintFooter, testProfileIteration,
+  testProfileJobProgressMessage, testProfileTradeoffResults,
+  testProjectFolderName, testProjectManifest, testPxfExport,
+  testRGBDefinition, testRefinementContinuation, testRegularizationReport,
+  testSpectralAnalysis, testTiffICCInstructions,
+  testVerificationChainSummaryText.
+- A full MATLAB run waited indefinitely in testApprovalDialog and was
+  interrupted. Broader public tests exposed excluded-private-fixture
+  dependencies, older UI/ICC-import assumptions and runtime configuration
+  requirements. These runs did NOT pass and are not included in the
+  selected-suite total. Full MATLAB/dialog qualification remains open.
+- One real compatibility issue identified in the recheck was fixed:
+  previewMeasurement now guards missing measurementCondition in older
+  revisions. testDeviationRanking passes with this guard.
+- Environment: macOS, MATLAB R2025b, Python 3.13, ArgyllCMS 3.5.0.
+- All current Python sources parsed: 103 development, 102 public.
+- Version/source/resource checks and recorded dependency licence hashes
+  passed. Public source check: 354 first-party source files carry notices.
+- Five current PDFs rebuilt: Swedish/English handbooks 44/44 pages,
+  Swedish/English presentations 7/7 pages, English MATLAB workflow 8 pages.
+  Every page checked for 1.0.0-rc.2. Changed presentation/handbook layouts
+  were visually inspected; builders retain font notices and contact details.
+- Public source excludes private projects, real i1Profiler reference
+  packages, vendor TIFF fixtures, third-party ICCs and A4 test.jpg.
+  Existing synthetic fixtures remain included. No private Git history merged.
+- Installed runtimes/dependencies were reused; a fresh package installation
+  and new physical printing/measurement were not performed in this recheck.
+- This prerelease does not establish universal colour accuracy, M1-equivalent
+  FWA correction, ISO conformance or Windows/Linux qualification.
+- Release notes: docs/releases/v1.0.0-rc.2.md.
+
+HISTORICAL RC1 VALIDATION (not RC2 test totals)
+====================================================
 InkProf v1.0.0RC1 — public release candidate
 Date: 2026-10-03 | Internal version: 1.0.0-rc.1
 

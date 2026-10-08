@@ -76,7 +76,7 @@ Run `.venv/bin/python tools/check_license_inventory.py` to verify recorded versi
 
 Before distributing a packaged runtime, audit its actual wheel/native-library contents, dataset notices (including colour-science datasets), fonts and source obligations. MATLAB-linked/compiled distributions and any third-party GPL code adapted into MATLAB require review of the concrete combination; do not infer clearance from this document. InkProf's own GPL-3.0-or-later designation remains unchanged.
 
-C1-flyttalskontrollen anropar LittleCMS offentliga C-API via Python ctypes. API-format och konstanter följer `lcms2.h` (https://github.com/mm2/Little-CMS/blob/master/include/lcms2.h); egen bryggkod ligger i `analysis/lcms_float.py`. Den använder installerat bibliotek, normalt det som följer med Pillow, och distribuerar ingen ny LittleCMS-binär. Befintliga LittleCMS-notiser gäller; vid annat systembibliotek måste dess version och licensmaterial granskas inför paketering.
+The C1 floating-point check calls the public LittleCMS C API through Python ctypes. API formats and constants follow `lcms2.h` (https://github.com/mm2/Little-CMS/blob/master/include/lcms2.h); InkProf's own bridge code is in `analysis/lcms_float.py`. It uses the installed library, normally the one shipped with Pillow, and does not distribute a new LittleCMS binary. Existing LittleCMS notices apply; if another system library is used, its version and licence material must be reviewed before packaging.
 
 ## CxF3 XML schema
 

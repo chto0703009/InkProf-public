@@ -1,32 +1,32 @@
-# InkProf: placering av nya inre RGB-punkter
+# InkProf: placement of new interior RGB points
 
 > Historical planning/research/decision record. The dated findings are preserved; use [the v1.0.0 documentation index](https://github.com/chto0703009/InkProf-public/blob/main/docs/README.md) for current usage and status.
 
-Jämförelse 2026-09-26. Samma budget: 499 anpassningspunkter, 64 kontroller och 12 upprepningar. InkProf börjar med 153 punkter och lägger till 346. Alla InkProf-varianter behåller 98 ytpunkter och har 401 inre anpassningspunkter. Argyll har 190 ytpunkter och 309 inre.
+Comparison 2026-09-26. Same budget: 499 fitting points, 64 checks and 12 repeats. InkProf starts with 153 points and adds 346. All InkProf variants keep 98 surface points and have 401 interior fitting points. Argyll has 190 surface points and 309 interior.
 
-## Oberoende kontroll med 100 000 slumpmässiga provpunkter
+## Independent check with 100,000 random sample points
 
-Samma provpunkter används för alla metoder; MATLAB twister med frö 20260926. Provpunkterna används inte vid genereringen. Avstånd gäller normaliserat RGB till närmaste anpassningspunkt, inte ΔE. Kontroller och upprepningar ingår inte som anpassningsstöd. Lägre är bättre.
+The same sample points are used for all methods; MATLAB twister with seed 20260926. The sample points are not used during generation. Distances are normalised RGB to the nearest fitting point, not ΔE. Checks and repeats are not included as fitting support. Lower is better.
 
-| Metod | Medel | 95-percentil | Största påträffade avstånd |
+| Method | Mean | 95th percentile | Largest distance found |
 |---|---:|---:|---:|
 | Argyll OFPS | 0.06695 | 0.09564 | 0.12648 |
-| InkProf: tyngdpunkter (förval) | 0.06648 | 0.09910 | 0.13312 |
-| InkProf: omsfärscentrum inom egen tetraeder | 0.06615 | 0.10535 | 0.13812 |
-| InkProf: alla omsfärscentrum inne i kuben | 0.06723 | 0.10305 | 0.13360 |
+| InkProf: centroids (default) | 0.06648 | 0.09910 | 0.13312 |
+| InkProf: circumcentres within own tetrahedron | 0.06615 | 0.10535 | 0.13812 |
+| InkProf: all circumcentres inside the cube | 0.06723 | 0.10305 | 0.13360 |
 
-## Bedömning
+## Assessment
 
-Att använda omsfärscentrum endast där de ligger i sin egen tetraeder ger ungefär 0,5 procent lägre medelavstånd än tyngdpunktsmetoden på det oberoende provet. Däremot blir 95-percentilen cirka 6,3 procent högre och största påträffade avståndet cirka 3,8 procent högre. Argyll behåller bättre täckning enligt dessa två svansmått. Den nya placeringen är därför ett jämförelsealternativ, inte en entydig förbättring. Tyngdpunkter behålls som förval.
+Using circumcentres only where they lie within their own tetrahedron gives about 0.5 percent lower mean distance than the centroid method on the independent sample. However, the 95th percentile becomes about 6.3 percent higher and the largest distance found about 3.8 percent higher. Argyll retains better coverage according to these two tail measures. The new placement is therefore a comparison option, not an unambiguous improvement. Centroids are kept as the default.
 
-Det regelbundna 33³-nätet gav större förbättring av medelvärdet än det oberoende slumpmässiga provet. Detta visar att ett enda regelbundet provnät inte bör avgöra metodvalet. Båda undersökningarna finns i JSON-filen. Inget undersökt maximum är ett bevisat maximum över den kontinuerliga kuben.
+The regular 33³ grid showed a larger improvement in the mean than the independent random sample did. This shows that a single regular sample grid should not decide the choice of method. Both investigations are in the JSON file. No maximum examined is a proven maximum over the continuous cube.
 
 ## Implementation
 
-InteriorPlacement="centroid" är förval. "contained-circumcenter" lägger till omsfärscentrum inom respektive tetraeder som kandidater, med tyngdpunkter som reserv. "circumcenter" tillåter omsfärscentrum var som helst strikt inne i kuben, även utanför sin definierande tetraeder. Alla kandidater rangordnas efter avståndet till närmaste befintliga anpassningspunkt. Startpunkter flyttas inte och inga nya ytpunkter läggs till.
+InteriorPlacement="centroid" is the default. "contained-circumcenter" adds the circumcentre within its respective tetrahedron as a candidate, with centroids as a fallback. "circumcenter" allows circumcentres anywhere strictly inside the cube, even outside their defining tetrahedron. All candidates are ranked by distance to the nearest existing fitting point. Starting points are not moved and no new surface points are added.
 
-Omsfärscentrum är lika långt från tetraederns fyra hörn. För Delaunay-tetraedrar ger det en tom sfär, men en girig följd av sådana val behöver inte ge bäst fördelning vid ett bestämt slutligt punktantal.
+A circumcentre is equidistant from the tetrahedron's four vertices. For Delaunay tetrahedra this gives an empty sphere, but a greedy sequence of such choices does not necessarily give the best distribution at a given final point count.
 
-Algoritmversion 2.1 sparar InteriorPlacement, insertionKinds, candidateKinds och parentTetrahedra. Vid omsfärscentrum avser de fyra föräldrarna sfärens definierande hörn; de måste inte omge punkten i den obegränsade varianten.
+Algorithm version 2.1 stores InteriorPlacement, insertionKinds, candidateKinds and parentTetrahedra. For circumcentres, the four parents refer to the vertices defining the sphere; they need not enclose the point in the unrestricted variant.
 
-Det gjordes också ett separat försök med diskret längst-bort-placering med 65 nivåer per axel, där ytterytan undantogs (63³ inre kandidater). Det gav inte bättre inre medeltäckning än tyngdpunkter och lades inte till som användaralternativ.
+A separate trial was also made with discrete farthest-point placement using 65 levels per axis, with the outer surface excluded (63³ interior candidates). It did not give better interior mean coverage than centroids and was not added as a user option.
