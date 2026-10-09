@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-09",
+  "app": "InkProf 1.0.0-rc.4",
+  "matlab": "R2025b",
+  "capture": "exportapp for UI dialogs and main window; exportgraphics for the gamut figure",
+  "project": "Fictional Handbook example, created only for documentation",
+  "gamut": "LittleCMS-generated sRGB ICC v2.1 example; not a measured printer profile",
+  "figures": [
+    "main-window.png",
+    "project-details.png",
+    "profiling-settings.png",
+    "gamut-window.png",
+    "measurement-window.png",
+    "profiling-recipe.png"
+  ],
+  "gamutPresentation": "Same ICC gamut surface; overlapping helper axes removed, labels moved to axis edges, depth sorting enabled for this documentation example. InkProf app code unchanged.",
+  "measurement": "Before start; no spectrometer connection or physical measurement.",
+  "recipe": "Example 575-patch input; compact layout for documentation export; cancelled without building a profile.",
+  "iccVersionChoice": "Project details and Profiling screenshots recaptured from the actual updated dialog on 2026-10-09. Delivered ICC versions = Both; fictional settings; dialog cancelled without saving.",
+  "captureHelpers": "Capture helpers resolve the repository from their own location. Intermediate example projects/images use tempdir/InkProf-handbook-examples; capture_examples initializes this folder. Copy selected captures into this examples directory after inspection. No private reference measurements are required."
+}

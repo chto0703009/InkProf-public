@@ -31,7 +31,7 @@ class VerificationTests(unittest.TestCase):
     return values*[100,200,200]-[0,100,100]
    class CMM:
     def save_lab_profile(self,path):Path(path).write_bytes(b'synthetic Lab')
-   with patch('verification_target.require_profile'),patch('verification_target.lookup',lookup),patch('verification_target.LittleCMS',CMM):
+   with patch('verification_target.require_profile'),patch('verification_target.lookup',lookup),patch('verification_target.LittleCMS',CMM),patch('verification_target.lookup_evidence',return_value={'engine':'test'}):
     r=generate(job,'unused',request,Path(directory)/'target')
    self.assertEqual(len(r['patches']),575)
    self.assertEqual(sum(x['role']=='repeat' for x in r['patches']),40)

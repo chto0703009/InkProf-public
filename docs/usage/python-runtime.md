@@ -1,6 +1,6 @@
 # Local and optional Python environment
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Python is not needed for target generation in MATLAB. Python is used by the chartread bridge, spectral analysis, profiling and reports.
 

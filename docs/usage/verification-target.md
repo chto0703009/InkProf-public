@@ -1,6 +1,6 @@
 # C2 – independent verification target with the ICC applied
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 The first implementation uses **absolute colorimetric, D50/2° and no black point compensation**, as the user chose. The profile is applied once, when the patches' device RGB is computed. The TIFF16 is then written without further colour management and without scaling. The printer ICC is embedded as a TIFF tag only; the pixels are unchanged device RGB. The tag exists because an application such as Photoshop may otherwise assign its working space (for example Adobe RGB 1998) to an untagged file and convert it to the printer profile, which applies the profile twice. When opening in Photoshop, discard/ignore the embedded profile without converting the RGB values, and print with colour management off in the application and driver. The tag remains preserved in the original TIFF as provenance.
 

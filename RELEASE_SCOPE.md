@@ -1,8 +1,10 @@
-# Public release scope — v1.0.0-rc.3
+# Public release scope — v1.0.0-rc.4
 
-This is a source-only release candidate (tag v1.0.0-rc.3, released 2026-10-08, internal version 1.0.0-rc.3), based on the separate public repository. Private development history is neither merged into it nor rewritten.
+This is a source-only release candidate (tag v1.0.0-rc.4, released 2026-10-09, internal version 1.0.0-rc.4), based on the separate public repository. Private development history is neither merged into it nor rewritten.
 
-Excluded: local projects/measurements/ICC profiles, imported i1Profiler reference packages and real MXF fixtures, vendor screenshots, private historical datasets, machine settings, virtual environments, caches and external runtime binaries. Synthetic fixtures and original explanatory documentation figures are included. Some historical research notes refer to excluded data; they are not reproducible release tests. This private development repository still contains some of the excluded material (for example the real MXF fixtures in `tests/fixtures/i1profiler/` and the Chart 575 `reference.tif`); it is not copied to the public repository.
+Download: [v1.0.0-rc.4 prerelease](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4). As of 2026-10-09, GitHub’s latest stable release remains v0.9; RC4 is the current testing release.
+
+Excluded: local projects/measurements/ICC profiles, imported i1Profiler reference packages and real MXF fixtures, vendor screenshots, private historical datasets, machine settings, virtual environments, caches and external runtime binaries. Synthetic fixtures and original explanatory documentation figures are included. Some historical research notes refer to excluded data; they are not reproducible release tests. Excluded material remains in the separate private development repository, including real MXF fixtures and the Chart 575 reference image; it is absent from this public tree.
 
 Separately licensed resources: complete unmodified CxF3 schema with its licence and provenance; unmodified DejaVu Sans font with full notice and hash. ReportLab's separately installed fonts are embedded in PDFs with notices. MATLAB, Python and ArgyllCMS must be installed separately. The root GPL licence does not relicense these dependencies.
 

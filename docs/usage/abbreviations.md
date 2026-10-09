@@ -1,6 +1,6 @@
 # Abbreviations in InkProf
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Abbreviations should be explained at first use in any self-contained description or report. This glossary is a supplement.
 

@@ -1,47 +1,110 @@
 [
   {
-    "title": "From image to a reliable colour workflow",
-    "tag": "USER HANDBOOK | RC3 | 2026-10-08",
+    "tag": "USER HANDBOOK | RC4 | 2026-10-09",
+    "title": "What is InkProf?",
+    "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
       [
-        "The image should reach the paper",
-        "For the photographer, the aim is for the carefully crafted image to come into its own in print. A clear, well-controlled workflow helps the photographer, printing business and client understand the result and work towards the same goal."
+        "A profile for your printing combination",
+        "An ICC profile describes colour reproduction for a specific combination of printer, paper, ink and print settings. InkProf creates colour targets, collects spectral measurements and builds the profile using ArgyllCMS. You can also verify an existing ICC profile without building a new one."
       ],
       [
-        "Less time and material wasted",
-        "For a printing business, documented settings and regular checks provide a stronger basis for consistent deliveries. Finding and understanding errors early reduces the need to make new prints and the extra working time, paper and ink they consume."
+        "A connected, traceable workflow",
+        "Targets, settings, measurements, profiles and decisions are saved in one project. The app shows completed steps and missing prerequisites. Pause while prints dry and resume the same project. The history helps you repeat the work and understand what has changed."
       ],
       [
-        "Transparency makes colour understandable",
-        "InkProf brings colour targets, spectral measurements, ICC profiles and decisions together in one project. Open source and a traceable workflow reveal how results were produced. This makes it easier to understand difficult colours and work right up to the limits of the chosen printer, paper and ink."
+        "Checks of both the profile and the print",
+        "InkProf checks the profile numerically and can compare its predictions with a separately printed and measured target. Colour differences, gradients and gamut views help you assess the result and identify areas that need additional colour samples."
       ],
       [
-        "How this handbook helps",
-        "This handbook describes the main window, dialogs and 19 profiling steps, with current profiling paths, smoothing and FWA limitations. Updated on 8 October 2026 against the source. The final appendix follows a complete profiling job and its decisions."
+        "Benefits for photographers, print businesses and clients",
+        "Documented conditions and recurring checks support consistent prints. Finding errors early can reduce reprints, working time, paper and ink use. The ICC profile and report provide a shared basis for assessing and explaining the delivery."
       ],
       [
-        "The three parts of the work",
-        "First, document and measure the printer. Next, build and check a profile. Finally, verify a print or document an explicitly limited numerical decision. If needed, another iteration adds more measurements."
+        "Open methods and clear conditions",
+        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.0.0-rc.4; app buttons and field names are English."
       ]
     ],
-    "lead": "InkProf - When colours have to be right",
-    "callout": "InkProf saves TIFF16 for separate printing. Measurement, profile building, analysis and documentation are part of the app workflow. Print using your usual printing application."
+    "callout": "InkProf brings profiling, checks and documentation together in one project. Print the colour targets using a separate printing application."
+  },
+  {
+    "tag": "PREPARATION AND INSTALLATION",
+    "title": "What you need",
+    "lead": "Install the dependencies first, then InkProf. These installation steps apply to macOS, the tested environment.",
+    "sections": [
+      [
+        "Hardware and printing software",
+        "You need a computer that runs MATLAB, an RGB-driven printer, your chosen paper and ink, and a spectrometer supported by ArgyllCMS chartread for reflectance measurement. Connect it by USB and keep its own calibration reference available. Use a printing application and driver or RIP that can print TIFF16 without unintended colour conversion."
+      ],
+      [
+        "1. Install MATLAB, Python and ArgyllCMS",
+        "MATLAB requires its own licence; InkProf was tested with R2025b and no mandatory add-on toolboxes. Install Python 3.11-3.13 (tested with 3.13) and ArgyllCMS (3.5.0 was used in development). Git is needed for the clone command below. On macOS, Python, Git and ArgyllCMS can be installed using Homebrew; with Homebrew installed: brew install python@3.13 git argyll-cms."
+      ],
+      [
+        "2. Download InkProf v1.0.0-rc.4",
+        "Open the RC4 link below, download the source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.0.0-rc.4 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
+      ],
+      [
+        "3. Install Python packages in the InkProf folder",
+        "Run in Terminal:\npython3.13 -m venv .venv\n.venv/bin/python -m pip install -r requirements-report.txt\nThe dependency chain includes measurement, colour calculation and PDF packages. InkProf discovers the local .venv environment."
+      ],
+      [
+        "4. Check and start in MATLAB",
+        "Set the InkProf folder as Current Folder. Run:\npaths = setupInkProf(CheckPython=true);\nstartInkProfApp();\nRun setupInkProf in each new MATLAB session. ArgyllCMS is normally discovered automatically on macOS. If needed, specify its tools folder using setupInkProf(ArgyllBin=\"/path/to/Argyll/bin\",CheckPython=true)."
+      ]
+    ],
+    "links": [
+      [
+        "Download InkProf v1.0.0-rc.4 (prerelease)",
+        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
+      ]
+    ],
+    "callout": "Windows and Linux have not been verified for the complete workflow. Close other instrument applications before measuring and follow the calibration prompts when the instrument starts."
+  },
+  {
+    "tag": "THE WORKFLOW AT A GLANCE",
+    "title": "From start to finished profile",
+    "lead": "From documented printing conditions to a checked ICC profile and a report recording the basis for your decision.",
+    "sections": [
+      [
+        "1. Create the project and colour target",
+        "Record printer, paper, ink, print settings and drying time. Create or import an RGB target and save its TIFF16 file."
+      ],
+      [
+        "2. Print, dry and measure",
+        "Print without ICC conversion of the target RGB values. Allow to dry, calibrate the instrument and measure in InkProf. Review and accept the inputs."
+      ],
+      [
+        "3. Build and check the profile",
+        "Lock the inputs, choose a recipe and build the ICC profile. Review numerical checks, colour deviations and gradients."
+      ],
+      [
+        "4. Check an actual print",
+        "Print a separate verification target following InkProf’s instructions. Allow to dry and measure. Compare desired colours, profile predictions and print results."
+      ],
+      [
+        "5. Improve when the evidence calls for it",
+        "Print and measure additional patches when supported by evidence. Build the next iteration, compare on common inputs and perform fresh final verification."
+      ],
+      [
+        "6. Approve and save the delivery",
+        "Assess intended use and save the ICC and PDF/HTML certificate. Use the same materials and settings when printing. The project saves inputs, decisions and history."
+      ]
+    ],
+    "callout": "Verifying an existing ICC has a separate workflow. Approval without a check print is a specific, numerically limited alternative and is described as such in the certificate.",
+    "overviewDiagram": true
   },
   {
     "title": "Find your way through the workflow",
     "tag": "OVERVIEW",
     "sections": [
       [
-        "Reading the status",
-        "Ready means the step can be run. Complete means its recorded requirements have been met. Locked means a required input is missing. Stale means an input has changed and the result needs updating. Simply opening and closing a dialog does not complete a step."
-      ],
-      [
         "There is more than one route",
         "B2 is needed for the manual profiling route. The profile comparison on row 18 supports your decision. Row 19 is a separate option when the current iteration has been checked numerically but has not been verified by a separate print and measurement."
       ],
       [
-        "Additional guidance",
-        "The later chapters cover smoothing, gradients, remeasurement, target preparation, diagnostics and FWA. The final appendix gives the complete recommended profiling route and decision points."
+        "Additional guidance: pages 35-47",
+        "35: smoothing. 36: gradients. 37: row remeasurement. 38: C2 and ICC tagging. 39: C3. 40: existing ICC and reference colours. 41: diagnostics. 42: accuracy and gradient comparison. 43-45: target methods and roles. 46: ICC version choice. 47: TIFF conversion and embedded ICC."
       ]
     ],
     "lead": "The row number on the left and the internal step identifier are different things. This handbook uses row numbers to help you find the step in the app.",
@@ -54,54 +117,79 @@
       [
         "1-2",
         "Create / import RGB target; Save TIFF16",
-        "Base target and print file. Page 6."
+        "Base target and print file. Page 12."
       ],
       [
         "3-4",
         "Measure / select measurement revision; Review and accept measurement",
-        "Measure, choose a saved revision and review it. Pages 7-8."
+        "Measure, choose a saved revision and review it. Pages 13-15."
       ],
       [
         "5-7",
         "B1. Lock profiling inputs; B2. Create recipe; B3. Build ICC",
-        "Lock inputs, choose a recipe and build a profile. Page 9."
+        "Lock inputs, choose a recipe and build a profile. Page 16."
       ],
       [
         "8",
         "C1. Fit, Grid and C1",
-        "Numerical checks. Page 10."
+        "Numerical checks. Page 18."
       ],
       [
         "9-10",
         "C2. Save verification target; Measure / select verification revision",
-        "Print and measure a verification target. Page 11."
+        "Print and measure a verification target. Page 19."
       ],
       [
         "11-12",
         "C3. Compare model and print; Review feedback",
-        "Assess the actual print and feedback. Page 11."
+        "Assess the actual print and feedback. Page 19."
       ],
       [
         "13-14",
         "Approve for intended use; Save ICC and measurement certificate",
-        "Decision and delivery after verification. Page 12."
+        "Decision and delivery after verification. Page 20."
       ],
       [
         "15-17",
         "Save refinement TIFF16; Measure refinement; Build next iteration",
-        "New colour patches and a new profile. Pages 13-14."
+        "New colour patches and a new profile. Pages 21-23."
       ],
       [
         "18",
         "Compare with previous iteration",
-        "Compare profiles on a common basis. Page 15."
+        "Compare profiles on a common basis. Page 24."
       ],
       [
         "19",
         "Save ICC + measurement certificate without print verification",
-        "A limited decision without another verification print. Page 16."
+        "Limited decision without a new verification print. Page 29."
       ]
     ]
+  },
+  {
+    "title": "Reading the status",
+    "tag": "STATUS AND NEXT ACTION",
+    "lead": "Status applies to an individual project step. It shows what the app has recorded and what you can do next.",
+    "sections": [
+      [
+        "Ready",
+        "Required inputs are available. Select the step and Run selected step to start. Example: creating a target can make the Save TIFF16 step Ready."
+      ],
+      [
+        "Complete",
+        "The step’s result or decision is saved and the app’s requirements for that step are met. This does not itself mean approved print quality. Example: a completed profile calculation makes the build step Complete. Print quality still needs assessment in the verification steps."
+      ],
+      [
+        "Locked",
+        "The step cannot start yet. Read its description and first complete the prerequisite steps. Example: profile building can remain Locked until the measurement is reviewed and required inputs or recipes are available."
+      ],
+      [
+        "Stale",
+        "An earlier result needs updating because its inputs or settings have changed. Repeat the affected steps. Example: changing the recipe can make the earlier profile Stale. Rebuild it and update the affected checks."
+      ]
+    ],
+    "callout": "Use the dialog’s intended save or acceptance button. Simply opening and closing the dialog does not complete the step.",
+    "links": []
   },
   {
     "title": "The main window",
@@ -126,6 +214,29 @@
     ],
     "lead": "First select a row in the table. Read the description and saved results before choosing Run selected step.",
     "diagram": true
+  },
+  {
+    "title": "Example: the main window",
+    "tag": "EXAMPLE IMAGE | THE APP HUB",
+    "lead": "A newly created example project. The first step is Ready; later steps wait for their input data.",
+    "images": [
+      [
+        "examples/main-window.png",
+        174,
+        116,
+        "Figure 1. InkProf’s main window with fictional project details. Available buttons and status depend on the project."
+      ]
+    ],
+    "sections": [
+      [
+        "Read from left to right",
+        "Choose a step in the left table. The right pane shows its description, status and saved results. Run selected step opens the operation; Open selected step results opens existing saved results."
+      ],
+      [
+        "Tools around the workflow",
+        "The top row contains project details, log, history and report controls. View gamut sits above the workspace and becomes available when the project has a suitable ICC profile."
+      ]
+    ]
   },
   {
     "title": "The project remembers your work",
@@ -160,12 +271,34 @@
     "callout": "Pausing while prints dry: finish saving the current step, close the app and reopen the same project when the sheets are ready. Do not create a new project to continue the same measurement session."
   },
   {
+    "title": "Example: project details",
+    "tag": "EXAMPLE IMAGE | PROJECT DETAILS",
+    "images": [
+      [
+        "examples/project-details.png",
+        137,
+        139,
+        "Figure 2. Project and materials in Project details. All product and user details shown are examples."
+      ]
+    ],
+    "sections": [
+      [
+        "Document the combination",
+        "Record the printer, paper, finish and ink so that conditions can be reproduced. Printing settings collects driver/RIP, media setting and other print conditions."
+      ],
+      [
+        "Save what you actually use",
+        "Matte and Pigment illustrate the fields. Choose details and the FWA/OBA setting for your material and measurement evidence. Save records changes; Cancel leaves the dialog unchanged."
+      ]
+    ]
+  },
+  {
     "title": "Profile and measurement conditions",
     "tag": "PROJECT DETAILS",
     "sections": [
       [
         "Profiling",
-        "Profile name and Description describe the profile. Colour data can be Spectra (D50 / 2 degrees) or Stored XYZ. Spectral data allow recalculation from measured spectra. Stored XYZ preserves the stored colour values. Inverse table (B2A) offers High (denser) or Medium (baseline). A denser table is a calculation setting, not proof of better printing."
+        "Profile name and Description identify the profile. Colour data selects Spectra (D50 / 2 degrees) or Stored XYZ. Inverse table (B2A) selects High or Medium. Delivered ICC versions offers v2, v4.4 and Both. InkProf can import RGB printer profiles in ICC v2 and v4 and deliver v2 and v4.4. Older projects default to v2. The internal v2 profile is retained for Argyll calculations."
       ],
       [
         "D50 and D65",
@@ -177,15 +310,37 @@
       ],
       [
         "Change FWA after measurement",
-        "Changing only FWA/OBA preserves locked B1 but makes B2 and later profile results stale. Raw measurements remain preserved. Actual changes to materials or printing conditions also invalidate B1. New recipes support FWA before Argyll pre-smoothing and final smoothing; see the M0 white-reference section. See page 21."
+        "Changing only FWA/OBA preserves locked B1 but makes B2 and later profile results stale. Raw measurements remain preserved. Actual changes to materials or printing conditions also invalidate B1. New recipes support FWA before Argyll pre-smoothing and final smoothing; see the M0 white-reference section. See page 25."
       ],
       [
         "Black point compensation: BPC",
-        "Black point compensation maps the black point between colour spaces. It is off in the controlled comparisons described here so that the calculation conditions remain explicit. BPC off describes a condition; it is not an error message."
+        "Black point compensation maps the black point between colour spaces. It is off in the controlled comparisons described here so that the calculation conditions remain explicit. BPC off describes a condition; it is not an error message. See page 46 for version choice and BPC in perceptual production rendering."
       ],
       [
         "Computer and instrument",
         "MATLAB provides the app interface. Python, ArgyllCMS and LittleCMS are used for underlying calculations and tools. Tool paths depend on the computer and must work on the current machine. Check the installation even when the project folder is complete. The program has been tested on macOS. Windows and Linux are not verified environments for the complete InkProf workflow."
+      ]
+    ]
+  },
+  {
+    "title": "Example: profiling settings",
+    "tag": "EXAMPLE IMAGE | PROFILING",
+    "images": [
+      [
+        "examples/profiling-settings.png",
+        137,
+        139,
+        "Figure 3. The project definition’s Profiling tab with the new version choice. Both is selected as an example; these values are not a general recommendation."
+      ]
+    ],
+    "sections": [
+      [
+        "What the fields show",
+        "Profile name and Description identify the profile. Colour data selects spectra or stored XYZ. Inverse table (B2A) specifies table quality. Delivered ICC versions shows Both in this example: delivery of v2 and v4.4."
+      ],
+      [
+        "Shadows and colour samples",
+        "Matte shadows and the next three fields describe additional shadow detail in targets and profiling. Review the print result before deciding whether these settings help your combination."
       ]
     ]
   },
@@ -253,6 +408,25 @@
     "lead": "Measurements use a spectrometer supported by the measurement workflow. Instrument calibration and the correct target-file association are essential."
   },
   {
+    "tag": "EXAMPLE IMAGE | MEASURE CHART",
+    "title": "Example: measurement",
+    "lead": "The measurement window before starting. No physical measurement was performed for this example.",
+    "images": [
+      [
+        "examples/measurement-window.png",
+        168,
+        143,
+        "Figure 4. The measurement window with an example TI2 and alternating row scans. The instrument starts only after you choose Start measurement."
+      ]
+    ],
+    "sections": [
+      [
+        "Choose the target and follow instrument messages",
+        "Use the TI2 matching your printed target. Review Scan mode and Measurement condition before starting. Calibration, remeasurement and acceptance buttons activate when needed. Instrument messages tell you what to do; Save and finish saves the completed result."
+      ]
+    ]
+  },
+  {
     "title": "Revisions, review and remeasurement",
     "tag": "ROWS 3-4 / SAVED REVISIONS",
     "sections": [
@@ -266,7 +440,7 @@
       ],
       [
         "When a patch needs remeasurement",
-        "Remeasure patch rereads one patch. Remeasure row lets you choose a page and printed row and retains the original scan mode, including forward/reverse. Review changes before Accept row replacement. Discard / Close leaves the row unreplaced. An accepted row is saved as a new revision; original and raw readings remain preserved. See page 24."
+        "Remeasure patch rereads one patch. Remeasure row lets you choose a page and printed row and retains the original scan mode, including forward/reverse. Review changes before Accept row replacement. Discard / Close leaves the row unreplaced. An accepted row is saved as a new revision; original and raw readings remain preserved. See page 37."
       ],
       [
         "Absolute colour and change are different",
@@ -294,7 +468,7 @@
       ],
       [
         "Row 6: B2. Create recipe",
-        "Profiling recipe is used by the manual route. Measurement data smoothing controls optional pre-regularization. Smoothing at ICC build controls final colprof -r; empty means 0.5%. These stages are separate. Printing details come from Project details. Review profile name, colour data and table quality. See pages 21-23. Perceptual compression (%) controls perceptual gamut mapping; see the new rendering-intent section."
+        "Profiling recipe is used by the manual route. Measurement data smoothing controls optional pre-regularization. Smoothing at ICC build controls final colprof -r; empty means 0.5%. These stages are separate. Printing details come from Project details. Review profile name, colour data and table quality. See pages 35-36 and 26. Perceptual compression (%) controls perceptual gamut mapping; see the new rendering-intent section."
       ],
       [
         "Row 7: B3. Build ICC / automatic iteration",
@@ -302,7 +476,7 @@
       ],
       [
         "What is saved when it finishes?",
-        "The project contains the ICC candidate linked to locked inputs and the profiling job. This is the internal working copy. Later export creates a separate delivery copy with the chosen name and location."
+        "The project retains the v2 ICC candidate with its locked inputs and profile job. Selecting v4.4 or Both also produces a separate v4.4 profile and conversion report. Colorimetric tables are preserved; perceptual and saturation tables are remapped. Assess v4.4 in the application and rendering intent used for production."
       ],
       [
         "Why is creating an ICC file not enough?",
@@ -310,6 +484,24 @@
       ]
     ],
     "lead": "An ICC profile describes the relationship between printer RGB values and the colours reproduced. The candidate then needs to be checked."
+  },
+  {
+    "tag": "EXAMPLE IMAGE | PROFILING RECIPE",
+    "title": "Example: profiling",
+    "images": [
+      [
+        "examples/profiling-recipe.png",
+        155,
+        150,
+        "Figure 5. Profiling recipe in the manual workflow. The 575 patches, materials and settings are examples; no ICC was built for this image."
+      ]
+    ],
+    "sections": [
+      [
+        "From recipe to ICC profile",
+        "Review colour data, table quality and optional smoothing. Project print details are locked in the recipe. Save recipe records settings; B3 then builds the profile. The recipe window itself does not create an ICC."
+      ]
+    ]
   },
   {
     "title": "Understand the numerical checks",
@@ -367,7 +559,7 @@
       ],
       [
         "Avoid double profile conversion",
-        "New C2 files contain the printer profile as an embedded tag. The tag does not change RGB values or mean the profile should be applied again. Keep it without conversion. Older files may be untagged. Printer Manages Colors or a greyed-out Off control does not prove the complete print chain has no extra conversion. See page 25."
+        "New C2 files contain the printer profile as an embedded tag. The tag does not change RGB values or mean the profile should be applied again. Keep it without conversion. Older files may be untagged. Printer Manages Colors or a greyed-out Off control does not prove the complete print chain has no extra conversion. See page 38."
       ],
       [
         "Row 10: measure and select a revision",
@@ -375,7 +567,7 @@
       ],
       [
         "Row 11: C3. Compare model and print",
-        "Measured vs desired compares print with desired colour. Model vs measurement compares ICC prediction with print. Both are colour differences, not absolute colour values. Desired Lab and Measured Lab contain L*, a*, b*. Largest errors appear first. C3 may warn about suspected double colour management; this is a hypothesis, not proof. See page 26."
+        "Measured vs desired compares print with desired colour. Model vs measurement compares ICC prediction with print. Both are colour differences, not absolute colour values. Desired Lab and Measured Lab contain L*, a*, b*. Largest errors appear first. C3 may warn about suspected double colour management; this is a hypothesis, not proof. See page 39."
       ],
       [
         "Row 12: Review feedback",
@@ -402,7 +594,7 @@
       ],
       [
         "Row 14: choose what to save",
-        "Use Save ICC and measurement certificate for delivery. The profile already exists as a working result in the project. The ICC file chooser concerns the separate copy you want to use or hand over. Choose a destination and check the filename."
+        "Save ICC and measurement certificate follows Delivered ICC versions: v2, v4.4 or Both. Both saves v2 at the chosen filename and a sibling <name>-v4.4.icc. The project working profile is retained. Changing only the version choice requires a new export, not new measurement or profiling."
       ],
       [
         "Profile names in files and image applications",
@@ -410,7 +602,7 @@
       ],
       [
         "Certificate contents",
-        "The measurement certificate describes the project, materials, printing conditions, profile and check results. It should identify the iteration, the measurements supporting it and how FWA was handled. Instrument identity is reported when available. Report colour patches are screen previews, not substitutes for the original print."
+        "The measurement certificate describes the project, materials, printing conditions, profile and check results. It should identify the iteration, the measurements supporting it and how FWA was handled. Instrument identity is reported when available. Report colour patches are screen previews, not substitutes for the original print. For v4.4 delivery, the report distinguishes the checked v2 from the converted v4.4 copy; it does not certify a separate verification print for its perceptual rendering."
       ],
       [
         "Where are reports saved?",
@@ -755,7 +947,7 @@
       ],
       [
         "Basis of this handbook",
-        "The Swedish and English handbooks share the same chapter order and corresponding content. The 7 October 2026 update was checked against workflow, recipe, row remeasurement, RGB gradients, C2/C3 source and usage guides. Separate diagnostic scripts are not built-in app features. Documentation and numerical tests are not new physical validation."
+        "The Swedish and English handbooks share the same chapter order and corresponding content. The RC4 edition of 9 October 2026 was checked against workflow, recipes, row remeasurement, gradients, C2/C3 and ICC import/delivery. Separate diagnostic scripts are not built-in app features. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -798,8 +990,8 @@
     ],
     "links": [
       [
-        "Public project and installation",
-        "https://github.com/chto0703009/InkProf-public"
+        "InkProf v1.0.0-rc.4 – prerelease and download",
+        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
       ],
       [
         "User documentation",
@@ -817,7 +1009,7 @@
   },
   {
     "title": "More samples in dark colours",
-    "tag": "v1.0.0 | MATERIALS AND SHADOWS",
+    "tag": "v1.0.0-rc.4 | MATERIALS AND SHADOWS",
     "sections": [
       [
         "Matte paper",
@@ -843,7 +1035,7 @@
   },
   {
     "title": "Gamut, certificates and source code",
-    "tag": "v1.0.0 | DELIVERY AND LICENSING",
+    "tag": "v1.0.0-rc.4 | DELIVERY AND LICENSING",
     "sections": [
       [
         "Surfaces and measurement points are different views",
@@ -859,7 +1051,30 @@
       ],
       [
         "Release status",
-        "This handbook describes release candidate 1.0.0-rc.3, dated 8 October 2026. It is not the stable v1.0.0 release. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+        "This handbook describes release candidate 1.0.0-rc.4, dated 9 October 2026. It is not the stable v1.0.0 release. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+      ]
+    ]
+  },
+  {
+    "title": "Example: the gamut window",
+    "tag": "EXAMPLE IMAGE | VIEW GAMUT",
+    "lead": "An example of InkProf’s ICC-derived colour volume in a separate window.",
+    "images": [
+      [
+        "examples/gamut-window.png",
+        174,
+        126,
+        "Figure 6. InkProf’s gamut view using an example sRGB profile (ICC v2). sRGB illustrates the window; this is not a measured printer gamut."
+      ]
+    ],
+    "sections": [
+      [
+        "Read the axes and surface",
+        "L* represents lightness. a* runs from green to red, b* from blue to yellow. The surface is calculated from the profile’s colour transform in CIELAB D50. Rotate the view in the app; the PDF image is static."
+      ],
+      [
+        "Use the view as supporting information",
+        "For a printer project, InkProf uses the available printer profile. A larger surface is not itself a quality score. Also assess measurements, colour errors and the actual print."
       ]
     ]
   },
@@ -987,7 +1202,7 @@
       ],
       [
         "New project: Verify existing ICC",
-        "The separate seven-step workflow imports an RGB printer profile, creates a target, measures, analyses, reviews, records assessment and saves a certificate. It does not rebuild the profile. The editable 575-patch suggestion covers skin tones, shadows, neutrals and broad colours."
+        "The separate seven-step workflow imports RGB printer profiles in ICC v2 and v4, creates a target, measures, analyses, reviews, records assessment and saves a certificate. The original colour tables are used and delivered. V4.4 is checked natively through LittleCMS; verification does not use a v2 reconstruction. The 575-patch suggestion covers skin tones, shadows, neutrals and broad colours."
       ],
       [
         "Unknown independence",
@@ -995,7 +1210,7 @@
       ],
       [
         "Methods in RGB Target",
-        "The RGB target designer offers OFPS, incremental far point, quasi-random, body-centred cubic and random through Argyll. An existing ICC can guide placement through pre-conditioning; it does not create new measurements or apply the profile to the raw target RGB. Method, seed and profile reference are saved."
+        "The RGB target designer offers OFPS, incremental far point, quasi-random, body-centred cubic and random through Argyll. An existing ICC can guide patch placement but is not measurement data. Argyll preconditioning with v4 needs a separate, explicitly accepted approximate v2 copy; the original is preserved."
       ]
     ]
   },
@@ -1108,7 +1323,48 @@
       ],
       [
         "ICC specification",
-        "https://www.color.org/icc1-v41.pdf"
+        "https://www.color.org/specifications/"
+      ]
+    ]
+  },
+  {
+    "title": "ICC v2 or v4.4: which fits best?",
+    "tag": "VERSION CHOICE | ASSESSMENT AND DELIVERY",
+    "lead": "Choose according to the printing application, rendering intent and checked results. A higher version number does not itself make a profile more colour-accurate.",
+    "sections": [
+      [
+        "What v4 adds",
+        "ICC v4 clarifies the reference colour space and rendering intents for more predictable interpretation across profiles and engines. It does not replace good measurements or print assessment."
+      ],
+      [
+        "When v2 is a good choice",
+        "Keep v2 in a working, checked workflow, particularly for older applications or recipients requiring it. InkProf uses v2 internally for Argyll. Do not switch solely for a higher version number."
+      ],
+      [
+        "When v4.4 is a good choice",
+        "Choose v4.4 when the application and recipient support it and the result has been assessed. InkProf preserves colorimetric tables but remaps perceptual and saturation tables. Shadows and transitions may change; improvement is not guaranteed."
+      ],
+      [
+        "Both for comparison",
+        "Both gives both versions from the same profiling run. Compare the same photograph, gradients and shadows with the same paper, ink, settings, intent and viewing light. Record BPC and change one part of the chain at a time."
+      ],
+      [
+        "Numerical BPC example",
+        "Two profiles were tested through LittleCMS at sRGB greys 0, 8, 32, 128 and 255. Perceptual v4.4 gave identical results with BPC on and off; predicted L* differed by at most 0.79 from v2 with BPC on. This is a numerical example, not a new print measurement or general guarantee."
+      ],
+      [
+        "What verification establishes",
+        "C2 uses absolute colorimetry without BPC. A good result does not establish your preferred perceptual rendering. The certificate identifies the checked profile and v4.4 conversion separately. Also assess a print using the production version and intent."
+      ],
+      [
+        "Import and the practical decision",
+        "InkProf imports RGB printer profiles in v2 and v4. Existing v4 verification uses the original through LittleCMS. Argyll preconditioning requires an accepted approximate v2 copy. Choose according to your chain, measurements and image assessment."
+      ]
+    ],
+    "links": [
+      [
+        "ICC: reasons for changing to v4",
+        "https://www.color.org/advantagesv4.pdf"
       ]
     ]
   },
@@ -1135,8 +1391,20 @@
     ]
   },
   {
+    "title": "Appendix: workflow diagram",
+    "tag": "FLOW DIAGRAM | COMPLETE PROFILING",
+    "lead": "Overview of the example on the following pages: from planning to measured final verification and saved delivery.",
+    "workflowDiagram": true,
+    "sections": [
+      [
+        "Using the feedback loop",
+        "When results deviate, first review measurements, profile identity and print settings. Refine only when supported by evidence; otherwise investigate or withhold approval. A new ICC requires fresh final verification. The diagram shows the print-verified route, not the separate numerical delivery route."
+      ]
+    ]
+  },
+  {
     "title": "Appendix: plan and create the base target",
-    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-09",
     "sections": [
       [
         "1. Define success before printing",
@@ -1158,7 +1426,7 @@
   },
   {
     "title": "Appendix: print, measure and decide on OBA",
-    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-09",
     "sections": [
       [
         "4. Print the prepared RGB target",
@@ -1180,7 +1448,7 @@
   },
   {
     "title": "Appendix: build, refine and stop",
-    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-09",
     "sections": [
       [
         "7. Choose smoothing and the B3 route",
@@ -1202,7 +1470,7 @@
   },
   {
     "title": "Appendix: final verification and certificate",
-    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-08",
+    "tag": "COMPLETE PROFILING APPENDIX | 2026-10-09",
     "sections": [
       [
         "11. Verify the exact profile to be delivered",
@@ -1268,18 +1536,18 @@
         "https://fogra.org/en/shop/mediawedge-cmyk"
       ]
     ],
-    "tag": "COMPLETE PROFILING APPENDIX | SOURCES | 2026-10-08"
+    "tag": "COMPLETE PROFILING APPENDIX | SOURCES | 2026-10-09"
   },
   {
-    "title": "Appendix: Torger and i1Profiler",
+    "title": "Appendix: comparing profiling methods",
     "tag": "COMPLETE PROFILING APPENDIX | COMPARISON",
     "sections": [
       [
-        "Torger: a useful photographic starting point",
+        "A photographic starting point",
         "Torger recommends preconditioning, optimised placement and extra greys. His Colormunki example favours about 840 patches as a practical balance; this is experience with that instrument and print system, not a universal limit. He uses colprof -r1.0 to trade a little fit accuracy for smoothness and evaluates diagnostic gradients and a familiar photograph. His reported profile-matching errors compare predictions with measured device patches, including training-data checks; they are not interchangeable with InkProf C3 errors against desired colours on a separate profile-converted print. His tutorial is primarily a base-profiling workflow, not evidence that InkProf refinement replicates a particular iterative algorithm."
       ],
       [
-        "i1Profiler: a more extensive measurement route",
+        "A more extensive measurement workflow",
         "X-Rite’s recommended RGB workflow proposes 2,033 or 1,586 patches, wider patches for better sampling, about an hour of drying, instrument calibration and saved measurement data. These recommendations concern its own software and layouts: do not blindly increase InkProf patch width or assume one hour guarantees stability for every paper. i1Profiler also offers targeted optimisation and optical-brightener compensation; the internal engine is not Argyll, and its OBC must not be described as identical to InkProf’s M0 method."
       ],
       [
@@ -1307,11 +1575,11 @@
     ]
   },
   {
-    "title": "Keith Cooper: test images and sky gradients",
+    "title": "Test images",
     "tag": "COMPLETE PROFILING APPENDIX | VISUAL ASSESSMENT",
     "sections": [
       [
-        "Keith Cooper: photographic test images",
+        "Photographic test images",
         "Keith Cooper (Northlight Images) provides printer test images and assessment notes, including the Datacolor image made available courtesy of Datacolor. Use it for overall photographic assessment of skin tones, neutrals, shadows and saturated colours. In InkProf comparisons, inspect the sky gradient for banding or uneven transitions when assessing smoothing; it is a visual diagnostic, not proof of a particular cause. Compare the same source, ICC path, intent, BPC, print preset and viewing light. The original Adobe RGB photograph needs one intended printer-profile conversion; an already converted device-RGB version must receive no second conversion. Do not apply fitting-target opening instructions to the original photograph. JPEG quantisation and clipping can also produce visible steps; use synthetic high-precision gradients alongside it. Download from Keith Cooper’s page; the image is not distributed in the InkProf repository."
       ]
     ],

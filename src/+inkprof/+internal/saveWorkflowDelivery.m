@@ -28,12 +28,18 @@ reportParent=reportBundle;reportDestination=fullfile(reportParent,stem+reportExt
 destinations=[iccDestination,reportDestination];
 if lower(reportExt)==".pdf",destinations(3)=fullfile(reportParent,stem+".html");end
 if lower(reportExt)==".html",destinations(3)=fullfile(reportParent,stem+".pdf");end
+variant=struct('primaryFile',"profile.icc",'secondaryFile',"");
+if isfile(fullfile(folder,'icc-variants.json')),variant=jsondecode(fileread(fullfile(folder,'icc-variants.json')));end
+secondaryIndex=0;
+if string(variant.secondaryFile)~=""
+ secondaryIndex=numel(destinations)+1;destinations(secondaryIndex)=fullfile(iccParent,iccName+"-v4.4"+iccExt);
+end
 for file=destinations
  assert(~isfolder(file),'inkprof:Delivery','The destination is a folder.');
  assert(~isfile(file)||options.Overwrite,'inkprof:Exists','File already exists: %s',file);
  assert(~isfile(file)||~startsWith(file,root+filesep),'inkprof:Delivery','Existing project files cannot be replaced. Choose a new name.');
 end
-source=fullfile(folder,'profile.icc');hash=inkprof.internal.sha256(source);
+source=fullfile(folder,string(variant.primaryFile));hash=inkprof.internal.sha256(source);
 assets=fullfile(reportParent,"underlag");
 stages=strings(size(destinations));
 backups=strings(size(destinations));published=false(size(destinations));
@@ -47,9 +53,17 @@ try
  mkdir(fullfile(assets,'delivered'));naming.file="delivered/"+iccName+iccExt;
  copyfile(stages(1),fullfile(assets,naming.file));
  inkprof.internal.writeJson(fullfile(assets,'icc-delivery.json'),naming);
+ if secondaryIndex>0
+  second=fullfile(folder,string(variant.secondaryFile));
+  secondaryNaming=inkprof.internal.nameICC(second,stages(secondaryIndex),iccName+"-v4.4");
+  secondaryNaming.file="delivered/"+iccName+"-v4.4"+iccExt;
+  copyfile(stages(secondaryIndex),fullfile(assets,secondaryNaming.file));
+  inkprof.internal.writeJson(fullfile(assets,'icc-delivery-secondary.json'),secondaryNaming);
+ end
  config=inkprof.paths();
  inkprof.runPython(fullfile(config.Root,'analysis','delivery_report.py'),assets,RequiredModules="reportlab",WorkingDirectory=config.Root);
  for k=2:numel(destinations)
+  if k==secondaryIndex,continue;end
   [~,~,ext]=fileparts(destinations(k));
   if lower(ext)==".pdf"
    copyfile(fullfile(assets,'final-report.pdf'),stages(k));
@@ -66,6 +80,7 @@ try
    closer=onCleanup(@()fclose(fid));fprintf(fid,'%s\n',text);clear closer
   end
  end
+ if secondaryIndex>0,assert(inkprof.internal.sha256(stages(secondaryIndex))==string(secondaryNaming.sha256),'inkprof:Integrity','Secondary ICC copy changed.');end
  assert(inkprof.internal.sha256(stages(1))==string(naming.sha256),'inkprof:Integrity','The ICC copy has changed.');
  for k=1:numel(destinations)
   if isfile(destinations(k)),backups(k)=string(tempname(fileparts(destinations(k))));copyfile(destinations(k),backups(k));end

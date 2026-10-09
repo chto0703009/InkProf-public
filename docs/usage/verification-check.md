@@ -1,6 +1,6 @@
 # C3 – analysis of a measured verification print
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Implemented 2026-09-28. MATLAB Base is the interface; Python/Colour and ArgyllCMS profcheck do the analysis. The analysis routine does not open any instrument.
 

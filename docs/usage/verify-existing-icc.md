@@ -1,6 +1,6 @@
 # Verify an existing printer ICC
 
-InkProf 1.0.0-rc.3 offers a separate project purpose, **Verify existing ICC**, under **New project**. Existing profiling projects keep their original workflow. Project mode is saved in the project and workflow JSON.
+InkProf 1.0.0-rc.4 offers a separate project purpose, **Verify existing ICC**, under **New project**. Existing profiling projects keep their original workflow. Project mode is saved in the project and workflow JSON.
 
 ## Seven steps
 
@@ -37,42 +37,24 @@ This improves coverage; it does not establish print accuracy or a standardized c
 
 ### ICC v4 import
 
-When importing an ICC v4 RGB printer profile, InkProf opens **ICC v4
-compatibility** before conversion. **Cancel** aborts the import. **Create v2
-copy** preserves the original and creates a separate approximate ICC v2
-compatibility profile for Argyll. ICC v2 inputs are copied without conversion.
+Existing-profile verification preserves the selected ICC v4 original. No v2
+reconstruction is requested for this workflow. C2 target RGB, forward
+predictions and C3 chain diagnostics use LittleCMS on that original, with
+absolute colorimetric intent and no BPC. Reachability is a stored B2A/A2B
+round-trip diagnostic, not Argyll numerical inversion or proof of gamut.
+C3 integrates measured spectra with Argyll `spec2cie` (D50 / 2 degrees),
+then compares the resulting Lab with the original ICC predictions.
+The certificate and delivered profile refer to the original colour tables.
 
-This is a reconstruction from a 17³ grid of LittleCMS absolute A2B samples,
-not a change to the version byte. Argyll rebuilds the output profile, inverse
-tables and perceptual mapping. Original rendering behaviour is not guaranteed.
-A `conversion.json` records original/converted hashes, commands and relative
-and absolute ΔE00 comparisons on 512 separate RGB probes. These are numerical
-checks, not print validation. The verification workflow uses the v2 copy and
-marks the imported profile as modified. Keep the original for reference.
+Argyll target pre-conditioning still needs an explicitly accepted approximate
+v2 compatibility copy. Its samples now come from relative A2B and are prepared
+with inverse Bradford adaptation for the media white before `colprof` rebuilds
+the profile. Numerical comparisons use LittleCMS on both profiles and include
+forward and inverse directions. The cache method version has changed so old
+copies are not silently reused. Original tables and perceptual behaviour are
+not guaranteed by this reconstruction.
 
-The same compatibility routine is also used for Argyll target pre-conditioning.
-An original SHA-256 plus conversion-method version identifies a shared cache
-under `projects/.icc-v2-cache`. All callers reuse and validate the same v2 bytes;
-a Cancel choice stops the operation even when a cached copy already exists.
-Each imported package retains its own original, converted profile and numerical
-conversion evidence. Existing imported packages are not rewritten automatically;
-re-import their original v4 file to use this conversion policy. Native ICC
-inspection reads the original unchanged. Native LittleCMS source-image colour
-handling remains separate from Argyll RGB printer compatibility.
-
-### Opening the device-RGB target in Photoshop
-
-The C2 TIFF contains **printer device RGB**, already calculated by InkProf.
-When asked about its embedded printer profile, choose **Discard the embedded
-profile / Don't color manage this document**, without converting pixel values.
-If it opened with the tag retained, use **Edit > Assign Profile > Don't Color
-Manage This Document**. Do not use **Convert to Profile** or convert/assign
-Adobe RGB or sRGB. Removing the association does not perform a pixel conversion.
-
-Then print at actual size with no additional application/OS colour conversion
-and Epson **Off (No Color Adjustment)**. Do not select Photoshop Manages Colors
-with the printer ICC for this prepared target. If the application cannot
-preserve device RGB on output, use a suitable unmanaged print utility. Ignoring
-the profile on opening alone does not prove an unmanaged print path. The
-embedded ICC identifies the profile already used; it is not an instruction to
-apply it again. These rules concern InkProf print targets, not arbitrary images.
+Previously imported verification packages are preserved. Re-import the original
+v4 profile to use native verification. See the dated
+[ICC investigation](../research/icc-v2-v4-compatibility-20261009.md) for the
+historical findings and the initial prototype.

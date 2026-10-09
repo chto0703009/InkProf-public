@@ -11,9 +11,9 @@ from urllib.parse import quote
 
 
 def details(delivery):
-    return [f"File: {Path(delivery['file']).name}", 'Internal profile name: '+delivery['internalName'],
+    return ([delivery['conversionNote']] if delivery.get('conversionNote') else []) + [f"File: {Path(delivery['file']).name}", 'Internal profile name: '+delivery['internalName'],
             'Delivery file SHA-256: '+delivery['sha256'],
-            'Checked original profile SHA-256: '+delivery['sourceSHA256'],
+            'Source ICC SHA-256 before delivery naming: '+delivery['sourceSHA256'],
             'Only profile naming information and necessary file structure/identity fields have changed. All other ICC tags, including colour computation tables, are byte-identical.']
 
 
@@ -22,7 +22,19 @@ def create(folder):
     r = json.loads((folder/'final-report.json').read_text(encoding='utf-8'))
     delivery = json.loads((folder/'icc-delivery.json').read_text(encoding='utf-8'))
     if delivery['sourceSHA256'] != r['profile']['sha256']:
-        raise ValueError('Delivery and report refer to different source profiles')
+        conversion=json.loads((folder/'conversion-v4.json').read_text())
+        if (conversion['inputSHA256']!=r['profile']['sha256'] or conversion['outputSHA256']!=delivery['sourceSHA256'] or conversion['problems']):
+            raise ValueError('Delivery and report lack matching conversion evidence')
+        r['deliveryConversion']=conversion
+        delivery['conversionNote']='Delivered v4.4 is derived from the checked v2. Colorimetric tables are unchanged; perceptual/saturation tables are remapped. Separate application print assessment is required.'
+    secondary=folder/'icc-delivery-secondary.json'
+    if secondary.exists():
+        second=json.loads(secondary.read_text())
+        conversion=json.loads((folder/'conversion-v4.json').read_text())
+        if conversion['inputSHA256']!=r['profile']['sha256'] or conversion['outputSHA256']!=second['sourceSHA256'] or conversion['problems']:
+            raise ValueError('Secondary delivery lacks matching conversion evidence')
+        r['secondaryDeliveryProfile']=second
+        delivery['conversionNote']='Also delivered: '+Path(second['file']).name+'. The v4.4 copy preserves colorimetric tables but remaps perceptual/saturation mapping. The certificate identifies the checked v2; assess v4.4 prints in the intended application.'
     r['deliveryProfile'] = delivery
     (folder/'final-report.json').write_text(json.dumps(r,indent=2,ensure_ascii=False),encoding='utf-8')
     if r['documentType'] == 'inkprof.numerical-report':

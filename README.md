@@ -1,8 +1,8 @@
-# InkProf v1.0.0-rc.3 — public release candidate
+# InkProf v1.0.0-rc.4 — public release candidate
 
 **InkProf - When colours have to be right**
 
-Public prerelease: **[v1.0.0-rc.3](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.3)**. Internal version: **1.0.0-rc.3**. This is a release candidate for testing, not the stable v1.0.0. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
+Public prerelease: **[v1.0.0-rc.4](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4)**. Internal version: **1.0.0-rc.4**. This is a release candidate for testing, not the stable v1.0.0. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
 
 
 For photographers, the carefully crafted image should reach paper with its intended colours, tones and expression. A smooth workflow builds confidence and satisfaction for photographers, printing businesses and clients. Calibration and verification can reduce reprints, save time, paper and ink, and improve consistency.
@@ -15,7 +15,11 @@ InkProf is an open-source MATLAB application for RGB printer profiling: colour t
 
 The app saves TIFF16 targets for separate printing. Measurement is started in the app using a compatible spectrometer. ICC candidates are built with ArgyllCMS, checked numerically and assessed against a separately printed and measured verification target. After user approval, save the ICC file and PDF/HTML reports to locations of your choice. A 2D view starts at L*=50, with a switch to rotatable 3D sample points. View gamut provides a separate ICC-derived 3D surface in the app and certificates.
 
+InkProf reads supported RGB printer ICC profiles in v2 and v4. For newly built profiles, choose **v2**, **v4.4** or **Both** in Project definition → Profiling. Argyll builds the internal v2 profile; optional v4.4 delivery includes conversion evidence. A higher version number does not by itself improve colour accuracy. See [ICC output settings](docs/usage/profiling-project.md#delivered-icc-versions) and the handbooks for guidance.
+
 **Platform testing:** InkProf has been tested on macOS only. Windows and Linux have not been tested. See [tested platforms and limitations](docs/usage/tested-platforms.md).
+
+Download the current testing version from **[v1.0.0-rc.4](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4)**. As of 2026-10-09, GitHub’s “Latest” stable release is v0.9 because RC4 is marked as a prerelease. Use the version-specific link for RC4.
 
 ## Install and start
 
@@ -30,7 +34,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 Clone the tagged release candidate:
 
 ```sh
-git clone --branch v1.0.0-rc.3 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.0.0-rc.4 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
@@ -52,9 +56,9 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [2026-10-07 update](docs/releases/2026-10-07-workflow-update.md) for the latest workflow changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [RC4 release notes](docs/releases/v1.0.0-rc.4.md) for the current changes.
 
-- [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok.pdf)
+- [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
 
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)

@@ -7,7 +7,8 @@ from pathlib import Path
 import numpy as np
 import colour
 import tifffile
-from profile_grid import lookup, sha
+from profile_grid import sha
+from icc_lookup import lookup, evidence as lookup_evidence
 
 
 def summary(values):
@@ -35,7 +36,7 @@ def analyse(reference,root,profile,exe,measured):
     rows=[dict(sampleId=str(p['id']),inverseRoundtripDE00=float(inverse_de[i]),
                savedRGBRoundtripDE00=float(quantized_de[i]),
                inverseVsSavedMaxChannel16Codes=float(np.max(abs(b2a[i]*65535-saved[i]*65535)))) for i,p in enumerate(patches)]
-    result=dict(inverse=dict(status='available',label='Desired Lab vs ICC inverse/forward round-trip',summary=summary(inverse_de[unique]),savedRGBSummary=summary(quantized_de[unique])),
+    result=dict(colourEngine=lookup_evidence(profile),inverse=dict(status='available',label='Desired Lab vs ICC inverse/forward round-trip',summary=summary(inverse_de[unique]),savedRGBSummary=summary(quantized_de[unique])),
                 tiff=dict(status='unavailable',label='Saved device RGB vs actual TIFF pixels'),
                 print=dict(status='unavailable',label='Measured print vs ICC prediction from actual TIFF RGB'),patches=rows,sources=[],
                 limitations=['Numerical inverse agreement does not establish physical reachability.',

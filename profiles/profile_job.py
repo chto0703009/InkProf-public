@@ -13,11 +13,18 @@ from pathlib import Path
 import shutil
 import subprocess
 import time
-from read_icc import inspect_file
+from read_icc import inspect_file, inspect_bytes
+
+def inspect_file_bytes(data):
+    result = inspect_bytes(data)
+    if result['diagnostics'] or not result['capabilities']['rgbOutputCandidate']:
+        raise ValueError('Converted ICC failed structural inspection.')
+    return result
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "analysis"))
 from fwa import arguments as fwa_arguments, prepare as fwa_prepare
 import preregularize
+from icc_v2_to_v4 import convert as convert_v4
 
 
 def sha(path):
@@ -67,6 +74,9 @@ def run(folder):
             if not path.is_relative_to(folder) or sha(path) != digest:
                 raise ValueError(f'Job input hash mismatch: {name}')
         recipe = json.loads((folder/'recipe.json').read_text())
+        versions = recipe.get('printing', {}).get('profileOutputVersions', 'v2')
+        if versions not in ('v2', 'v4', 'both'):
+            raise ValueError('Unsupported ICC output versions.')
         mode = recipe['colorimetry']['mode']
         if mode not in ('spectral', 'storedXYZ'):
             raise ValueError('Unsupported recipe colourimetry.')
@@ -189,6 +199,20 @@ def run(folder):
         shutil.copyfile(candidate, stage/'profile.icc')
         inspection['source']['path'] = 'profile.icc'
         write(stage/'inspection.json', inspection)
+        status['outputVersions'] = versions
+        status['deliveryProfiles'] = []
+        if versions in ('v2', 'both'):
+            status['deliveryProfiles'].append(dict(file='result/profile.icc', version='v2', sha256=sha(stage/'profile.icc')))
+        if versions in ('v4', 'both'):
+            v4, conversion = convert_v4(candidate.read_bytes())
+            if conversion['problems']:
+                raise ValueError('ICC v4 conversion failed: ' + '; '.join(conversion['problems']))
+            v4inspection = inspect_file_bytes(v4)
+            (stage/'profile-v4.icc').write_bytes(v4)
+            write(stage/'conversion-v4.json', conversion)
+            write(stage/'inspection-v4.json', v4inspection)
+            status['deliveryProfiles'].append(dict(file='result/profile-v4.icc', version='v4.4', sha256=sha(stage/'profile-v4.icc')))
+        if (folder/'cancel.request').exists(): raise InterruptedError('Cancelled before publication.')
         os.replace(stage, folder/'result')
         status['profileFile'] = 'result/profile.icc'
         status['profileSHA256'] = sha(folder/status['profileFile'])

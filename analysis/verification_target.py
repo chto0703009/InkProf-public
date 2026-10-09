@@ -7,7 +7,8 @@ import argparse,json,shutil
 from pathlib import Path
 import numpy as np
 import colour
-from profile_grid import lookup,sha
+from profile_grid import sha
+from icc_lookup import lookup, evidence as lookup_evidence
 from profile_c1 import require_profile
 from lcms_float import LittleCMS
 import reference_sets
@@ -184,6 +185,11 @@ def write_definition(job,exe,request,out,profile,status,recipe,external,patches,
         independence='New device RGB separated from training; model-informed gamut screening is disclosed. Independent measured validation remains to be performed. Any paperwhite patch is a model reference, excluded from independent scores.',
         referencePolicy='Compare measured absolute D50 Lab against referenceLabD50Absolute; predictedLabD50Absolute is diagnostic only. Stratify gamutAssessment and role; do not score padding or contrast bars.',
         definitions=dict(file='verification.ti1',sha256=sha(out/'verification.ti1')),patches=patches)
+    record['colourEngine']=lookup_evidence(profile)
+    if record['colourEngine']['engine']=='LittleCMS':
+        record['pipeline']=record['pipeline'].replace('xicclu -fb -ia -pl','LittleCMS stored B2A, absolute intent, no BPC')
+        record['sourceProfile']['role']='reference encoding; LittleCMS receives Lab directly'
+        record['classification']='Stored B2A/A2B round-trip residual; not numerical A2B inversion or proof of gamut. Residual <=0.5 dE00 is model-reachable; >3 is a challenge, not a print acceptance threshold.'
     if external:
         record.update(externalProfile=True,trainingIndependence='unknown: original training data unavailable',
             independence='New verification print; original training data unavailable, so independence from training cannot be established. Model-informed gamut screening is disclosed.')

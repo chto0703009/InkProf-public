@@ -32,13 +32,13 @@ class Pages(canvas.Canvas):
   n=len(self.states);ann=self._annotationCount
   for st in self.states:
    self.__dict__.update(st);self._annotationCount=ann
-   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf Quality Profiling RGB printer | 1.0.0-rc.3')
-   self.setFont('Vera',7.7);self.setFillColor(MUTED);self.drawCentredString(105*mm,277.5*mm,'Christer Törnkvist  |  christer@borgasundsfotografiska.se')
+   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf Quality Profiling RGB printer | 1.0.0-rc.4')
+   self.setFillColor(MUTED)
    self.setStrokeColor(LINE);self.setLineWidth(.6)
    self.line(18*mm,273.5*mm,192*mm,273.5*mm);self.line(18*mm,22*mm,192*mm,22*mm)
-   self.setFont('Vera',8);self.drawString(18*mm,16*mm,'2026-10-08');self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber} ({n})')
+   self.setFont('Vera',8);self.drawString(18*mm,16*mm,'2026-10-09');self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber} ({n})')
    self.setFillColor(TEAL);self.drawCentredString(105*mm,11*mm,'christer@borgasundsfotografiska.se')
-   url='https://github.com/chto0703009/InkProf-public';self.setFont('Vera',7);self.drawCentredString(105*mm,6*mm,url);self.linkURL(url,(45*mm,4*mm,165*mm,9*mm),relative=0)
+   url='https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4';self.setFont('Vera',7);self.drawCentredString(105*mm,6*mm,'GitHub | InkProf v1.0.0-rc.4 (prerelease)');self.linkURL(url,(45*mm,4*mm,165*mm,9*mm),relative=0)
    ann=self._annotationCount;super().showPage()
   sys.path.insert(0,str(ROOT.parents[2]/'analysis'))
   from pdf_notices import attach

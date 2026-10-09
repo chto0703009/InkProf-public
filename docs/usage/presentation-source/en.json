@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.0.0-rc.3 | 2026-10-08",
+    "tag": "InkProf | v1.0.0-rc.4 | 2026-10-09",
     "title": "Your image deserves the right colours",
     "lead": "You chose the light, shaped the image and worked on every nuance. When the image reaches paper, that work should come with it.",
     "sections": [
@@ -134,8 +134,8 @@
         "https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50"
       ],
       [
-        "InkProf: code, installation and documentation",
-        "https://github.com/chto0703009/InkProf-public"
+        "InkProf v1.0.0-rc.4 – prerelease and download",
+        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
       ],
       [
         "Licensing and third-party references",
@@ -223,7 +223,7 @@
       ],
       [
         "Release preparation",
-        "This documentation accompanies 1.0.0-rc.3 ahead of v1.0.0. New features do not alter saved targets or measurements. Assess improvement through printing and measurement."
+        "This documentation accompanies 1.0.0-rc.4 ahead of v1.0.0. New features do not alter saved targets or measurements. Assess improvement through printing and measurement."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub."

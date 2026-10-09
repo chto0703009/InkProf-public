@@ -16,6 +16,7 @@ import subprocess
 import colour
 import numpy as np
 from profile_fit import parse_log, sha, stats
+from icc_lookup import is_v4, lookup, evidence as lookup_evidence
 
 
 def read(path):
@@ -125,6 +126,23 @@ def analyse(reference, measurement, readings):
                 rankedIDs=[p['sampleId'] for p in sorted(patches,key=lambda p:-p['deltaE00'])])
 
 
+def v4_readings(ti3,profile,expected):
+    import sys
+    sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'profiles'))
+    from preregularize import read_ti3
+    table=read_ti3(Path(ti3).read_text())
+    if (table['ids']!=list(map(str,expected['ids'])) or table['locations']!=list(map(str,expected['locations']))
+        or not np.allclose(table['rgb'],expected['rgb'],atol=1e-6,rtol=0)):
+        raise ValueError('Integrated measurement identity/RGB changed.')
+    fields=table['fields']
+    xyz=np.array([[float(row[fields.index('XYZ_'+c)]) for c in 'XYZ'] for row in table['rows']])/100
+    if not np.isfinite(xyz).all():raise ValueError('Nonfinite integrated XYZ.')
+    measured=colour.XYZ_to_Lab(xyz,illuminant=colour.XYZ_to_xy([0.9642,1,0.8249]))
+    predicted=lookup(None,profile,np.asarray(table['rgb'])/100,'f','a')
+    return [dict(sampleId=identity,sampleLoc=location,measuredLab=m.tolist(),predictedLab=p.tolist())
+            for identity,location,m,p in zip(table['ids'],table['locations'],measured,predicted)]
+
+
 def run(reference_file, measurement_file, executable, output, print_settings=None):
     reference_file=Path(reference_file).resolve(); measurement_file=Path(measurement_file).resolve()
     reference=read(reference_file);measurement=read(measurement_file)
@@ -149,15 +167,30 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
     else:args += fwa_arguments(reference,measurement.get('measurementCondition',{}),ti3)
     if fwa_evidence:artifacts.append((ti3,fwa_evidence['compensatedTI3SHA256']))
     version=subprocess.run([str(executable),'-?'],capture_output=True,timeout=15)
-    completed=subprocess.run([str(executable),*args,str(ti3),str(profile)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=120)
-    log=completed.stdout.decode(errors='replace');(output/'profcheck.log').write_text(log)
-    if completed.returncode:raise ValueError('profcheck failed; inspect profcheck.log.')
-    readings=parse_log(log,expected)
+    if is_v4(profile):
+        # spec2cie integrates spectra without reading the printer ICC.
+        if not prepared_fwa:
+            integrated=output/'integrated.ti3'
+            command=[str(Path(executable).with_name('spec2cie'+Path(executable).suffix)), '-i', 'D50', '-o', '1931_2',
+                     *fwa_arguments(reference,measurement.get('measurementCondition',{}),ti3),str(ti3),str(integrated)]
+            completed=subprocess.run(command,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=120)
+            (output/'spec2cie.log').write_bytes(completed.stdout)
+            if completed.returncode:raise ValueError('Spectral integration failed; see spec2cie.log.')
+            ti3=integrated
+            artifacts.append((ti3,sha(ti3)))
+        readings=v4_readings(ti3,profile,expected)
+        (output/'lcms-readings.json').write_text(json.dumps(readings,indent=2,allow_nan=False))
+    else:
+        completed=subprocess.run([str(executable),*args,str(ti3),str(profile)],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=120)
+        log=completed.stdout.decode(errors='replace');(output/'profcheck.log').write_text(log)
+        if completed.returncode:raise ValueError('profcheck failed; inspect profcheck.log.')
+        readings=parse_log(log,expected)
     result=analyse(reference,measurement,readings)
     from colour_management_check import check as cm_check
     cm=cm_check(profile,reference,result['patches'])
     from verification_chain import analyse as chain_analyse
     chain=chain_analyse(reference,root,profile,Path(executable).with_name('xicclu'+Path(executable).suffix),result['patches'])
+    result['colourEngine']=lookup_evidence(profile)
     result['chainDiagnostics']=chain
     result['fwaPreparation']=fwa_evidence
     artifacts += [(Path(s['path']),s['sha256']) for s in chain['sources']]
@@ -169,7 +202,7 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
                   combinedTarget=bool(reference.get('combinedTarget')), excludedNonVerificationCount=len(reference.get('combinedTarget',{}).get('otherPatches',[])),
                   decisionReasons=['Print colour-management chain has not been verified.','Acceptance criteria have not been approved.'],
                   primaryMetric='CIEDE2000 against desired absolute D50 Lab; unique patches in main summary',
-                  colorimetry=dict(method='Argyll spec2cie M0 FWA integration then XYZ profcheck' if prepared_fwa else 'Argyll profcheck spectral integration',illuminant='D50',observer='1931_2',fwaCompensation=reference.get('fwaCompensation',False),fwaIlluminant=reference.get('fwaIlluminant'),labPrecision='six decimal places',measurementCondition=measurement.get('measurementCondition',{})),
+                  colorimetry=dict(method=('Argyll spec2cie D50/2 integration; LittleCMS original ICC prediction' if is_v4(profile) else 'Argyll spec2cie M0 FWA integration then XYZ profcheck' if prepared_fwa else 'Argyll profcheck spectral integration'),illuminant='D50',observer='1931_2',fwaCompensation=reference.get('fwaCompensation',False),fwaIlluminant=reference.get('fwaIlluminant'),labPrecision='floating-point XYZ/Lab and double CMM buffers' if is_v4(profile) else 'six decimal places',measurementCondition=measurement.get('measurementCondition',{})),
                   reportedPrintSettings=print_settings or {},printChainVerified=False,criteria=reference.get('criteria',{}),
                   limitations=['Model-reachable is a numerical classification, not proof of physical gamut.',
                                'Targets were screened using this profile, although separate from its training patches.',
@@ -182,6 +215,8 @@ def run(reference_file, measurement_file, executable, output, print_settings=Non
                   colourManagementCheck=cm,
                   sources=[dict(path=str(p),sha256=h) for p,h in artifacts],
                   tool=dict(executable=str(executable),arguments=args,versionOutput=(version.stdout+version.stderr).decode(errors='replace'),colourVersion=colour.__version__))
+    if is_v4(profile):
+        result['tool']=dict(engine='LittleCMS',version=result['colourEngine']['version'],spectralIntegrator=str(Path(executable).with_name('spec2cie'+Path(executable).suffix)),colourVersion=colour.__version__)
     if reference.get('externalProfile'):
         result['purpose']='New-print verification of an imported ICC; training independence unknown; no automatic acceptance'
         result['limitations'][1]='Original training data unavailable; independence from training cannot be established. The control print is new and model-informed gamut screening is disclosed.'

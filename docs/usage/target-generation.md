@@ -1,6 +1,6 @@
 # Creating a target with InkProf 0.1.4
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 ## Warning: external prints without contrast markers
 
@@ -195,7 +195,7 @@ Argyll is given numeric strip indices (`-x0-9,@-9,@-9;1-999`) and alphabetic pat
 
 ## Update 2026-09-26: fixed 575 model and neutral names
 
-The 575 model retains the reference's 29 × 20 positions, five padding fields, 8 × 8 mm patches, guide lines and 263 × 195 mm image area. The columns are A–Z, 2A–2C and the rows 1–20. The image header identifies InkProf, 575 patches and date. The source file's name and identity are in the manifest. (Note 2026-10-08: the current header is **InkProf Quality Profiling RGB printer**; date/time, page number, full TIFF path and the target summary with patch count are in the footer. See [print standard](target-print-standard.md#header-and-footer).)
+The 575 model retains the reference's 29 × 20 positions, five padding fields, 8 × 8 mm patches, guide lines and 263 × 195 mm image area. The columns are A–Z, 2A–2C and the rows 1–20. The image header identifies InkProf, 575 patches and date. The source file's name and identity are in the manifest. (Note 2026-10-09: the current header is **InkProf Quality Profiling RGB printer**; date/time, page number, full TIFF path and the target summary with patch count are in the footer. See [print standard](target-print-standard.md#header-and-footer).)
 
 `createTiff16` now normalises the RGB scale during reference matching and accepts both `.tif` and `.tiff`. The package is built and verified in a temporary neighbouring folder. Only after the checks pass are the files published; existing files are not overwritten. On an ordinary publishing error, files published by the same call are rolled back. This is not a guarantee of atomic publishing in the event of a power failure or process crash.
 

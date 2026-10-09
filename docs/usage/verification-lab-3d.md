@@ -1,6 +1,6 @@
 # Rotatable Lab view of a verification target
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 `fig = inkprof.showVerificationLab(referenceFile)` opens an ordinary MATLAB figure that can be rotated and zoomed. The input is `verification.json` from a fully rendered C2 package. Without an argument, a file chooser opens. MATLAB Base is sufficient.
 

@@ -1,6 +1,6 @@
 # Chart reading and interactive row measurement
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 ## Warning: external prints without contrast markers
 
@@ -156,7 +156,7 @@ run=inkprof.startMeasurement(sessionFolder,Resume=true);
 result=inkprof.finishMeasurement(run);
 ```
 
-Resume sends `-r` to chartread and requires the same chart JSON as before. The previous TI3 is copied to `before-<runId>.ti3` before chartread starts. A changed result is copied to `result-<runId>.ti3`. MATLAB imports that run's snapshot, not any old TI3. Within an ongoing chartread run, a row reread replaces the row's values; intermediate readings that were never saved cannot be restored by InkProf. Full revision management with user choice is still a later feature. (Note 2026-10-08: saved revisions can now be chosen with `inkprof.selectMeasurementRevision` and the workflow step **3. Measure / select measurement revision**.)
+Resume sends `-r` to chartread and requires the same chart JSON as before. The previous TI3 is copied to `before-<runId>.ti3` before chartread starts. A changed result is copied to `result-<runId>.ti3`. MATLAB imports that run's snapshot, not any old TI3. Within an ongoing chartread run, a row reread replaces the row's values; intermediate readings that were never saved cannot be restored by InkProf. Full revision management with user choice is still a later feature. (Note 2026-10-09: saved revisions can now be chosen with `inkprof.selectMeasurementRevision` and the workflow step **3. Measure / select measurement revision**.)
 
 Each run has `terminal-run-<runId>.json` with status, arguments, version, hash and result path. The states are `ready`, `running`, `saved_unvalidated`, `no_new_result`, `failed` or `interrupted`. An unchanged TI3 on Resume does not count as a new measurement result. If the terminal is hard-aborted, the status may remain `running`; no automatic import then takes place.
 
@@ -244,7 +244,7 @@ See also [optical brighteners, OBA/FWA and OBC](optical-brighteners.md) for the 
 
 The dialog distinguishes between reading direction and measurement condition. For the current i1Pro 2 workflow, the choice **M0 – i1Pro 2 without UV filter** is the default. The alternative **Instrument default – unspecified** leaves the M condition unspecified. M1/M2 are shown as a limitation, not as available direct measurement modes.
 
-Argyll's documentation states that the i1Pro 2's UV measurement mode is not supported. FWA compensation can be used for calculation under other conditions, but it is a separate processing step and must not be labelled as a direct M1/M2 reading. General `chartread -F` options do not prove that a particular instrument supports them. InkProf therefore sends no `-F` command in this i1Pro 2 workflow and performs no FWA calculation during measurement. (Note 2026-10-08: optional D50 FWA compensation of M0 spectra is now available at profile building; see [optical brighteners](optical-brighteners.md).)
+Argyll's documentation states that the i1Pro 2's UV measurement mode is not supported. FWA compensation can be used for calculation under other conditions, but it is a separate processing step and must not be labelled as a direct M1/M2 reading. General `chartread -F` options do not prove that a particular instrument supports them. InkProf therefore sends no `-F` command in this i1Pro 2 workflow and performs no FWA calculation during measurement. (Note 2026-10-09: optional D50 FWA compensation of M0 spectra is now available at profile building; see [optical brighteners](optical-brighteners.md).)
 
 The settings are saved in `measurement-settings.json` with the measurement definition's hash, requested condition, reading direction, tolerance and port. Each newly imported measurement JSON contains `measurementCondition`, in which the requested (`requested`), file-reported (`reported`) and interpreted (`interpreted`) conditions are kept separate. M0 can be interpreted from the combination of i1Pro 2 in the TI3 and an unambiguous run log reporting no UV filter. It is then explicitly reported as a conclusion from the instrument/driver, not as an M0 label in the original TI3. If the data is missing, the condition is left unknown. Older saved results are not rewritten automatically.
 

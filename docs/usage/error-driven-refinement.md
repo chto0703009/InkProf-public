@@ -1,6 +1,6 @@
 # Error-driven local refinement
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 First implementation: `inkprof.proposeRefinement` uses a successful InkProf profile and a separate, complete spectral measurement to propose the next supplementary target. MATLAB Base handles the call and the review; Python/NumPy/SciPy/Colour analyse errors and geometry. Argyll `profcheck` computes the forward predictions. No measurement values are merged, and no ICC is replaced.
 

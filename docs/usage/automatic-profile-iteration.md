@@ -1,6 +1,6 @@
 # Automatic profile iteration from measurement
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 `inkprof.iterateProfile` links together validated import, frozen training basis,
 Argyll profiling, model comparison, numerical checking and printable TIFF16 targets.

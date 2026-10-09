@@ -60,7 +60,7 @@ class ReferenceTargetTests(unittest.TestCase):
         ref = write(d, name, text)
         request = dict(externalProfile=True, name='Reference test', printing={'printer': 'fixture'}, trainingRGB=[], minTrainingRGBDistance=1/255,
                        seed=7, repeats=repeats, referenceSet=dict(file=str(ref), name='Synthetic SG'))
-        with patch('verification_target.require_profile'), patch('verification_target.lookup', fake_lookup), patch('verification_target.LittleCMS', CMM):
+        with patch('verification_target.require_profile'), patch('verification_target.lookup', fake_lookup), patch('verification_target.LittleCMS', CMM), patch('verification_target.lookup_evidence', return_value={'engine':'synthetic test lookup'}):
             return generate(job, 'unused', request, Path(d)/'target'), Path(d)/'target'
 
     def test_lab_reference_set(self):

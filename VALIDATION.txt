@@ -1,3 +1,24 @@
+InkProf 1.0.0-rc.4 release validation — 2026-10-09
+
+Environment: macOS; MATLAB R2025b; Python 3.13; external ArgyllCMS 3.5.0.
+
+Release checks:
+- Full development MATLAB suite: 214 passed, 0 failed, 0 incomplete in one run; assertSuccess completed and MATLAB exited 0. Includes actual synthetic-data Argyll profile builds and ICC delivery/export tests.
+- Python unittest discovery: 177 passed in the development checkout and 177 passed in the public checkout.
+- Source/version/resource checks passed: 367 development source files and 366 public source files carry required notices; VERSION and release.json agree; schema and notice hashes match.
+- License inventory check passed in both checkouts. This checks recorded notices/versions; it is not a legal clearance.
+- git diff --check passed. Current README, documentation-index and RC4-note file links resolve.
+- Five maintained PDFs rebuilt for RC4: Swedish/English handbooks 55 pages each, presentations 7 pages each, English MATLAB workflow guide 8 pages. Version/footer/release links and embedded font notices checked across all pages; representative and first/last pages visually inspected.
+- Additional numerical BPC example: two local profiles, five sRGB greys (0, 8, 32, 128, 255), perceptual LittleCMS conversion followed by relative A2B output-lightness prediction. v4.4 BPC on/off results were identical; differences from v2+BPC were at most 0.794 L*. This is model evidence, not a new physical print measurement.
+- ICC-specific tests cover v2/v4/Both worker choices, conversion guards, unchanged colourimetric tables, profile IDs, original-v4 verification and portable multi-version delivery.
+- Additional local comparison of two existing profiles preserved original bytes and colourimetric tables. LittleCMS relative/absolute predictions agreed on 2048 random RGB points per profile. These local profiles are excluded from the release.
+
+Scope and limits:
+The public release contains current reviewed source and original example figures, not private Git history, local projects, real reference fixtures or measurement data. Full MATLAB testing used private reference fixtures that are excluded; this is not complete public-checkout qualification. No new physical print/instrument measurement or complete manual UI qualification was performed. Windows/Linux end-to-end operation remains unverified. Converted v4.4 delivery changes perceptual/saturation mapping; numerical colourimetric agreement is not perceptual-print equivalence or a guarantee of print accuracy. Argyll v4-to-v2 preparation remains a disclosed approximation.
+
+Historical validation records below remain unchanged.
+---------------------------------------------------
+
 InkProf v1.0.0-rc.3 — public release candidate
 Date: 2026-10-08 | Internal version: 1.0.0-rc.3
 

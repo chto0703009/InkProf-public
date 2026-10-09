@@ -4,7 +4,7 @@
 
 **OBA** (Optical Brightening Agents) and **FWA** (Fluorescent Whitening Agents) are two names for the same optical brighteners in paper. **OBC** (Optical Brightener Compensation) means compensation for their effect. All three terms concern the same phenomenon, but OBA/FWA name the substances and OBC names the compensation process. Argyll calls its process FWA compensation; X-Rite uses OBC. These names do not imply identical algorithms or results. See [optical brighteners](optical-brighteners.md) for the physical and measurement limitations.
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 The measurement certificate is a handover document for a saved ICC profile. It summarises the project's prerequisites, measurement results and the user's assessment for a client. It replaces the term final report in the app's delivery step.
 
@@ -240,3 +240,13 @@ New certificates include the shared acceptance context in the opening scope expl
 ## M0 white-reference compensation evidence
 
 New FWA recipes disclose a native-M0-based simulated D50 response, not direct UV excitation quantification or native M1. Certificates record training and verification white-reference source/count and embed preparation evidence. Averaging reduces random variation but cannot recover missing UV excitation; weak fluorescence remains uncertain. A separate approved blank-paper reference supplies missing white, with any auxiliary ICC white anchor distinguished from actual target patches. See [FWA acquisition and smoothing](optical-brighteners.md).
+
+## ICC v4.4 delivery
+
+Project-defined v4.4 output is recorded separately from the checked v2 ICC,
+with input/output hashes and conversion evidence. Colorimetric tables are
+preserved; perceptual/saturation tables are remapped. A delivered v4.4 profile
+must not be described as byte-identical to the checked v2 or as independently
+print-verified in every intent. With Both, both named profiles are retained in
+the portable report bundle. Imported v4 verification uses the original profile
+through LittleCMS rather than the Argyll compatibility reconstruction.

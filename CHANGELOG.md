@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## v1.0.0-rc.4 — 2026-10-09
+
+- Add v2, v4.4 and Both delivery choices, version conversion evidence and portable multi-version delivery.
+- Preserve supported original v4 ICCs for LittleCMS verification; disclose approximate Argyll compatibility conversion.
+- Update handbooks, figures, workflow diagrams, status explanations and ICC version guidance; rename the Swedish PDF and correct release links and layout.
+- See [RC4 release notes](docs/releases/v1.0.0-rc.4.md) and VALIDATION.txt for scope and checks.
+
 ## v1.0.0-rc.3 — 2026-10-08
 
 - Fix early Save/Cancel/Approve responses in project details and profile approval

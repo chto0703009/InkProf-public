@@ -10,9 +10,9 @@ if w.mode()=="verification"&&id=="profile"
 
  source=string(get(o,'Source',""));assert(isfile(source),'inkprof:Input','Select an existing ICC file.');
  dest=w.newFolder('profiles');mkdir(dest);
- [compatible,conversion]=inkprof.internal.iccV2Compatibility(source,fullfile(dest,'v2-conversion'));
+ conversion=struct('converted',false,'method',"Original ICC; native LittleCMS verification");
  calculation=inkprof.internal.calculationProgress("Importing existing ICC","Validating the selected ICC and saving the project copy."); %#ok<NASGU>
- [profile,receipt]=inkprof.saveICC(compatible,fullfile(dest,'profile.icc'));
+ [profile,receipt]=inkprof.saveICC(source,fullfile(dest,'profile.icc'));
  paths=inkprof.paths();
  inkprof.runPython(fullfile(paths.Root,'analysis','validate_external_profile.py'),profile,RequiredModules=["numpy","colour"]);
  [~,name,ext]=fileparts(source);
@@ -30,6 +30,7 @@ switch id
   [file,~]=inkprof.saveICC(w.output('profile','profile'),fullfile(folder,'profile.icc'));
   report=inkprof.internal.writeNumericalReport(w,file,folder,string(o.Notes));
   out=struct('profile',file,'finalReport',report.html,'reportJSON',report.json,'reportText',report.text,'reportPDF',report.pdf);
+  inkprof.internal.prepareICCVariants(w,folder);
   if isfield(o,'ICCDestination')||isfield(o,'ReportDestination')
    assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose both delivery destinations.');
    receipt=inkprof.internal.saveWorkflowDelivery(folder,string(o.ICCDestination),string(o.ReportDestination),Overwrite=get(o,'Overwrite',false));
@@ -220,6 +221,7 @@ switch id
   copyfile(fullfile(w.Root,'inkprof-project.json'),fullfile(folder,'project-snapshot.json'));
   report=inkprof.internal.writeWorkflowFinalReport(w,file,folder,User=get(o,'ReportUser',get(project,'user',string(java.lang.System.getProperty('user.name')))));
   out.profile=file;out.finalReport=report.html;out.reportJSON=report.json;out.reportText=report.text;out.reportPDF=report.pdf;
+  inkprof.internal.prepareICCVariants(w,folder);
   if isfield(o,'ICCDestination')||isfield(o,'ReportDestination')
    assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose save locations for both the ICC profile and report.');
    receipt=inkprof.internal.saveWorkflowDelivery(folder,string(o.ICCDestination),string(o.ReportDestination),Overwrite=get(o,'Overwrite',false));

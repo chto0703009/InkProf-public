@@ -1,23 +1,26 @@
-# InkProf documentation — v1.0.0-rc.3
+# InkProf documentation — v1.0.0-rc.4
 
-Source version **1.0.0-rc.3**, documentation updated 2026-10-08. Start with the [complete app workflow](usage/workflow-v1.0.md). The user handbook is maintained in matching Swedish and English editions, updated 2026-10-08. App labels and the other current usage guides remain English. Dated development records and original source citations are retained.
+Source version **1.0.0-rc.4**, documentation updated 2026-10-09. Start with the [complete app workflow](usage/workflow-v1.0.md). The user handbook is maintained in matching Swedish and English editions, updated 2026-10-09. App labels and the other current usage guides remain English. Dated development records and original source citations are retained.
 
-Current release: [v1.0.0-rc.3](releases/v1.0.0-rc.3.md). Earlier changes: [workflow update, 2026-10-07](releases/2026-10-07-workflow-update.md). The two user handbooks include the 2026-10-07 additions and a matching seven-page complete-profiling appendix (pages 38–44), added 2026-10-08. The presentation was aligned with the current handbook on 2026-10-08: smooth gradients, optional optical-brightener correction, measured final assessment and handbook support. It omits internal refinement-method choices. All five maintained PDFs are marked 1.0.0-rc.3; the MATLAB workflow guide remains a compact overview supplemented by the current handbook.
+Current release: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). Earlier changes: [workflow update, 2026-10-07](releases/2026-10-07-workflow-update.md). The two user handbooks include the 2026-10-07 additions and a matching complete-profiling appendix and supporting material (pages 48–55), updated 2026-10-09. The presentation was aligned with the current handbook on 2026-10-09: smooth gradients, optional optical-brightener correction, measured final assessment and handbook support. It omits internal refinement-method choices. All five maintained PDFs are marked 1.0.0-rc.4; the MATLAB workflow guide remains a compact overview supplemented by the current handbook.
 
 ## PDF guides
 
-- [Swedish user handbook](usage/InkProf-anvandarhandbok.pdf)
+PDF layout updated 2026-10-09: the Swedish and English user handbooks and presentations show the InkProf title and version in the header. Christer Törnkvist and christer@borgasundsfotografiska.se appear only in the footer, together with the document date, page number, total page count and a direct GitHub link to [v1.0.0-rc.4](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4). This is a prerelease; GitHub’s latest stable release remains v0.9. The shared builders preserve this layout for future exports.
+
+- [Swedish user handbook](usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook](usage/InkProf-user-handbook-English.pdf)
 
 - [Swedish presentation](usage/InkProf-presentation-svenska.pdf)
 - [English presentation](usage/InkProf-presentation-English.pdf)
 - [InkProf-profiling-workflow-MATLAB-guide-English](usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
 
-Release candidate notes: [v1.0.0-rc.3](releases/v1.0.0-rc.3.md). The current Markdown guides supplement the PDF handbooks, including the recently added external-profile verification workflow.
+Release candidate notes: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). The current Markdown guides supplement the PDF handbooks, including the recently added external-profile verification workflow.
 
 ## Research notes
 
 - [Pre-regularization, noise-matched smoothing and target placement methods (2026-10-06)](research/preregularization-and-target-methods-20261006.md)
+- [ICC v2 and v4.4 for RGB printer profiles: v4 → v2 copy accuracy and v4 output (2026-10-09)](research/icc-v2-v4-compatibility-20261009.md)
 
 ## Detailed usage
 
@@ -97,4 +100,16 @@ The [best-practice guide](usage/profiling-best-practice.md) and both handbook ap
 
 Photographic assessment resource: [Keith Cooper — Printer Test Images, Northlight Images](https://www.northlight-images.co.uk/printer-test-images/), including the Datacolor test image available courtesy of Datacolor. See the best-practice guide for sky-gradient checks and the distinction between source photographs and prepared device-RGB targets. The image itself is not included in this repository.
 
-Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-08. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support.
+Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-09. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support.
+
+Current handbooks: 55 pages in each language, updated 2026-10-09 for RC4. The introduction explains InkProf, benefits, required hardware/software and installation, followed by a six-step workflow diagram on page 3. Page 5 explains Ready, Complete, Locked and Stale and the action each requires.
+
+Six original example figures illustrate the actual app: main window (page 7), Project details (9), Profiling settings and ICC delivery choice (11), measurement (14), profiling recipe (17), and gamut (34). Values are fictional; the gamut uses an sRGB ICC example, not a measured printer. The gamut export includes top margin to prevent title clipping. Blue callouts have 4 mm of additional space before following text or links.
+
+The complete example has its own flow diagram on page 48, followed by the detailed route and supporting guidance on pages 49–55. Appendix headings describe their content; the last page is “Testbilder” / “Test images”. Author/source attribution remains in body text and references.
+
+ICC import supports suitable RGB printer profiles in v2 and v4, including v4.2; generated delivery offers v2, v4.4 and Both. Pages 10–11, 16, 20 and 40 explain selection, variants, filenames, certificate scope and original-profile verification. Page 46 discusses version choice and a limited numerical LittleCMS/BPC example; it does not claim new print validation. See [project output settings](usage/profiling-project.md#delivered-icc-versions).
+
+Fact-check corrections for RC4: page references on pages 4, 10, 15, 16 and 19 now match the physical page order. Removed the obsolete Swedish FWA/pre-smoothing incompatibility claim; updated version/date statements, Swedish appendix headings, terminology and percentage spacing. Both editions remain 55 pages and corresponding chapter titles were checked against every physical page.
+
+Link audit 2026-10-09 covered all embedded hyperlinks in the handbooks and presentations (20 unique destinations). The ICC specification link points to https://www.color.org/specifications/; release links point directly to v1.0.0-rc.4.

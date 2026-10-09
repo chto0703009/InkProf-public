@@ -446,3 +446,34 @@ w.run('definition',struct('Source',source));
 verifyEqual(tc,stem+ext,"test.ti1");verifyTrue(tc,w.valid('definition'));
 verifyTrue(tc,isfile(w.output('definition','definition')));
 end
+
+function testICCOutputBothDelivery(tc)
+w=finalReportFixture(tc);source=w.output('profile','profile');config=inkprof.paths();
+inkprof.runPython(fullfile(config.Root,'tests','test_icc_versions.py'),["--fixture",source],RequiredModules=["numpy","colour","PIL"]);
+a=w.output('approve','approval');approval=jsondecode(fileread(a));approval.profileSHA256=inkprof.internal.sha256(source);inkprof.internal.writeJson(a,approval);
+reference=w.output('c2','reference');r=jsondecode(fileread(reference));r.printerProfile.sha256=inkprof.internal.sha256(source);inkprof.internal.writeJson(reference,r);
+inkprof.updateProject(w.Root,Printing=struct('profileOutputVersions',"both"));
+external=string(tempname);mkdir(external);clean=onCleanup(@()rmdir(external,'s'));
+icc=fullfile(external,'Output.icc');w.run('export',struct('ICCDestination',icc,'ReportDestination',fullfile(external,'Report.html')));
+verifyTrue(tc,isfile(icc));verifyTrue(tc,isfile(fullfile(external,'Output-v4.4.icc')));
+d=jsondecode(fileread(w.output('export','delivery')));report=jsondecode(fileread(fullfile(d.reportAssets,'final-report.json')));
+verifyTrue(tc,isfield(report,'secondaryDeliveryProfile'));verifyTrue(tc,isfield(report.deliveryProfile,'conversionNote'));
+verifyEqual(tc,string(report.secondaryDeliveryProfile.sha256),inkprof.internal.sha256(fullfile(external,'Output-v4.4.icc')));
+end
+function testICCOutputV4Delivery(tc)
+w=finalReportFixture(tc);source=w.output('profile','profile');config=inkprof.paths();
+inkprof.runPython(fullfile(config.Root,'tests','test_icc_versions.py'),["--fixture",source],RequiredModules=["numpy","colour","PIL"]);
+a=w.output('approve','approval');approval=jsondecode(fileread(a));approval.profileSHA256=inkprof.internal.sha256(source);inkprof.internal.writeJson(a,approval);
+reference=w.output('c2','reference');r=jsondecode(fileread(reference));r.printerProfile.sha256=inkprof.internal.sha256(source);inkprof.internal.writeJson(reference,r);
+inkprof.updateProject(w.Root,Printing=struct('profileOutputVersions',"v4"));
+external=string(tempname);mkdir(external);clean=onCleanup(@()rmdir(external,'s'));
+icc=fullfile(external,'Output.icc');w.run('export',struct('ICCDestination',icc,'ReportDestination',fullfile(external,'Report.html')));
+f=fopen(icc,'rb');c=onCleanup(@()fclose(f));h=fread(f,12,'*uint8');verifyEqual(tc,h(9:10),uint8([4;64]));clear c
+d=jsondecode(fileread(w.output('export','delivery')));report=jsondecode(fileread(fullfile(d.reportAssets,'final-report.json')));
+verifyTrue(tc,isfield(report,'deliveryConversion'));verifyTrue(tc,isfield(report.deliveryProfile,'conversionNote'));
+end
+function testICCOutputChoicePreservesEvidence(tc)
+w=finalReportFixture(tc);record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+w.editDetails(struct('Name',string(record.name),'User',"Tester",'Printing',struct('profileOutputVersions',"both")));
+verifyTrue(tc,w.valid('profile'));verifyTrue(tc,w.valid('approve'));verifyFalse(tc,w.valid('export'));
+end

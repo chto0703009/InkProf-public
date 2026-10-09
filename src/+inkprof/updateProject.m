@@ -17,6 +17,9 @@ arguments
  options.Printing (1,1) struct = struct
  options.Relocations = []
 end
+if isfield(options.Printing,'profileOutputVersions')
+ assert(any(string(options.Printing.profileOutputVersions)==["v2","v4","both"]),'inkprof:ICCVersion','Choose v2, v4 or both.');
+end
 root=inkprof.internal.findProject(path);
 assert(root~="",'inkprof:Project','No inkprof-project.json found.');
 lock=fullfile(root,'.manifest.lock');

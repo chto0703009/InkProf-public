@@ -274,7 +274,13 @@ classdef ProjectWorkflow < handle
                 if isfield(previousPrinting,'fwaCompensation'),previousPrinting=rmfield(previousPrinting,'fwaCompensation');end
                 if isfield(physicalPrinting,'fwaCompensation'),physicalPrinting=rmfield(physicalPrinting,'fwaCompensation');end
                 onlyFWA=strcmp(jsonencode(orderfields(previousPrinting)),jsonencode(orderfields(physicalPrinting)));
-                if obj.mode()=="verification"
+                previousVersions=before.printing;newVersions=printing;
+                if isfield(previousVersions,'profileOutputVersions'),previousVersions=rmfield(previousVersions,'profileOutputVersions');end
+                if isfield(newVersions,'profileOutputVersions'),newVersions=rmfield(newVersions,'profileOutputVersions');end
+                onlyVersions=strcmp(jsonencode(orderfields(previousVersions)),jsonencode(orderfields(newVersions)));
+                if onlyVersions
+                    obj.invalidate("export");obj.invalidate("numericalExport");
+                elseif obj.mode()=="verification"
                     obj.invalidate("c2");
                 elseif onlyFWA
                     % FWA changes the build recipe, not the frozen raw measurements.

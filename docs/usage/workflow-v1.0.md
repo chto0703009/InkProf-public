@@ -1,6 +1,6 @@
 # InkProf v1.0.0 workflow guide
 
-Source build **1.0.0-rc.3**, updated 2026-10-08. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with `setupInkProf(CheckPython=true); startInkProfApp();` from the source folder.
+Source build **1.0.0-rc.4**, updated 2026-10-09. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with `setupInkProf(CheckPython=true); startInkProfApp();` from the source folder.
 
 ## One project, one source of settings
 
@@ -32,7 +32,17 @@ Rename through Project details to rename the project folder too. External folder
 | 18 | Compare previous/current ICC | Shared RGB/Lab comparisons, independent of original meshes |
 | 19 | Save without print verification | Numerically checked later iteration and explicitly limited certificate |
 
-Ready means available; Complete means the operation's recorded requirements are met; Locked means prerequisites are missing; Stale means evidence changed. Opening/closing a dialog does not save acceptance. Refresh reloads status, not unsaved edits. Calculation feedback indicates activity; complete or cancel the active dialog before starting another operation.
+Ready: Required inputs are available. Select the step and Run selected step to start.
+
+Complete: The step’s result or decision is saved and the app’s requirements for that step are met. This does not itself mean approved print quality.
+
+Locked: The step cannot start yet. Read its description and first complete the prerequisite steps.
+
+Stale: An earlier result needs updating because its inputs or settings have changed. Repeat the affected steps.
+
+Use the dialog’s intended save or acceptance button. Simply opening and closing the dialog does not complete the step.
+
+Refresh reloads saved status; it does not save edits still open in a dialog. Finish or cancel the active dialog before starting another operation.
 
 ## Targets, paper and measurement
 
@@ -76,4 +86,4 @@ See [Profiling paths, regularisation and refinement](profiling-paths.md) for the
 
 ## Complete profiling best practice
 
-The [best-practice guide](profiling-best-practice.md) and matching handbook appendices (pages 38–44, updated 2026-10-08) follow the full job and decision points: existing-ICC target placement, measurement budget, printing, revisions and white references, smoothing, refinement selection, stopping, independent final print and reviewer approval. Source guidance from Torger and i1Profiler is compared with the actual InkProf route. Practical stopping recommendations are not automatic approval rules; row 19 does not replace measured final verification.
+The [best-practice guide](profiling-best-practice.md) and matching handbook appendices (pages 38–44, updated 2026-10-09) follow the full job and decision points: existing-ICC target placement, measurement budget, printing, revisions and white references, smoothing, refinement selection, stopping, independent final print and reviewer approval. Source guidance from Torger and i1Profiler is compared with the actual InkProf route. Practical stopping recommendations are not automatic approval rules; row 19 does not replace measured final verification.

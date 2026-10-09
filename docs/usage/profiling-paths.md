@@ -1,6 +1,6 @@
 # Profiling paths, regularisation and refinement
 
-Checked against the implementation on 2026-10-08. This is the common guide for the current app; archived experiments do not define its selectable options.
+Checked against the implementation on 2026-10-09. This is the common guide for the current app; archived experiments do not define its selectable options.
 
 ## Optical-brightener terminology
 

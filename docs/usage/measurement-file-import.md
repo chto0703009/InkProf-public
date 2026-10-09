@@ -1,6 +1,6 @@
 # Importing a measurement file for analysis and profiling
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Status: basic workflow implemented 2026-09-27. `inkprof.importMeasurement`
 opens a file chooser for TI3/MXF and uses the same internal measurement model and

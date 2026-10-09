@@ -1,6 +1,6 @@
 # Self-contained profiling project
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 A profiling job lives in one shared folder with `inkprof-project.json`. The JSON files for definition, layout, measurement and analysis keep their own roles; the project manifest brings them together and stores the history.
 
@@ -58,3 +58,23 @@ Take the whole project folder when moving to another computer. `inkprof.updatePr
 ## v1.0.0 project settings
 
 Project details also records dye/pigment ink type, printer coating and coating settings. Matte paper can activate configurable extra dark patch sampling and shadow table emphasis. Read [matte shadow profiling](matte-shadow-profiling.md), [the current workflow](workflow-v1.0.md) and [gamut surface](gamut-surface.md). Certificates distinguish the saved build recipe from requested future patch counts.
+
+## Delivered ICC versions
+
+In **Project details → Profiling → Delivered ICC versions**, choose **v2**,
+**v4.4** or **Both**. Older projects default to v2. New jobs record the selection
+in their recipe and status; v4.4 is produced as an additional file, with conversion
+hashes and structural checks. Argyll's v2 calculation candidate is always retained.
+
+Export follows the current project selection. v4.4 delivers the converted profile
+at the chosen ICC filename. Both delivers v2 there and a sibling
+`<chosen-name>-v4.4.icc`. Changing only this selection invalidates export,
+not raw measurements or profiling inputs. Existing-profile verification delivers
+the imported original regardless of this profiling preference.
+
+The v4.4 converter preserves colorimetric tables but remaps perceptual and
+saturation tables. The certificate identifies the checked v2 candidate and
+records the converted delivery separately; it does not claim independent
+print verification of v4.4 perceptual behaviour. Check the v4.4 copy in the
+application and rendering intent used for production. Structural checks are
+not a complete ICC conformance certification.

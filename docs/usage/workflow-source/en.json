@@ -1,17 +1,17 @@
 [
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.4",
     "title": "From colour target to ICC",
     "sections": [
       [
         "",
-        "Source build 1.0.0-rc.3, updated 2026-10-08. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with setupInkProf(CheckPython=true); startInkProfApp(); from the source folder."
+        "Source build 1.0.0-rc.4, updated 2026-10-09. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with setupInkProf(CheckPython=true); startInkProfApp(); from the source folder."
       ]
     ],
     "lead": "InkProf - When colours have to be right"
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.4",
     "title": "One project, one source of settings",
     "sections": [
       [
@@ -25,7 +25,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.4",
     "title": "The 19 rows",
     "rows": [
       [
@@ -86,7 +86,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.4",
     "title": "The 19 rows — continued",
     "rows": [
       [
@@ -143,12 +143,12 @@
     "sections": [
       [
         "",
-        "Ready means available; Complete means the operation's recorded requirements are met; Locked means prerequisites are missing; Stale means evidence changed. Opening/closing a dialog does not save acceptance. Refresh reloads status, not unsaved edits. Calculation feedback indicates activity; complete or cancel the active dialog before starting another operation."
+        "Ready: Required inputs are available. Select the step and Run selected step to start.\nComplete: The step’s result or decision is saved and the app’s requirements for that step are met. This does not itself mean approved print quality.\nLocked: The step cannot start yet. Read its description and first complete the prerequisite steps.\nStale: An earlier result needs updating because its inputs or settings have changed. Repeat the affected steps.\nUse the dialog’s intended save or acceptance button. Simply opening and closing the dialog does not complete the step.\nRefresh reloads saved status; it does not save edits still open in a dialog. Finish or cancel the active dialog before starting another operation."
       ]
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.4",
     "title": "Targets, paper and measurement",
     "sections": [
       [
@@ -166,7 +166,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.4",
     "title": "Refinement and shadows",
     "sections": [
       [
@@ -184,7 +184,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.4",
     "title": "Interpret and deliver",
     "sections": [
       [
@@ -206,7 +206,7 @@
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.3",
+    "tag": "WORKFLOW AND MATLAB | v1.0.0-rc.4",
     "title": "Code, licensing and maintenance",
     "sections": [
       [

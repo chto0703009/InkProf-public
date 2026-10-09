@@ -22,7 +22,7 @@ progress=inkprof.internal.calculationProgress("Creating ICC v2 compatibility cop
 paths=inkprof.paths();bin=inkprof.internal.argyllBin(options.ArgyllBin);suffix="";if ispc,suffix=".exe";end
 sourceHash=inkprof.internal.sha256(source);
 % Content-addressed common copy makes every caller use identical ICC bytes.
-cache=fullfile(paths.Projects,'.icc-v2-cache',sourceHash+"-conversion-v1");
+cache=fullfile(paths.Projects,'.icc-v2-cache',sourceHash+"-conversion-v2-bradford");
 if isfolder(cache)
  cached=jsondecode(fileread(fullfile(cache,'conversion.json')));
  assert(string(cached.originalSHA256)==sourceHash&& ...

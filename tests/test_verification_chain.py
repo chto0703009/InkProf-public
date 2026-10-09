@@ -18,7 +18,7 @@ class ChainTests(unittest.TestCase):
    if layout:
     (folder/'layout.json').write_text(json.dumps({'patches':[{'sampleId':'1','tiff':'target.tif','rectMm':[1,1,2,2]}]}))
     tifffile.imwrite(folder/'target.tif',np.full((10,10,3),pixel,dtype=np.uint16),resolution=(25.4,25.4),resolutionunit='INCH')
-   with patch('verification_chain.lookup',side_effect=lambda exe,profile,x,*args:np.asarray(x)):
+   with patch('verification_chain.lookup',side_effect=lambda exe,profile,x,*args:np.asarray(x)), patch('verification_chain.lookup_evidence',return_value={'engine':'test'}):
     return analyse(r,root,'unused','unused',m)
  def test_exact_pixels(self):
   d=self.check(0);self.assertEqual(d['tiff']['mismatchCount'],0);self.assertEqual(d['print']['summary']['max'],0)

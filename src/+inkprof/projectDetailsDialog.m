@@ -58,11 +58,13 @@ coatingDetails.Tooltip='Coating product, mode, coverage or amount. Record the ac
 
 uilabel(g,'Text','Printer settings','WordWrap','on');
 settings=uitextarea(g,'Value',splitlines(value(printing,'settings','')),'Tag','projectSettings');
-g=uigridlayout(profileTab,[10 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,32,32,100,'1x'};g.RowSpacing=5;g.Padding=[20 16 20 16];
+g=uigridlayout(profileTab,[11 2]);g.ColumnWidth={150,'1x'};g.RowHeight={32,32,32,32,32,32,32,32,32,100,'1x'};g.RowSpacing=5;g.Padding=[20 16 20 16];
 profileName=field('Profile name','projectProfileName',value(printing,'profileName',value(record,'name','New project')));
 profileDescription=field('Description','projectProfileDescription',value(printing,'profileDescription',value(record,'name','New project')));
 uilabel(g,'Text','Colour data');profileMode=uidropdown(g,'Items',{'Spectra (D50 / 2 degrees)','Stored XYZ'},'ItemsData',{'spectral','storedXYZ'},'Value',char(value(printing,'profileDataMode','spectral')),'Tag','projectProfileDataMode');
 uilabel(g,'Text','Inverse table (B2A)');profileQuality=uidropdown(g,'Items',{'High (denser)','Medium (baseline)'},'ItemsData',{'high','medium'},'Value',char(value(printing,'profileB2AQuality','high')),'Tag','projectProfileB2AQuality');
+uilabel(g,'Text','Delivered ICC versions');profileVersions=uidropdown(g,'Items',{'v2','v4.4','Both'},'ItemsData',{'v2','v4','both'},'Value',char(value(printing,'profileOutputVersions','v2')),'Tag','projectProfileOutputVersions');
+profileVersions.Tooltip='Choose delivery versions for new profiling jobs. ICC v4.4 has remapped perceptual tables; print-check it in your intended application. The v2 calculation profile is retained.';
 shadow=inkprof.internal.shadowSettings(printing);
 uilabel(g,'Text','Matte shadows');shadowMode=uidropdown(g,'Items',{'Extra shadow detail for Matte','Standard distribution'},'ItemsData',{'auto-matte','standard'},'Value',char(shadow.mode),'Tag','projectShadowMode');
 uilabel(g,'Text','Dark patch emphasis');shadowPatch=uieditfield(g,'numeric','Value',shadow.patchEmphasis,'Limits',[1 4],'Tag','projectShadowPatch');
@@ -97,6 +99,7 @@ clear cleanup
         updated.shadowMode=string(shadowMode.Value);updated.shadowPatchEmphasis=shadowPatch.Value;
         updated.shadowGridEmphasis=shadowGrid.Value;updated.shadowExtraPatches=shadowCount.Value;
         updated.profileName=strtrim(string(profileName.Value));updated.profileDescription=strtrim(string(profileDescription.Value));
+        updated.profileOutputVersions=string(profileVersions.Value);
         updated.profileDataMode=string(profileMode.Value);updated.profileB2AQuality=string(profileQuality.Value);
         updated.printer=string(printer.Value);updated.paper=string(paper.Value);
         updated.paperSurface=string(surface.Value);

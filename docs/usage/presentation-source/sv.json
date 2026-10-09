@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.0.0-rc.3 | 2026-10-08",
+    "tag": "InkProf | v1.0.0-rc.4 | 2026-10-09",
     "title": "Din bild förtjänar rätt färger",
     "lead": "Du valde ljuset, formade bilden och arbetade med varje nyans. Det arbetet ska följa med till papperet.",
     "sections": [
@@ -134,8 +134,8 @@
         "https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50"
       ],
       [
-        "InkProf: code, installation and documentation",
-        "https://github.com/chto0703009/InkProf-public"
+        "InkProf v1.0.0-rc.4 – förhandsrelease och nedladdning",
+        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
       ],
       [
         "Licensing and third-party references",
@@ -223,7 +223,7 @@
       ],
       [
         "Förberedelse för utgåva",
-        "Dokumentationen gäller 1.0.0-rc.3 inför v1.0.0. Nya funktioner ändrar inte sparade mål och mätningar. Bedöm förbättring genom utskrift och mätning."
+        "Dokumentationen gäller 1.0.0-rc.4 inför v1.0.0. Nya funktioner ändrar inte sparade mål och mätningar. Bedöm förbättring genom utskrift och mätning."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. Externa komponenter har egna licenser. Kod, villkor och verifieringsstatus finns på GitHub."

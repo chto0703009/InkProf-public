@@ -1,6 +1,6 @@
 # RGB target: iterative refinement and the Argyll alternative
 
-> InkProf 1.0.0-rc.3, version marking updated 2026-10-08. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Introduced 2026-09-26 as a geometric prototype. No measured colour model is included and no profile accuracy is promised.
 
@@ -102,7 +102,7 @@ The **Method** drop-down contains, in addition to InkProf's mesh method, Argyll'
 
 The profile affects OFPS (adaptation 1.0 when a profile is present) and the perceptual methods. Perceptual methods without a profile give a notice, since Argyll's default model assumes a saturated device with high contrast. The profile is checked structurally: it must be an RGB printer profile with Lab or XYZ PCS. Its SHA-256 is saved in the JSON, and an exact copy is saved as `<name>-precondition.icc` next to the TI1 file.
 
-Argyll cannot use ICC v4 profiles for lookups. All Argyll pre-conditioning and profile-import routes use the same `iccV2Compatibility` routine: **Create v2 copy / Cancel**, preservation of the original, and the common approximate v2 reconstruction from a 17³ absolute A2B grid. The resulting v2 profile is cached by the original SHA-256 so every route uses identical ICC bytes. Relative/absolute validation results are recorded under `preconditioning.conversion`. This is an approximation, not an unchanged original profile; inverse and perceptual mapping are rebuilt. Synthetic samples never become measured training data.
+Argyll cannot use ICC v4 profiles for lookups. All Argyll pre-conditioning and profile-import routes use the same `iccV2Compatibility` routine: **Create v2 copy / Cancel**, preservation of the original, and the common approximate v2 reconstruction from a 17³ relative A2B grid prepared with inverse Bradford media-white adaptation. The resulting v2 profile is cached by the original SHA-256 so every route uses identical ICC bytes. Same-engine LittleCMS forward and inverse validation results are recorded under `preconditioning.conversion`. This is an approximation, not an unchanged original profile; inverse and perceptual mapping are rebuilt. Synthetic samples never become measured training data.
 
 **Optimized points (-G)** is the default in the window and gives slower but better optimised points. The combination of preconditioning + `-G` + extra grey steps (`-g`) corresponds to Torger's recommended workflow (*Printer profiling with Argyll and Colormunki*): `targen -v -d2 -c <precond.icc> -G -g<n> -f<n>`. According to him, the difference from the default spread is small with many patches. Preconditioning is the optimisation he considers worthwhile.
 
