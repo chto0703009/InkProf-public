@@ -100,7 +100,7 @@ The [best-practice guide](usage/profiling-best-practice.md) and both handbook ap
 
 Photographic assessment resource: [Keith Cooper — Printer Test Images, Northlight Images](https://www.northlight-images.co.uk/printer-test-images/), including the Datacolor test image available courtesy of Datacolor. See the best-practice guide for sky-gradient checks and the distinction between source photographs and prepared device-RGB targets. The image itself is not included in this repository.
 
-Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-09. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support.
+Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-09. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support. Page 7 also describes continued use of older i1Pro instruments through ArgyllCMS after X-Rite support ends, and the goal of operating beyond Rosetta removal with compatible native runtimes; future macOS compatibility still requires verification.
 
 Current handbooks: 55 pages in each language, updated 2026-10-09 for RC4. The introduction explains InkProf, benefits, required hardware/software and installation, followed by a six-step workflow diagram on page 3. Page 5 explains Ready, Complete, Locked and Stale and the action each requires.
 

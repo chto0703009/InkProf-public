@@ -222,10 +222,24 @@
         "The user handbook supports the complete profiling process, from planning and printing to assessment and final verification. Practical guidance helps you decide when to refine, when to stop and how to evaluate the finished result."
       ],
       [
+        "Keep using existing instruments",
+        "X-Rite has ended updates and support for i1Pro 2 and earlier i1Pro generations. InkProf uses ArgyllCMS for instrument communication and is independent of i1Profiler. Its goal is continued use after Rosetta is removed from macOS, with MATLAB, Python and ArgyllCMS that run without Rosetta. The i1Pro 2 workflow is tested on current macOS; future macOS versions require verification."
+      ],
+      [
         "Release preparation",
         "This documentation accompanies 1.0.0-rc.4 ahead of v1.0.0. New features do not alter saved targets or measurements. Assess improvement through printing and measurement."
       ]
     ],
-    "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub."
+    "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub.",
+    "links": [
+      [
+        "X-Rite: i1Pro 2 EOL",
+        "https://www.xrite.com/service-support/i1pro-2-eol-notes-compatibility-issues-with-windows-11-macos"
+      ],
+      [
+        "X-Rite: i1Pro 1 support",
+        "https://www.xrite.com/service-support/i1pro1supportdroppedini1profiler320"
+      ]
+    ]
   }
 ]
