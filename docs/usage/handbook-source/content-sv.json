@@ -1050,8 +1050,18 @@
         "InkProfs kod och egen dokumentation licensieras enligt GNU GPL version 3 eller senare. Copyright 2026 Christer Törnkvist. Programmet tillhandahålls utan garanti enligt LICENSE. MATLAB, Python, ArgyllCMS, typsnitt och andra beroenden har egna villkor; se THIRD_PARTY_NOTICES.md."
       ],
       [
+        "i1Pro 2 efter i1Profilers sista version",
+        "X-Rite har avslutat stödet för i1Pro 2: i1Profiler 3.8.6 är den sista version som stöder instrumentet, och teknisk support upphörde i januari 2025. Nyare Windows 11 blockerar de gamla drivrutinerna, och på macOS väntas programmet sluta fungera när Rosetta tas bort. Instrumentet mäter lika bra som tidigare. InkProf använder ArgyllCMS, som har egna instrumentdrivrutiner, och är därför oberoende av i1Profilers fortsatta utveckling. Arbetsflödet är testat med i1Pro 2 på macOS. InkProf kompletterar i1Profiler för den som vill fortsätta använda befintlig utrustning med spårbar mätning, verifiering och dokumentation."
+      ],
+      [
         "Utgåvestatus",
         "Handboken beskriver release candidate 1.0.0-rc.4, daterad 9 oktober 2026. Det är inte den stabila v1.0.0-utgåvan. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
+      ]
+    ],
+    "links": [
+      [
+        "X-Rite: i1Pro 2, slut på stöd och kompatibilitet",
+        "https://www.xrite.com/service-support/i1pro-2-eol-notes-compatibility-issues-with-windows-11-macos"
       ]
     ]
   },
