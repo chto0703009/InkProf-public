@@ -223,7 +223,7 @@
       ],
       [
         "Fortsätt använda befintliga instrument",
-        "X-Rite har avslutat uppdateringar och stöd för i1Pro 2 och tidigare i1Pro-generationer. InkProf använder ArgyllCMS för instrumentkommunikation och är oberoende av i1Profiler. InkProf är utformat för en mjukvarumiljö där MATLAB, Python och ArgyllCMS körs direkt på Apple Silicon, utan Rosetta. Det ger förutsättningar för fortsatt användning även när Rosetta tas bort från macOS. i1Pro 2-flödet är testat på dagens macOS; framtida macOS-versioner behöver verifieras."
+        "X-Rite har avslutat uppdateringar och stöd för i1Pro 2 och tidigare i1Pro-generationer. InkProf använder ArgyllCMS för instrumentkommunikation och är oberoende av i1Profiler. InkProf är utformat för en mjukvarumiljö där kompatibla versioner av MATLAB, Python och ArgyllCMS körs direkt på Macens processor, både Apple Silicon och Intel. På Apple Silicon behövs då inte Rosetta, vilket ger förutsättningar för fortsatt användning när Rosetta tas bort från macOS. i1Pro 2-flödet är testat på dagens macOS; framtida macOS-versioner behöver verifieras."
       ],
       [
         "Förberedelse för utgåva",
