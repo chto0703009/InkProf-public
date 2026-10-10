@@ -1,3 +1,7 @@
+InkProf v1.0.0 — released 2026-10-10
+Approved for publication by Christer Törnkvist. The validation record below
+describes the preparation runs and retains their original scope and limits.
+
 InkProf 1.0.0 release preparation validation — 2026-10-10
 
 Environment: macOS; MATLAB R2025b; Python 3.13; ArgyllCMS 3.5.0.

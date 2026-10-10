@@ -1,8 +1,8 @@
 # Changelog
 
-## v1.0.0 — prepared 2026-10-10
+## v1.0.0 — 2026-10-10
 
-Stable release preparation; publication pending.
+Stable source release.
 
 - Include sRGB original and ICC soft-proof gradient JPGs, a portable comparison page and exact delivered-profile hash in external certificate bundles.
 - Name certificates after the profile and last eight iteration UUID characters; save external ICC, PDF, HTML and supporting evidence together in a folder named after the PDF, preserving older bundles.

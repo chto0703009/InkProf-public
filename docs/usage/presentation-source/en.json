@@ -250,8 +250,8 @@
         "X-Rite has ended updates and support for i1Pro 2 and earlier generations. InkProf uses ArgyllCMS independently of i1Profiler. Compatible MATLAB, Python and ArgyllCMS versions run natively on Apple Silicon or Intel. On Apple Silicon, no Rosetta is needed, supporting continued use after its removal. The i1Pro 2 workflow is tested on current macOS; future macOS versions require verification."
       ],
       [
-        "Release preparation",
-        "Prepared source release v1.0.0; publication pending. Saved targets and measurements are preserved. Assess improvement through printing and measurement."
+        "Stable release",
+        "Source release v1.0.0, published 10 October 2026. Saved targets and measurements are preserved. Assess improvement through printing and measurement."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub.",

@@ -1,8 +1,8 @@
-# InkProf documentation — v1.0.0 preparation
+# InkProf documentation — v1.0.0
 
-Source version **1.0.0**, updated 2026-10-10. Publication is pending. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release preparation](releases/v1.0.0.md).
+Source version **1.0.0**, updated 2026-10-10. Released 2026-10-10. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release notes](releases/v1.0.0.md).
 
-The Swedish and English user handbooks contain 60 numbered pages plus a cover. Covers identify the handbook, program, language, author, date and version. Five maintained PDFs are rebuilt for v1.0.0: both handbooks, both presentations and the English MATLAB workflow guide. Their links point to the public repository while release publication is pending.
+The Swedish and English user handbooks contain 60 numbered pages plus a cover. Covers identify the handbook, program, language, author, date and version. Five maintained PDFs are rebuilt for v1.0.0: both handbooks, both presentations and the English MATLAB workflow guide. Their links point to the public repository for source and release information.
 
 Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.
 
@@ -10,7 +10,7 @@ Last published candidate: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md).
 
 ## PDF guides
 
-PDF layout updated 2026-10-09: the Swedish and English user handbooks and presentations show the InkProf title and version in the header. Christer Törnkvist and christer@borgasundsfotografiska.se appear only in the footer, together with the document date, page number, total page count and a direct GitHub link to [v1.0.0-rc.4](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4). This is a prerelease; GitHub’s latest stable release remains v0.9. The shared builders preserve this layout for future exports.
+PDF layout updated 2026-10-10: handbooks have an illustrated cover with the author, language, date and version. Handbooks and presentations display version 1.0.0 and link to the public repository, https://github.com/chto0703009/InkProf-public. The stable release is [v1.0.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0).
 
 - [Swedish user handbook](usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook](usage/InkProf-user-handbook-English.pdf)
@@ -19,7 +19,7 @@ PDF layout updated 2026-10-09: the Swedish and English user handbooks and presen
 - [English presentation](usage/InkProf-presentation-English.pdf)
 - [InkProf-profiling-workflow-MATLAB-guide-English](usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
 
-Release candidate notes: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). The current Markdown guides supplement the PDF handbooks, including the recently added external-profile verification workflow.
+Earlier release candidate notes: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). The current Markdown guides supplement the PDF handbooks, including the recently added external-profile verification workflow.
 
 ## Research notes
 
@@ -80,7 +80,7 @@ Release candidate notes: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). The current Mar
 
 ## Release and licensing
 
-- [Release notes](../CHANGELOG.md), [preparation checklist](releases/v1.0.0.md), [validation](../VALIDATION.txt).
+- [Release notes](../CHANGELOG.md), [v1.0.0 release notes](releases/v1.0.0.md), [validation](../VALIDATION.txt).
 - [Post-RC2 MATLAB and UI follow-up](validation/rc2-follow-up.md) — local fixes and checks after the published release.
 - [Licence and third-party sources](../THIRD_PARTY_NOTICES.md), [licensing review](../licenses/review-v1.0.0.md).
 
@@ -104,9 +104,9 @@ The [best-practice guide](usage/profiling-best-practice.md) and both handbook ap
 
 Photographic assessment resource: [Keith Cooper — Printer Test Images, Northlight Images](https://www.northlight-images.co.uk/printer-test-images/), including the Datacolor test image available courtesy of Datacolor. See the best-practice guide for sky-gradient checks and the distinction between source photographs and prepared device-RGB targets. The image itself is not included in this repository.
 
-Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-09. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support. Page 7 also describes continued use of older i1Pro instruments through ArgyllCMS after X-Rite support ends, and the goal of operating beyond Rosetta removal with compatible native runtimes; future macOS compatibility still requires verification.
+Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-10 for v1.0.0. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support. Page 7 also describes continued use of older i1Pro instruments through ArgyllCMS after X-Rite support ends, and the goal of operating beyond Rosetta removal with compatible native runtimes; future macOS compatibility still requires verification.
 
-Current handbooks: 58 pages in each language, updated 2026-10-10 for RC4. The introduction explains InkProf, benefits, required hardware/software and installation, followed by a six-step workflow diagram on page 3. Page 5 explains Ready, Complete, Locked and Stale and the action each requires.
+Current handbooks: 61 physical pages in each language, including the cover and 60 numbered pages, updated 2026-10-10 for v1.0.0. They explain installation, project steps, measurement checks, manual refinement, verification and certificate delivery.
 
 Six original example figures illustrate the actual app: main window (page 7), Project details (9), Profiling settings and ICC delivery choice (11), measurement (14), profiling recipe (17), and gamut (34). Values are fictional; the gamut uses an sRGB ICC example, not a measured printer. The gamut export includes top margin to prevent title clipping. Blue callouts have 4 mm of additional space before following text or links.
 
@@ -114,9 +114,9 @@ The complete example has its own flow diagram on page 48, followed by the detail
 
 ICC import supports suitable RGB printer profiles in v2 and v4, including v4.2; generated delivery offers v2, v4.4 and Both. Pages 10–11, 16, 20 and 40 explain selection, variants, filenames, certificate scope and original-profile verification. Page 46 discusses version choice and a limited numerical LittleCMS/BPC example; it does not claim new print validation. See [project output settings](usage/profiling-project.md#delivered-icc-versions).
 
-Fact-check corrections for RC4: page references on pages 4, 10, 15, 16 and 19 now match the physical page order. Removed the obsolete Swedish FWA/pre-smoothing incompatibility claim; updated version/date statements, Swedish appendix headings, terminology and percentage spacing. Both editions now have 58 pages and corresponding chapter titles were checked against every physical page.
+Earlier RC4 fact-check corrections included page references, FWA terminology and appendix headings. The v1.0.0 editions include subsequent workflow and delivery updates.
 
-Link audit 2026-10-09 covered all embedded hyperlinks in the handbooks and presentations (20 unique destinations). The ICC specification link points to https://www.color.org/specifications/; release links point directly to v1.0.0-rc.4.
+Current PDF footers link to the public repository. The stable release is available at https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0. The ICC specification link points to https://www.color.org/specifications/.
 
 Manual gamut reinforcement: page 56 in both handbooks explains selecting an area in View gamut, reviewing device-RGB neighbours, saving paper dimensions, registering the selection in step 15, and printing/measuring/rebuilding in steps 16–17. It distinguishes manually strengthening measurement coverage from automatic error detection and physical gamut expansion; pages 21 and 34 point to the walkthrough.
 
