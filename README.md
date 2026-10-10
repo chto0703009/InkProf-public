@@ -1,8 +1,8 @@
-# InkProf v1.0.0-rc.4 — public release candidate
+# InkProf v1.0.0 — stable source release
 
 **InkProf - When colours have to be right**
 
-Public prerelease: **[v1.0.0-rc.4](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4)**. Internal version: **1.0.0-rc.4**. This is a release candidate for testing, not the stable v1.0.0. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
+Stable release: **[v1.0.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0)**, released 2026-10-10. Internal version: **1.0.0**. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.0.md).
 
 
 For photographers, the carefully crafted image should reach paper with its intended colours, tones and expression. A smooth workflow builds confidence and satisfaction for photographers, printing businesses and clients. Calibration and verification can reduce reprints, save time, paper and ink, and improve consistency.
@@ -19,7 +19,7 @@ InkProf reads supported RGB printer ICC profiles in v2 and v4. For newly built p
 
 **Platform testing:** InkProf has been tested on macOS only. Windows and Linux have not been tested. See [tested platforms and limitations](docs/usage/tested-platforms.md).
 
-Download the current testing version from **[v1.0.0-rc.4](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4)**. As of 2026-10-09, GitHub’s “Latest” stable release is v0.9 because RC4 is marked as a prerelease. Use the version-specific link for RC4.
+Download the current stable version from **[v1.0.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0)**. The release includes source code, English and Swedish documentation, validation records and SHA-256 checksums.
 
 ## Install and start
 
@@ -31,10 +31,10 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 - Instrument measurement uses a POSIX bridge. Windows instrument operation has not been qualified.
 - The project app uses English labels, dialogs and workflow guidance. Matching Swedish and English user handbooks are included.
 
-Clone the tagged release candidate:
+Clone the stable source release:
 
 ```sh
-git clone --branch v1.0.0-rc.4 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.0.0 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
@@ -56,7 +56,7 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [RC4 release notes](docs/releases/v1.0.0-rc.4.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.0.0 release notes](docs/releases/v1.0.0.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)

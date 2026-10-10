@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | RC4 | 2026-10-09",
+    "tag": "ANVÄNDARHANDBOK | v1.0.0 | 2026-10-10",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Öppen metod och tydliga förutsättningar",
-        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver 1.0.0-rc.4; appens knappar och fältnamn är engelska."
+        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver 1.0.0; appens knappar och fältnamn är engelska."
       ]
     ],
     "callout": "InkProf samlar profilering, kontroll och dokumentation i ett projekt. Utskriften av färgmålen gör du i ett separat utskriftsprogram."
@@ -41,8 +41,8 @@
         "MATLAB kräver egen licens; InkProf har testats med R2025b utan obligatoriska tilläggsverktygslådor. Installera Python 3.11-3.13 (testat med 3.13) och ArgyllCMS (3.5.0 användes i utvecklingen). Git behövs om du använder kloningskommandot nedan. På macOS kan Python, Git och ArgyllCMS installeras med Homebrew; med Homebrew installerat: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Hämta InkProf v1.0.0-rc.4",
-        "Öppna RC4-länken nedan och hämta källkodens ZIP, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.0.0-rc.4 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
+        "2. Hämta InkProf v1.0.0",
+        "Öppna v1.0.0-länken nedan och hämta källkodens ZIP, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.0.0 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
       ],
       [
         "3. Installera Python-paketen i InkProf-mappen",
@@ -55,8 +55,8 @@
     ],
     "links": [
       [
-        "Hämta InkProf v1.0.0-rc.4 (förhandsrelease)",
-        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
+        "Hämta InkProf v1.0.0 (förhandsrelease)",
+        "https://github.com/chto0703009/InkProf-public"
       ]
     ],
     "callout": "Windows och Linux är ännu inte verifierade för hela arbetsflödet. Stäng andra instrumentprogram före mätning och följ kalibreringsanvisningarna när instrumentet startas."
@@ -405,7 +405,8 @@
         "Om första anslutningen misslyckas",
         "Vid vissa tidiga startfel kan mätkedjan göra begränsade återförsök. Det är inte samma sak som en fullständig maskinvaruåterställning. Om ett fel kvarstår, avbryt ordnat, läs loggen och kontrollera anslutningen samt att ett annat program inte använder instrumentet. Starta därefter mätningen igen."
       ]
-    ]
+    ],
+    "callout": "Nya ark har separata RGB-kontrollrutor. InkProf kontrollerar dem före radmätningen och stoppar tydliga avvikelser mot en godkänd referens. Kontrollera även aktiva Photoshop- och drivrutinsinställningar när du använder presets. Se sidan 57."
   },
   {
     "tag": "EXEMPELBILD | MEASURE CHART",
@@ -586,7 +587,7 @@
     "sections": [
       [
         "Rad 13: Approve for intended use",
-        "Öppna aktuella kontrollresultat innan du godkänner. Beskriv vad profilen ska användas till och varför underlaget räcker för det syftet. Fyll i dialogens begärda uppgifter och bekräftelse, och spara beslutet. Att bara skriva accept i en text som inte sparas slutför inte steget."
+        "Granska aktuella C3-resultat och kör rad 12 först. I rad 13 skriver du avsedd användning och accepterade begränsningar i Your assessment. Kryssa i att du granskat resultaten och kontrollerat att utskriftsinställningarna stämmer med projektet. Klicka Approve for stated use. Rad 14 för sedan in det sparade beslutet i certifikatet. Se steg-för-steg på sidan 58."
       ],
       [
         "När godkännandet blir inaktuellt",
@@ -598,7 +599,7 @@
       ],
       [
         "Profilnamn i fil och bildprogram",
-        "Exportnamnet följer projektnamnet med datum, exempelvis MittProjekt_261003.icc. Vid export anpassas profilens interna beskrivning till leveransnamnet, så att den går att känna igen även i exempelvis Photoshop. Om du senare döper om filen i Finder ändras inte automatiskt den interna ICC-beskrivningen."
+        "Profilnamnet hämtas från Profile name i projektdefinitionen, utan en extra namnfråga. Det används för ICC-filnamnet och profilens interna beskrivning. Rapportnamnet föreslås som <profilnamn>_iter-<nummer>_<UUID-kodens sista åtta tecken>.pdf. Hela UUID-koden behålls i rapportdata. Välj Save delivery elsewhere i steg 14. Sparadialogen börjar i Downloads och huvudfönstret döljs tills Spara eller Avbryt."
       ],
       [
         "Certifikatets innehåll",
@@ -606,15 +607,15 @@
       ],
       [
         "Var sparas rapporterna?",
-        "Projektet behåller sina resultat. Vid extern leverans sparas rapporten med sina tillhörande filer i en gemensam rapportmapp. Flytta hela mappen för HTML-versionen. PDF-filen kan öppnas separat. Använd den angivna sökvägen och Open report för att hitta projektets rapport."
+        "Projektet behåller sina resultat. Vid extern leverans väljer du namn och plats för certifikatet. En mapp med samma namn som PDF-filen utan .pdf samlar ICC, PDF, HTML och underlag. Vid Both ligger båda ICC-versionerna i mappen. Finns mappen redan får den och rapporterna ett löpnummer. Flytta hela mappen för HTML; PDF kan öppnas separat. Open report öppnar projektets rapport."
       ]
     ],
     "callout": "PDF-certifikatet har datum och plats för underskrift på papper. Den juridiska texten ligger i en bilaga efter signeringsdelen, så att resultat och beslut kan läsas sammanhängande."
   },
   {
     "title": "Välj nya färgprov",
-    "tag": "RAD 15 / ERRORS OR IMAGE",
-    "lead": "En komplettering ska undersöka något du vill förstå eller förbättra. Den behöver inte vara riktad mot en viss färg.",
+    "tag": "RAD 15 / ERRORS, IMAGE OR GAMUT",
+    "lead": "Välj From verification errors, From image eller From gamut selection. Gamutvalet förstärker manuellt mätunderlaget kring valda färger; se steg-för-steg på sidan 56.",
     "sections": [
       [
         "Från verifieringsfel",
@@ -629,7 +630,7 @@
         "Dialogen låter dig begränsa bildområdet och antalet nya patchar. Minsta RGB-avstånd minskar täta dubbletter. En grannradie kan lägga prov runt valda färger; radie noll ger bildfärger utan sådana grannar. En bild med många liknande pixlar behöver inte lika många separata färgprov."
       ],
       [
-        "Granska förslagen",
+        "Granska bildförslagen",
         "Urvalsfönstret visar beräknade mått och färgprov. Standardfiltret är uppskattad lokal anpassningsavvikelse ΔE00 större än 5. Tröskeln kan ändras. Endast synliga, markerade förslag går vidare. Om inget visas, granska tröskel och valt mått; det är inte automatiskt ett bevis på perfekta färger."
       ],
       [
@@ -985,13 +986,13 @@
       ],
       [
         "Underlag för denna handbok",
-        "Svenska och engelska handboken har samma kapitelordning och motsvarande innehåll. RC4-utgåvan den 9 oktober 2026 har stämts av mot arbetsflöde, recept, radommätning, gradienter, C2/C3 samt ICC-inläsning och leverans. Separata felsökningsskript är inte inbyggda appfunktioner. Dokumentation och numeriska tester är inte ny fysisk validering."
+        "Svenska och engelska handboken har samma kapitelordning och motsvarande innehåll. v1.0.0-utgåvan den 9 oktober 2026 har stämts av mot arbetsflöde, recept, radommätning, gradienter, C2/C3 samt ICC-inläsning och leverans. Separata felsökningsskript är inte inbyggda appfunktioner. Dokumentation och numeriska tester är inte ny fysisk validering."
       ]
     ],
     "links": [
       [
-        "InkProf v1.0.0-rc.4 – förhandsrelease och nedladdning",
-        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
+        "InkProf – källkod och releaseinformation",
+        "https://github.com/chto0703009/InkProf-public"
       ],
       [
         "Användardokumentation",
@@ -1008,7 +1009,7 @@
     ]
   },
   {
-    "tag": "v1.0.0-rc.4 | MATERIAL OCH SKUGGOR",
+    "tag": "v1.0.0 | MATERIAL OCH SKUGGOR",
     "title": "Fler mätpunkter i mörka färger",
     "sections": [
       [
@@ -1034,7 +1035,7 @@
     ]
   },
   {
-    "tag": "v1.0.0-rc.4 | LEVERANS OCH LICENS",
+    "tag": "v1.0.0 | LEVERANS OCH LICENS",
     "title": "Gamut, certifikat och källkod",
     "sections": [
       [
@@ -1055,7 +1056,7 @@
       ],
       [
         "Utgåvestatus",
-        "Handboken beskriver release candidate 1.0.0-rc.4, daterad 9 oktober 2026. Det är inte den stabila v1.0.0-utgåvan. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
+        "Handboken beskriver release candidate 1.0.0, daterad 9 oktober 2026. Det är inte den stabila v1.0.0-utgåvan. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
       ]
     ],
     "links": [
@@ -1084,7 +1085,7 @@
       ],
       [
         "Använd vyn som ett komplement",
-        "För ett skrivarprojekt väljer InkProf den tillgängliga skrivarprofilen. En större yta är inte i sig ett kvalitetsmått. Bedöm även mätning, färgfel och verklig utskrift."
+        "En större yta är inte i sig ett kvalitetsmått. Bedöm mätning, färgfel och verklig utskrift. I ett skrivarprojekt kan Select area välja områden för manuell förstärkning med fler mätpunkter. Se sidan 56."
       ]
     ]
   },
@@ -1595,5 +1596,151 @@
         "https://www.northlight-images.co.uk/printer-test-images/"
       ]
     ]
+  },
+  {
+    "title": "Manuell förstärkning via gamutvyn",
+    "tag": "TILLÄGG | VIEW GAMUT OCH RAD 15-17",
+    "lead": "Använd klickvalet för att manuellt förstärka mätunderlaget i ett valt färgområde. Du väljer var fler färgprov behövs; profilen förbättras först efter utskrift, mätning och ett nytt profilbygge.",
+    "sections": [
+      [
+        "1. Kontrollera att profilen är klar",
+        "Rad 7 ska visa Complete. Kör rad 8, C1. Fit, Grid and C1, tills även den visar Complete. Rad 15 kräver dessa aktuella numeriska kontroller. Om rad 15 är Locked, kontrollera rad 8 och klicka Refresh efter avslutad körning."
+      ],
+      [
+        "2. Välj området manuellt",
+        "Öppna View gamut. Vrid ytan med Rotate view, klicka Select area i panelen till höger och klicka på den färgade ytan. En vit markering visar valet. Markera flera punkter runt området du vill undersöka, exempelvis en inbuktning. Clear selection tar bort valen."
+      ],
+      [
+        "3. Granska och spara färgproven",
+        "Neighbour radius anger grannområdet i RGB-procentenheter; standard är 3. Minimum spacing är normalt 1 och Maximum new patches 100. Klicka Review patches / create TIFF16, avmarkera oönskade rutor och klicka Create TIFF16 target. Befintliga träningsfärger och nära dubbletter filtreras bort; kontrollrutor tillkommer."
+      ],
+      [
+        "4. Välj papper och avsluta gamutvyn",
+        "Granska pappersförslaget. Preview selected dimensions visar endast en tillfällig förhandsgranskning: stäng den med det röda krysset och klicka Use these dimensions i fönstret bakom för att spara. Gamutfönstret stängs inte automatiskt; stäng det när sparandet är klart."
+      ],
+      [
+        "5. Koppla urvalet till rad 15",
+        "Välj rad 15 och Run selected step. Välj From gamut selection och Use latest selection. Ange varför du förstärker området och bekräfta pappersmåtten. Vänta tills rad 15 visar Complete. Detta steg sparar arbetsflödets utskriftsark och tar med väntande C2-färger när det är aktuellt."
+      ],
+      [
+        "6. Skriv ut, mät och bygg nästa profil",
+        "Markera rad 15 och välj \"Copy TIFF16 for printing…\". Skriv ut detta ark i 100 % storlek utan färghantering, med samma skrivare, papper och inställningar. Låt det torka. Kör rad 16, Measure refinement, och därefter rad 17, Build next iteration. Bedöm den nya profilen med en ny oberoende kontrollutskrift."
+      ]
+    ],
+    "callout": "Klickvalet är manuell komplettering, inte automatisk felupptäckt. Skrivar-RGB kopplas ungefärligt till den valda ytpunkten via profilens framåtberäkning. ΔE76 offset visar kopplingsavståndet, inte ett uppmätt utskriftsfel. Fler mätpunkter kan ge bättre modellunderlag, men utökar inte skrivarens fysiska gamut och garanterar inte att ett synligt hack försvinner."
+  },
+  {
+    "tag": "FÖRE RADMÄTNING | RGB-UTSKRIFTSKONTROLL",
+    "title": "Upptäck fel utskriftsinställningar tidigt",
+    "lead": "InkProf kontrollerar nya arks RGB-rutor innan den långa radmätningen börjar. En tydlig avvikelse mot en godkänd utskrift kan stoppa en felinställd utskrift redan efter några punktmätningar.",
+    "sections": [
+      [
+        "1. Kontrollera inställningarna även med Photoshop-presets",
+        "En sparad preset i Adobe Photoshop är inte ett bevis på att den aktuella utskriften får rätt inställningar. Kontrollera färghantering i Photoshop och skrivardrivrutinen, mediatyp, upplösning och övriga projektvillkor inför varje utskrift. Grundmål och redan färdigberedda C2-/förfiningsmål ska inte få en extra ICC-omvandling. Följ målfilens utskriftsinstruktioner."
+      ],
+      [
+        "2. Mät de tre kontrollrutorna före raderna",
+        "Varje nytt TIFF16-ark har en röd, grön och blå ruta, 8 × 8 mm, nedanför profileringsrutnätet. Välj Start measurement. InkProf börjar med RGB-kontrollen: kalibrera enligt anvisningen och placera i1 Pro 2 stilla mitt på varje ruta med samma underlag. Välj Measure square; svep inte. Kontrollen använder instrumentets M0-läge. Följ anvisad sida och R, G eller B."
+      ],
+      [
+        "3. Godkänn en känd korrekt utskrift som referens",
+        "Första gången behövs en utskrift vars papper och färginställningar du själv har kontrollerat. Efter punktmätningarna väljer du Approve as print reference. InkProf sparar RGB-värdena som projektets referens. Utan godkänd referens jämförs sidorna med första sidan; det avslöjar inte ett gemensamt fel på alla ark. Ändrade registrerade skrivar-, pappers- eller utskriftsvillkor kräver en ny referens."
+      ],
+      [
+        "4. Failed eller ett motiverat override",
+        "Över standardgränsen 5 ΔE00 stoppas radmätningen och mätsteget får Failed. Sida, färg och avvikelse sparas. Kontrollera aktiva utskriftsinställningar och skriv ut igen vid behov. Vill du ändå acceptera avvikelsen, välj Override…, skriv orsaken och välj Save override and continue. Motivering, datum och ursprungliga värden sparas; referens och gräns ändras inte. Saknade mätvärden kan inte kringgås."
+      ],
+      [
+        "Separata från profileringen; äldre ark fungerar",
+        "Kontrollrutorna påverkar inte profilanpassningen. Äldre mål utan deklarerade RGB-rutor mäts som tidigare och avvisas inte för att rutorna saknas. Registrerad Paper finish, exempelvis Matte, följer med kontrollen. Jämför matta papper mot en korrekt referens för samma papper; mindre färgomfång innebär inte i sig större avvikelse från den egna referensen. Papperstyp och motiverade undantag kan bli underlag för framtida gränser, men gränsen ändras inte automatiskt."
+      ]
+    ]
+  },
+  {
+    "tag": "STEG 9-14 | VERIFIERING OCH GODKÄNNANDE",
+    "title": "Från verifieringsmål till godkänt certifikat",
+    "lead": "Ett bra mätresultat är inte ett sparat godkännande. Kör verifieringen för aktuell ICC, dokumentera din bedömning och exportera därefter certifikatet.",
+    "sections": [
+      [
+        "1. Rad 9: välj mål för aktuell profil",
+        "Kör rad 9. Välj Create new target för ett nytt mål, därefter Default eller Other file för ColorChecker (Lab-fil, inte bild), eller Generated balanced set för bredare kontroll. 12 extra repeats betyder 12 extra rutor. För en redan utskriven ColorChecker: välj Select existing target; se sidan 59."
+      ],
+      [
+        "2. Skriv ut det sparade TIFF16-målet",
+        "Skriv ut i 100 % med dokumenterat papper och inställningar. Lab-referenser har redan omvandlats genom ICC en gång. Ingen ytterligare färgomvandling ska ske i Photoshop eller drivrutinen. Kontrollera även presets och låt torka. RGB-kontrollen beskrivs på sidan 57."
+      ],
+      [
+        "3. Rad 10: mät rätt ark och spara",
+        "Kör rad 10 och välj Measure för en ny mätning. Kontrollera målnamn och antal rutor i Confirm measurement target innan du väljer Measure this target. Save and finish sparar mätningen. Saved revisions används för en redan sparad mätning av samma mål. Tidigare filer bevaras när C2-valet ändras."
+      ],
+      [
+        "4. Rad 11 och 12: jämför och granska",
+        "Kör C3. Compare model and print och därefter Review feedback. Bedöm fel, gråtoner, upprepningar och färger utanför gamut. Äldre resultat ersätter inte verifiering av aktuell ICC. Godkänn för den användning och de krav som underlaget stöder."
+      ],
+      [
+        "5. Rad 13: spara ditt uttryckliga godkännande",
+        "Kör Approve for intended use. Skriv avsedd användning, kvalitetskrav och accepterade begränsningar i Your assessment. Kryssa i att resultaten granskats och utskriftsinställningarna stämmer med projektet. Klicka Approve for stated use. Exempel: Godkänd för fotografiska utskrifter på angivet papper efter ColorChecker-verifiering. Uppmätta färgfel och angivna begränsningar accepteras för denna användning. Anpassa texten till din faktiska bedömning."
+      ],
+      [
+        "6. Rad 14: exportera certifikatet",
+        "Kör Save ICC and measurement certificate. Certifikatet tar med aktuella kontrollresultat och ditt godkännande knutet till profilen. ColorChecker får en egen sektion med rutnamn, referensfärg, uppmätt färg och Delta E00. Detta är inte automatiskt ISO-certifiering. Två mål sammanställs inte automatiskt; aktuell C2-verifiering är underlaget."
+      ]
+    ]
+  },
+  {
+    "tag": "STEG 9-10 | ÅTERVÄLJ ETT UTSKRIVET MÅL",
+    "title": "Mät din redan utskrivna ColorChecker",
+    "lead": "Du kan välja ett sparat verifieringsmål för aktuell ICC utan att skapa eller skriva ut det på nytt.",
+    "sections": [
+      [
+        "1. Välj målet i steg 9",
+        "Markera C2. Save verification target as TIFF16 och klicka Run selected step. Välj Select existing target. Listan visar sparade mål i projektet som hör till aktuell ICC, med namn, antal rutor och mapp-ID."
+      ],
+      [
+        "2. Matcha mot den verkliga utskriften",
+        "Välj ColorChecker-posten som motsvarar ditt ark. Exempel: Profile test ColorChecker-SG-D50-Lab | 153 patches. Antalet beror på referensen, upprepningarna och eventuella pappersvitkontroller; alla ColorChecker-mål har inte 153 rutor. Jämför även mapp-ID med din utskriftsfil om flera liknande mål finns."
+      ],
+      [
+        "3. Det befintliga utskriftspaketet kontrolleras",
+        "InkProf kontrollerar ICC-identitet, TI2, manifest och TIFF16-rutornas värden. Samma sparade utskriftsfiler används; ingen ny layout eller färgomvandling skapas. Kontrollen av filerna bevisar inte att den fysiska utskriften gjordes med rätt inställningar."
+      ],
+      [
+        "4. Börja mäta i steg 10",
+        "Kör C2. Measure / select verification revision och välj Measure. Confirm measurement target visar målnamn och antal rutor. När de stämmer med ditt ark, välj Measure this target och sedan Start measurement. Saved revisions är till för mätningar som redan är sparade."
+      ],
+      [
+        "5. Spara och godkänn resultatet",
+        "Mät färdigt och välj Save and finish. Kör därefter steg 11, 12, 13 och 14 för jämförelse, granskning, godkännande och certifikat. Ett ändrat C2-mål kräver nya aktuella resultat och godkännande; det ändrar inte ICC-profilen."
+      ]
+    ],
+    "callout": "Har du skrivit ut både ColorChecker och ett bredare verifieringsmål, välj det ark du ska mäta först. Målen mäts separat. Certifikatet använder det aktuella, uppmätta och godkända C2-målet."
+  },
+  {
+    "tag": "LEVERANS | JPG OCH SOFT PROOF",
+    "title": "Studera gradienter med ICC-profilen",
+    "lead": "Den externa leveransmappen innehåller testgradienter och en skärmförhandsvisning genom den levererade profilen.",
+    "sections": [
+      [
+        "Öppna jämförelsen",
+        "Öppna gradients.html i samma mapp som ICC, PDF och HTML-certifikat. Växla mellan Original och Soft proof. Välj 100 % för att granska utan skalning. Gradienterna omfattar gråskala, primärer, sekundärer och blå himmel. Detta är genererade testbilder; funktionen öppnar inte en egen JPG."
+      ],
+      [
+        "Vilken profil används?",
+        "Soft proof använder exakt den ICC som levereras. Originalet och förhandsvisningen sparas som JPG med inbäddad sRGB. Konverteringen använder relativ kolorimetrisk avsikt och svartpunktskompensation. gradients.json sparar inställningar och profilens SHA-256-identitet."
+      ],
+      [
+        "Fungerar profiler skapade i InkProf?",
+        "Normalt förväntas InkProf-profiler fungera för denna förhandsvisning. Den aktuella skrivarprofilen i utvecklingskontrollen fungerade. Alla möjliga profilvarianter har däremot inte testats, så detta är inte en garanti för samtliga profiler. En förenklad profil i automatiska kodtester kunde inte utföra konverteringen."
+      ],
+      [
+        "Om förhandsvisningen saknas",
+        "En profil kan sakna stöd för någon färgkonvertering som soft proof behöver. Då sparas leveransen ändå och gradients.html visar att förhandsvisningen inte kunde skapas. Detta innebär inte automatiskt att profilen är dålig för utskrift."
+      ],
+      [
+        "Spara en uppdaterad leverans",
+        "Starta om InkProf efter programuppdateringen och spara externt från steg 14 igen. Ingen ny mätning behövs enbart för att lägga till JPG-filerna. Flytta hela leveransmappen för att behålla jämförelsen och rapportunderlaget."
+      ]
+    ],
+    "callout": "Soft proof är profilens förutsägelse på skärm, inte en fysisk mätning eller ett godkännande. JPG är 8-bitars och kan själv ge steg i gradienterna. Bedöm med en kalibrerad skärm och behåll fysisk utskriftsverifiering."
   }
 ]

@@ -18,6 +18,7 @@ classdef SpotReadSession < handle
                 folder (1,1) string
                 options.ArgyllBin (1,1) string = ""
                 options.PythonExecutable (1,1) string = ""
+                options.PrintControls (1,1) logical = false
             end
             assert(isunix,'inkprof:Platform','Spot measurement requires macOS/Linux.');
             obj.Folder=inkprof.internal.absolutePath(folder);
@@ -25,6 +26,7 @@ classdef SpotReadSession < handle
             assert(isfile(exe),'inkprof:Input','spotread is missing.');
             runtime=inkprof.checkPython(PythonExecutable=options.PythonExecutable);
             paths=inkprof.paths();script=fullfile(paths.Root,'bridge','spotread_bridge.py');
+            if options.PrintControls,script=fullfile(paths.Root,'bridge','print_controls_bridge.py');end
             argv=java.util.ArrayList();
             args=[runtime.executable,"-u",script,obj.Folder,exe];
             for arg=reshape(args,1,[]),argv.add(java.lang.String(char(arg)));end

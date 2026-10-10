@@ -50,8 +50,11 @@ def fake_lookup(exe, profile, values, direction='f', intent='a'):
 
 
 class ReferenceTargetTests(unittest.TestCase):
-    def generate(self, text, name, repeats=1):
-        from verification_target import generate
+    def generate(self, text, name, repeats=1, fwa=False):
+        from verification_target import generate, write_definition
+        def definition(*args, **kwargs):
+            args[6]['colorimetry']['fwaCompensation']=fwa
+            return write_definition(*args, **kwargs)
         class CMM:
             def save_lab_profile(self, path): Path(path).write_bytes(b'synthetic Lab')
         d = tempfile.mkdtemp()
@@ -60,7 +63,7 @@ class ReferenceTargetTests(unittest.TestCase):
         ref = write(d, name, text)
         request = dict(externalProfile=True, name='Reference test', printing={'printer': 'fixture'}, trainingRGB=[], minTrainingRGBDistance=1/255,
                        seed=7, repeats=repeats, referenceSet=dict(file=str(ref), name='Synthetic SG'))
-        with patch('verification_target.require_profile'), patch('verification_target.lookup', fake_lookup), patch('verification_target.LittleCMS', CMM), patch('verification_target.lookup_evidence', return_value={'engine':'synthetic test lookup'}):
+        with patch('verification_target.require_profile'), patch('verification_target.lookup', fake_lookup), patch('verification_target.LittleCMS', CMM), patch('verification_target.lookup_evidence', return_value={'engine':'synthetic test lookup'}), patch('verification_target.write_definition', side_effect=definition):
             return generate(job, 'unused', request, Path(d)/'target'), Path(d)/'target'
 
     def test_lab_reference_set(self):
@@ -80,6 +83,15 @@ class ReferenceTargetTests(unittest.TestCase):
         p = r['patches'][2]
         self.assertEqual(p['deviceRGB16'], [32768, 13107, 52428])
         self.assertTrue(np.allclose(p['referenceLabD50Absolute'], p['predictedLabD50Absolute']))
+
+    def test_named_reference_and_fwa_white_have_uniform_fields(self):
+        for text,name in [(LAB_TABLE,'sg.txt'),(TI1,'rgb.ti1')]:
+            r,_=self.generate(text,name,fwa=True)
+            white=r['patches'][-1]
+            self.assertEqual(white['role'],'paperwhite')
+            self.assertEqual(white['referenceName'],'Paper white control')
+            self.assertEqual(white['gamutAssessment'],'paper-white-reference-not-independent')
+            self.assertTrue(all(list(p)==list(white) for p in r['patches']))
 
     def test_repeat_limit(self):
         with self.assertRaises(ValueError): self.generate(LAB_TABLE, 'sg.txt', repeats=5)

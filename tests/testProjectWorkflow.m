@@ -102,15 +102,21 @@ w=tc.TestData.w;saveDefinition(tc);
 pkg=fullfile(w.Root,'targets','printed');inkprof.createTarget(pkg,Source=w.output('definition','definition'),DPI=100);
 w.run('render',struct('Source',pkg));
 folder=fullfile(w.Root,'measurements','fixture');chart=inkprof.prepareChart(fullfile(pkg,'target.ti2'),folder);
+% Synthetic chart values are not a physical print test. Check that a new
+% target cannot enter the workflow without completed print controls.
 p=chart.patches;p=p(~[p.isPadding]);file=fullfile(folder,'synthetic.ti3');fid=fopen(file,'w');
 fprintf(fid,'CTI3\nCOLOR_REP "RGB_XYZ"\nNUMBER_OF_FIELDS 7\nBEGIN_DATA_FORMAT\nSAMPLE_ID RGB_R RGB_G RGB_B XYZ_X XYZ_Y XYZ_Z\nEND_DATA_FORMAT\nNUMBER_OF_SETS %d\nBEGIN_DATA\n',numel(p));
 for k=1:numel(p),fprintf(fid,'%s %.12g %.12g %.12g 10 20 30\n',p(k).sampleId,p(k).rgbPercent);end
 fprintf(fid,'END_DATA\n');fclose(fid);
 inkprof.importChartMeasurement(folder,file);f=dir(fullfile(folder,'measurement-*.json'));source=fullfile(f(1).folder,f(1).name);
+verifyError(tc,@()w.run('measurement',struct('Source',source)),'inkprof:PrintControlFailed');
+control=struct('complete',true,'status',"passed",'definitionSHA256',chart.printControls.sha256);
+inkprof.internal.writeJson(fullfile(folder,'print-control-check.json'),control);
 w.run('measurement',struct('Source',source));verifyTrue(tc,w.valid('measurement'));verifyTrue(tc,w.ready('review'));
 verifyError(tc,@()w.run('review'),'inkprof:Cancelled');
 verifyTrue(tc,inkprof.verifyProject(w.Root).passed);
 w.run('review',struct('Confirmed',true,'Notes','Synthetic data only'));verifyTrue(tc,w.ready('input'));
+w.run('measurement',struct('Source',source));verifyTrue(tc,w.valid('review'),'Reselecting the same revision must retain its accepted review.');
 [~,stem]=fileparts(source);fid=fopen(fullfile(folder,string(stem)+".ti3"),'a');fprintf(fid,'# altered');fclose(fid);
 verifyFalse(tc,w.ready('input'));
 end
@@ -188,6 +194,31 @@ w=finalReportFixture(tc);a=w.output('approve','approval');r=jsondecode(fileread(
 verifyError(tc,@()w.run('export'),'inkprof:FinalReport');verifyEqual(tc,string(w.State.steps.export.status),"failed");
 verifyFalse(tc,w.valid('export'));
 end
+function testSelectSavedVerificationTarget(tc)
+w=finalReportFixture(tc);
+folder=fullfile(w.Root,'targets','saved-test');mkdir(folder);
+definition=fullfile(folder,'test.ti1');
+inkprof.saveRGBDefinition(inkprof.designRGBTarget(Levels=2,GraySteps=3,MaxPoints=24,ControlCount=3,RepeatCount=2),definition);
+pkg=fullfile(folder,'print');inkprof.createTarget(pkg,Source=definition,DPI=100);
+target=fullfile(pkg,'target.ti2');reference=fullfile(folder,'verification.json');
+r=struct('documentType',"inkprof.verification-target",'name',"Saved reference fixture", ...
+ 'patches',struct('id',"1"),'printerProfile',struct('sha256',inkprof.internal.sha256(w.output('profile','profile'))), ...
+ 'printPackage',struct('ti2',"print/target.ti2",'ti2SHA256',inkprof.internal.sha256(target), ...
+ 'manifestSHA256',inkprof.internal.sha256(fullfile(pkg,'manifest.json'))));
+inkprof.internal.writeJson(reference,r);
+choices=inkprof.internal.savedVerificationTargets(w);verifyEqual(tc,numel(choices),1);
+before=inkprof.internal.sha256(target);profile=w.output('profile','profile');
+w.run('c2',struct('Source',reference));
+verifyEqual(tc,w.output('c2','target'),target);verifyEqual(tc,w.output('c2','reference'),reference);
+verifyEqual(tc,inkprof.internal.sha256(target),before);verifyEqual(tc,w.output('profile','profile'),profile);
+verifyTrue(tc,w.ready('c2measurement'));verifyFalse(tc,w.valid('c3'));verifyFalse(tc,w.valid('approve'));
+verifyTrue(tc,contains(join(inkprof.internal.savedTargetSummary(w,'c2')),'Saved reference fixture'));
+r.printerProfile.sha256="wrong";inkprof.internal.writeJson(reference,r);
+verifyEmpty(tc,inkprof.internal.savedVerificationTargets(w));
+verifyError(tc,@()inkprof.internal.executeWorkflowStep(w,'c2',struct('Source',reference)),'inkprof:WorkflowTarget');
+r.printerProfile.sha256=inkprof.internal.sha256(profile);r.printPackage.ti2SHA256="wrong";inkprof.internal.writeJson(reference,r);
+verifyError(tc,@()inkprof.internal.executeWorkflowStep(w,'c2',struct('Source',reference)),'inkprof:Integrity');
+end
 function w=finalReportFixture(tc)
 % Synthetic records isolate export/report orchestration from physical devices.
 w=tc.TestData.w;s=w.State;
@@ -200,6 +231,7 @@ for k=1:size(pairs,1)
  inkprof.internal.writeJson(file,struct('summary',summary,'status','synthetic-test-only'));
  s.steps.(key).outputs.(name)=w.relative(file);
 end
+
 c3file=w.resolve(s.steps.c3.outputs.report);c3=jsondecode(fileread(c3file));
 p=struct('sampleId',"",'coordinate',"",'page',1,'role',"colour",'deltaE00',1.25,'measuredLab',[50 0 0]);
 for i=1:3,p.sampleId=string(i);p.coordinate="A"+i;p.measuredLab=[50+i i 2*i];c3.patches(i)=p;end
@@ -227,11 +259,19 @@ w=finalReportFixture(tc);external=string(tempname);mkdir(external);cleanup=onCle
 mkdir(fullfile(external,'ICC'));mkdir(fullfile(external,'Rapporter'));
 icc=fullfile(external,'ICC','Mitt papper.icc');report=fullfile(external,'Rapporter','Min slutrapport.html');
 w.run('export',struct('ICCDestination',icc,'ReportDestination',report));
-verifyTrue(tc,w.valid('export'));verifyTrue(tc,isfile(icc));verifyFalse(tc,isfile(report));
+verifyTrue(tc,w.valid('export'));verifyFalse(tc,isfile(icc));verifyFalse(tc,isfile(report));
+r=jsondecode(fileread(w.output('export','delivery')));icc=string(r.iccFile);verifyTrue(tc,isfile(icc));
 verifyNotEqual(tc,inkprof.internal.sha256(icc),inkprof.internal.sha256(w.output('export','profile')));
-r=jsondecode(fileread(w.output('export','delivery')));verifyEqual(tc,string(r.iccFile),inkprof.internal.absolutePath(icc));
-verifyEqual(tc,string(r.reportFolder),inkprof.internal.absolutePath(fullfile(external,'Rapporter','Min slutrapport-report')));
+verifyEqual(tc,string(r.iccFile),inkprof.internal.absolutePath(icc));
+verifyEqual(tc,string(r.reportFolder),inkprof.internal.absolutePath(fullfile(external,'Rapporter','Min slutrapport')));
+verifyEqual(tc,string(fileparts(icc)),string(r.reportFolder));
 verifyTrue(tc,isfile(fullfile(r.reportFolder,'Min slutrapport.pdf')));
+for previewFile=["gradients.html","gradients-original.jpg","gradients.json"]
+ verifyTrue(tc,isfile(fullfile(r.reportFolder,previewFile)));
+end
+preview=jsondecode(fileread(fullfile(r.reportFolder,'gradients.json')));
+verifyEqual(tc,string(preview.profileSHA256),inkprof.internal.sha256(icc));
+verifyFalse(tc,preview.physicalMeasurement);
 verifyEqual(tc,string(r.internalName),"Mitt papper");verifyTrue(tc,r.colourTagPayloadsUnchanged);
 report=string(r.reportFile);verifyTrue(tc,isfile(report));verifyTrue(tc,isfile(fullfile(r.reportAssets,'final-report.json')));
 delivered=jsondecode(fileread(fullfile(r.reportAssets,'final-report.json')));
@@ -246,7 +286,9 @@ for k=1:numel(links)
  verifyTrue(tc,isfile(fullfile(fileparts(report),relative)),relative);
 end
 folder=fileparts(w.output('export','profile'));
-verifyError(tc,@()inkprof.internal.saveWorkflowDelivery(folder,icc,report),'inkprof:Exists');
+second=inkprof.internal.saveWorkflowDelivery(folder,icc,fullfile(external,'Rapporter','Min slutrapport.html'));
+verifyEqual(tc,string(second.reportFolder),inkprof.internal.absolutePath(fullfile(external,'Rapporter','Min slutrapport-2')));
+verifyTrue(tc,isfile(fullfile(second.reportFolder,'Min slutrapport-2.pdf')));
 original=inkprof.internal.sha256(icc);
 verifyError(tc,@()inkprof.internal.saveWorkflowDelivery(folder,icc,fullfile(external,'missing','report.html'),Overwrite=true),'inkprof:Delivery');
 verifyEqual(tc,inkprof.internal.sha256(icc),original);
@@ -455,10 +497,10 @@ reference=w.output('c2','reference');r=jsondecode(fileread(reference));r.printer
 inkprof.updateProject(w.Root,Printing=struct('profileOutputVersions',"both"));
 external=string(tempname);mkdir(external);clean=onCleanup(@()rmdir(external,'s'));
 icc=fullfile(external,'Output.icc');w.run('export',struct('ICCDestination',icc,'ReportDestination',fullfile(external,'Report.html')));
-verifyTrue(tc,isfile(icc));verifyTrue(tc,isfile(fullfile(external,'Output-v4.4.icc')));
 d=jsondecode(fileread(w.output('export','delivery')));report=jsondecode(fileread(fullfile(d.reportAssets,'final-report.json')));
+icc=string(d.iccFile);verifyTrue(tc,isfile(icc));verifyTrue(tc,isfile(fullfile(d.reportFolder,'Output-v4.4.icc')));
 verifyTrue(tc,isfield(report,'secondaryDeliveryProfile'));verifyTrue(tc,isfield(report.deliveryProfile,'conversionNote'));
-verifyEqual(tc,string(report.secondaryDeliveryProfile.sha256),inkprof.internal.sha256(fullfile(external,'Output-v4.4.icc')));
+verifyEqual(tc,string(report.secondaryDeliveryProfile.sha256),inkprof.internal.sha256(fullfile(d.reportFolder,'Output-v4.4.icc')));
 end
 function testICCOutputV4Delivery(tc)
 w=finalReportFixture(tc);source=w.output('profile','profile');config=inkprof.paths();
@@ -468,8 +510,8 @@ reference=w.output('c2','reference');r=jsondecode(fileread(reference));r.printer
 inkprof.updateProject(w.Root,Printing=struct('profileOutputVersions',"v4"));
 external=string(tempname);mkdir(external);clean=onCleanup(@()rmdir(external,'s'));
 icc=fullfile(external,'Output.icc');w.run('export',struct('ICCDestination',icc,'ReportDestination',fullfile(external,'Report.html')));
-f=fopen(icc,'rb');c=onCleanup(@()fclose(f));h=fread(f,12,'*uint8');verifyEqual(tc,h(9:10),uint8([4;64]));clear c
 d=jsondecode(fileread(w.output('export','delivery')));report=jsondecode(fileread(fullfile(d.reportAssets,'final-report.json')));
+icc=string(d.iccFile);f=fopen(icc,'rb');c=onCleanup(@()fclose(f));h=fread(f,12,'*uint8');verifyEqual(tc,h(9:10),uint8([4;64]));clear c
 verifyTrue(tc,isfield(report,'deliveryConversion'));verifyTrue(tc,isfield(report.deliveryProfile,'conversionNote'));
 end
 function testICCOutputChoicePreservesEvidence(tc)

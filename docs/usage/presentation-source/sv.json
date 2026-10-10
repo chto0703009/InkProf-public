@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.0.0-rc.4 | 2026-10-09",
+    "tag": "InkProf | v1.0.0 | 2026-10-09",
     "title": "Din bild förtjänar rätt färger",
     "lead": "Du valde ljuset, formade bilden och arbetade med varje nyans. Det arbetet ska följa med till papperet.",
     "sections": [
@@ -109,11 +109,11 @@
       ],
       [
         "Förbättring med ett tydligt syfte",
-        "Fler patchar kan väljas från kontrollfel eller färger i en profilerad bild. Pappersförslag anpassas efter patchantal och utrustning. Jämför iterationer i ett 2D-snitt vid L*=50 eller byt till 3D."
+        "Välj fler patchar från kontrollfel, bildfärger eller ett markerat gamut-område. Skriv ut och mät för att förfina. Pappersförslag anpassas efter patchantal och utrustning. Jämför iterationer vid L*=50 eller i 3D."
       ],
       [
         "Ett mätcertifikat att lämna vidare",
-        "PDF och HTML samlar projekt, mätbetingelser, profilidentitet och granskarbeslut. Alla bedömda färger redovisas tillsammans med svåra färger och begränsningar. Uppmätta utskrifter skiljs från modellförutsägelser och numeriska kontroller. Certifikatet har signaturdel, standardreferenser och juridiska villkor."
+        "PDF och HTML dokumenterar mätningar, aktuell ICC och granskarbeslut. ColorChecker-verifiering visar namngivna referensfärger och uppmätta färger med Delta E00. ICC, certifikat, HTML, underlag och gradient-JPG sparas i en flyttbar mapp. Soft proof är en modellförutsägelse, skild från uppmätt utskriftsnoggrannhet."
       ],
       [
         "Standardreferenser som stöd",
@@ -134,8 +134,8 @@
         "https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50"
       ],
       [
-        "InkProf v1.0.0-rc.4 – förhandsrelease och nedladdning",
-        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
+        "InkProf – källkod och releaseinformation",
+        "https://github.com/chto0703009/InkProf-public"
       ],
       [
         "Licensing and third-party references",
@@ -194,6 +194,30 @@
     ]
   },
   {
+    "tag": "MÄTKVALITET OCH TIDIGA KONTROLLER",
+    "title": "Upptäck fel innan de följer med",
+    "lead": "InkProf hjälper dig att hantera felmätningar och kontrollera att mätvärdena är rimliga innan de används som underlag för profilen.",
+    "sections": [
+      [
+        "Mät om när en avläsning blir fel",
+        "Läsfel kan följas av en ny skanning av raden. Appen håller reda på bekräftade avläsningar och visar vilka rader som återstår innan mätningen kan sparas."
+      ],
+      [
+        "Granska rimlighet och avvikelser",
+        "Mätvärden, upprepade färgprover och skanningsriktning ger underlag för att upptäcka avvikelser. Resultaten granskas före godkännande, så att misstänkta värden kan utredas eller mätas om."
+      ],
+      [
+        "Kontrollera utskriften före en lång mätning",
+        "Nya mål har separata röda, gröna och blå kontrollrutor. De mäts först och jämförs med en godkänd referens för samma utskriftsvillkor. Stora avvikelser stoppar fortsatt mätning och kan avslöja felaktig färghantering, även när en preset har använts i Adobe Photoshop."
+      ],
+      [
+        "Beslutet blir spårbart",
+        "En slutförd RGB-kontroll med stora avvikelser kan åsidosättas med en skriftlig motivering, exempelvis när ett papper behöver utredas. Mätvärden, gränser och beslut sparas. Äldre mål utan kontrollrutor kan fortfarande mätas."
+      ]
+    ],
+    "callout": "Kontrollerna minskar risken att felaktiga utskrifter eller mätningar går vidare. En godkänd kontroll behöver fortfarande följas av granskning och verifiering av profilen."
+  },
+  {
     "tag": "v1.0.0 | NYA MÖJLIGHETER",
     "title": "Förstå ditt utskriftssystem",
     "sections": [
@@ -226,8 +250,8 @@
         "X-Rite har avslutat uppdateringar och stöd för i1Pro 2 och tidigare i1Pro-generationer. InkProf använder ArgyllCMS för instrumentkommunikation och är oberoende av i1Profiler. InkProf är utformat för en mjukvarumiljö där kompatibla versioner av MATLAB, Python och ArgyllCMS körs direkt på Macens processor, både Apple Silicon och Intel. På Apple Silicon behövs då inte Rosetta, vilket ger förutsättningar för fortsatt användning när Rosetta tas bort från macOS. i1Pro 2-flödet är testat på dagens macOS; framtida macOS-versioner behöver verifieras."
       ],
       [
-        "Förberedelse för utgåva",
-        "Dokumentationen gäller 1.0.0-rc.4 inför v1.0.0. Nya funktioner ändrar inte sparade mål och mätningar. Bedöm förbättring genom utskrift och mätning."
+        "Stabil utgåva",
+        "Källkodsrelease v1.0.0, publicerad 10 oktober 2026. Sparade mål och mätningar bevaras. Bedöm förbättring genom utskrift och mätning."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. Externa komponenter har egna licenser. Kod, villkor och verifieringsstatus finns på GitHub.",

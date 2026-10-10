@@ -1,3 +1,51 @@
+InkProf v1.0.0 — released 2026-10-10
+Approved for publication by Christer Törnkvist. The validation record below
+describes the preparation runs and retains their original scope and limits.
+
+InkProf 1.0.0 release preparation validation — 2026-10-10
+
+Environment: macOS; MATLAB R2025b; Python 3.13; ArgyllCMS 3.5.0.
+Publication is pending. No stable tag or release is published by preparation.
+
+Release checks:
+- Development full MATLAB suite: 238 selected, 236 passed, 0 failed, 2 optional
+  Python integration tests filtered because INKPROF_TEST_PYTHON was unset.
+  Sum of test durations: 697.6 seconds. assertSuccess completed; exit 0.
+- Follow-up with INKPROF_TEST_PYTHON explicitly pointing to the project .venv:
+  testPython/testRuntime and testSpectralAnalysis/testPythonRoundTrip both
+  passed, 0 failed, 0 incomplete; exit 0. All 238 unique MATLAB tests have a
+  passing latest result across these runs, not a zero-skip single full run.
+- Public checkout: 15 targeted MATLAB tests passed, 0 failed/incomplete across
+  two runs. Covers focus/visibility restoration, stored profile naming, RGB
+  print controls, saved C2 selection, external delivery and both ICC versions.
+- Python unittest discovery: 189 passed in development; 189 passed in public.
+- Source/version/resource checks passed: 401 development and 400 public source
+  files carry required notices; VERSION and release.json identify 1.0.0.
+  Recorded license versions and notice hashes passed in both checkouts.
+- Current release/documentation file links resolve; git diff --check passed.
+- Five maintained PDFs rebuilt: handbooks 61 physical pages each (cover plus
+  60 numbered pages), presentations 8 pages each, MATLAB workflow guide 8 pages.
+  Version checked on every page. Changed covers, delivery content and last
+  presentation pages visually inspected; full resource notices retained.
+- Reviewed public source excludes private development history, local projects,
+  physical reference/measurement fixtures, machine settings and runtime binaries.
+  The source ZIP and attached assets have SHA-256 checksums in SHA256SUMS.
+
+Scope and limits:
+No new physical printing or instrument measurements were performed as part of
+this preparation. The latest native save-dialog change has automated visibility,
+error-path and focus coverage; fresh user confirmation on macOS remains pending.
+Public source tests do not constitute full public-checkout hardware qualification.
+Windows/Linux and every supported instrument/mode remain unqualified. ISSUE-001
+remains open. Soft proof is an ICC model prediction, not a physical measurement.
+Certificates record measurement evidence and decisions, not accredited or complete
+ISO certification. External runtimes are installed separately. Recorded notices
+and checks are not complete third-party rights clearance; retain the documented
+release scope and known limitations when reviewing this draft.
+
+Historical validation records below remain unchanged.
+---------------------------------------------------
+
 InkProf 1.0.0-rc.4 release validation — 2026-10-09
 
 Environment: macOS; MATLAB R2025b; Python 3.13; external ArgyllCMS 3.5.0.

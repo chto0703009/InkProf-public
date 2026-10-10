@@ -4,6 +4,7 @@
 # Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 """Create the printable counterpart of the persisted InkProf final report."""
 from certificate_swatches import enrich, pdf_chips
+from certificate_reference import html_section, pdf_section
 import json
 import sys
 from pathlib import Path
@@ -21,6 +22,11 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 def create(folder):
     folder = Path(folder)
     r = json.loads((folder / 'final-report.json').read_text(encoding='utf-8'))
+    html_path = folder / 'final-report.html'
+    if html_path.exists():
+        html = html_path.read_text(encoding='utf-8')
+        if '<!--REFERENCE-TARGET-->' in html:
+            html_path.write_text(html.replace('<!--REFERENCE-TARGET-->', html_section(r)), encoding='utf-8')
     for name in ['Report', 'ReportBold']:
         pdfmetrics.registerFont(TTFont(name, str(Path(__file__).resolve().parents[1]/'resources/fonts/DejaVuSans.ttf')))
     styles = getSampleStyleSheet()
@@ -40,6 +46,7 @@ def create(folder):
 
     story += [p('InkProf - Measurement certificate', 'Title'), p(r['project']['name'], 'Heading2'),
               p(f"Iteration {r['iteration']} | {r['createdUTC']}"),
+              p('Iteration UUID: '+r.get('iterationId','Not recorded')),
               p('Certificate ID: '+r.get('certificateId','Not specified')),
               p(r.get('certificateScope','')), p('How to interpret these results','Heading2'), p(r.get('resultInterpretation','Interpretation not recorded in this historical certificate.')), p('Project and printing conditions','Heading2')]
     for item in r.get('projectDetails',[]):
@@ -51,6 +58,7 @@ def create(folder):
               p('Final assessment', 'Heading2'), p(r['approval']['notes'])]
     if r.get('regularization'):
         story += [p('Regularization - method, inputs and results', 'Heading2'), p(r['regularization']['summaryText'])]
+    story += pdf_section(r, p)
     if r.get('patchOutliers'):
         outliers=r['patchOutliers']
         story += [PageBreak(),p('Whole-target result overview','Heading2'),p(outliers.get('overviewText','Whole-target distribution unavailable.')),p('Technical diagnostic colours: deviations above 5 dE00','Heading2'),p('Desired colour, profile prediction and measured colour are shown as sRGB previews. Delta E00 compares measurement with desired colour (above 5). See Appendix A.'),p(outliers['message']),p(outliers.get('contextText','Reachability evidence unavailable.'))]

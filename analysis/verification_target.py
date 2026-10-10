@@ -166,6 +166,14 @@ def write_definition(job,exe,request,out,profile,status,recipe,external,patches,
             referenceLabD50Absolute=white.tolist(),deviceRGB16=[65535]*3,deviceRGB=[1.0]*3,
             predictedLabD50Absolute=white.tolist(),numericalInverseResidualDE00=0,
             gamutAssessment='paper-white-reference-not-independent',minTrainingRGBDistance=0))
+        # MATLAB jsondecode needs identical object fields to produce a struct
+        # array. Retain named reference sets and external selection metadata
+        # on the extra white control too, without scoring it as a reference.
+        if reference is not None:
+            patches[-1]['referenceName']='Paper white control'
+        if any('selectionCategory' in patch for patch in patches[:-1]):
+            patches[-1]['selectionCategory']='paperwhite'
+        patches[-1]={field:patches[-1][field] for field in patches[0]}
         output_rgb=np.vstack((output_rgb,np.ones((1,3))));predicted=np.vstack((predicted,white))
     if sha(profile)!=status['profileSHA256']:raise ValueError('Profile changed during generation.')
     out.mkdir(parents=True);shutil.copy2(profile,out/'printer.icc');cmm=LittleCMS();cmm.save_lab_profile(out/'source-Lab-D50.icc')

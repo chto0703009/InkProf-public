@@ -31,6 +31,7 @@ switch id
   report=inkprof.internal.writeNumericalReport(w,file,folder,string(o.Notes));
   out=struct('profile',file,'finalReport',report.html,'reportJSON',report.json,'reportText',report.text,'reportPDF',report.pdf);
   inkprof.internal.prepareICCVariants(w,folder);
+  named=inkprof.internal.nameWorkflowReport(w,folder);out.finalReport=named.html;out.reportText=named.text;out.reportPDF=named.pdf;
   if isfield(o,'ICCDestination')||isfield(o,'ReportDestination')
    assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose both delivery destinations.');
    receipt=inkprof.internal.saveWorkflowDelivery(folder,string(o.ICCDestination),string(o.ReportDestination),Overwrite=get(o,'Overwrite',false));
@@ -88,6 +89,7 @@ switch id
    dest=w.newFolder('measurements');inkprof.prepareChart(target,dest);clear calculation;
    dialog=inkprof.measureChart(target,SessionFolder=dest,ScanMode="paired",Condition="M0");
    waitfor(dialog.Figure);
+   assert(dialog.Failure=="",'inkprof:PrintControlFailed','%s',dialog.Failure);
    source=inkprof.selectMeasurementRevision(dest,target);
   else
    [~,~,ext]=fileparts(source);
@@ -107,6 +109,7 @@ switch id
   if source=="",cancel();end
   calculation=inkprof.internal.calculationProgress("Validating saved measurement","Checking file integrity and matching the measured patches to the printed target.");
   files=validateMeasurement(source,target);out.measurement=source;clear calculation;
+  inkprof.internal.requirePrintControls(fileparts(source));
   if any(id==["c2measurement","refinemeasurement"])&&isfield(w.State.steps.refine.outputs,'c2reference')&& ...
     string(w.State.steps.refine.outputs.target)==string(w.State.steps.c2.outputs.target)
    reference=w.output('refine','c2reference');
@@ -159,11 +162,30 @@ switch id
    files=profileFiles(out);
   end
  case "checks"
+  activity=inkprof.internal.calculationProgress("Step 8 - ICC checks","Checking the profile. Three numerical checks are in progress."); %#ok<NASGU>
   job=fileparts(w.output('profile','job'));
-  [~,a]=inkprof.checkProfileFit(job);[~,b]=inkprof.checkProfileGrid(job);[c1,c]=inkprof.checkProfileC1(job);
+  phase=inkprof.internal.calculationProgress("Step 8 - Fit (1/3)","Comparing ICC predictions with the measured profiling patches.");
+  [~,a]=inkprof.checkProfileFit(job);clear phase
+  phase=inkprof.internal.calculationProgress("Step 8 - Grid (2/3)","Checking colour grids, inverse conversion and gradients.");
+  [~,b]=inkprof.checkProfileGrid(job);clear phase
+  phase=inkprof.internal.calculationProgress("Step 8 - C1 (3/3)","Checking the colour engine and damaged-profile controls.");
+  [c1,c]=inkprof.checkProfileC1(job);clear phase
   assert(c1.allNegativeControlsDetected&&isempty(c1.grossFailureAlerts),'inkprof:WorkflowNumerical','C1 reports serious problems. Review the reports before C2.');
   out.fit=a;out.grid=b;out.c1=c;files=[a;b;c];
  case "c2"
+  source=string(get(o,'Source',""));
+  if source~=""
+   source=inkprof.internal.absolutePath(source);
+   choices=inkprof.internal.savedVerificationTargets(w);
+   assert(any(string({choices.file})==source),'inkprof:WorkflowTarget','Select a saved project verification target for the current ICC.');
+   r=jsondecode(fileread(source));folder=fileparts(source);
+   target=fullfile(folder,string(r.printPackage.ti2));
+   assert(inkprof.internal.sha256(target)==string(r.printPackage.ti2SHA256),'inkprof:Integrity','Saved verification TI2 changed.');
+   assert(inkprof.internal.sha256(fullfile(fileparts(target),'manifest.json'))==string(r.printPackage.manifestSHA256), ...
+    'inkprof:Integrity','Saved verification print manifest changed.');
+   inkprof.verifyPackage(fileparts(target));
+   out=inkprof.internal.workflowTiffOutputs(target);out.reference=source;files=allFiles(folder);return
+  end
   referenceSet=get(o,'ReferenceSet',"");
   if referenceSet~=""
    % Fixed reference set (Lab or device RGB): same TIFF16/TI2 print package, patch names kept in verification.json.
@@ -222,26 +244,33 @@ switch id
   report=inkprof.internal.writeWorkflowFinalReport(w,file,folder,User=get(o,'ReportUser',get(project,'user',string(java.lang.System.getProperty('user.name')))));
   out.profile=file;out.finalReport=report.html;out.reportJSON=report.json;out.reportText=report.text;out.reportPDF=report.pdf;
   inkprof.internal.prepareICCVariants(w,folder);
+  named=inkprof.internal.nameWorkflowReport(w,folder);out.finalReport=named.html;out.reportText=named.text;out.reportPDF=named.pdf;
   if isfield(o,'ICCDestination')||isfield(o,'ReportDestination')
    assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose save locations for both the ICC profile and report.');
    receipt=inkprof.internal.saveWorkflowDelivery(folder,string(o.ICCDestination),string(o.ReportDestination),Overwrite=get(o,'Overwrite',false));
    out.delivery=fullfile(folder,'delivery.json');inkprof.internal.writeJson(out.delivery,receipt);
   end
   if w.mode()=="verification"&&isfield(o,'BundleDestination')
-   destination=fullfile(string(o.BundleDestination),"InkProf-verification-"+string(java.util.UUID.randomUUID()));
-   assert(~isfolder(destination),'inkprof:Exists','Report destination exists.');copyfile(folder,destination);
+   name=inkprof.internal.certificateDeliveryName(project.name,w.State.cycle,w.State.iterationId);
+   receipt=inkprof.internal.saveWorkflowDelivery(folder,fullfile(string(o.BundleDestination),string(project.name)+".icc"), ...
+    fullfile(string(o.BundleDestination),name+".pdf"));
+   out.delivery=fullfile(folder,'delivery.json');inkprof.internal.writeJson(out.delivery,receipt);
   end
   files=allFiles(folder);
  case "refine"
   assert(get(o,'Confirmed',false),'inkprof:Cancelled','Record why you are adding patches.');
   method=string(get(o,'Method',"errors"));
-  if method=="image"
+  if any(method==["image","gamut"])
    reference="";
    if get(o,'IncludeC2',false),reference=string(get(o,'C2Reference',""));assert(reference~="",'inkprof:Verification','Select the unprinted C2 reference.');end
    if isfield(o,'ExistingProposal')
-    saved=jsondecode(fileread(o.ExistingProposal));assert(string(saved.sourceProfileSHA256)==inkprof.internal.sha256(w.output('profile','profile')),'inkprof:Integrity','Saved image selection belongs to another profile.');
+    saved=jsondecode(fileread(o.ExistingProposal));
+    expected="inkprof.image-refinement";if method=="gamut",expected="inkprof.gamut-refinement";end
+    assert(string(saved.documentType)==expected,'inkprof:Refinement','Wrong saved proposal type.');
+    assert(string(saved.sourceProfileSHA256)==inkprof.internal.sha256(w.output('profile','profile')),'inkprof:Integrity','Saved selection belongs to another profile.');
     [proposal,folder]=inkprof.rebuildImageRefinement(string(o.ExistingProposal),VerificationFile=reference,PlanPaper=get(o,'PlanPaper',true));
    else
+   assert(method=="image",'inkprof:Gamut','Select a saved gamut proposal.');
    [proposal,folder]=inkprof.refineFromImage(w.output('profile','job'),FitReport=w.output('checks','fit'),VerificationFile=reference, ...
     Image=string(get(o,'Image',"")),SourceProfile=string(get(o,'SourceProfile',"embedded")), ...
     ROI=get(o,'ROI',[]),MaxNewPatches=get(o,'MaxNewPatches',100), ...
@@ -249,7 +278,7 @@ switch id
     Name="Iteration "+(w.State.cycle+1)+" - image colours",ShowDialog=get(o,'ShowDialog',true), ...
     PlanPaper=get(o,'PlanPaper',true),CreatePrint=true);
    end
-   assert(~isempty(proposal)&&folder~="",'inkprof:Cancelled','Image refinement cancelled.');
+   assert(~isempty(proposal)&&folder~="",'inkprof:Cancelled','Refinement cancelled.');
   else
    assert(method=="errors",'inkprof:Workflow','Unknown refinement method.');
    [ok,why]=w.valid('feedback');assert(ok,'inkprof:WorkflowBlocked','Error-driven refinement requires current C3 feedback: %s',why);

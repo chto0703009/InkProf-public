@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | RC4 | 2026-10-09",
+    "tag": "USER HANDBOOK | v1.0.0 | 2026-10-10",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Open methods and clear conditions",
-        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.0.0-rc.4; app buttons and field names are English."
+        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.0.0; app buttons and field names are English."
       ]
     ],
     "callout": "InkProf brings profiling, checks and documentation together in one project. Print the colour targets using a separate printing application."
@@ -41,8 +41,8 @@
         "MATLAB requires its own licence; InkProf was tested with R2025b and no mandatory add-on toolboxes. Install Python 3.11-3.13 (tested with 3.13) and ArgyllCMS (3.5.0 was used in development). Git is needed for the clone command below. On macOS, Python, Git and ArgyllCMS can be installed using Homebrew; with Homebrew installed: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Download InkProf v1.0.0-rc.4",
-        "Open the RC4 link below, download the source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.0.0-rc.4 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
+        "2. Download InkProf v1.0.0",
+        "Open the v1.0.0 link below, download the source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.0.0 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
       ],
       [
         "3. Install Python packages in the InkProf folder",
@@ -55,8 +55,8 @@
     ],
     "links": [
       [
-        "Download InkProf v1.0.0-rc.4 (prerelease)",
-        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
+        "Download InkProf v1.0.0 (prerelease)",
+        "https://github.com/chto0703009/InkProf-public"
       ]
     ],
     "callout": "Windows and Linux have not been verified for the complete workflow. Close other instrument applications before measuring and follow the calibration prompts when the instrument starts."
@@ -405,7 +405,8 @@
         "For some early startup failures, the measurement workflow can make limited retry attempts. This is not the same as a full hardware reset. If an error persists, cancel cleanly, read the log and check the connection and whether another program is using the instrument. Then start measurement again."
       ]
     ],
-    "lead": "Measurements use a spectrometer supported by the measurement workflow. Instrument calibration and the correct target-file association are essential."
+    "lead": "Measurements use a spectrometer supported by the measurement workflow. Instrument calibration and the correct target-file association are essential.",
+    "callout": "New pages have separate RGB print controls. InkProf checks them before strip measurement and stops large differences from an approved reference. Check active Photoshop and driver settings even when using presets. See page 57."
   },
   {
     "tag": "EXAMPLE IMAGE | MEASURE CHART",
@@ -586,7 +587,7 @@
     "sections": [
       [
         "Row 13: Approve for intended use",
-        "Open the current check results before approving. Describe how the profile will be used and why the evidence is sufficient for that purpose. Complete the required fields and confirmation, then save the decision. Merely typing accept into text that is not saved does not complete the step."
+        "Review current C3 results and run row 12 first. In row 13, enter the intended use and accepted limitations in Your assessment. Tick the confirmation that you reviewed the results and checked the print settings against the project. Select Approve for stated use. Row 14 includes the saved decision in the certificate. See the walkthrough on page 58."
       ],
       [
         "When approval becomes stale",
@@ -598,7 +599,7 @@
       ],
       [
         "Profile names in files and image applications",
-        "The export name follows the project name and date, for example MyProject_261003.icc. During export, the internal profile description is adapted to the delivery name so it is recognisable in applications such as Photoshop. Renaming the file later in Finder does not automatically change its internal ICC description."
+        "The profile name comes from Profile name in Project details without an additional prompt. It identifies the ICC filename and internal description. The suggested report name is <profile name>_iter-<number>_<last eight UUID characters>.pdf. The full UUID remains in report data for traceability. Select Save delivery elsewhere in step 14. The save dialog starts in Downloads; the main window is temporarily hidden until Save or Cancel."
       ],
       [
         "Certificate contents",
@@ -606,14 +607,14 @@
       ],
       [
         "Where are reports saved?",
-        "The project retains its results. External delivery saves the report and supporting files in a common report folder. Move the entire folder for the HTML version. The PDF can be opened separately. Use the recorded path and Open report to find the project report."
+        "The project retains its results. For external delivery, choose the certificate name and location. A folder named after the PDF without .pdf contains the ICC, PDF, HTML and supporting evidence. Both places both ICC versions in this folder. If the folder exists, a number is added to it and the reports. Move the whole folder for HTML; the PDF can be opened separately. Open report opens the project report."
       ]
     ],
     "callout": "The PDF certificate includes a date and space for a handwritten signature. Legal text is placed in an appendix after the signing section so that results and decisions can be read together."
   },
   {
     "title": "Select new colour patches",
-    "tag": "ROW 15 / ERRORS OR IMAGE",
+    "tag": "ROW 15 / ERRORS, IMAGE OR GAMUT",
     "sections": [
       [
         "From verification errors",
@@ -628,7 +629,7 @@
         "The dialog lets you limit the image region and number of new patches. A minimum RGB distance reduces close duplicates. A neighbourhood radius can add samples around selected colours; a zero radius gives image colours without these neighbours. An image containing many similar pixels does not necessarily need as many separate patches."
       ],
       [
-        "Review suggestions",
+        "Review image suggestions",
         "The selection window shows calculated measures and colour patches. The default filter is an estimated local fit deviation ΔE00 greater than 5. You can change the threshold. Only visible, selected suggestions proceed. If none appear, review the threshold and chosen measure; it is not automatically proof of perfect colour."
       ],
       [
@@ -640,7 +641,7 @@
         "Confirm the selected patches and review the suggested paper layout. Use saved image patches can reuse a saved selection. The app saves inputs and choices for traceability. Read the patch count and TIFF path in the result before printing."
       ]
     ],
-    "lead": "A refinement should investigate something you want to understand or improve. It does not need to target a particular colour."
+    "lead": "Choose From verification errors, From image or From gamut selection. Gamut selection manually strengthens measurement coverage around chosen colours; see the walkthrough on page 56."
   },
   {
     "title": "Choose the error-driven refinement method",
@@ -947,7 +948,7 @@
       ],
       [
         "Basis of this handbook",
-        "The Swedish and English handbooks share the same chapter order and corresponding content. The RC4 edition of 9 October 2026 was checked against workflow, recipes, row remeasurement, gradients, C2/C3 and ICC import/delivery. Separate diagnostic scripts are not built-in app features. Documentation and numerical tests are not new physical validation."
+        "The Swedish and English handbooks share the same chapter order and corresponding content. The v1.0.0 edition prepared on 10 October 2026 was checked against workflow, recipes, row remeasurement, gradients, C2/C3 and ICC import/delivery. Separate diagnostic scripts are not built-in app features. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -990,8 +991,8 @@
     ],
     "links": [
       [
-        "InkProf v1.0.0-rc.4 – prerelease and download",
-        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
+        "InkProf – source and release information",
+        "https://github.com/chto0703009/InkProf-public"
       ],
       [
         "User documentation",
@@ -1009,7 +1010,7 @@
   },
   {
     "title": "More samples in dark colours",
-    "tag": "v1.0.0-rc.4 | MATERIALS AND SHADOWS",
+    "tag": "v1.0.0 | MATERIALS AND SHADOWS",
     "sections": [
       [
         "Matte paper",
@@ -1035,7 +1036,7 @@
   },
   {
     "title": "Gamut, certificates and source code",
-    "tag": "v1.0.0-rc.4 | DELIVERY AND LICENSING",
+    "tag": "v1.0.0 | DELIVERY AND LICENSING",
     "sections": [
       [
         "Surfaces and measurement points are different views",
@@ -1055,7 +1056,7 @@
       ],
       [
         "Release status",
-        "This handbook describes release candidate 1.0.0-rc.4, dated 9 October 2026. It is not the stable v1.0.0 release. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+        "This handbook describes release candidate 1.0.0, dated 9 October 2026. It is not the stable v1.0.0 release. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
       ]
     ],
     "links": [
@@ -1084,7 +1085,7 @@
       ],
       [
         "Use the view as supporting information",
-        "For a printer project, InkProf uses the available printer profile. A larger surface is not itself a quality score. Also assess measurements, colour errors and the actual print."
+        "A larger surface is not itself a quality score. Assess measurements, colour errors and real prints. In a printer project, Select area chooses regions for manual reinforcement with additional measured samples. See page 56."
       ]
     ]
   },
@@ -1599,5 +1600,151 @@
         "https://www.northlight-images.co.uk/printer-test-images/"
       ]
     ]
+  },
+  {
+    "title": "Manual gamut reinforcement",
+    "tag": "ADDENDUM | VIEW GAMUT AND ROWS 15-17",
+    "lead": "Manually strengthen measurement coverage in a chosen colour region. You choose where more samples are needed; refinement requires printing, measurement and a new profile build.",
+    "sections": [
+      [
+        "1. Check the current profile",
+        "Rows 7 and 8 (C1. Fit, Grid and C1) must show Complete. Row 15 requires current numerical checks. If it is Locked, complete row 8 and click Refresh."
+      ],
+      [
+        "2. Select the region manually",
+        "Open View gamut. Use Rotate view to expose the region, then Select area in the right panel. Click the coloured surface; a white marker identifies the selection. Choose several points around an indentation if needed. Clear selection removes all markers."
+      ],
+      [
+        "3. Review and save the samples",
+        "Defaults: Neighbour radius 3 RGB percentage points, Minimum spacing 1, Maximum new patches 100. Click Review patches / create TIFF16, uncheck unwanted rows, then Create TIFF16 target. Existing training colours and near duplicates are excluded. Extra controls increase the printed total."
+      ],
+      [
+        "4. Choose paper and close the gamut view",
+        "Review the paper suggestion. Preview selected dimensions opens a temporary preview. Close it with the red window button, then click Use these dimensions behind it to save. Close the gamut window after saving; it stays open until you close it."
+      ],
+      [
+        "5. Link the selection to row 15",
+        "Select row 15 and Run selected step. Choose From gamut selection and Use latest selection. Record your reason and confirm the paper dimensions. Wait for Complete. This saves the workflow print package, including pending C2 colours when applicable."
+      ],
+      [
+        "6. Print, measure and rebuild",
+        "Select row 15 and \"Copy TIFF16 for printing…\". Print this package at 100% with colour management disabled and the same printer, paper and settings. Let it dry. Run row 16, Measure refinement, then row 17, Build next iteration. Assess the new profile with a fresh independent verification print."
+      ]
+    ],
+    "callout": "Manual supplementation is not automatic error detection. Printer RGB is approximately associated with the selected vertex through forward ICC samples. ΔE76 offset is the association distance, not measured print error. More measurements may strengthen the model, but cannot extend physical gamut or guarantee that an indentation disappears."
+  },
+  {
+    "tag": "BEFORE STRIP MEASUREMENT | RGB PRINT CHECK",
+    "title": "Catch incorrect print settings early",
+    "lead": "InkProf checks the RGB squares on new pages before the long strip measurement starts. A large difference from an approved print can stop an incorrectly configured print after just a few spot readings.",
+    "sections": [
+      [
+        "1. Check settings even with Photoshop presets",
+        "A saved Adobe Photoshop preset is not proof that the current print uses the correct settings. Check colour management in Photoshop and the printer driver, media type, resolution and other project conditions before every print. Base targets and already prepared C2/refinement targets must not receive an extra ICC conversion. Follow the target printing instructions."
+      ],
+      [
+        "2. Measure the three controls before the strips",
+        "Each new TIFF16 page has red, green and blue 8 × 8 mm squares below the profiling grid. Select Start measurement. InkProf starts with the RGB check: calibrate as instructed and hold i1 Pro 2 stationary at the centre of each square with the same backing. Select Measure square; do not swipe. The check uses native M0. Follow the displayed page and R, G or B."
+      ],
+      [
+        "3. Approve a known-correct print as the reference",
+        "The first check needs a print whose paper and colour settings you have independently checked. After the spot readings, select Approve as print reference. InkProf saves the RGB values as the project reference. Without an approved reference, pages are compared with page 1; this cannot detect a shared error on all pages. Changed recorded printer, paper or print conditions require a new reference."
+      ],
+      [
+        "4. Failed or a reasoned override",
+        "Above the default 5 ΔE00 threshold, strip measurement is stopped and the step receives Failed. Page, colour and difference are saved. Check active print settings and reprint if needed. To accept the difference anyway, select Override…, enter your reason and select Save override and continue. The reason, date and original values are retained; the reference and threshold are unchanged. Missing readings cannot be bypassed."
+      ],
+      [
+        "Separate from profiling; older pages still work",
+        "Control squares do not affect profile fitting. Older targets without declared RGB controls are measured as before and are not rejected for missing squares. Recorded Paper finish, such as Matte, is retained with the check. Compare matte papers with a correct reference for the same paper; a smaller gamut does not itself mean a larger difference from that reference. Paper type and reasoned exceptions may inform future thresholds, but the threshold does not change automatically."
+      ]
+    ]
+  },
+  {
+    "tag": "STEPS 9-14 | VERIFICATION AND APPROVAL",
+    "title": "From verification target to an approved certificate",
+    "lead": "A good measurement result is not a saved approval. Verify the current ICC, record your assessment and then export the certificate.",
+    "sections": [
+      [
+        "1. Row 9: choose a target for the current profile",
+        "Run row 9. Choose Create new target, then Default or Other file for ColorChecker (a Lab file, not an image), or Generated balanced set for broader control coverage. 12 extra repeats means 12 extra patches. For an already printed ColorChecker, choose Select existing target; see page 59."
+      ],
+      [
+        "2. Print the saved TIFF16 target",
+        "Print at 100% size with the recorded paper and settings. Lab references have already been converted through the ICC once. Do not apply another colour conversion in Photoshop or the driver. Check active settings even with presets. Allow the print to dry. Page 57 describes the RGB check before strip measurement."
+      ],
+      [
+        "3. Row 10: measure the correct print and save",
+        "Run row 10 and choose Measure for a new measurement. Check the target name and patch count in Confirm measurement target before choosing Measure this target. Save and finish saves the measurement. Saved revisions selects an already saved measurement of the same target. Previous files remain when the C2 selection changes."
+      ],
+      [
+        "4. Rows 11 and 12: compare and review",
+        "Run C3. Compare model and print, then Review feedback. Assess measured errors, grays, repeats and out-of-gamut colours. Approve only for the use and requirements supported by the results. Evidence from an older target or profile does not replace verification of the current ICC."
+      ],
+      [
+        "5. Row 13: save your explicit approval",
+        "Run Approve for intended use. Enter intended use, quality requirements and accepted limitations in Your assessment. Tick the confirmation that you reviewed the results and checked print settings against the project. Select Approve for stated use. Example: Approved for photographic prints on the stated paper after ColorChecker verification. Measured colour errors and stated limitations are accepted for this use. Adapt the text to your actual assessment."
+      ],
+      [
+        "6. Row 14: export the certificate",
+        "Run Save ICC and measurement certificate. The certificate includes current results and your approval tied to the profile. ColorChecker has its own section with patch names, reference and measured colours, and Delta E00. This is not automatic ISO certification. Two targets are not automatically combined; the current C2 verification provides the evidence."
+      ]
+    ]
+  },
+  {
+    "tag": "STEPS 9-10 | RESELECT A PRINTED TARGET",
+    "title": "Measure your already printed ColorChecker",
+    "lead": "Select a saved verification target for the current ICC without creating or printing it again.",
+    "sections": [
+      [
+        "1. Select the target in step 9",
+        "Select C2. Save verification target as TIFF16 and click Run selected step. Choose Select existing target. The list shows saved targets in this project for the current ICC, with names, patch counts and folder IDs."
+      ],
+      [
+        "2. Match the physical print",
+        "Choose the ColorChecker entry matching your sheet. Example: Profile test ColorChecker-SG-D50-Lab | 153 patches. The count depends on the reference, repeats and any paper-white controls; not every ColorChecker target has 153 patches. Also compare the folder ID with your print file if several similar targets exist."
+      ],
+      [
+        "3. The saved print package is checked",
+        "InkProf checks ICC identity, TI2, manifest and TIFF16 patch values. The same saved print files are reused; no new layout or colour conversion is created. File checks do not prove that the physical print was made with the correct settings."
+      ],
+      [
+        "4. Begin measurement in step 10",
+        "Run C2. Measure / select verification revision and choose Measure. Confirm measurement target shows the target name and patch count. If they match your sheet, choose Measure this target, then Start measurement. Saved revisions is for measurements that are already saved."
+      ],
+      [
+        "5. Save and approve the result",
+        "Complete the measurement and choose Save and finish. Then run steps 11, 12, 13 and 14 for comparison, review, approval and certificate export. Changing the C2 target requires current results and a fresh approval; it does not change the ICC profile."
+      ]
+    ],
+    "callout": "If you printed both ColorChecker and a broader verification target, select the sheet you will measure first. Targets are measured separately. The certificate uses the current, measured and approved C2 target."
+  },
+  {
+    "tag": "DELIVERY | JPG AND SOFT PROOF",
+    "title": "Study gradients through the ICC profile",
+    "lead": "The external delivery folder includes test gradients and a screen preview through the delivered profile.",
+    "sections": [
+      [
+        "Open the comparison",
+        "Open gradients.html beside the ICC, PDF and HTML certificate. Switch between Original and Soft proof. Select 100 % to inspect without scaling. The ramps include neutral, primary, secondary and blue-sky colours. These are generated test images; this feature does not open a custom JPG."
+      ],
+      [
+        "Which profile is used?",
+        "The soft proof uses the exact ICC included in the delivery. The original and preview JPGs contain embedded sRGB. Conversion uses relative colorimetric intent and black point compensation. gradients.json records settings and the profile SHA-256 identity."
+      ],
+      [
+        "Do InkProf profiles work?",
+        "InkProf profiles are normally expected to support this preview. The current printer profile checked during development worked. Not every possible profile variant has been tested, so this is not a guarantee for all profiles. A simplified profile used in automated code tests could not perform the conversion."
+      ],
+      [
+        "If the preview is unavailable",
+        "A profile may lack support for a colour conversion required by soft proof. The delivery is still saved and gradients.html explains that the preview could not be created. This does not automatically mean the profile is unsuitable for printing."
+      ],
+      [
+        "Save an updated delivery",
+        "Restart InkProf after updating and save an external delivery from step 14 again. Adding the JPGs alone does not require new measurements. Move the entire delivery folder to retain the comparison and report assets."
+      ]
+    ],
+    "callout": "Soft proof is the profile prediction on screen, not a physical measurement or approval. JPG is 8-bit and may introduce gradient steps itself. Inspect on a calibrated display and retain physical print verification."
   }
 ]

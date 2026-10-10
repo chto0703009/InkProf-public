@@ -48,7 +48,49 @@ def validate(vertices, triangles):
         raise ValueError('Invalid gamut triangles.')
 
 
-def generate(profile, folder, executable):
+def device_mapping(profile, executable, vertices):
+    """Associate mesh vertices with known forward RGB samples, never inverse RGB.
+
+    The Argyll envelope has no source RGB. Its vertices may not be reachable
+    exactly, so retain the sampled Lab and the distance instead of claiming an
+    exact inverse or using the clipped display colour as printer RGB.
+    """
+    import numpy as np
+    from scipy.spatial import cKDTree
+    levels = np.linspace(0, 1, 65)
+    a, b = np.meshgrid(levels, levels, indexing='ij')
+    faces = []
+    for axis in range(3):
+        for side in (0., 1.):
+            face = np.empty((a.size, 3))
+            face[:, axis] = side
+            face[:, [i for i in range(3) if i != axis]] = np.column_stack([a.ravel(), b.ravel()])
+            faces.append(face)
+    # Interior extrema are possible; include a coarse full-cube grid too.
+    interior = np.array(np.meshgrid(*[np.linspace(0, 1, 17)] * 3, indexing='ij')).reshape(3, -1).T
+    rgb = np.unique(np.vstack(faces + [interior]), axis=0)
+    lab = forward_lookup(executable, profile, rgb)
+    distance, index = cKDTree(lab).query(np.asarray(vertices))
+    return dict(method='Nearest sampled absolute A2B Lab; 65-level RGB faces plus 17-level interior grid',
+                approximate=True, rgb=rgb[index].tolist(), lab=lab[index].tolist(),
+                distanceDeltaE76=distance.tolist(), sampleCount=len(rgb))
+
+
+def forward_lookup(executable, profile, rgb):
+    import numpy as np
+    values = np.asarray(rgb, dtype=float)
+    result = subprocess.run([str(executable), '-v0', '-ff', '-ia', '-pl', str(profile)],
+                            input=''.join(' '.join(f'{x:.10f}' for x in row) + '\n' for row in values),
+                            capture_output=True, text=True, timeout=180)
+    if result.returncode:
+        raise ValueError('Forward RGB lookup failed: ' + (result.stderr + result.stdout)[-1200:])
+    lab = np.asarray([line.split()[:3] for line in result.stdout.splitlines() if line.strip()], dtype=float)
+    if lab.shape != values.shape or not np.isfinite(lab).all():
+        raise ValueError('Invalid forward RGB lookup output.')
+    return lab
+
+
+def generate(profile, folder, executable, include_device_rgb=False):
     import numpy as np
     import colour
     profile, folder = Path(profile).resolve(), Path(folder)
@@ -72,6 +114,11 @@ def generate(profile, folder, executable):
     data = dict(schemaVersion=1, documentType='inkprof.gamut-surface', profileSHA256=sha,
                 method='Argyll iccgamut forward A2B, absolute colorimetric, CIELAB D50',
                 detail=5, toolVersion=(version.stdout+version.stderr)[:600], vertices=vertices, triangles=triangles, rgb=rgb.tolist())
+    if include_device_rgb:
+        lookup = Path(executable).with_name('xicclu' + Path(executable).suffix)
+        data['deviceMapping'] = device_mapping(profile, lookup, vertices)
+        if digest(profile) != sha:
+            raise ValueError('ICC changed during device RGB mapping.')
     path = folder/'gamut-surface.json'
     path.write_text(json.dumps(data, allow_nan=False))
     return dict(status='available', file=path.name, sha256=digest(path), profileSHA256=sha)
@@ -144,7 +191,7 @@ def pdf_drawing(data, language='en'):
 
 if __name__ == '__main__':
     import sys
-    ref = generate(sys.argv[1], sys.argv[2], sys.argv[3])
+    ref = generate(sys.argv[1], sys.argv[2], sys.argv[3], '--device-rgb' in sys.argv[4:])
     (Path(sys.argv[2])/'gamut-reference.json').write_text(json.dumps(ref))
     data = load(sys.argv[2], dict(gamut=ref, profile=dict(sha256=ref['profileSHA256'])))
     (Path(sys.argv[2])/'gamut-view.html').write_text('<section><h2>ICC gamut — CIELAB D50</h2><p>'+html.escape(caption("en"))+'</p>'+interactive(data,"en")+'</section>')

@@ -48,6 +48,8 @@ f=inkprof.renderTarget(source);cleanup=onCleanup(@()delete(f));
 set(findobj(f,'Tag','renderDPI'),'Value',100);
 b=findobj(f,'Tag','renderCalculate');b.ButtonPushedFcn(b,[]);
 verifyNotEmpty(tc,f.UserData.pageCount);
+verifyEmpty(tc,timerfindall('Tag','InkProfTiffClock'));
+verifyFalse(tc,f.UserData.busy);
 verifyEqual(tc,findobj(f,'Tag','previewPage').Text,'Page 1 of 2');
 verifyEqual(tc,string(f.WindowStyle),"alwaysontop");
 prev=findobj(f,'Tag','previewPrevious');next=findobj(f,'Tag','previewNext');
@@ -70,4 +72,17 @@ end
 function testPreviewPageOrder(tc)
 m.files=struct('name',{'target_10-preview.png','target_2-preview.png','target_1-preview.png','argyll/target-preview.png','target.ti2'});
 verifyEqual(tc,inkprof.internal.previewFiles(m),["target_1-preview.png","target_2-preview.png","target_10-preview.png"]);
+end
+
+function testClockCleanupAfterDialogAppears(tc)
+f=uifigure();cleanup=onCleanup(@()delete(f));
+f.UserData=struct('cancelled',false);status=uilabel(f);
+guard=inkprof.internal.tiffProgress(f,status,"Rendering test target");
+watch=timerfindall('Tag','InkProfTiffClock');
+watch.TimerFcn(watch,[]);
+dialog=watch.UserData.dialog;
+verifyTrue(tc,isvalid(dialog));
+clear guard
+verifyFalse(tc,isvalid(watch));
+verifyFalse(tc,isvalid(dialog));
 end

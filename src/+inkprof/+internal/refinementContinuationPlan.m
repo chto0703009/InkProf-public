@@ -11,7 +11,7 @@ end
 folder=inkprof.internal.absolutePath(folder);project=inkprof.internal.findProject(folder);
 assert(project~="",'inkprof:Continuation','Proposal must belong to a project.');
 proposalFile=fullfile(folder,'proposal.json');p=jsondecode(fileread(proposalFile));
-assert(any(string(p.documentType)==["inkprof.verification-refinement","inkprof.image-refinement"])&&isfield(p,'print'),'inkprof:Continuation','A rendered error-driven or image-guided refinement proposal is required.');
+assert(any(string(p.documentType)==["inkprof.verification-refinement","inkprof.image-refinement","inkprof.gamut-refinement"])&&isfield(p,'print'),'inkprof:Continuation','A rendered error-driven, image-guided or gamut-area refinement proposal is required.');
 context=jsondecode(fileread(fullfile(folder,'sources','context.json')));
 job=fullfile(project,context.profileJob);recipeFile=fullfile(job,'recipe.json');
 status=jsondecode(fileread(fullfile(job,'status.json')));recipe=jsondecode(fileread(recipeFile));

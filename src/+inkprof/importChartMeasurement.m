@@ -47,6 +47,15 @@ if ~isempty(fieldnames(options.PairedReadings))
 end
 result.instrument=inkprof.internal.instrumentIdentity(sessionFolder,result.measurementCondition);
 result.rowDirectionCheck=inkprof.internal.checkRowDirection(sessionFolder,result);
+if isfield(chart,'printControls')
+ result.printControlCheck=struct('required',true,'status',"not-measured",'excludedFromProfiling',true);
+ file=fullfile(sessionFolder,'print-control-check.json');
+ if isfile(file)
+  check=jsondecode(fileread(file));
+  assert(string(check.definitionSHA256)==string(chart.printControls.sha256),'inkprof:Integrity','Print check definition differs.');
+  result.printControlCheck=check;result.printControlCheck.reportSHA256=inkprof.internal.sha256(file);
+ end
+end
 % Keep immutable snapshots, including the full original TI3 and its metadata.
 name="measurement-"+string(datetime('now','Format','yyyyMMdd-HHmmssSSS'));
 assert(~isfile(fullfile(sessionFolder,name+".json")),'inkprof:Exists','Result already exists.');

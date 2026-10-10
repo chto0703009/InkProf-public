@@ -9,12 +9,35 @@ function varargout=withFocus(owner,dialog,varargin)
 % immediately and again shortly after, once macOS has finished activating.
 %   [n,p] = inkprof.internal.withFocus(fig,@uigetfile,filter,title);
 before=findall(groot,'Type','figure');
+% A delayed callback from the preceding dialog must not cover this one.
+hadFlag=isgraphics(owner,'figure')&&isappdata(owner,'InkProfNativeDialogOpen');
+previous=false;
+if isgraphics(owner,'figure')
+    if hadFlag,previous=getappdata(owner,'InkProfNativeDialogOpen');end
+    setappdata(owner,'InkProfNativeDialogOpen',true);
+    figure(owner);drawnow;
+end
+dialogGuard=onCleanup(@()restoreFlag(owner,hadFlag,previous));
+fileDialogGuard=[];
+if any(string(func2str(dialog))==["uigetfile","uiputfile","uigetdir"])
+    fileDialogGuard=inkprof.internal.suspendForFileDialog(owner);
+end
 try
     [varargout{1:nargout}]=dialog(varargin{:});
 catch err
+    clear fileDialogGuard
+    clear dialogGuard
     refocus(owner,before);rethrow(err);
 end
+clear fileDialogGuard
+clear dialogGuard
 refocus(owner,before);
+end
+
+function restoreFlag(owner,hadFlag,previous)
+if ~isgraphics(owner,'figure'),return;end
+if hadFlag,setappdata(owner,'InkProfNativeDialogOpen',previous);
+elseif isappdata(owner,'InkProfNativeDialogOpen'),rmappdata(owner,'InkProfNativeDialogOpen');end
 end
 
 function refocus(owner,before)
@@ -29,6 +52,7 @@ end
 
 function bring(owner,before)
 if ~isgraphics(owner,'figure')||strcmp(owner.BeingDeleted,'on')||~strcmp(owner.Visible,'on'),return;end
+if isappdata(owner,'InkProfNativeDialogOpen')&&getappdata(owner,'InkProfNativeDialogOpen'),return;end
 % A window opened after the dialog (for example the next step's window) keeps focus.
 target=owner;
 for f=reshape(findall(groot,'Type','figure'),1,[])

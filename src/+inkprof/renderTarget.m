@@ -158,34 +158,7 @@ fig.Visible='on';drawnow;focus(fig);
         if isvalid(fig),fig.WindowStyle='alwaysontop';drawnow;focus(fig);end
     end
     function guard=startClock(label)
-        % Elapsed-time clock for long renders. It appears after 2 s, so small
-        % targets do not flash a dialog, and updates once per second.
-        clockStarted=tic;clockDialog=[];
-        clockTimer=timer('ExecutionMode','fixedSpacing','Period',1,'StartDelay',2,'BusyMode','drop', ...
-            'Tag','InkProfTiffClock','TimerFcn',@tick);
-        start(clockTimer);guard=onCleanup(@stopClock);
-        function tick(~,~)
-            if ~isvalid(fig),stopClock();return;end
-            clockSeconds=floor(toc(clockStarted));clockText=sprintf('Working — elapsed %d min %02d sec',floor(clockSeconds/60),mod(clockSeconds,60));
-            clockMessage=sprintf('%s\n%s. Please wait.',label,clockText);
-            try
-                if isempty(clockDialog)||~isvalid(clockDialog)
-                    clockDialog=uiprogressdlg(fig,'Title','TIFF16 target','Message',clockMessage,'Indeterminate','on', ...
-                        'Cancelable','on','CancelText','Cancel');
-                elseif clockDialog.CancelRequested
-                    fig.UserData.cancelled=true;clockDialog.Message=sprintf('Cancelling at the next safe checkpoint…\n\n%s.',clockText);
-                else
-                    clockDialog.Message=clockMessage;
-                end
-                status.Text=label+" ("+clockText+")";drawnow limitrate
-            catch
-                % The clock is feedback only; never interrupt rendering.
-            end
-        end
-        function stopClock()
-            if isvalid(clockTimer),stop(clockTimer);delete(clockTimer);end
-            if ~isempty(clockDialog)&&isvalid(clockDialog),close(clockDialog);end
-        end
+        guard=inkprof.internal.tiffProgress(fig,status,label);
     end
     function yes=keepGoing()
         drawnow;yes=~fig.UserData.cancelled;

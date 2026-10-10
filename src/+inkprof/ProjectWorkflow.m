@@ -41,6 +41,35 @@ classdef ProjectWorkflow < handle
         function defs=definitions(obj)
             defs=inkprof.internal.workflowSteps(obj.mode());
         end
+        function restoreRefinementForRemeasurement(obj)
+            lock=obj.lock();obj.reload();
+            assert(isfield(obj.State.steps.refine.outputs,'proposal'),'inkprof:WorkflowRecovery','No saved refinement target to remeasure.');
+            proposal=string(obj.State.steps.refine.outputs.proposal);
+            [saved,restored]=inkprof.internal.refinementRemeasureState(obj.State,proposal);
+            for id=restored
+                for a=reshape(saved.(id).artifacts,1,[])
+                    file=obj.resolve(a.path);
+                    assert(isfile(file)&&inkprof.internal.sha256(file)==string(a.sha256), ...
+                        'inkprof:WorkflowRecovery','Cannot restore: saved file is missing or changed: %s',a.path);
+                end
+            end
+            p=jsondecode(fileread(obj.resolve(saved.refine.outputs.proposal)));
+            if isfield(p,'sourceProfileSHA256')
+                assert(string(p.sourceProfileSHA256)==inkprof.internal.sha256(obj.resolve(saved.profile.outputs.profile)), ...
+                    'inkprof:WorkflowRecovery','Refinement belongs to a different historical profile.');
+            end
+            inkprof.verifyPackage(fileparts(obj.resolve(saved.refine.outputs.target)));
+            % Back up selections and preserve every file from later reruns.
+            backup=fullfile(obj.Root,'workflow-recovery',string(java.util.UUID.randomUUID())+".json");
+            mkdir(fileparts(backup));inkprof.internal.writeJson(backup,obj.State);
+            obj.invalidate('measurement');
+            for id=restored,obj.State.steps.(id)=saved.(id);end
+            obj.State.steps.refinemeasurement=struct('status',"pending",'outputs',struct,'artifacts',struct([]), ...
+                'message',"Remeasure the existing refinement print; previous readings retained in history.");
+            obj.State.currentStep="refinemeasurement";
+            obj.event("refine","restored-for-remeasurement",struct('proposal',proposal,'restoredSteps',restored,'backup',obj.relative(backup)));
+            obj.save();inkprof.updateProject(obj.Root,Step="refinement-remeasurement-restored",WorkflowMetadataOnly=true);
+        end
         function [ok,reason]=ready(obj,id)
             defs=obj.definitions();index=find(string({defs.id})==string(id));
             assert(isscalar(index),'inkprof:Workflow','Unknown step.');
@@ -58,7 +87,7 @@ classdef ProjectWorkflow < handle
             s=obj.State.steps.(id);ok=false;reason=string(s.status);
             if string(s.status)~="completed",return;end
             [ok,reason]=obj.ready(id);if ~ok,return;end
-            if id=="refine"&&(~isfield(s,'method')||string(s.method)~="image")
+            if id=="refine"&&(~isfield(s,'method')||~any(string(s.method)==["image","gamut"]))
                 [ok,reason]=obj.valid('feedback');if ~ok,reason="Requires current feedback: "+reason;return;end
             end
             for a=reshape(s.artifacts,1,[])
@@ -91,7 +120,7 @@ classdef ProjectWorkflow < handle
                         end
                     end
                 end
-                if string(d.id)=="refine"&&a.valid&&(~isfield(s,'method')||string(s.method)~="image")
+                if string(d.id)=="refine"&&a.valid&&(~isfield(s,'method')||~any(string(s.method)==["image","gamut"]))
                     a.valid=assessment.feedback.valid;
                     if ~a.valid,a.reason="Error-driven refinement requires current C3 feedback.";end
                 end
@@ -109,6 +138,13 @@ classdef ProjectWorkflow < handle
             end
             lock=obj.lock();obj.reload();
             [ok,reason]=obj.ready(id);assert(ok,'inkprof:WorkflowBlocked','%s',reason);
+            if any(string(id)==["measurement","c2measurement","refinemeasurement"])&&isfield(options,'Source')&& ...
+                    isfield(obj.State.steps.(id).outputs,'measurement')&&obj.valid(id)&& ...
+                    inkprof.internal.absolutePath(string(options.Source))==obj.resolve(obj.State.steps.(id).outputs.measurement)
+                result=obj.State.steps.(id);
+                obj.event(id,"revision-reselected",struct('measurement',result.outputs.measurement));obj.save();
+                inkprof.updateProject(obj.Root,Step="measurement-revision-reselected",WorkflowMetadataOnly=true);return;
+            end
             if id=="profile"&&isfield(options,'Mode')&&string(options.Mode)=="manual"
                 assert(~isfield(obj.State,'activeContinuation'),'inkprof:WorkflowBlocked','A continued iteration uses the combined inputs through automatic continuation.');
                 [ok,reason]=obj.valid('recipe');assert(ok,'inkprof:WorkflowBlocked','B2 is required: %s',reason);
@@ -118,10 +154,11 @@ classdef ProjectWorkflow < handle
                 assert(islogical(options.FWACompensation)&&isscalar(options.FWACompensation),'inkprof:FWA','FWA selection must be logical.');
                 obj.applyFWA(options.FWACompensation,"automatic-profiling");
             end
-            if id=="refine"&&(~isfield(options,'Method')||string(options.Method)~="image")
+            if id=="refine"&&(~isfield(options,'Method')||~any(string(options.Method)==["image","gamut"]))
                 [ok,reason]=obj.valid('feedback');assert(ok,'inkprof:WorkflowBlocked','Error-driven refinement requires current C3 feedback: %s',reason);
             end
             % Invalidate descendants before starting, including cancelled reruns.
+            previousState=obj.State;
             obj.invalidate(id);obj.State.currentStep=id;
             obj.State.steps.(id).status="running";obj.State.steps.(id).message="Running";obj.event(id,"started",options);obj.save();
             % Keep the manifest consistent while the step runs, so a crash or
@@ -174,7 +211,12 @@ classdef ProjectWorkflow < handle
                 inkprof.internal.recordProjectStep(obj.Root,"workflow-"+id);clear savingProgress;
             catch err
                 clear savingProgress;status="failed";if strcmp(err.identifier,'inkprof:Cancelled'),status="pending";end
-                obj.State.steps.(id).status=status;obj.State.steps.(id).message=string(err.message);
+                if strcmp(err.identifier,'inkprof:Cancelled')&&any(string(id)==["measurement","c2measurement","refinemeasurement"])
+                    obj.State.steps=previousState.steps;
+                    if isfield(previousState,'activeContinuation'),obj.State.activeContinuation=previousState.activeContinuation;end
+                else
+                    obj.State.steps.(id).status=status;obj.State.steps.(id).message=string(err.message);
+                end
                 obj.event(id,status,string(err.message));obj.save();
                 % Record our own state changes even on cancellation/failure. Do not
                 % accept changed measurement/target files by rehashing all inputs.
@@ -409,7 +451,7 @@ classdef ProjectWorkflow < handle
             % Automatic profile does not require B2, but changing B2 invalidates it.
             if id=="recipe",affected=[affected,"profile"];end
             if any(id==["c2","c2measurement","c3","feedback"])&& ...
-                    (~isfield(obj.State.steps.refine,'method')||string(obj.State.steps.refine.method)~="image")
+                    (~isfield(obj.State.steps.refine,'method')||~any(string(obj.State.steps.refine.method)==["image","gamut"]))
                 affected=[affected,"refine"];
             end
             while changed

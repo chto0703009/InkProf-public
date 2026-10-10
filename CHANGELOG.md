@@ -1,6 +1,25 @@
 # Changelog
 
-## Unreleased
+## v1.0.0 — 2026-10-10
+
+Stable source release.
+
+- Include sRGB original and ICC soft-proof gradient JPGs, a portable comparison page and exact delivered-profile hash in external certificate bundles.
+- Name certificates after the profile and last eight iteration UUID characters; save external ICC, PDF, HTML and supporting evidence together in a folder named after the PDF, preserving older bundles.
+- Preserve all three XYZ components when approving RGB print references decoded as column vectors; reject malformed scalar references before colour-error calculation.
+- Show an activity dialog with elapsed time and Fit/Grid/C1 phase labels while step 8 runs; close it automatically on completion or failure.
+- Allow step 9 to reselect an already printed verification target for the current ICC; verify saved package integrity and confirm target name and patch count before step 10 measurement.
+- Include the selected ColorChecker/reference target in measurement certificates, with named reference and measured swatches and per-patch Delta E00 in PDF, HTML and text; retain reference-set identity in certificate JSON.
+- Keep reference-patch fields consistent with the extra FWA paper-white control so ColorChecker C2 targets decode and render correctly in MATLAB.
+- Restore the verified historical branch for remeasuring an existing refinement target, without reprinting or rebuilding; preserve downstream results when the same measurement revision is reselected or a measurement rerun is cancelled.
+- Allow a reasoned override of completed RGB print checks with flagged deviations, retaining measurements, thresholds, paper finish and decision evidence; missing readings cannot be overridden.
+- Add separate raw device R/G/B print-control squares to each new TIFF16 page, with stationary per-square M0 checks before strip measurement, approved printer/paper reference comparison and Failed status for flagged controls. Legacy targets without declared controls remain compatible.
+- Recognize chartread's communication-error retry prompt and alternate strip-start prompts so measurement controls do not stay disabled.
+- Show printed row numbers, pages and paired scan directions in the measurement window's instrument log instead of internal chartread pass numbers, and count instrument-confirmed scans so unread final sweeps are visible.
+- Document manual gamut-area measurement reinforcement in both handbooks, with a step-by-step guide on page 56.
+
+- Add gamut-area selection with approximate forward device-RGB associations, reviewed local patch proposals, and step 15–17 measurement/refinement continuation.
+- Show the blue-sky diagnostic in a readable table with aligned values and metric explanations.
 
 ## v1.0.0-rc.4 — 2026-10-09
 

@@ -52,3 +52,18 @@ function fail()
 guard=inkprof.internal.calculationProgress("Testing failure","Working"); %#ok<NASGU>
 error('inkprof:TestFailure','Expected test failure');
 end
+
+function testCheckpointUpdatesWithoutTimerCallback(tc)
+f=uifigure('Visible','off');cleanup=onCleanup(@()delete(f));
+[guard,p]=inkprof.internal.calculationProgress("Displaying measured patches","Drawing patches",Parent=f);
+watch=timerfindall('Tag','InkProfCalculationTimer');stop(watch);
+% A measurement timer callback may hold up other timers. Checkpoints must
+% still refresh elapsed time rather than depending on a second timer firing.
+pause(1.1);
+inkprof.internal.updateCalculationProgress(f);
+elapsed=regexp(char(p.Message),'elapsed (\d+) min (\d+) sec','tokens','once');
+verifyNotEmpty(tc,elapsed);
+verifyGreaterThanOrEqual(tc,60*str2double(elapsed{1})+str2double(elapsed{2}),1);
+clear guard;
+verifyFalse(tc,isvalid(p));verifyEmpty(tc,timerfindall('Tag','InkProfCalculationTimer'));
+end
