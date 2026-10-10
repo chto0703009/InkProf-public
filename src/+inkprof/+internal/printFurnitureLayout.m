@@ -10,4 +10,6 @@ if layout.compact
  layout.footerReservedMm=30;layout.footerCenterInsetMm=19;
  layout.summaryInsetMm=27;layout.dateInsetMm=10;
 end
+layout.controlReservedMm=16;
+layout.chartReservedMm=layout.footerReservedMm+layout.controlReservedMm;
 end

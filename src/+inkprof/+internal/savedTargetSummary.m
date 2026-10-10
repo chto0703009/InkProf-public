@@ -17,6 +17,10 @@ r=jsondecode(fileread(file));if ~isfield(r,'ids'),return;end
 pages=[dir(fullfile(fileparts(target),'*.tif'));dir(fullfile(fileparts(target),'*.tiff'))];
 if isempty(pages),return;end
 lines="Target saved: "+numel(r.ids)+" patches in "+numel(pages)+" TIFF16 file(s).";
+if isfield(outputs,'reference')
+ reference=jsondecode(fileread(w.resolve(outputs.reference)));
+ if isfield(reference,'name'),lines=["Verification target: "+string(reference.name);lines];end
+end
 if isfield(outputs,'proposal')
  proposal=jsondecode(fileread(w.resolve(outputs.proposal)));
  if isfield(proposal,'verification'),lines(end+1,1)="Included C2 verification patches: "+proposal.verification.patchCount+" (colours also train the next ICC; repeats remain controls).";end

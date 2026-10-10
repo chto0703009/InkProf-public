@@ -19,15 +19,18 @@ assert(isfolder(iccParent)&&isfolder(reportParent),'inkprof:Delivery','The selec
 folder=inkprof.internal.absolutePath(folder);
 assert(reportParent~=folder&&~startsWith(reportParent,folder+filesep),'inkprof:Delivery','Choose a report location outside the project internal export package.');
 root=inkprof.internal.findProject(folder);
+if root~="",assert(~startsWith(iccDestination,root+filesep),'inkprof:Delivery','Choose an external destination for the delivery.');end
+assert(strlength(stem)>0&&strlength(stem)<=220&&~any(stem==[".",".."])&& ...
+ isempty(regexp(char(stem),'[<>:"/\\|?*\x00-\x1F]','once'))&&~endsWith(stem,"."), ...
+ 'inkprof:Delivery','Use a portable certificate name without path separators.');
 % Give each delivery one portable folder; never overwrite an older bundle.
-reportBundle=fullfile(reportParent,stem+"-report");suffix=1;
+baseStem=stem;reportBundle=fullfile(reportParent,stem);suffix=1;
 while isfolder(reportBundle)||isfile(reportBundle)
- suffix=suffix+1;reportBundle=fullfile(reportParent,stem+"-report-"+suffix);
+ suffix=suffix+1;stem=baseStem+"-"+suffix;reportBundle=fullfile(reportParent,stem);
 end
 reportParent=reportBundle;reportDestination=fullfile(reportParent,stem+reportExt);
-destinations=[iccDestination,reportDestination];
-if lower(reportExt)==".pdf",destinations(3)=fullfile(reportParent,stem+".html");end
-if lower(reportExt)==".html",destinations(3)=fullfile(reportParent,stem+".pdf");end
+iccParent=reportBundle;iccDestination=fullfile(iccParent,iccName+iccExt);
+destinations=unique([iccDestination,reportDestination,fullfile(reportParent,stem+".pdf"),fullfile(reportParent,stem+".html")],'stable');
 variant=struct('primaryFile',"profile.icc",'secondaryFile',"");
 if isfile(fullfile(folder,'icc-variants.json')),variant=jsondecode(fileread(fullfile(folder,'icc-variants.json')));end
 secondaryIndex=0;
@@ -62,6 +65,9 @@ try
  end
  config=inkprof.paths();
  inkprof.runPython(fullfile(config.Root,'analysis','delivery_report.py'),assets,RequiredModules="reportlab",WorkingDirectory=config.Root);
+ % Display previews use the exact named ICC included in this delivery.
+ inkprof.runPython(fullfile(config.Root,'analysis','delivery_gradients.py'), ...
+  [stages(1),reportBundle],RequiredModules="PIL",WorkingDirectory=config.Root);
  for k=2:numel(destinations)
   if k==secondaryIndex,continue;end
   [~,~,ext]=fileparts(destinations(k));
@@ -73,6 +79,7 @@ try
     [~,assetName]=fileparts(assets);
     prefix=string(java.net.URLEncoder.encode(char(assetName),'UTF-8'));prefix=replace(prefix,"+","%20");
     text=regexprep(text,"(href|src)='(?![A-Za-z][A-Za-z0-9+.-]*:|//|#)","$1='"+prefix+"/");
+    text=replace(text,"</body>","<p><a href='gradients.html'>Gradient soft proof / Gradienter med ICC-profilen</a></p></body>");
    else
     text=string(fileread(fullfile(assets,'final-report.txt')))+newline+newline+"Rapportunderlag: "+assets;
    end
@@ -89,9 +96,12 @@ try
   if ~options.Overwrite,assert(~isfile(destinations(k)),'inkprof:Exists','The destination file was created while saving.');end
   [ok,msg]=movefile(stages(k),destinations(k),'f');assert(ok,'inkprof:IO','%s',msg);published(k)=true;
  end
+ previewFiles=fullfile(reportBundle,["gradients.html","gradients-original.jpg","gradients-soft-proof.jpg","gradients.json"]);
+ previewFiles=previewFiles(isfile(previewFiles));
  receipt=struct('documentType',"inkprof.delivery",'iccFile',iccDestination,'iccSHA256',string(naming.sha256),'sourceICCSHA256',hash,'internalName',iccName,'colourTagPayloadsUnchanged',true, ...
   'reportFolder',reportBundle,'reportFile',reportDestination,'reportSHA256',inkprof.internal.sha256(reportDestination),'reportAssets',assets, ...
-  'files',destinations,'savedUTC',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")));
+  'files',[destinations,previewFiles], ...
+  'savedUTC',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")));
 catch err
  for k=1:numel(destinations)
   if published(k)

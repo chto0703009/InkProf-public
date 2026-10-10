@@ -22,8 +22,9 @@ uibutton(bar,'Text','Open results log','Tag','openResultLog','ButtonPushedFcn',@
 uibutton(bar,'Text','Iteration history','Tag','iterationHistory','ButtonPushedFcn',@history);
 reportButton=uibutton(bar,'Text','Open report','Tag','openFinalReport','Enable','off','ButtonPushedFcn',@openReport);
 labButton=uibutton(bar,'Text','View 3D','Tag','showProfile3D','Enable','off','ButtonPushedFcn',@show3D);
-projectBar=uigridlayout(g,[1 3]);projectBar.ColumnWidth={'1x',120,140};projectBar.Padding=[0 0 0 0];
+projectBar=uigridlayout(g,[1 4]);projectBar.ColumnWidth={'1x',200,120,140};projectBar.Padding=[0 0 0 0];
 projectLabel=uilabel(projectBar,'Text','Create a new project or select an existing one.','WordWrap','on');
+remeasureButton=uibutton(projectBar,'Text','Remeasure saved refinement','Tag','remeasureSavedRefinement','Enable','off','ButtonPushedFcn',@remeasureRefinement);
 gamutButton=uibutton(projectBar,'Text','View gamut','Tag','showGamut','Enable','off','ButtonPushedFcn',@showGamutView);
 verifyButton=uibutton(projectBar,'Text','Verify project','Tag','verifyProject','Enable','off','ButtonPushedFcn',@verifyCurrentProject);
 body=uigridlayout(g,[1 2]);body.ColumnWidth={490,'1x'};body.Padding=[0 0 0 0];
@@ -61,6 +62,15 @@ end
             else,message=strjoin(check.issues,newline);icon='warning';end
             uialert(fig,message,'Project integrity','Icon',icon);
         catch err,uialert(fig,err.message,'Project integrity');end
+    end
+    function remeasureRefinement(~,~)
+        if isempty(w)||busy,return;end
+        busy=true;
+        try
+            w.restoreRefinementForRemeasurement();selected="refinemeasurement";
+            message='Existing refinement target restored. Step 16: Run selected step, then Measure the corrected print.';
+        catch err,message=string(err.message);uialert(fig,message,'Remeasure saved refinement');end
+        busy=false;refresh();status.Text=message;
     end
     function loadProject(folder)
         check=inkprof.verifyProject(folder);
@@ -141,6 +151,7 @@ end
         if isempty(w)||busy,return;end
         try
             w.reload();detailsButton.Enable='on';verifyButton.Enable='on';assessment=w.inspect();data=cell(numel(defs),2);
+            remeasureButton.Enable=matlab.lang.OnOffSwitchState(isfield(w.State.steps.refine.outputs,'proposal')&&isfield(w.State.steps.refine.outputs,'target'));
             for k=1:numel(defs)
                 id=string(defs(k).id);valid=assessment.(id).valid;ready=assessment.(id).ready;
                 s=string(w.State.steps.(id).status);
@@ -164,6 +175,11 @@ end
             end
             hint.Value=cellstr([reason;guide]);
             printButton.Enable=matlab.lang.OnOffSwitchState(assessment.(selected).valid&&any(startsWith(string(fieldnames(w.State.steps.(selected).outputs)),"TIFF16_")));
+            printButton.Text='Copy TIFF16 for printing…';
+            if any(selected==["export","numericalExport"])
+                printButton.Text='Save delivery elsewhere…';
+                printButton.Enable=matlab.lang.OnOffSwitchState(assessment.(selected).ready);
+            end
             step=w.State.steps.(selected);lines=["Iteration "+w.State.cycle;"Status: "+string(data{index,2});""];
             names=string(fieldnames(step.outputs));
             resultStep=selected;
@@ -193,7 +209,13 @@ end
                 end
                 if ~isempty(names),lines=[lines;"";"Results saved from the completed step:"];end
             else
-                lines=[lines;string(step.message);"";"Saved results for this step:"];
+                if assessment.(selected).valid
+                    lines=[lines;string(step.message);"";"Saved results for this step:"];
+                else
+                    lines=[lines;"These saved results are not current. Inputs or prerequisites have changed."; ...
+                        "Complete the required preceding steps, then run this step again before using its results."; ...
+                        "";"Previous results (out of date):"];
+                end
             end
             if assessment.(resultStep).valid
                 lines=[lines;inkprof.internal.savedTargetSummary(w,resultStep);""];
@@ -311,6 +333,9 @@ end
     function copyPrint(~,~)
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if isempty(w)||busy,return;end
+        if any(selected==["export","numericalExport"])
+            run([],[],true);return;
+        end
         copyPrintStep(selected);
     end
     function copyPrintStep(id)
@@ -328,6 +353,18 @@ end
             if o.Source=="",o=[];end
             return
         elseif id=="c2"
+            choice=uiconfirm(fig,'Create a new verification target or select one you have already printed?', ...
+                'Verification target','Options',{'Select existing target','Create new target','Cancel'},'CancelOption',3);
+            if strcmp(choice,'Cancel'),o=[];return;end
+            if strcmp(choice,'Select existing target')
+                targets=inkprof.internal.savedVerificationTargets(w);
+                if isempty(targets),uialert(fig,'No saved verification targets for the current ICC were found.','Verification target');o=[];return;end
+                [index,ok]=inkprof.internal.withFocus(fig,@listdlg,'ListString',cellstr(string({targets.label})), ...
+                    'SelectionMode','single','PromptString','Select the target matching your printed sheet:', ...
+                    'Name','Saved verification targets','ListSize',[720 220]);
+                if ~ok,o=[];return;end
+                o.Source=targets(index).file;return
+            end
             % Profile test target: fixed reference set (e.g. ColorChecker SG Lab) or generated colours.
             [o.ReferenceSet,cancelled]=inkprof.internal.chooseReferenceSet(fig,w.mode()~="verification");
             if cancelled,o=[];return;end
@@ -365,6 +402,13 @@ end
         elseif any(id==["measurement","c2measurement","refinemeasurement"])
             choice=uiconfirm(fig,'Measure, choose a saved project revision, or import a file?','Measurement','Options',{'Measure','Saved revisions','Import file','Cancel'},'CancelOption',4);
             if strcmp(choice,'Cancel'),o=[];return;end
+            if strcmp(choice,'Measure')&&id=="c2measurement"
+                ref=jsondecode(fileread(w.output('c2','reference')));
+                name=string(ref.name)+" ("+numel(ref.patches)+" patches)";
+                confirm=uiconfirm(fig,"Selected target: "+name+newline+"Use the matching printed sheet.", ...
+                    'Confirm measurement target','Options',{'Measure this target','Cancel'},'CancelOption',2);
+                if strcmp(confirm,'Cancel'),o=[];return;end
+            end
             if strcmp(choice,'Saved revisions')
                 parents=struct('measurement','render','c2measurement','c2','refinemeasurement','refine');
                 o.Source=inkprof.selectMeasurementRevision(fullfile(w.Root,'measurements'),w.output(parents.(id),'target'),Parent=fig);
@@ -376,10 +420,25 @@ end
             o=inkprof.internal.approvalDialog(w);
         elseif any(id==["review","refine"])
             if id=="refine"
-                choice=uiconfirm(fig,'Choose how to propose additional patches. Image-guided refinement can use any colours and requires a current checked ICC. Error-driven refinement also requires C3 feedback.', ...
-                    'Refinement source','Options',{'From image','From verification errors','Cancel'},'CancelOption',3);
+                choice=uiconfirm(fig,'Choose how to propose additional patches. Image and gamut selections require a current checked ICC. For gamut patches, first select an area in View gamut and save the selection. Error-driven refinement also requires C3 feedback.', ...
+                    'Refinement source','Options',{'From image','From gamut selection','From verification errors','Cancel'},'CancelOption',4);
                 if strcmp(choice,'Cancel'),o=[];return;end
                 o.Method="image";
+                if strcmp(choice,'From gamut selection')
+                    o.Method="gamut";latest=inkprof.internal.latestGamutProposal(w.Root,w.output('profile','profile'));
+                    useLatest=false;
+                    if latest~=""
+                        saved=jsondecode(fileread(latest));
+                        action=uiconfirm(fig,sprintf('Use the latest gamut selection with %d selected patches? Step 15 creates the print package to measure in step 16.',numel(saved.candidates)), ...
+                            'Gamut selection','Options',{'Use latest selection','Choose another','Cancel'},'CancelOption',3);
+                        if strcmp(action,'Cancel'),o=[];return;end
+                        useLatest=strcmp(action,'Use latest selection');
+                    end
+                    if useLatest,o.ExistingProposal=latest;else,o.ExistingProposal=pick('proposal.json','Select saved gamut proposal.json');end
+                    if o.ExistingProposal=="",o=[];return;end
+                    saved=jsondecode(fileread(o.ExistingProposal));
+                    assert(string(saved.documentType)=="inkprof.gamut-refinement",'inkprof:Gamut','Select a gamut-area proposal.');
+                end
                 if strcmp(choice,'From verification errors')
                     mode=uiconfirm(fig,'Argyll only: preconditioned targen patches, colprof -r 1.0, no InkProf Jacobian or pre-regularization. Current InkProf: C3 residuals and Jacobian-guided patches. Both require a new measurement and independent print verification.', ...
                         'Refinement method','Options',{'1. Argyll only','2. Current InkProf (Jacobian sampling)','Cancel'},'DefaultOption',1,'CancelOption',3);
@@ -389,10 +448,10 @@ end
                     if ~ok,uialert(fig,"Complete current C3 feedback first: "+why,'Refinement');o=[];return;end
                 end
             end
-            if id=="refine"&&o.Method=="image"
+            if id=="refine"&&any(o.Method==["image","gamut"])
                 reference=inkprof.internal.pendingVerification(w);
                 o.IncludeC2=reference~="";o.C2Reference=reference;
-                if w.valid('refine')&&isfield(w.State.steps.refine,'method')&&string(w.State.steps.refine.method)=="image"
+                if o.Method=="image"&&w.valid('refine')&&isfield(w.State.steps.refine,'method')&&string(w.State.steps.refine.method)=="image"
                     choice=uiconfirm(fig,'Reuse your saved image-patch selection or select another image? Any current C2 patches without a saved measurement will be included automatically.', ...
                         'Image patches','Options',{'Use saved image patches','Choose another image','Cancel'},'CancelOption',3);
                     if strcmp(choice,'Cancel'),o=[];return;end
@@ -406,11 +465,6 @@ end
             if isempty(a),o=[];return;end
             o.Notes=inkprof.internal.dialogText(a{1});o.Confirmed=strlength(strtrim(o.Notes))>0;
         elseif any(id==["export","numericalExport"])
-            if w.mode()=="verification"
-                destination=inkprof.internal.withFocus(fig,@uigetdir,char(fileparts(w.Root)),'Save certificate bundle in this folder (Cancel: keep project copy only)');
-                if ~isequal(destination,0),o.BundleDestination=string(destination);end
-                return
-            end
             if id=="numericalExport"
                 a=inkprof.internal.withFocus(fig,@inputdlg,{'Why are you ending this iteration without a separate verification print? State intended use.'},'Save measurement certificate',[4 70],{''});
                 if isempty(a),o=[];return;end
@@ -423,7 +477,7 @@ end
             end
             message="The ICC profile already exists in this project:"+newline+w.output('profile','profile')+newline+newline+ ...
                 "This step saves an approved delivery copy and creates the measurement certificate (PDF and HTML) inside the project."+newline+newline+ ...
-                "You can also save copies elsewhere. The certificate and all supporting files are collected in one report folder. Move or share that entire folder. The project keeps its own copies.";
+                "You can also save copies elsewhere. The ICC, PDF certificate, HTML and supporting files are collected in one folder named after the PDF. Move or share that entire folder. The project keeps its own copies.";
             if id=="numericalExport"
                 message="Save the current ICC and a measurement certificate (PDF and HTML) with the numerical-only verification scope. This does not approve print accuracy. Project copies are retained; external copies include all supporting files.";
             end
@@ -435,14 +489,14 @@ end
             if strcmp(choice,'Cancel'),o=[];return;end
             if strcmp(choice,'Save in project only'),return;end
             record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
-            iccName=inkprof.internal.iccDeliveryName(string(record.name));
-            [n,p]=inkprof.internal.withFocus(fig,@uiputfile,{'*.icc','ICC profile (*.icc)';'*.icm','ICC profile (*.icm)'},'Choose where to save the ICC profile',fullfile(w.Root,iccName));
-            if isequal(n,0),o=[];return;end
-            o.ICCDestination=string(fullfile(p,n));
-            reportName='measurement-certificate.pdf';
+            profileName=inkprof.internal.projectDeliveryProfileName(record);
+            reportName=inkprof.internal.certificateDeliveryName(profileName,w.State.cycle,w.State.iterationId)+".pdf";
+            destination=fullfile(string(java.lang.System.getProperty('user.home')),'Downloads');
+            if ~isfolder(destination),destination=string(fileparts(w.Root));end
             [n,p]=inkprof.internal.withFocus(fig,@uiputfile,{'*.pdf','Report (*.pdf)';'*.html','Report (*.html)';'*.txt','Report as text (*.txt)'}, ...
-                'Name the report bundle (PDF, HTML and supporting files)',fullfile(p,reportName));
+                'Choose bundle name and location (ICC, PDF, HTML, JPG and supporting files)',fullfile(destination,reportName));
             if isequal(n,0),o=[];return;end
+            o.ICCDestination=string(fullfile(p,profileName+".icc"));
             o.ReportDestination=string(fullfile(p,n));o.Overwrite=true;
         elseif id=="profile"
             choice=uiconfirm(fig,'Select a profiling workflow. Manual mode requires a completed B2 recipe.','Profiling', ...
@@ -589,7 +643,7 @@ switch id
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
  case "compare",s="Compare this ICC with the previous iteration on common RGB and Lab samples. Profile differences do not prove improved print accuracy; fresh independent print verification is still required.";
  case "approve",s="Record the intended use, quality requirements and accepted limitations. This is the user's decision after physical C2/C3 verification, not ISO certification.";
- case "refine",s="Add patches from an image (any colours) or from current verification errors. Review and select the proposed colours before saving TIFF16. Image refinement uses the current checked ICC; error-driven refinement requires C3 feedback. Record why you are adding patches.";
+ case "refine",s="Add patches from an image, a saved gamut-area selection, or current verification errors. For gamut patches, first use View gamut → Select area → Review patches / create TIFF16, then choose From gamut selection here. Image and gamut refinement use the current checked ICC; error-driven refinement requires C3 feedback. Print the TIFF16 package saved by this step. Record why you are adding patches.";
  case "profile",s="Automatic iteration or manual B3. Manual B3 requires B2. A successful job produces a candidate, not an approval of print quality.";
  case "checks",s="Run numerical checks. Review the reports before printing; these checks do not replace C2/C3.";
  case "continue",s="Link refinement to previous inputs and patch roles. The next iteration requires new checks and new physical C2/C3 verification.";

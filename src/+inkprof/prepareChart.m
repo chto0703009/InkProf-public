@@ -48,9 +48,17 @@ for table=reshape(doc.tables,1,[])
     tables(end+1)=struct('signature',table.signature,'fields',table.fields,'metadata',meta,'rows',rows); %#ok<AGROW>
 end
 chart.exchangeTables=tables;
+controlFile=fullfile(fileparts(ti2Path),'print-controls.json');
+if isfile(controlFile)
+ controls=jsondecode(fileread(controlFile));
+ assert(string(controls.documentType)=="inkprof.print-controls"&&controls.excludedFromProfiling&& ...
+  string(controls.targetTI2SHA256)==chart.sourceSHA256,'inkprof:Integrity','Print controls do not belong to this TI2.');
+ chart.printControls=struct('file',"print-controls.json",'sha256',inkprof.internal.sha256(controlFile));
+end
 parent=fileparts(sessionFolder);if ~isfolder(parent),mkdir(parent);end
 stage=string(tempname(parent));mkdir(stage);cleanup=onCleanup(@()removeStage(stage));
 copyfile(ti2Path,fullfile(stage,'source.ti2'));
+if isfield(chart,'printControls'),copyfile(controlFile,fullfile(stage,'print-controls.json'));end
 assert(inkprof.internal.sha256(fullfile(stage,'source.ti2'))==chart.sourceSHA256,'inkprof:Integrity','TI2 changed during preparation.');
 inkprof.internal.writeJson(fullfile(stage,'chart.json'),chart);
 [ok,msg]=movefile(stage,sessionFolder);assert(ok,'inkprof:IO','%s',msg);

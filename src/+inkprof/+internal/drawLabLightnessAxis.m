@@ -4,8 +4,8 @@
 function drawLabLightnessAxis(ax)
 %DRAWLABLIGHTNESSAXIS Visible neutral L* reference through a*=b*=0.
 held=ishold(ax);hold(ax,'on');
-% Draw over opaque surfaces so the neutral reference remains visible.
-ax.SortMethod='childorder';ax.Layer='top';
+% Preserve 3-D occlusion: child order lets rear surface triangles cover front ones.
+ax.SortMethod='depth';ax.Layer='top';
 xlabel(ax,'a*');ylabel(ax,'b*');zlabel(ax,'L*');
 limits={ax.XLim,ax.YLim};
 for dimension=1:2

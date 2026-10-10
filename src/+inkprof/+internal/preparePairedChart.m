@@ -57,7 +57,10 @@ for k=1:numel(t.metadata)
     t.metadata{k}=token;
 end
 doc.tables(1)=t;
-input=fullfile(folder,'paired-input.ti2');inkprof.exportCgats(input,doc);
+% This derived traversal is not a printed target. Keep it away from the
+% physical target's print-control sidecar; controls run on the parent chart.
+inputFolder=fullfile(folder,'paired-input');mkdir(inputFolder);
+input=fullfile(inputFolder,'target.ti2');inkprof.exportCgats(input,doc);
 inkprof.prepareChart(input,runFolder);
 plan=struct('schemaVersion',1,'documentType',"inkprof.paired-scan-plan", ...
  'physicalChartSHA256',inkprof.internal.sha256(fullfile(folder,'chart.json')), ...

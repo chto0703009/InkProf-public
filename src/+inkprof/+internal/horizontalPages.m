@@ -18,6 +18,7 @@ native=fullfile(folder,'argyll');
 pages=dir(fullfile(native,'target*.tif'));
 timestamp=string(datetime('now','Format','yyyy-MM-dd HH:mm'));
 placements=struct('tiff',{},'offsetMm',{},'rowGuides',{});
+controls=struct('page',{},'tiff',{},'label',{},'rgbPercent',{},'rgb16',{},'rectMm',{});
 for k=1:numel(pages)
     name=string(pages(k).name);[~,stem]=fileparts(name);
     input=Tiff(fullfile(native,name),'r');c=onCleanup(@()close(input));
@@ -52,7 +53,7 @@ for k=1:numel(pages)
     % Center the entire strip body, including spacers, using integer pixels.
     % Reserve heading space and the same footer band as the text renderer.
     furniture=inkprof.internal.printFurnitureLayout(paperMm(1));
-    top=ceil(20*outDpi(2)/25.4);bottom=floor((paperMm(2)-furniture.footerReservedMm)*outDpi(2)/25.4);
+    top=ceil(20*outDpi(2)/25.4);bottom=floor((paperMm(2)-furniture.chartReservedMm)*outDpi(2)/25.4);
     assert(numel(y)<=pixels(1)&&numel(x)<=bottom-top,'inkprof:Geometry','Strip body does not fit the printable area.');
     dx=floor((pixels(1)-numel(y))/2)+1-y(1);
     dy=top+floor((bottom-top-numel(x))/2)+1-x(1);
@@ -90,7 +91,9 @@ for k=1:numel(pages)
         geom=str2double(tokens(6:9));
         output=label(output,columnLabel,[geom(4)+geom(2)/2-2+offset(1),lo(1)-6+offset(2)],outDpi,2.5);
     end
-    assert(hi(1)+offset(2)<paperMm(2)-furniture.footerReservedMm+1,'inkprof:Geometry','No clear space for footer.');
+    assert(hi(1)+offset(2)<paperMm(2)-furniture.chartReservedMm+1,'inkprof:Geometry','No clear space for print controls.');
+    [output,pageControls]=inkprof.internal.drawPrintControls(output,outDpi(1),k,name);
+    controls=[controls pageControls]; %#ok<AGROW>
     output=inkprof.internal.drawPrintFurniture(output,outDpi(1),k,numel(pages),timestamp,fullfile(outputFolder,name),targetInfo.footerText);
     file=Tiff(fullfile(folder,name),'w');c=onCleanup(@()close(file));
     tags=struct('ImageLength',size(output,1),'ImageWidth',size(output,2), ...
@@ -103,6 +106,9 @@ for k=1:numel(pages)
 end
 inkprof.internal.writeJson(fullfile(folder,'page-placement.json'),struct('schemaVersion',1, ...
     'documentType',"inkprof.page-placement",'pages',placements));
+inkprof.internal.writeJson(fullfile(folder,'print-controls.json'),struct('schemaVersion',1, ...
+    'documentType',"inkprof.print-controls",'measurementMode',"stationary native M0 spots", ...
+    'excludedFromProfiling',true,'patches',controls));
 % SAMPLE_LOC/IDs/RGB and strip membership remain unchanged. Only page axes
 % change; chartread uses the same row label and patch order.
 text=fileread(fullfile(native,'target.ti2'));

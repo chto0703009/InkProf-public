@@ -6,6 +6,12 @@ function tests=testCombinedRefinement
 tests=functiontests(localfunctions);
 end
 function testCombinedPrintKeepsC2PixelsAndRoles(tc)
+checkCombined(tc,"image");
+end
+function testGamutCombinedPrintKeepsC2PixelsAndRoles(tc)
+checkCombined(tc,"gamut");
+end
+function checkCombined(tc,method)
 p=string(tempname);inkprof.createProject(p);c=onCleanup(@()rmdir(p,'s'));
 j=fullfile(p,'profiles','jobs','test');mkdir(fullfile(j,'result'));
 inkprof.internal.writeJson(fullfile(j,'result','profile.icc'),struct('fixture',true));
@@ -33,7 +39,7 @@ verifyEqual(tc,combined.patches(2).repeatOf,'1');verifyEqual(tc,numel(combined.c
 verifyEqual(tc,numel(unique(string({roles.patches.sampleId}))),7);
 % Rebuild through the workflow; C2 links to the same TIFF and remains unmeasured.
 copyfile(fullfile(j,'engine.ti3'),fullfile(f,'sources','training.ti3'));
-proposal.documentType="inkprof.image-refinement";proposal.sourceProfileSHA256=r.printerProfile.sha256;
+proposal.documentType="inkprof."+method+"-refinement";proposal.sourceProfileSHA256=r.printerProfile.sha256;
 proposal.print=info;
 inkprof.internal.writeJson(fullfile(f,'proposal.json'),proposal);
 inkprof.internal.writeJson(fullfile(f,'proposed-candidates.json'),proposal.candidates);
@@ -48,7 +54,7 @@ verifyEqual(tc,inkprof.internal.pendingVerification(w),file);
 state.steps.c2measurement.status="completed";inkprof.internal.writeJson(fullfile(p,'workflow.json'),state);w.reload();
 verifyEqual(tc,inkprof.internal.pendingVerification(w),"");
 state.steps.c2measurement.status="pending";inkprof.internal.writeJson(fullfile(p,'workflow.json'),state);w.reload();
-w.run('refine',struct('Method',"image",'Confirmed',true,'Notes',"Combined fixture",'ExistingProposal',fullfile(f,'proposal.json'),'IncludeC2',true,'C2Reference',file,'PlanPaper',false));
+w.run('refine',struct('Method',method,'Confirmed',true,'Notes',"Combined fixture",'ExistingProposal',fullfile(f,'proposal.json'),'IncludeC2',true,'C2Reference',file,'PlanPaper',false));
 verifyTrue(tc,w.valid('refine'));verifyTrue(tc,w.valid('c2'));verifyFalse(tc,w.valid('c2measurement'));
 verifyEqual(tc,w.State.steps.c2.outputs.target,w.State.steps.refine.outputs.target);
 verifyEqual(tc,w.State.steps.c2.outputs.reference,w.State.steps.refine.outputs.c2reference);

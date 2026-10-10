@@ -116,6 +116,7 @@ paths=struct('pdf',fullfile(folder,'final-report.pdf'),'html',fullfile(folder,'f
 if isfield(w.State.steps.c2.outputs,'reference')
  reference=w.output('c2','reference');
  ref=jsondecode(fileread(reference));
+ if isfield(ref,'referenceSet'),r.referenceTarget=ref.referenceSet;end
  if external,addDetail("Verification patch count including repeats",string(numel(ref.patches)));end
  assert(string(ref.printerProfile.sha256)==digest,'inkprof:FinalReport','3D-underlaget hör till en annan ICC.');
  f=inkprof.showVerificationLab(reference,Visible=false);
@@ -158,6 +159,12 @@ lines=["INKPROF - MEASUREMENT CERTIFICATE";"Project: "+string(project.name);"Pro
  "";"SAVED ICC";"File: profile.icc";"SHA-256: "+digest;"Byte-identical to the selected candidate."; ...
  "";"FINAL ASSESSMENT";string(approval.notes);""; ...
  "Whole-target result overview";r.patchOutliers.overviewText;"";"Technical diagnostic colours: deviations above 5 dE00";"Desired colour, profile prediction and measured colour are shown as sRGB previews. Delta E00 compares measurement with desired colour (above 5). See Appendix A.";r.patchOutliers.message;r.patchOutliers.contextText];
+if isfield(r,'referenceTarget')
+ lines=[lines;"";"REFERENCE TARGET: "+string(r.referenceTarget.name);"Measured print vs desired reference colour (Delta E00); unique patches, excluding repeats and paper white."];
+ for patch=reshape(r.patchOutliers.allPatches,1,[])
+  lines(end+1)=patch.referenceName+" | "+patch.sampleId+sprintf(' | Delta E00 %.4f',patch.deltaE00);
+ end
+end
 fit=r.results.checks_fit;
 if isfield(r,'verificationSummary')
 for key=["desired","predicted"]
@@ -214,11 +221,11 @@ end
 html="<!doctype html><html lang='en'><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>InkProf - Measurement certificate</title>"+ ...
  "<style>body{font:16px/1.5 system-ui,sans-serif;color:#19303c;max-width:1050px;margin:40px auto;padding:0 24px}h1{font-size:32px}h2{margin-top:32px}table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid #ccd8de;padding:9px;text-align:left}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f6f7;padding:20px}a{color:#146078}code{overflow-wrap:anywhere}@media print{body{margin:0;font-size:11px}tr{break-inside:avoid}}</style>"+ ...
  "<h1>InkProf - Measurement certificate</h1><p>"+esc(string(project.name))+" · Iteration "+w.State.cycle+" · "+esc(r.createdUTC)+"</p>"+ ...
- "<p>Certificate ID: "+esc(r.certificateId)+"</p><p>"+esc(r.certificateScope)+"</p><h2>How to interpret these results</h2><p>"+esc(r.resultInterpretation)+"</p>"+projectHTML+ ...
+ "<p>Iteration UUID: "+esc(string(r.iterationId))+"</p><p>Certificate ID: "+esc(r.certificateId)+"</p><p>"+esc(r.certificateScope)+"</p><h2>How to interpret these results</h2><p>"+esc(r.resultInterpretation)+"</p>"+projectHTML+ ...
  "<h2>Saved ICC profile</h2><p><a href='profile.icc'>profile.icc</a></p><p>SHA-256: <code>"+digest+"</code></p>"+ ...
  "<h2>Final assessment</h2><p>"+esc(string(approval.notes))+"</p><h2>Whole-target result overview</h2><p>"+replace(esc(r.patchOutliers.overviewText),newline,"<br>")+"</p><h2>Technical diagnostic colours: deviations above 5 dE00</h2>"+ ...
  "<p>Desired colour, profile prediction and measured colour are shown as sRGB previews. Delta E00 compares measurement with desired colour (above 5). See Appendix A.</p><p>"+esc(r.patchOutliers.message)+"</p>";
-mosaic="<h3>Every unique measured colour</h3><p>Target order; labels show patch ID and measured print vs desired colour dE00. Screen colours are sRGB previews.</p><div style='display:grid;grid-template-columns:repeat(8,1fr);gap:5px'>";
+mosaic="<!--REFERENCE-TARGET--><h3>Every unique measured colour</h3><p>Target order; labels show patch ID and measured print vs desired colour dE00. Screen colours are sRGB previews.</p><div style='display:grid;grid-template-columns:repeat(8,1fr);gap:5px'>";
 for patch=reshape(r.patchOutliers.allPatches,1,[])
  mosaic=mosaic+"<div><div style='height:25px;background:"+patch.hex+"'></div>"+esc(patch.sampleId)+sprintf(' · %.1f</div>',patch.deltaE00);
 end

@@ -21,6 +21,13 @@ inkprof.internal.writeJson(fullfile(f,'proposal.json'),r);
 p=inkprof.internal.refinementContinuationPlan(f,m);
 verifyEqual(tc,p.newFitCount,8);verifyEqual(tc,p.developmentCount,2);
 end
+function testGamutProposalContinuation(tc)
+[w,f,m]=fixture();c=onCleanup(@()rmdir(w,'s'));
+r=jsondecode(fileread(fullfile(f,'proposal.json')));r.documentType="inkprof.gamut-refinement";
+inkprof.internal.writeJson(fullfile(f,'proposal.json'),r);
+p=inkprof.internal.refinementContinuationPlan(f,m);
+verifyEqual(tc,p.newFitCount,8);verifyEqual(tc,p.developmentCount,2);verifyEqual(tc,p.controlCount,2);
+end
 function testC2IncludedInContinuation(tc)
 [w,f,m]=fixture();c=onCleanup(@()rmdir(w,'s'));
 file=fullfile(f,'sources','c2.json');profile=fullfile(f,'sources','profile.icc');

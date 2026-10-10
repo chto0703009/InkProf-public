@@ -39,10 +39,7 @@ if isempty(previous),start(watch);end
 drawnow;
 end
 function update(parent)
-if ~isgraphics(parent)||~isappdata(parent,'InkProfCalculationState'),return;end
-s=getappdata(parent,'InkProfCalculationState');if ~isvalid(s.progress),return;end
-elapsed=floor(toc(s.started));s.progress.Title=char(s.title);
-s.progress.Message=char(s.message+newline+sprintf('Working — elapsed %d min %02d sec. Please wait.',floor(elapsed/60),mod(elapsed,60)));
+inkprof.internal.updateCalculationProgress(parent);
 end
 function finish(parent,state,previous)
 if ~isgraphics(parent)

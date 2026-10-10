@@ -40,7 +40,7 @@ print('Calibration complete\nReady to read strip pass 1\nTrigger instrument swit
 time.sleep(.35)
 prompt('rt:')
 instrument_button()
-prompt('Strip read failed due to misread (Too many patches)\nHit Esc to give up, any other key to retry:')
+prompt("Strip read failed due to communication problem.\nHit Esc or 'q' to give up, any other key to retry:")
 key(' ')
 prompt(row)
 instrument_button()

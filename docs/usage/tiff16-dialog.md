@@ -59,3 +59,14 @@ Read `PRINTING.txt` beside the TIFF (or `*-README.txt` for the legacy exporter).
 Base and refinement targets render device RGB directly; InkProf applies no printer ICC conversion. Ordinary C2 colour-reference targets have already been converted once, absolute colorimetric without BPC. C2 device-RGB reference sets are an exception: their RGB is rendered directly and the ICC only predicts reference Lab. Both kinds of C2 TIFF carry the printer ICC as an identifying tag. Embedding changes no pixels; an application may nevertheless use the tag if colour management is enabled. Preserve the tag without conversion, do not assign another profile, and disable application, OS and driver colour conversion. An untagged TIFF does not establish its prior history; the embedded tag likewise does not prove absence of earlier conversions.
 
 Newly generated packages include these instructions; existing print packages are preserved. Read the C2 package-level `PRINTING.txt` as well as `print/PRINTING.txt`.
+
+## Separate page RGB controls
+
+New pages reserve a 16 mm band above the normal footer for three 8 × 8 mm
+raw R/G/B squares marked **PRINT CHECK - SPOT ONLY**. This can increase the
+page count; Calculate / preview shows the actual layout before saving.
+`print-controls.json` records their locations and the matching TI2 hash.
+They are not added to `layout.patches`, TI1/TI2 or the profiling patch count.
+The measurement dialog checks them point by point before strip scanning;
+see [chart measurement](chart-measurement.md#separate-rgb-print-checks-on-new-targets).
+Existing print packages are never modified retroactively.

@@ -55,6 +55,7 @@ for p=reshape(patches,1,[])
  entry=struct('sampleId',string(p.sampleId),'coordinate',string(p.coordinate),'page',p.page, ...
   'role',string(p.role),'deltaE00',p.deltaE00,'excess',p.deltaE00-r.threshold, ...
   'measuredLab',p.measuredLab,'sRGB8',rgb8,'hex',hex,'clipped',clipped);
+ entry.referenceName="";if isfield(p,'referenceName')&&~isempty(p.referenceName),entry.referenceName=string(p.referenceName);end
  entry.gamutAssessment="unknown";if isfield(p,'gamutAssessment'),entry.gamutAssessment=string(p.gamutAssessment);end
  entry.reachabilityLabel="Reachability unknown";
  if entry.gamutAssessment=="model-reachable",entry.reachabilityLabel="Model-reachable (numerical)";end

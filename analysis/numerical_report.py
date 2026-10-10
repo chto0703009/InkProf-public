@@ -29,6 +29,7 @@ def create(folder, language="en"):
     figure_title = 'Profile comparison - 2D and 3D in CIELAB'
     sections = [('InkProf - Measurement certificate', ['Certificate ID: '+r.get('certificateId', 'Not specified'), r.get('certificateScope', ''), r['scopeStatement'],
         f"Project: {r['project']['name']} | Iteration {r['iteration']}",
+        'Iteration UUID: '+r.get('iterationId', 'Not recorded'),
         'Current profile: numerically checked. Previous print measurements are reported separately as historical evidence.']),
         ('Decision and intended use', [r['decision']['notes']]),
         ('Saved ICC profile', [r['profile']['file'], 'SHA-256: '+r['profile']['sha256']]),

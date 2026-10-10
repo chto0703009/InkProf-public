@@ -1,8 +1,12 @@
-# InkProf documentation — v1.0.0-rc.4
+# InkProf documentation — v1.0.0 preparation
 
-Source version **1.0.0-rc.4**, documentation updated 2026-10-09. Start with the [complete app workflow](usage/workflow-v1.0.md). The user handbook is maintained in matching Swedish and English editions, updated 2026-10-09. App labels and the other current usage guides remain English. Dated development records and original source citations are retained.
+Source version **1.0.0**, updated 2026-10-10. Publication is pending. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release preparation](releases/v1.0.0.md).
 
-Current release: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). Earlier changes: [workflow update, 2026-10-07](releases/2026-10-07-workflow-update.md). The two user handbooks include the 2026-10-07 additions and a matching complete-profiling appendix and supporting material (pages 48–55), updated 2026-10-09. The presentation was aligned with the current handbook on 2026-10-09: smooth gradients, optional optical-brightener correction, measured final assessment and handbook support. It omits internal refinement-method choices. All five maintained PDFs are marked 1.0.0-rc.4; the MATLAB workflow guide remains a compact overview supplemented by the current handbook.
+The Swedish and English user handbooks contain 60 numbered pages plus a cover. Covers identify the handbook, program, language, author, date and version. Five maintained PDFs are rebuilt for v1.0.0: both handbooks, both presentations and the English MATLAB workflow guide. Their links point to the public repository while release publication is pending.
+
+Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.
+
+Last published candidate: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md).
 
 ## PDF guides
 
@@ -102,14 +106,20 @@ Photographic assessment resource: [Keith Cooper — Printer Test Images, Northli
 
 Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-09. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support. Page 7 also describes continued use of older i1Pro instruments through ArgyllCMS after X-Rite support ends, and the goal of operating beyond Rosetta removal with compatible native runtimes; future macOS compatibility still requires verification.
 
-Current handbooks: 55 pages in each language, updated 2026-10-09 for RC4. The introduction explains InkProf, benefits, required hardware/software and installation, followed by a six-step workflow diagram on page 3. Page 5 explains Ready, Complete, Locked and Stale and the action each requires.
+Current handbooks: 58 pages in each language, updated 2026-10-10 for RC4. The introduction explains InkProf, benefits, required hardware/software and installation, followed by a six-step workflow diagram on page 3. Page 5 explains Ready, Complete, Locked and Stale and the action each requires.
 
 Six original example figures illustrate the actual app: main window (page 7), Project details (9), Profiling settings and ICC delivery choice (11), measurement (14), profiling recipe (17), and gamut (34). Values are fictional; the gamut uses an sRGB ICC example, not a measured printer. The gamut export includes top margin to prevent title clipping. Blue callouts have 4 mm of additional space before following text or links.
 
-The complete example has its own flow diagram on page 48, followed by the detailed route and supporting guidance on pages 49–55. Appendix headings describe their content; the last page is “Testbilder” / “Test images”. Author/source attribution remains in body text and references.
+The complete example has its own flow diagram on page 48, followed by the detailed route and supporting guidance on pages 49–55. Appendix headings describe their content; page 55 is “Testbilder” / “Test images”, followed by the manual gamut-reinforcement walkthrough on page 56. Author/source attribution remains in body text and references.
 
 ICC import supports suitable RGB printer profiles in v2 and v4, including v4.2; generated delivery offers v2, v4.4 and Both. Pages 10–11, 16, 20 and 40 explain selection, variants, filenames, certificate scope and original-profile verification. Page 46 discusses version choice and a limited numerical LittleCMS/BPC example; it does not claim new print validation. See [project output settings](usage/profiling-project.md#delivered-icc-versions).
 
-Fact-check corrections for RC4: page references on pages 4, 10, 15, 16 and 19 now match the physical page order. Removed the obsolete Swedish FWA/pre-smoothing incompatibility claim; updated version/date statements, Swedish appendix headings, terminology and percentage spacing. Both editions remain 55 pages and corresponding chapter titles were checked against every physical page.
+Fact-check corrections for RC4: page references on pages 4, 10, 15, 16 and 19 now match the physical page order. Removed the obsolete Swedish FWA/pre-smoothing incompatibility claim; updated version/date statements, Swedish appendix headings, terminology and percentage spacing. Both editions now have 58 pages and corresponding chapter titles were checked against every physical page.
 
 Link audit 2026-10-09 covered all embedded hyperlinks in the handbooks and presentations (20 unique destinations). The ICC specification link points to https://www.color.org/specifications/; release links point directly to v1.0.0-rc.4.
+
+Manual gamut reinforcement: page 56 in both handbooks explains selecting an area in View gamut, reviewing device-RGB neighbours, saving paper dimensions, registering the selection in step 15, and printing/measuring/rebuilding in steps 16–17. It distinguishes manually strengthening measurement coverage from automatic error detection and physical gamut expansion; pages 21 and 34 point to the walkthrough.
+
+RGB print checks: page 57 in both handbooks explains the stationary per-page controls before strip measurement, explicit approval of a known-correct reference, the default 5 ΔE00 threshold and Failed status for large differences. It stresses checking active Adobe Photoshop and driver settings even with presets, keeping controls outside profiling data, and compatibility with older prints without control squares. Page 13 points to the walkthrough.
+
+Verification approval: page 58 walks through C2 target selection, printing, matching measurement revisions, C3/feedback, explicit approval with intended use and limitations, and exporting that decision in the certificate. Page 20 points to this guide.

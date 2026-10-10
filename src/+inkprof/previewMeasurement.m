@@ -141,6 +141,11 @@ end
 if any(rowReplaced)
  notice=notice+" Whole-row replacements saved. Scan ΔE00 describes the ORIGINAL sweeps; new row readings are retained separately.";
 end
+if isfield(result,'printControlCheck')
+ notice=notice+" Separate page RGB check: "+string(result.printControlCheck.status)+". Controls are excluded from fitting.";
+ if isfield(result.printControlCheck,'override'),notice=notice+" Override reason: "+string(result.printControlCheck.override.reason);end
+ if ~any(string(result.printControlCheck.status)==["passed","reference-approved"]),noticeColor=[.7 .15 .05];end
+end
 if isfield(result,'rowDirectionCheck')
  check=result.rowDirectionCheck;
  if check.available && ~isempty(check.flaggedRows)
@@ -151,8 +156,7 @@ if isfield(result,'rowDirectionCheck')
  end
 end
 uilabel(grid,'Text',notice,'WordWrap','on','FontSize',11,'FontColor',noticeColor,'Tag','pairedWarning');
-drawPage();
-if ~isempty(rankedIndices),showRankedPatch(rankedIndices(1));end
+if isempty(rankedIndices),drawPage();else,showRankedPatch(rankedIndices(1));end
     function selectRankedPatch(~,event)
         if isempty(event.Indices),return;end
         showRankedPatch(rankedIndices(event.Indices(1,1)));
@@ -164,7 +168,10 @@ if ~isempty(rankedIndices),showRankedPatch(rankedIndices(1));end
     function drawPage()
         page=str2double(pageChoice.Value);selected=find(pageOfRow(rowIndex)==page);
         firstRow=sum(passes(1:page-1));localRows=rowIndex-firstRow;cols=max(columnIndex(selected));
+        pageProgress=inkprof.internal.calculationProgress("Displaying measured patches", ...
+            sprintf('Drawing page %d of %d (%d patches). Please wait.',page,numel(passes),numel(selected)),Parent=fig);
         cla(ax);hold(ax,'on');
+        drawn=0;
         for i=reshape(selected,1,[])
             rgb=reshape(double(p(i).rgbPercent),1,[])/100;
             caption=columns(i)+rows(i);
@@ -177,11 +184,18 @@ if ~isempty(rankedIndices),showRankedPatch(rankedIndices(1));end
             text(ax,columnIndex(i),localRows(i),caption,'HorizontalAlignment','center', ...
                 'Color',ink,'FontSize',max(7,min(11,230/cols)),'Interpreter','none', ...
                 'ButtonDownFcn',@(~,~)selectPatch(i));
+            drawn=drawn+1;
+            if mod(drawn,25)==0
+                inkprof.internal.updateCalculationProgress(fig);
+                drawnow limitrate
+            end
         end
         hold(ax,'off');ax.YDir='reverse';ax.XLim=[.5 cols+.5];ax.YLim=[.5 passes(page)+.5];
         ax.DataAspectRatio=[1 1 1];ax.XTick=[];ax.YTick=[];ax.Box='off';
         title(ax,sprintf('Page %d of %d – letter = column, number = row',page,numel(passes)));
         selectPatch(selected(1));
+        drawnow;
+        clear pageProgress;
     end
     function selectPatch(i)
         selectedPatch=i;remeasure.Enable='off';remeasureRow.Enable='off';

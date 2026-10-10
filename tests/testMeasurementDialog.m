@@ -16,6 +16,9 @@ s=f("Ready to read strip pass 7 (!! ALL ROWS READ !!)"+newline+"Trigger instrume
 s=f(s.text+newline+"Ready to read strip pass 7 (This row has been read)"+newline+"Trigger instrument switch or any other key to start:");verifyFalse(tc,s.allRead);
 s=f("Hit Return to use it anyway, any other key to retry, Esc or 'q' to give up:");verifyEqual(tc,s.kind,"unexpected");
 s=f("Hit Esc to give up, any other key to retry:");verifyEqual(tc,s.kind,"retry");
+s=f("Strip read failed due to communication problem."+newline+"Hit Esc or 'q' to give up, any other key to retry:");verifyEqual(tc,s.kind,"retry");
+s=f("Ready to read strip pass 144 (!! ALL ROWS READ !!)"+newline+"Trigger instrument switch to start reading.");verifyEqual(tc,s.kind,"row");verifyTrue(tc,s.allRead);
+s=f("Ready to read strip pass 144 (!! ALL ROWS READ !!)"+newline+"Press any other key to start:");verifyEqual(tc,s.kind,"row");verifyTrue(tc,s.allRead);
 s=f("Hit any key to retry, or Esc or Q to abort:");verifyEqual(tc,s.kind,"calibrationRetry");
 s=f("Unknown instrument question:");verifyEqual(tc,s.kind,"busy");
 end
@@ -41,6 +44,7 @@ if nargin<3,reenter=false;end
 assumeTrue(tc,isunix);
 w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
 pkg=fullfile(w,'target');inkprof.createTarget(pkg,PatchCount=20,GraySteps=3,DPI=100);
+delete(fullfile(pkg,'print-controls.json')); % Exercise the already-printed legacy workflow.
 folder=fullfile(w,'session');inkprof.prepareChart(fullfile(pkg,'target.ti2'),folder);
 bin=fullfile(w,'bin');mkdir(bin);
 for name=["targen","printtarg"],f=fopen(fullfile(bin,name),'w');fclose(f);end
@@ -179,6 +183,51 @@ for pass=[43 44]
  a=inkprof.internal.measurementPage(chart,pass,plan);verifyEqual(tc,a.page,2);verifyEqual(tc,a.row,"22");
 end
 verifyError(tc,@()inkprof.internal.measurementPage(chart,29),'inkprof:Layout');
+end
+
+function testFourPagePairedLogUsesPrintedRows(tc)
+chart=struct('passesInStrips',[19 19 19 15]);
+pages=repelem(1:4,chart.passesInStrips);
+passes=struct('page',{},'physicalRow',{},'rowOnPage',{},'phase',{},'expectedDirection',{});
+for row=1:72
+ for phase=1:2
+  direction="forward";if phase==2,direction="reverse";end
+  page=pages(row);
+  passes(end+1)=struct('page',page,'physicalRow',string(row), ...
+   'rowOnPage',row-sum(chart.passesInStrips(1:page-1)), ...
+   'phase',phase,'expectedDirection',direction);
+ end
+end
+
+
+plan=struct('passes',passes);
+transcript=join("Ready to read strip pass "+string(1:144)+newline+"Strip read OK",newline);
+shown=inkprof.internal.measurementLog(transcript,chart,plan);
+verifyFalse(tc,contains(shown,"strip pass"));
+verifyFalse(tc,contains(shown,"printed row 74"));
+verifyTrue(tc,contains(shown,"printed row 72 on page 4/4 · FORWARD scan (1/2)"));
+verifyTrue(tc,contains(shown,"printed row 72 on page 4/4 · REVERSE scan (2/2)"));
+for row=[20 39 58]
+ verifyTrue(tc,contains(shown,"printed row "+row+" on page "+pages(row)+"/4"));
+end
+state=inkprof.internal.chartPrompt(transcript+newline+"Ready to read strip pass 144"+newline+"Trigger instrument switch or any other key to start:");
+verifyEqual(tc,state.row,144); % Raw protocol remains authoritative and unchanged.
+end
+
+function testLastRowRequiresBothInstrumentConfirmations(tc)
+text=join("Ready to read strip pass "+string(1:142)+newline+"Strip read OK",newline);
+text=text+newline+"Ready to read strip pass 143"+newline+"Trigger instrument switch or any other key to start:n"+newline+ ...
+ "Ready to read strip pass 144"+newline+"Trigger instrument switch or any other key to start:n";
+p=inkprof.internal.measurementProgress(text,144);
+verifyEqual(tc,p.count,142);verifyEqual(tc,p.missing,[143 144]);
+text=text+newline+"Ready to read strip pass 143"+newline+"Strip read failed due to misread";
+p=inkprof.internal.measurementProgress(text,144);verifyEqual(tc,p.count,142);
+text=text+newline+"Strip read OK"+newline+"Ready to read strip pass 144";
+p=inkprof.internal.measurementProgress(text,144);verifyEqual(tc,p.count,143);verifyEqual(tc,p.missing,144);
+text=text+newline+"Strip read OK";
+p=inkprof.internal.measurementProgress(text,144);verifyEqual(tc,p.count,144);verifyEmpty(tc,p.missing);
+% Re-reading the last sweep does not inflate the count.
+p=inkprof.internal.measurementProgress(text+newline+"Strip read OK",144);verifyEqual(tc,p.count,144);
 end
 
 function hardwareScan(dialog)

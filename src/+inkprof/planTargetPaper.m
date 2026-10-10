@@ -46,7 +46,7 @@ roll=find(string({proposals.kind})=="Roll");if numel(roll)>1,proposals(roll(2:en
  function add(kind,label,dims,pieces,stockArea,feed)
   if dims(1)>options.MaxScanMm||dims(2)>options.MaxLengthMm,return;end
   furniture=inkprof.internal.printFurnitureLayout(dims(1));
-  capacity=floor((dims(1)-55)/11)*floor((dims(2)-30-furniture.footerReservedMm)/8);
+  capacity=floor((dims(1)-55)/11)*floor((dims(2)-30-furniture.chartReservedMm)/8);
   if dims(1)<148||dims(2)<80||capacity<1,return;end
   pages=ceil(count/capacity);sheets=ceil(pages/pieces);
   proposals(end+1)=struct('kind',kind,'description',label,'sizeMm',dims, ...

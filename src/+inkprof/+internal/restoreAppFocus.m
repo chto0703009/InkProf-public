@@ -34,6 +34,7 @@ start(t);
 end
 function returnFocus(parent)
 if ~isgraphics(parent,'figure')||strcmp(parent.BeingDeleted,'on'),return;end
+if isappdata(parent,'InkProfNativeDialogOpen')&&getappdata(parent,'InkProfNativeDialogOpen'),return;end
 % An open sibling (especially a modal dialog) must retain focus.
 target=parent;figures=findall(groot,'Type','figure');
 for child=reshape(figures,1,[])

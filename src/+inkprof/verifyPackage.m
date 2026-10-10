@@ -47,6 +47,23 @@ for name=reshape(names,1,[])
     assert(any(unit==[Tiff.ResolutionUnit.Inch,Tiff.ResolutionUnit.Centimeter]),'inkprof:TIFF','Missing physical resolution unit.');
     if unit==Tiff.ResolutionUnit.Centimeter,dpi=dpi*2.54;end
     image=tif.read();clear c
+    controlFile=fullfile(folder,'print-controls.json');
+    if isfile(controlFile)
+        controls=jsondecode(fileread(controlFile));
+        assert(controls.excludedFromProfiling&&string(controls.targetTI2SHA256)==inkprof.internal.sha256(fullfile(folder,'target.ti2')), ...
+            'inkprof:Integrity','Print-control definition differs from target.');
+        points=controls.patches(string({controls.patches.tiff})==name);
+        assert(numel(points)==3&&isequal(sort(string({points.label})),["B","G","R"]), ...
+            'inkprof:Identity','Each page requires exactly R, G and B controls.');
+        for point=reshape(points,1,[])
+            r=point.rectMm;x=round((r(1)+r(3)*[.25 .75])*dpi(1)/25.4)+1;
+            y=round((r(2)+r(4)*[.25 .75])*dpi(2)/25.4)+1;
+            expected=zeros(1,3);expected(find(["R","G","B"]==string(point.label)))=65535;
+            assert(isequal(reshape(double(point.rgb16),1,3),expected)&& ...
+                all(double(image(y(1):y(2),x(1):x(2),:))==reshape(expected,1,1,3),'all'), ...
+                'inkprof:Pixels','Page RGB control pixels differ: %s.',point.label);
+        end
+    end
     assert(isa(image,'uint16'),'inkprof:TIFF','Expected uint16 pixels.');
     sizeMm=[size(image,2),size(image,1)]./dpi*25.4;
     if isfield(target.printSettings,'maximumWidthMm')

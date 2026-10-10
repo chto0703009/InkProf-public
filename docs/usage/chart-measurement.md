@@ -393,3 +393,101 @@ verify which physical sheet is in the guide; the operator must still change it.
 ### Activity during patch remeasurement
 
 Remeasure patch shows progress while preparing the attempt, connecting the spectrometer, calculating the comparison, saving the accepted revision and rebuilding the overview. Calibration and measurement show elapsed time in the status area. Progress closes before a user decision is required. The existing overview remains available until its replacement is ready, and repeated actions are blocked while processing. Closing records the decision and releases the instrument with visible progress.
+
+## Remeasure an existing refinement print
+
+Use step **16 — Measure refinement** for an existing refinement print; step
+3 measures the base target. If reselecting a base revision has made the
+refinement locked, use **Remeasure saved refinement** in the project window.
+InkProf restores the recorded prerequisites for that saved target only after
+checking their file hashes. It selects step 16 without regenerating the print
+or rebuilding the ICC. Choose **Run selected step → Measure**, measure the
+corrected print, and save the new revision. Previous readings and later files
+remain in the project; the old refinement reading is not selected as current.
+Changed or missing historical files prevent restoration.
+
+Reselecting exactly the same valid measurement revision preserves downstream
+results. Cancelling a measurement rerun also preserves previous selections.
+
+## Separate RGB print checks on new targets
+
+New TIFF16 packages include three fixed 8 × 8 mm R/G/B squares below the
+profiling grid on **every page**. They are raw device RGB, absent from the
+TI1/TI2 profiling points and stored in `print-controls.json`. A printer ICC
+embedded on a C2 TIFF is still a tag only; the controls are not converted.
+
+When **Start measurement** is selected, InkProf first guides stationary M0
+point readings of the three squares on each page. Use the same backing;
+place i1 Pro 2 at the centre and select **Measure square**. Do not swipe.
+The normal strip measurement starts only after the controls pass.
+
+The first known-correct print must explicitly be approved with **Approve as
+print reference** after independently checking printer, media, paper and
+colour-management settings. This baseline approval is recorded, not treated
+as independent proof of print accuracy. Subsequent pages are compared with
+that project's saved reference. The default review threshold is 5 ΔE00;
+`measurePrintControls(..., ThresholdDeltaE00=...)` can set the baseline's
+threshold. A printer/paper/settings change requires a new reference.
+
+A flagged control makes the measurement step **Failed**, retaining the
+separate spot readings and identifying the page and RGB colour. No
+profiling rows are scanned until the print check passes. Missing readings
+on a target that declares controls also require completion. These checks
+can detect large colour-management/printing changes, but cannot prove all
+colours or tonal values correct, or determine the cause of a difference.
+
+After a completed check with deviations, **Override…** opens a required
+written reason. Explain why you accept the print, then select **Save override
+and continue** and continue to strip measurement. The result remains a
+recorded exception (`override-approved`), with the original readings,
+threshold, paper finish and dated decision retained. It does not change the
+project reference or thresholds, and cannot bypass missing readings.
+For matte papers, compare with a known-correct reference for that paper;
+matte finish alone does not establish a need for a higher threshold.
+
+**Already printed legacy targets without declared controls are unchanged:**
+no RGB-square measurement is requested and their absence never causes a
+rejection. Spot spectra, comparisons and reference provenance are stored
+separately; no control spot becomes a fitting, development or validation
+patch in the profile input.
+# ColorChecker in the measurement certificate
+
+To measure an already printed ColorChecker target, run step 9 and choose **Select existing target**. Select the entry named **Profile test ColorChecker-SG-D50-Lab** with the matching patch count. Only targets saved in this project for the current ICC are offered. The selection reuses the saved TIFF16/TI2 package; it does not generate another print. Then run step 10, choose **Measure**, check the target name and patch count in the confirmation, and choose **Measure this target**. Switching targets requires a fresh C2 measurement, comparison and approval before a certificate can be saved.
+
+Select ColorChecker as the C2 reference target in step 9, print that target without applying the profile again, then measure the matching target in step 10. Complete the comparison and review in steps 11–12, approve the results in step 13 and save the certificate in step 14. The certificate includes a dedicated section naming the selected reference, with each unique patch's reference colour, measured colour and Delta E00. Repeats and paper-white controls are excluded from this colour grid. The displayed colours are sRGB previews; errors are calculated from Lab measurements. A previously exported certificate must be exported again to include the new section.
+
+### Gradienter i den externa leveransen
+
+När ICC och certifikat sparas externt följer också `gradients.html`,
+`gradients-original.jpg`, `gradients-soft-proof.jpg` och `gradients.json` med i
+samma mapp. Öppna `gradients.html` för att växla mellan originalet i sRGB och en
+soft proof genom den levererade ICC-profilen, med relativ kolorimetrisk avsikt
+och svartpunktskompensation. Välj 100 % för att granska gradienterna utan
+skalning. Bilden innehåller gråskala, primärer, sekundärer och blå himmel.
+Detta är profilens skärmförutsägelse, inte en fysisk mätning eller ett
+certifikatresultat. JPG-filerna är 8-bitars med inbäddad sRGB-profil.
+`gradients.json` identifierar exakt den ICC som användes med SHA-256.
+
+Profiler skapade i InkProf förväntas normalt stödja denna förhandsvisning. Den
+aktuella skrivarprofilen har provats med fungerande konvertering, men alla
+profilvarianter har inte testats. En förenklad profil i automatiska kodtester
+saknade stöd för konverteringen. Om soft proof inte kan skapas sparas
+leveransen ändå; `gradients.html` visar ett tydligt besked. Detta betyder inte
+automatiskt att profilen är dålig för utskrift. Funktionen skapar testgradienter
+och öppnar ännu inte en egen JPG. Efter uppdatering: starta om InkProf och
+spara en extern leverans från steg 14 igen. Ingen ny mätning behövs enbart
+för detta tillägg.
+
+I steg 14 finns knappen **Save delivery elsewhere…** direkt i huvudfönstret.
+Klicka på den och välj namn och plats för leveransen. Profilnamnet hämtas från
+Profile name i projektdefinitionen; ingen extra namnfråga visas.
+Sparadialogen börjar i Downloads om mappen finns. En mapp med samma namn som
+PDF-filen skapas där, med ICC, certifikat, HTML, JPG och underlag.
+Projektets egna kopior behålls.
+
+Huvudfönstret döljs tillfälligt medan den vanliga filsparadialogen är öppen,
+så att det inte täcker dialogen. Det återställs efter Spara eller Avbryt.
+
+Fil- och mappnamn använder profilnamn, iterationsnummer och UUID-kodens sista
+åtta tecken, exempelvis `3880 SP Glossy Pro_iter-2_ee2247b0`. Hela UUID-koden
+behålls i rapporten och rapportdata för spårbarhet.

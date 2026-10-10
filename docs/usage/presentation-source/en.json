@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.0.0-rc.4 | 2026-10-09",
+    "tag": "InkProf | v1.0.0 | 2026-10-09",
     "title": "Your image deserves the right colours",
     "lead": "You chose the light, shaped the image and worked on every nuance. When the image reaches paper, that work should come with it.",
     "sections": [
@@ -109,11 +109,11 @@
       ],
       [
         "Improvement with a clear purpose",
-        "Additional patches can be selected from verification errors or colours in a profiled image. Paper suggestions adapt to patch count and equipment dimensions. Compare iterations in a 2D slice, starting at L*=50, or switch to 3D."
+        "Select additional patches from verification errors, image colours or a clicked gamut area, then print and measure to refine. Paper suggestions adapt to patch count and equipment. Compare iterations in a 2D slice at L*=50 or in 3D."
       ],
       [
         "A measurement certificate to hand over",
-        "PDF and HTML collect project details, measurement conditions, profile identity and reviewer decisions. They present the assessed colours as a whole, with difficult colours and limitations explained. Measured print results are distinguished from model predictions and numerical-only checks. The certificate includes a signature section, standards references and legal terms."
+        "PDF and HTML document measurements, the current ICC and reviewer decisions. ColorChecker verification adds named reference and measured swatches with Delta E00. ICC, certificate, HTML, evidence and gradient JPG previews are saved in one movable folder. Soft proof is a model prediction, distinct from measured print accuracy."
       ],
       [
         "Standards references supporting assessment",
@@ -134,8 +134,8 @@
         "https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50"
       ],
       [
-        "InkProf v1.0.0-rc.4 – prerelease and download",
-        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4"
+        "InkProf – source and release information",
+        "https://github.com/chto0703009/InkProf-public"
       ],
       [
         "Licensing and third-party references",
@@ -194,6 +194,30 @@
     ]
   },
   {
+    "tag": "MEASUREMENT QUALITY AND EARLY CHECKS",
+    "title": "Catch errors before they carry forward",
+    "lead": "InkProf helps handle measurement errors and check whether readings are plausible before they are used to build the profile.",
+    "sections": [
+      [
+        "Remeasure a faulty reading",
+        "Reading errors can be followed by another scan of the row. The app tracks confirmed readings and shows which rows remain before the measurement can be saved."
+      ],
+      [
+        "Review plausibility and deviations",
+        "Measured values, repeated colour patches and scan direction help reveal deviations. Results are reviewed before acceptance so suspicious readings can be investigated or measured again."
+      ],
+      [
+        "Check the print before a long measurement",
+        "New targets have separate red, green and blue control squares. These are measured first and compared with an approved reference for the same printing conditions. Large deviations stop further measurement and can reveal incorrect colour management, even when an Adobe Photoshop preset was used."
+      ],
+      [
+        "Keep decisions traceable",
+        "A completed RGB check with large deviations can be overridden with a written reason, for example when a paper needs investigation. Readings, thresholds and the decision are retained. Older targets without control squares can still be measured."
+      ]
+    ],
+    "callout": "These checks reduce the risk of carrying faulty prints or readings forward. A passed check still needs to be followed by profile review and verification."
+  },
+  {
     "tag": "v1.0.0 | NEW OPTIONS",
     "title": "Understand your print system",
     "sections": [
@@ -227,7 +251,7 @@
       ],
       [
         "Release preparation",
-        "This documentation accompanies 1.0.0-rc.4 ahead of v1.0.0. New features do not alter saved targets or measurements. Assess improvement through printing and measurement."
+        "Prepared source release v1.0.0; publication pending. Saved targets and measurements are preserved. Assess improvement through printing and measurement."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub.",

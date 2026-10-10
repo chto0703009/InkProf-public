@@ -161,7 +161,7 @@ inkprof.internal.writeJson(fullfile(stage,'target.json'),target);
 renderPaper=min(options.PaperSizeMm,floor(targetLimitMm*options.DPI/25.4)*25.4/options.DPI-1e-7);
 % Reduce native row capacity by the extra footer reservation above 12 mm.
 % Final TIFF retains the requested paper size; patch pixels are not scaled.
-nativePaper=fliplr(renderPaper);nativePaper(1)=nativePaper(1)-(furniture.footerReservedMm-12);
+nativePaper=fliplr(renderPaper);nativePaper(1)=nativePaper(1)-(furniture.chartReservedMm-12);
 paper=compose('%.12gx%.12g',nativePaper(1),nativePaper(2));
 mkdir(fullfile(stage,'argyll'));
 copyfile(fullfile(stage,'target.ti1'),fullfile(stage,'argyll','target.ti1'));
@@ -182,6 +182,9 @@ if options.EmbedICCProfile~=""
 end
 target.printSettings.iccHandling=inkprof.internal.tiffICCInstructions(target.targetInfo,options.EmbedICCProfile);
 inkprof.internal.horizontalPages(stage,renderPaper,outputFolder,target.targetInfo,options.EmbedICCProfile);
+controlFile=fullfile(stage,'print-controls.json');
+controls=jsondecode(fileread(controlFile));controls.targetTI2SHA256=inkprof.internal.sha256(fullfile(stage,'target.ti2'));
+inkprof.internal.writeJson(controlFile,controls);
 checkpoint(options.Continue);
 layout=inkprof.internal.readLayout(stage);
 for k=1:numel(layout)

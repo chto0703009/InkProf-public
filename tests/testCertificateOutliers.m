@@ -29,6 +29,11 @@ r=inkprof.internal.certificatePatchOutliers(struct('patches',p));verifyTrue(tc,r
 p.deltaE00=5.00001;r=inkprof.internal.certificatePatchOutliers(struct('patches',p));verifyEqual(tc,r.count,1);verifyEqual(tc,r.patches.coordinate,"B2");
 p.deltaE00=NaN;verifyError(tc,@()inkprof.internal.certificatePatchOutliers(struct('patches',p)),'inkprof:FinalReport');
 end
+function testReferenceNamesSurvive(tc)
+p=struct('sampleId',"1",'referenceName',"A1",'coordinate',"B2",'page',1,'role',"colour",'deltaE00',1.25,'measuredLab',[50 0 0]);
+r=inkprof.internal.certificatePatchOutliers(struct('patches',p));
+verifyEqual(tc,r.allPatches.referenceName,"A1");verifyEqual(tc,r.allPatches.deltaE00,1.25);
+end
 function testSRGBPreview(tc)
 [rgb,clipped]=inkprof.internal.labD50ToSRGB([0 0 0;100 0 0;50 200 200]);
 verifyEqual(tc,rgb(1,:),[0 0 0],'AbsTol',1e-8);verifyEqual(tc,rgb(2,:),[1 1 1],'AbsTol',.001);

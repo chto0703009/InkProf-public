@@ -8,6 +8,7 @@ classdef MeasurementDialog < handle
         Figure
         Result = []
         Folder
+        Failure = ""
     end
     properties (Access=private)
         Session
@@ -187,6 +188,13 @@ classdef MeasurementDialog < handle
                 data.runtimeFolder=runtimeFolder;
                 data.physicalChart=jsondecode(fileread(fullfile(obj.Folder,'chart.json')));
                 obj.Figure.UserData=data;
+                if isfield(data.physicalChart,'printControls')
+                    obj.Status.Text='Checking separate RGB print controls before chart measurement…';
+                    obj.Figure.WindowStyle='normal';
+                    inkprof.measurePrintControls(obj.Folder,ArgyllBin=options.ArgyllBin,PythonExecutable=options.PythonExecutable,Port=port);
+                    obj.Figure.WindowStyle='modal';
+                    inkprof.internal.requirePrintControls(obj.Folder);
+                end
                 inkprof.internal.recordProjectStep(obj.Folder,"measurement-settings-saved");
                 obj.Session=inkprof.ChartReadSession(runtimeFolder,ArgyllBin=options.ArgyllBin, ...
                     PythonExecutable=options.PythonExecutable,ScanTolerance=tolerance, ...
@@ -198,6 +206,11 @@ classdef MeasurementDialog < handle
                     'TimerFcn',@(~,~)obj.tick(),'ErrorFcn',@(~,~)obj.fail("Automatic updates stopped."));
                 start(obj.PollTimer);
             catch err
+                if strcmp(err.identifier,'inkprof:PrintControlFailed')
+                    obj.Failure=string(err.message);obj.Ended=true;
+                    obj.Status.Text='Failed - RGB print controls';obj.Hint.Text=obj.Failure;
+                    obj.disable();uialert(obj.Figure,obj.Failure,'Print check failed');return;
+                end
                 if isempty(obj.Session)
                     obj.Status.Text='Check chart and settings';obj.Hint.Text=string(err.message);
                     for tag=["targetFile","browse","direction","tolerance","port","condition","begin"]
@@ -236,7 +249,9 @@ classdef MeasurementDialog < handle
                     if isfield(event,'text')
                         obj.Buffer=obj.Buffer+string(event.text);
                         obj.Transcript=obj.Transcript+string(event.text);
-                        lines=splitlines(replace(obj.Transcript,char(13),""));
+                        data=obj.Figure.UserData;
+                        plan=struct;if isfield(data,'pairedPlan'),plan=data.pairedPlan;end
+                        lines=splitlines(inkprof.internal.measurementLog(obj.Transcript,data.physicalChart,plan));
                         obj.Log.Value=cellstr(lines(max(1,end-180):end));
                         scroll(obj.Log,'bottom');
                     end
@@ -315,6 +330,15 @@ classdef MeasurementDialog < handle
                     obj.Hint.Text="Press and hold the button on the i1 Pro 2 to scan; start and finish on white paper. "+string(obj.Hint.Text);
                     if ~isempty(fieldnames(data.RowContext))
                         obj.Hint.Text=sprintf('Use printed page %d, row %s. ',data.RowContext.page,data.RowContext.row)+string(obj.Hint.Text);
+                    end
+                    totalPasses=sum(data.physicalChart.passesInStrips);
+                    if ~isempty(fieldnames(plan)),totalPasses=numel(plan.passes);end
+                    progress=inkprof.internal.measurementProgress(obj.Transcript,totalPasses);
+                    if ~obj.State.allRead
+                        obj.Hint.Text=string(obj.Hint.Text)+sprintf(' Instrument-confirmed scans: %d/%d. ',progress.count,progress.total);
+                        if ~progress.confirmed(obj.State.row)
+                            obj.Hint.Text=string(obj.Hint.Text)+"The indicated scan is still unread. Wait for 'Strip read OK'; Next unread changes the selection and does not accept a scan.";
+                        end
                     end
                     if obj.State.allRead
                         obj.Status.Text=obj.Status.Text+" · ALL ROWS READ";

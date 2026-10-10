@@ -14,6 +14,8 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 ROOT=Path(__file__).resolve().parent
+VERSION=(ROOT.parents[2]/'VERSION').read_text().strip()
+DATE='2026-10-10'
 LANG=sys.argv[2] if len(sys.argv)>2 else 'en'
 if LANG not in ('sv','en'):raise ValueError('Language must be sv or en.')
 def local(sv,en):return sv if LANG=='sv' else en
@@ -33,13 +35,16 @@ class Pages(canvas.Canvas):
   n=len(self.states);ann=self._annotationCount
   for st in self.states:
    self.__dict__.update(st);self._annotationCount=ann
-   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf Quality Profiling RGB printer | 1.0.0-rc.4')
+   if self._pageNumber==1:
+    super().showPage()
+    continue
+   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf Quality Profiling RGB printer | '+VERSION)
    self.setFillColor(MUTED)
    self.setStrokeColor(LINE);self.setLineWidth(.6)
    self.line(18*mm,273.5*mm,192*mm,273.5*mm);self.line(18*mm,22*mm,192*mm,22*mm)
-   self.setFont('Vera',8);self.drawString(18*mm,16*mm,'2026-10-09');self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber} ({n})')
+   self.setFont('Vera',8);self.drawString(18*mm,16*mm,DATE);self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber-1} ({n-1})')
    self.setFillColor(TEAL);self.drawCentredString(105*mm,11*mm,'christer@borgasundsfotografiska.se')
-   url='https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0-rc.4';self.setFont('Vera',7);self.drawCentredString(105*mm,6*mm,'GitHub | InkProf v1.0.0-rc.4 (prerelease)');self.linkURL(url,(45*mm,4*mm,165*mm,9*mm),relative=0)
+   url='https://github.com/chto0703009/InkProf-public';self.setFont('Vera',7);self.drawCentredString(105*mm,6*mm,'GitHub | InkProf v'+VERSION);self.linkURL(url,(45*mm,4*mm,165*mm,9*mm),relative=0)
    ann=self._annotationCount;super().showPage()
   sys.path.insert(0,str(ROOT.parents[2]/'analysis'))
   from pdf_notices import attach
@@ -109,7 +114,19 @@ class WorkflowDiagram(Flowable):
 def table(rows):
  n=len(rows[0]);widths=([15,81,78] if n==3 else [51,123]);t=Table([[p(escape(v),'cell') for v in r] for r in rows],colWidths=[w*mm for w in widths],repeatRows=1,hAlign='LEFT')
  t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),PALE),('VALIGN',(0,0),(-1,-1),'TOP'),('LINEBELOW',(0,0),(-1,-1),.4,LINE),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]));return t
-story=[]
+coverTitle=ParagraphStyle('coverTitle',parent=S['title'],fontSize=44,leading=52,spaceAfter=8)
+coverSubtitle=ParagraphStyle('coverSubtitle',parent=S['lead'],fontSize=24,leading=30,spaceAfter=12)
+coverAuthor=ParagraphStyle('coverAuthor',parent=S['lead'],alignment=2)
+coverDetails=ParagraphStyle('coverDetails',parent=S['body'],alignment=2)
+story=[Spacer(1,8*mm),p(local('ANVÄNDARHANDBOK','USER HANDBOOK'),'tag'),
+ Paragraph('InkProf',coverTitle),
+ Paragraph(local('Handbok','User Handbook'),coverSubtitle),
+ p('Quality Profiling RGB printer','lead'),
+ p(local('Profilering, mätning och verifiering av RGB-skrivare','Profiling, measurement and verification of RGB printers'),'body'),
+ Spacer(1,9*mm),
+ Image(str(ROOT/'examples/cover-gamut.png'),width=174*mm,height=100*mm,kind='proportional'),
+ Spacer(1,5*mm),Paragraph('<b>Christer Törnkvist</b>',coverAuthor),
+ Paragraph(local('Datum: ','Date: ')+DATE+'<br/>'+local('Programversion: ','Program version: ')+escape(VERSION),coverDetails),PageBreak()]
 for i,page in enumerate(json.loads((ROOT/f'content-{LANG}.json').read_text())):
  if i:story.append(PageBreak())
  story.extend([p(escape(page['tag']),'tag'),p(escape(page['title']),'title')])
