@@ -31,7 +31,12 @@ if options.PythonExecutable~=""
     paths.PythonExecutable=inkprof.internal.pythonExecutable(options.PythonExecutable,paths.Root,"");
 end
 if options.CheckPython || options.PythonExecutable~=""
-    inkprof.checkPython(PythonExecutable=paths.PythonExecutable);
+    modules=strings(1,0);
+    if options.CheckPython
+        modules=["numpy","scipy","colour","PIL","reportlab","tifffile","imagecodecs"];
+    end
+    inkprof.checkPython(PythonExecutable=paths.PythonExecutable, ...
+        RequiredModules=modules);
 end
 if options.SaveLocalConfig
     directory=fileparts(paths.LocalConfig);if ~isfolder(directory),mkdir(directory);end

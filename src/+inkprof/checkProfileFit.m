@@ -28,6 +28,7 @@ reportFile=fullfile(folder,'profile-fit.json');inkprof.internal.recordProjectSte
 fprintf('InkProf: %d patches; mean dE00 %.4f, max %.4f.\nReport: %s\n',report.summary.count,report.summary.mean,report.summary.max,reportFile);
 if ~options.ShowDialog,return;end
 f=uifigure('Name','InkProf - ICC training fit','Position',[120 100 1100 730],'WindowStyle','alwaysontop','Visible','off');
+f.Tag='InkProfFitResult';setappdata(f,'InkProfCheckJob',jobFolder);
 g=uigridlayout(f,[5 1]);g.RowHeight={65,45,'1x',50,35};
 s=report.summary;uilabel(g,'Text',sprintf('Training fit: %d patches | mean %.4f | median %.4f | p95 %.4f | max %.4f dE00\nAbsolute colorimetric. Not independent print validation or proof of convergence.',s.count,s.mean,s.median,s.p95,s.max),'WordWrap','on');
 drop=uidropdown(g,'Items',{'All patches','Gray RGB','Dark','High chroma','RGB boundary'},'ValueChangedFcn',@(~,~)fill());

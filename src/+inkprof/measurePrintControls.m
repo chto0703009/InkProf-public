@@ -48,15 +48,19 @@ request=struct('documentType',"inkprof.print-control-test",'schemaVersion',1,'ca
  'instrumentSerial',serial,'condition',"M0",'port',options.Port,'readings',readings,'context',context,'pageCount',numel(chart.passesInStrips));
 inkprof.internal.writeJson(fullfile(base,'request.json'),request);
 session=[];closed=false;busy=false;index=1;referenceUsed="";check=struct;
-fig=uifigure('Name','InkProf - Page RGB print controls','Position',[160 110 850 620],'WindowStyle','modal','Tag','InkProfPrintControls');
-g=uigridlayout(fig,[6 1]);g.RowHeight={35,85,65,'1x',55,50};g.Padding=[18 16 18 16];
+sessionBase=base;pendingIndices=1:numel(readings);selected=1;complete=false;
+fig=uifigure('Name','InkProf - Page RGB print controls','Position',[160 110 850 690],'WindowStyle','modal','Tag','InkProfPrintControls');
+g=uigridlayout(fig,[7 1]);g.RowHeight={35,100,65,'1x',55,38,50};g.Padding=[18 16 18 16];
 uilabel(g,'Text','Separate RGB print checks','FontSize',22,'FontWeight','bold');
-uilabel(g,'Text','These R, G and B squares sit below the profiling grid. Measure one square at a time with i1 Pro 2 stationary at its centre, using the same backing. Do not swipe. Click Measure square, not the instrument button. These readings never enter the profiling data.','WordWrap','on');
-status=uilabel(g,'Text','Start to connect and calibrate.','WordWrap','on','Tag','printControlStatus');
+uilabel(g,'Text','On new targets, the R, G and B squares sit at the upper right above the profiling grid. Older targets have them below the grid. Measure one square at a time with i1 Pro 2 stationary at its centre, using the same backing. Do not swipe. Click Measure square, not the instrument button. Follow the displayed page and colour. If placement or order was wrong, restart the checks or select a measured row and remeasure it here. These readings never enter the profiling data.','WordWrap','on');
+status=uilabel(g,'Text','Start to connect and calibrate.','WordWrap','on','FontSize',18,'FontWeight','bold','Tag','printControlStatus');
 table=uitable(g,'Data',cell(numel(readings),4),'ColumnName',{'Page','Control','Status','Delta E00'}, ...
- 'ColumnWidth',{70,90,450,'auto'},'ColumnEditable',false,'RowName',{},'Tag','printControlTable');
+ 'ColumnWidth',{70,90,450,'auto'},'ColumnEditable',false,'RowName',{},'Tag','printControlTable','CellSelectionCallback',@selectReading);
 for k=1:numel(readings),table.Data(k,:)={readings(k).page,char(readings(k).colour),'Waiting',''};end
 notice=uilabel(g,'Text','An approved reference from a known-correct print is needed for an absolute print check. Without one, pages are compared with page 1. Default review threshold: 5 Delta E00.','WordWrap','on');
+retrybar=uigridlayout(g,[1 2]);retrybar.Padding=[0 0 0 0];
+redo=uibutton(retrybar,'Text','Remeasure selected square','Enable','off','Tag','printControlRemeasure','ButtonPushedFcn',@remeasureSelected);
+restart=uibutton(retrybar,'Text','Restart all RGB checks','Enable','off','Tag','printControlRestart','ButtonPushedFcn',@restartAll);
 bar=uigridlayout(g,[1 4]);bar.Padding=[0 0 0 0];bar.ColumnWidth={'1x',220,140,'1x'};
 action=uibutton(bar,'Text','Start RGB checks','Tag','printControlAction','ButtonPushedFcn',@trigger);
 reference=uibutton(bar,'Text','Approve as print reference','Enable','off','Tag','printControlReference','ButtonPushedFcn',@approveReference);
@@ -67,14 +71,14 @@ fig.CloseRequestFcn=@closeDialog;fig.DeleteFcn=@cleanup;
 uiwait(fig);
  function trigger(~,~)
   if busy||closed,return;end
-  busy=true;action.Enable='off';
+  busy=true;action.Enable='off';restart.Enable='off';redo.Enable='off';
   try
    if isempty(session)
-    session=inkprof.SpotReadSession(base,ArgyllBin=options.ArgyllBin,PythonExecutable=options.PythonExecutable,PrintControls=true);
+    session=inkprof.SpotReadSession(sessionBase,ArgyllBin=options.ArgyllBin,PythonExecutable=options.PythonExecutable,PrintControls=true);
     start(poller);
    else,session.sendKey(' ');end
    status.Text='Instrument working. Wait for the next instruction.';
-  catch err,status.Text=string(err.message);end
+  catch err,status.Text=string(err.message);restart.Enable='on';end
   busy=false;
  end
  function poll(~,~)
@@ -86,23 +90,81 @@ uiwait(fig);
     e=events{j};
     switch string(e.event)
      case 'state'
+      restart.Enable='off';
       if any(string(e.kind)==["calibration","calibrationRetry"])
-       action.Text='Calibrate';action.Enable='on';status.Text='Place i1 Pro 2 on its white calibration reference, then click Calibrate.';
-      elseif any(string(e.kind)==["ready","retry"])&&index<=numel(readings)
-       action.Text='Measure square';action.Enable='on';q=readings(index);
-       status.Text=sprintf('Page %d - %s square, below the profiling grid. Place the instrument at its centre. Click Measure square. (%d/%d)',q.page,string(q.colour),index,numel(readings));
+       action.Text='Calibrate';action.Enable='on';restart.Enable='on';status.BackgroundColor=[.94 .94 .94];status.FontColor=[0 0 0];status.Text='Place i1 Pro 2 on its white calibration reference, then click Calibrate.';
+      elseif any(string(e.kind)==["ready","retry"])&&index<=numel(pendingIndices)
+       action.Text='Measure square';action.Enable='on';restart.Enable='on';q=readings(pendingIndices(index));
+       showSquare(q);
+       action.Text=sprintf('Measure page %d - %s',q.page,string(q.colour));
+       status.Text=sprintf('PAGE %d — %s\nKeep the instrument still at the centre. Then click Measure page %d - %s. (%d/%d)',q.page,string(q.colour),q.page,string(q.colour),index,numel(pendingIndices));
       else,action.Enable='off';end
      case 'candidate'
-      table.Data{index,3}='Measured and saved separately';index=index+1;
+      row=pendingIndices(index);
+      if sessionBase~=base
+       copyfile(fullfile(sessionBase,sprintf('reading-%03d.json',index)),fullfile(base,sprintf('reading-%03d.json',row)));
+      end
+      table.Data{row,3}='Measured and saved separately';index=index+1;
      case 'completed'
-      stop(poller);action.Enable='off';analyse();finish.Text='Continue with saved chart';
+      stop(poller);action.Enable='off';analyse();complete=true;redo.Enable='on';restart.Enable='on';updateSelected();finish.Text='Continue with saved chart';
       if ~check.referenceAvailable&&check.status~="review-required",reference.Enable='on';end
       if check.complete&&check.status=="review-required",override.Enable='on';end
      case 'error'
-      stop(poller);action.Enable='off';status.Text=string(e.message);notice.Text='Chart readings are retained. Print controls require review; partial spots are also retained.';
+      stop(poller);action.Enable='off';restart.Enable='on';status.Text=string(e.message);notice.Text='Chart readings are retained. Print controls require review; partial spots are also retained.';
     end
    end
-  catch err,stop(poller);action.Enable='off';status.Text=string(err.message);end
+  catch err,stop(poller);action.Enable='off';restart.Enable='on';status.Text=string(err.message);end
+  busy=false;
+ end
+ function selectReading(~,event)
+  if ~isempty(event.Indices),selected=event.Indices(1,1);updateSelected();end
+ end
+ function updateSelected()
+  q=readings(selected);redo.Text=sprintf('Remeasure page %d - %s',q.page,string(q.colour));
+ end
+ function showSquare(q)
+  switch string(q.colour)
+   case "R",status.BackgroundColor=[.8 .08 .08];status.FontColor=[1 1 1];
+   case "G",status.BackgroundColor=[.15 .8 .15];status.FontColor=[0 0 0];
+   case "B",status.BackgroundColor=[.08 .08 .8];status.FontColor=[1 1 1];
+  end
+ end
+ function remeasureSelected(~,~)
+  if ~complete||busy||closed,return;end
+  beginAgain(selected);
+ end
+ function restartAll(~,~)
+  if busy||closed,return;end
+  beginAgain(1:numel(readings));
+ end
+ function beginAgain(indices)
+  busy=true;stop(poller);
+  if ~isempty(session),delete(session);session=[];end
+  previous=base;base=fullfile(folder,'print-control-spots',string(java.util.UUID.randomUUID()));mkdir(base);
+  inkprof.internal.writeJson(fullfile(base,'request.json'),request);
+  if numel(indices)<numel(readings)
+   for row=1:numel(readings)
+    if ~ismember(row,indices)
+     copyfile(fullfile(previous,sprintf('reading-%03d.json',row)),fullfile(base,sprintf('reading-%03d.json',row)));
+    end
+   end
+   sessionBase=fullfile(base,'replacement');mkdir(sessionBase);
+   subset=request;subset.readings=num2cell(readings(indices));
+   inkprof.internal.writeJson(fullfile(sessionBase,'request.json'),subset);
+  else
+   sessionBase=base;
+   for row=1:numel(readings),table.Data(row,3:4)={'Waiting',''};end
+  end
+  % Retain previous evidence, but never let an old pass authorize an incomplete retry.
+  active=fullfile(folder,'print-control-check.json');
+  if isfile(active),copyfile(active,fullfile(previous,'superseded-check.json'));delete(active);end
+  inkprof.internal.writeJson(fullfile(base,'retry.json'),struct('previousSpotFolder',previous,'remeasuredIndices',indices));
+  for row=reshape(indices,1,[]),table.Data(row,3:4)={'Waiting for remeasurement',''};end
+  index=1;pendingIndices=indices;complete=false;referenceUsed="";check=struct;reportFile="";
+  reference.Enable='off';override.Enable='off';redo.Enable='off';restart.Enable='off';
+  finish.Text='Skip / close';action.Text='Start RGB checks';action.Enable='on';
+  q=readings(indices(1));showSquare(q);status.Text=sprintf('Remeasure page %d, %s. Start RGB checks, calibrate, then measure the displayed square.',q.page,string(q.colour));
+  notice.Text='Previous readings are retained as evidence. The revised check must finish before continuing.';
   busy=false;
  end
  function analyse()
@@ -119,6 +181,7 @@ uiwait(fig);
    q=check.readings(k);table.Data{k,4}=sprintf('%.3f',q.deltaE00);
    table.Data{k,3}='Within review threshold';if q.flagged,table.Data{k,3}='REVIEW - unexpected print colour';end
   end
+  status.BackgroundColor=[.94 .94 .94];status.FontColor=[0 0 0];
   status.Text="RGB print check: "+string(check.status)+". These readings do not affect profile fitting.";
  end
  function publish()

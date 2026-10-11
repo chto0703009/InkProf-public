@@ -1,8 +1,8 @@
-# InkProf documentation — v1.0.0
+# InkProf documentation — v1.0.1 preparation
 
-Source version **1.0.0**, updated 2026-10-10. Released 2026-10-10. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release notes](releases/v1.0.0.md).
+Prepared source version **1.0.1**, updated 2026-10-11. Publication is pending; v1.0.0 remains the published stable release. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release notes](releases/v1.0.1.md).
 
-The Swedish and English user handbooks contain 60 numbered pages plus a cover. Covers identify the handbook, program, language, author, date and version. Five maintained PDFs are rebuilt for v1.0.0: both handbooks, both presentations and the English MATLAB workflow guide. Their links point to the public repository for source and release information.
+The Swedish and English user handbooks contain 61 numbered pages plus a cover. Covers identify the handbook, program, language, author, date and version. Five maintained PDFs are rebuilt for v1.0.1: both handbooks, both presentations and the English MATLAB workflow guide. Their links point to the public repository for source and release information.
 
 Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.
 
@@ -10,7 +10,7 @@ Last published candidate: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md).
 
 ## PDF guides
 
-PDF layout updated 2026-10-10: handbooks have an illustrated cover with the author, language, date and version. Handbooks and presentations display version 1.0.0 and link to the public repository, https://github.com/chto0703009/InkProf-public. The stable release is [v1.0.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0).
+PDF layout updated 2026-10-11: handbooks have an illustrated cover with the author, language, date and version. Handbooks and presentations display version 1.0.1 and link to the public repository, https://github.com/chto0703009/InkProf-public. The stable release is [v1.0.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0).
 
 - [Swedish user handbook](usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook](usage/InkProf-user-handbook-English.pdf)
@@ -104,9 +104,9 @@ The [best-practice guide](usage/profiling-best-practice.md) and both handbook ap
 
 Photographic assessment resource: [Keith Cooper — Printer Test Images, Northlight Images](https://www.northlight-images.co.uk/printer-test-images/), including the Datacolor test image available courtesy of Datacolor. See the best-practice guide for sky-gradient checks and the distinction between source photographs and prepared device-RGB targets. The image itself is not included in this repository.
 
-Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-10 for v1.0.0. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support. Page 7 also describes continued use of older i1Pro instruments through ArgyllCMS after X-Rite support ends, and the goal of operating beyond Rosetta removal with compatible native runtimes; future macOS compatibility still requires verification.
+Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-11 for v1.0.1. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support. Page 7 also describes continued use of older i1Pro instruments through ArgyllCMS after X-Rite support ends, and the goal of operating beyond Rosetta removal with compatible native runtimes; future macOS compatibility still requires verification.
 
-Current handbooks: 61 physical pages in each language, including the cover and 60 numbered pages, updated 2026-10-10 for v1.0.0. They explain installation, project steps, measurement checks, manual refinement, verification and certificate delivery.
+Current handbooks: 62 physical pages in each language, including the cover and 61 numbered pages, updated 2026-10-11 for v1.0.1 with installation guidance and revised RGB-control placement. They explain installation, project steps, measurement checks, manual refinement, verification and certificate delivery.
 
 Six original example figures illustrate the actual app: main window (page 7), Project details (9), Profiling settings and ICC delivery choice (11), measurement (14), profiling recipe (17), and gamut (34). Values are fictional; the gamut uses an sRGB ICC example, not a measured printer. The gamut export includes top margin to prevent title clipping. Blue callouts have 4 mm of additional space before following text or links.
 
@@ -123,3 +123,5 @@ Manual gamut reinforcement: page 56 in both handbooks explains selecting an area
 RGB print checks: page 57 in both handbooks explains the stationary per-page controls before strip measurement, explicit approval of a known-correct reference, the default 5 ΔE00 threshold and Failed status for large differences. It stresses checking active Adobe Photoshop and driver settings even with presets, keeping controls outside profiling data, and compatibility with older prints without control squares. Page 13 points to the walkthrough.
 
 Verification approval: page 58 walks through C2 target selection, printing, matching measurement revisions, C3/feedback, explicit approval with intended use and limitations, and exporting that decision in the certificate. Page 20 points to this guide.
+
+Python installation troubleshooting: page 61 in both handbooks explains actual import checks, the reported M4 SciPy failure, repair commands for the selected environment, and restarting/checking before retrying. These safeguards belong to the post-v1.0.0 source update; the original release archive is unchanged.

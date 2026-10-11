@@ -9,6 +9,20 @@ function testBatchDoesNotOpenWindow(tc)
 before=findall(groot,'Type','figure');[guard,p]=inkprof.internal.calculationProgress("Test","Batch");
 verifyEmpty(tc,guard);verifyEmpty(tc,p);verifyEqual(tc,findall(groot,'Type','figure'),before);
 end
+function testNextProfileCheckUsesMatchingVisibleResult(tc)
+f=uifigure('Visible','off','Tag','InkProfFitResult','WindowStyle','alwaysontop');
+c=onCleanup(@()delete(f));setappdata(f,'InkProfCheckJob',"current-job");
+other=uifigure('Visible','off','Tag','InkProfFitResult');
+d=onCleanup(@()delete(other));setappdata(other,'InkProfCheckJob',"different-job");
+[guard,p]=inkprof.internal.profileCheckProgress("current-job","InkProfFitResult","Grid (2/3)","Checking gradients");
+verifyTrue(tc,isvalid(p));verifyEqual(tc,f.Visible,matlab.lang.OnOffSwitchState.on);
+verifyTrue(tc,isappdata(f,'InkProfCalculationState'));
+verifyFalse(tc,isappdata(other,'InkProfCalculationState'));
+verifyTrue(tc,contains(string(p.Message),'elapsed'));
+clear guard
+verifyFalse(tc,isappdata(f,'InkProfCalculationState'));
+verifyEmpty(tc,timerfindall('Tag','InkProfCalculationTimer'));
+end
 function testVisibleElapsedAndCleanup(tc)
 f=uifigure('Visible','off','Tag','InkProfWorkflow');c=onCleanup(@()delete(f));setappdata(f,'InkProfRunning',true);
 [guard,p]=inkprof.internal.calculationProgress("Selecting patches","Converting colours");
@@ -66,4 +80,27 @@ verifyNotEmpty(tc,elapsed);
 verifyGreaterThanOrEqual(tc,60*str2double(elapsed{1})+str2double(elapsed{2}),1);
 clear guard;
 verifyFalse(tc,isvalid(p));verifyEmpty(tc,timerfindall('Tag','InkProfCalculationTimer'));
+end
+
+function testTargetActivityUsesPaperDialogParent(tc)
+f=uifigure('Visible','off','WindowStyle','modal','Tag','paperLayoutDialog');cleanup=onCleanup(@()delete(f));
+folder=string(tempname);files=onCleanup(@()removeFolder(folder));
+seen=false;watch=timer('ExecutionMode','fixedSpacing','Period',.1,'TimerFcn',@observe);
+clock=onCleanup(@()disposeTimer(watch));start(watch);
+inkprof.createTarget(folder,PatchCount=20,GraySteps=3,DPI=100,ProgressParent=f);
+stop(watch);verifyTrue(tc,seen,'TIFF16 generation must show activity on the visible paper dialog.');
+verifyFalse(tc,isappdata(f,'InkProfCalculationState'));
+verifyEmpty(tc,timerfindall('Tag','InkProfCalculationTimer'));
+ function observe(~,~)
+  if isappdata(f,'InkProfCalculationState')
+   state=getappdata(f,'InkProfCalculationState');
+   seen=seen||(isvalid(state.progress)&&contains(string(state.progress.Message),'elapsed'));
+  end
+ end
+end
+function removeFolder(folder)
+if isfolder(folder),rmdir(folder,'s');end
+end
+function disposeTimer(watch)
+if isvalid(watch),stop(watch);delete(watch);end
 end

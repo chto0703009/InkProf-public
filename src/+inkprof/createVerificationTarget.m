@@ -98,6 +98,7 @@ fprintf('InkProf C2: rendering RGB16 TIFF and matching TI2...\n');
 manifest=inkprof.createTarget(fullfile(folder,'print'),Source=source,TargetInfo=info, ...
  PlanPaper=options.PlanPaper,Randomize=true,Seed=options.Seed,DPI=options.DPI,Paper=options.Paper,SpacerMode="bw", ...
  EmbedICCProfile=fullfile(folder,'definition','printer.icc'));
+calculation=inkprof.internal.calculationProgress("Finishing C2 TIFF16 target","Checking patch identities and saving the verification package. Please wait.");
 layout=jsondecode(fileread(fullfile(folder,'print','layout.json')));
 for k=1:numel(reference.patches)
  matches=find(~[layout.patches.isPadding] & string({layout.patches.originalId})==string(reference.patches(k).id));

@@ -91,7 +91,7 @@ for k=1:numel(pages)
         geom=str2double(tokens(6:9));
         output=label(output,columnLabel,[geom(4)+geom(2)/2-2+offset(1),lo(1)-6+offset(2)],outDpi,2.5);
     end
-    assert(hi(1)+offset(2)<paperMm(2)-furniture.chartReservedMm+1,'inkprof:Geometry','No clear space for print controls.');
+    assert(hi(1)+offset(2)<paperMm(2)-furniture.chartReservedMm+1,'inkprof:Geometry','No clear space for the footer.');
     [output,pageControls]=inkprof.internal.drawPrintControls(output,outDpi(1),k,name);
     controls=[controls pageControls]; %#ok<AGROW>
     output=inkprof.internal.drawPrintFurniture(output,outDpi(1),k,numel(pages),timestamp,fullfile(outputFolder,name),targetInfo.footerText);

@@ -99,7 +99,7 @@ def generate(job,exe,request,out):
         reference=reference_sets.load(request['referenceSet']['file'])
         if not 1<=reference['count']<=2000:raise ValueError('Reference set must have 1..2000 patches.')
         counts=[0,0,0,request.get('repeats',0)]
-        if type(counts[3])!=int or not 0<=counts[3]<=reference['count']:raise ValueError('Repeats must be 0..number of reference patches.')
+        if type(counts[3])!=int or not 0<=counts[3]<=reference['count']:raise ValueError(f"Extra repeat patches must be 0..{reference['count']}; received {counts[3]}. This is not the total patch count. Use 12 for {reference['count'] + 12} total patches when the reference set has at least 12 patches.")
     else:
         counts=[request[k] for k in ('colourPatches','grayPatches','challengePatches','repeats')]
     if reference is None and (any(type(x)!=int or x<0 for x in counts) or not 8<=sum(counts)<=2000 or counts[0]<1 or counts[1]<2 or counts[3]>sum(counts[:3])):

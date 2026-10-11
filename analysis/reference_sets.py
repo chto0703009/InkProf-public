@@ -110,3 +110,14 @@ def load(path):
         raise ValueError('Patch names in the reference set are not unique.')
     return dict(kind=kind, basis=basis, names=names, values=values, count=len(names), fileName=path.name,
                 sha256=hashlib.sha256(raw).hexdigest(), notes=notes[:20])
+
+
+if __name__ == '__main__':
+    import argparse
+    import json
+    parser = argparse.ArgumentParser(description='Inspect a verification reference set.')
+    parser.add_argument('reference')
+    parser.add_argument('output')
+    args = parser.parse_args()
+    reference = load(args.reference)
+    Path(args.output).write_text(json.dumps({'count': reference['count']}), encoding='utf-8')

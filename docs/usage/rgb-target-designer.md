@@ -205,3 +205,13 @@ The window suggests 40 **Extra repeat patches** (previously 12). The repeats are
 The [best-practice appendix](profiling-best-practice.md) recommends roughly 1,500–2,000 patches for a careful full i1Pro2 profiling job, or about 800–1,000 when budget is tighter. A 300–600-patch pilot primarily checks the setup. Count fitting samples, repeats and controls consistently and review the generated total; these are not new software defaults. X-Rite recommends 1,586 or 2,033 patches in its own [i1Profiler RGB workflow](https://www.xrite.com/it-it/service-support/recommended_rgb_printer_profiling_with_i1profiler), while [Torger](https://www.torger.se/anders/photography/argyll-print.html) describes approximately 840 as a useful Colormunki compromise. Instrument, paper and print system differ; neither count proves the optimum for InkProf.
 
 Use a suitable existing RGB printer ICC to guide perceptual Argyll target placement. This is preconditioning, not pixel conversion: the base fitting target remains device RGB and is printed without another profile transform. Preserve instrument patch geometry; X-Rite’s wider-patch suggestion is not a command to change an InkProf layout blindly. See [target printing](target-print-standard.md).
+
+
+### Separate page RGB controls
+
+New TIFF16 pages place the three 8 × 8 mm R/G/B spot controls at the upper right, above the profiling grid, beside the heading. They use the existing header margin and no longer reserve a 16 mm band below the grid, leaving more height for measurement rows. These controls remain separate from TI1/TI2 profiling patches and are measured individually. Existing printed targets retain their original control positions.
+
+
+The active page and R/G/B letter are shown prominently with a colour cue, and the measurement button names the same page and colour.
+
+If a page RGB control was measured in the wrong order or with the instrument misplaced, stay in the RGB check window. After completing the controls, select the affected table row and choose **Remeasure selected square**. Choose **Restart all RGB checks** to redo the whole sequence, including an interrupted attempt. Start the checks again and calibrate as instructed. The revised check must complete; a previous pass or override does not carry over. Earlier readings are retained separately as evidence.

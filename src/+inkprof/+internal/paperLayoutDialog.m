@@ -45,15 +45,17 @@ selected=[];proposals=[];refresh([],[]);useButton.Tag='usePaperDimensions';f.Vis
   if w.Value>scan.Value||h.Value>len.Value,uialert(f,'Dimensions exceed your measurement limits.','Paper layout');return;end
   temp=string(tempname);clean=onCleanup(@()removePreview(temp));previewButton.Enable='off';drawnow;
   try
+   activity=inkprof.internal.calculationProgress("Creating TIFF16 preview","Calculating the actual pages and rendering the preview. Please wait.",Parent=f);
    metadata=struct('preferences',struct('MaxScanMm',scan.Value,'MaxLengthMm',len.Value,'RollWidthMm',roll.Value));
-   m=inkprof.createTarget(temp,Source=source,RGBScale=rgbScale,PaperSizeMm=[w.Value h.Value],PaperLayout=metadata,SpacerMode="bw");
+   m=inkprof.createTarget(temp,Source=source,RGBScale=rgbScale,PaperSizeMm=[w.Value h.Value],PaperLayout=metadata,SpacerMode="bw",ProgressParent=f);
    images=inkprof.internal.previewFiles(m);
+   clear activity
    view=uifigure('Name',sprintf('Paper preview: %d actual page(s)',m.pageCount),'Position',[200 160 800 600],'WindowStyle','modal');
    grid=uigridlayout(view,[2 1]);grid.RowHeight={'1x',35};im=uiimage(grid,'ScaleMethod','fit');
    pager=inkprof.internal.previewPager(grid,im);data=cell(1,numel(images));
    for k=1:numel(images),data{k}=imread(fullfile(temp,images(k)));end
    pager.setImages(data);status.Text=sprintf('Actual preview: %d page(s). No target saved.',m.pageCount);
-  catch err,uialert(f,err.message,'Paper preview');end
+  catch err,clear activity;uialert(f,err.message,'Paper preview');end
   previewButton.Enable='on';
  end
  function accept(~,~)

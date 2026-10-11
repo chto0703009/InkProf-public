@@ -1,3 +1,44 @@
+InkProf 1.0.1 release preparation — 2026-10-11
+Publication is pending. No v1.0.1 tag or published release is created by preparation.
+
+Development validation for changes since 1.0.0:
+- Python unittest discovery: 193 tests passed, 0 failed (24.0 seconds).
+- MATLAB print-control suite: 8 passed, covering complete checks, overrides,
+  selected-control remeasurement, restart, preserved evidence and invalidation
+  of an old approval during an incomplete retry. Synthetic instrument only.
+- MATLAB activity feedback suite: 9 passed, including a visible paper-dialog
+  parent during TIFF16 creation, elapsed updates, nested phases and cleanup.
+- MATLAB Python runtime suite: 4 passed; full setup import probe succeeded.
+- Reference parser: ColorChecker SG count 140 confirmed through MATLAB.
+- Rendered 575-patch print package inspected with RGB controls at upper right;
+  target pixel integrity and profiling/control separation checks passed.
+- Source/version/resource and dependency-notice inventory checks passed.
+
+Public-checkout and documentation validation:
+- Python unittest discovery: 193 passed, 0 failed (24.1 seconds).
+- MATLAB: 23 selected tests passed, 0 failed, 0 incomplete (39.8 seconds).
+  Covers runtime import failures, visible elapsed activity, TIFF16 render
+  integrity, print-control restart and selected remeasurement. One test using
+  the intentionally excluded private Chart 575 reference was removed from this
+  selection after its initial missing-fixture error; no private fixture is
+  added to the public source. The private reference test belongs to the
+  historical development qualification, not this public patch validation.
+- Public release checks: 404 source files have notices; version/resource hashes
+  and recorded installed dependency versions/notice hashes match.
+- Five PDFs rebuilt and version 1.0.1 checked on every page: each handbook has
+  62 physical pages (cover plus 61 numbered pages); presentations and English
+  MATLAB workflow guide have 8 pages each. Covers, revised RGB instructions,
+  release status, headers/footers and representative final pages inspected.
+- PDF copies in Downloads match the source PDFs by SHA-256.
+- Public source and asset selection exclude local projects, private physical
+  measurements/reference fixtures, runtime binaries and development history.
+- Code whitespace checks passed. The unmodified upstream SciPy notice retains
+  its original whitespace so its saved and installed notice hashes match.
+No new physical instrument/print qualification is included. The reported M4
+SciPy 1.16.3 success is an import check, not a full application qualification.
+
+Historical v1.0.0 release validation follows unchanged:
+
 InkProf v1.0.0 — released 2026-10-10
 Approved for publication by Christer Törnkvist. The validation record below
 describes the preparation runs and retains their original scope and limits.

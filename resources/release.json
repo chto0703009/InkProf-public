@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0",
-  "targetVersion": "1.0.0",
-  "status": "released",
-  "date": "2026-10-10",
+  "version": "1.0.1",
+  "targetVersion": "1.0.1",
+  "status": "prepared",
+  "date": "2026-10-11",
   "license": "GPL-3.0-or-later",
-  "tag": "v1.0.0"
+  "tag": "v1.0.1"
 }

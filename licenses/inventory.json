@@ -1,5 +1,5 @@
 {
-  "reviewed": "2026-10-03",
+  "reviewed": "2026-10-11",
   "scope": "Installed analysis/report packages excluding installer pip, external notices and separately licensed resource hashes; source-only v1.0.0 preparation. Not legal clearance.",
   "pythonPackages": [
     {
@@ -26,12 +26,12 @@
     },
     {
       "name": "scipy",
-      "version": "1.15.3",
+      "version": "1.16.3",
       "notices": [
         {
-          "packagePath": "scipy-1.15.3.dist-info/LICENSE.txt",
-          "savedPath": "licenses/dependencies/scipy-1.15.3/LICENSE.txt",
-          "sha256": "7552d2566b7098980454bb7883385d227fbb4dfa1d622cc5c85c3e8a3f23606f"
+          "packagePath": "scipy-1.16.3.dist-info/LICENSE.txt",
+          "savedPath": "licenses/dependencies/scipy-1.16.3/LICENSE.txt",
+          "sha256": "60a7d05d729ed5c763852a324a1cb4223d665d4ad3f4b8a0c130ae5c60c93e49"
         }
       ]
     },
