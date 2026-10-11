@@ -1,3 +1,8 @@
+InkProf v1.0.1 — released 2026-10-11
+Publication approved by Christer Törnkvist on 2026-10-11.
+The preparation record below retains its original validation scope. Final
+publication updates documentation/status only; tested application code is unchanged.
+
 InkProf 1.0.1 release preparation — 2026-10-11
 Publication is pending. No v1.0.1 tag or published release is created by preparation.
 

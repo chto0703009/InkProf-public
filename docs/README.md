@@ -1,6 +1,6 @@
-# InkProf documentation — v1.0.1 preparation
+# InkProf documentation — v1.0.1
 
-Prepared source version **1.0.1**, updated 2026-10-11. Publication is pending; v1.0.0 remains the published stable release. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release notes](releases/v1.0.1.md).
+Source version **1.0.1**, released 2026-10-11. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release notes](releases/v1.0.1.md).
 
 The Swedish and English user handbooks contain 61 numbered pages plus a cover. Covers identify the handbook, program, language, author, date and version. Five maintained PDFs are rebuilt for v1.0.1: both handbooks, both presentations and the English MATLAB workflow guide. Their links point to the public repository for source and release information.
 
@@ -10,7 +10,7 @@ Last published candidate: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md).
 
 ## PDF guides
 
-PDF layout updated 2026-10-11: handbooks have an illustrated cover with the author, language, date and version. Handbooks and presentations display version 1.0.1 and link to the public repository, https://github.com/chto0703009/InkProf-public. The stable release is [v1.0.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0).
+PDF layout updated 2026-10-11: handbooks have an illustrated cover with the author, language, date and version. Handbooks and presentations display version 1.0.1 and link to the public repository, https://github.com/chto0703009/InkProf-public. The stable release is [v1.0.1](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.1).
 
 - [Swedish user handbook](usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook](usage/InkProf-user-handbook-English.pdf)
@@ -116,7 +116,7 @@ ICC import supports suitable RGB printer profiles in v2 and v4, including v4.2; 
 
 Earlier RC4 fact-check corrections included page references, FWA terminology and appendix headings. The v1.0.0 editions include subsequent workflow and delivery updates.
 
-Current PDF footers link to the public repository. The stable release is available at https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.0. The ICC specification link points to https://www.color.org/specifications/.
+Current PDF footers link to the public repository. The stable release is available at https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.1. The ICC specification link points to https://www.color.org/specifications/.
 
 Manual gamut reinforcement: page 56 in both handbooks explains selecting an area in View gamut, reviewing device-RGB neighbours, saving paper dimensions, registering the selection in step 15, and printing/measuring/rebuilding in steps 16–17. It distinguishes manually strengthening measurement coverage from automatic error detection and physical gamut expansion; pages 21 and 34 point to the walkthrough.
 

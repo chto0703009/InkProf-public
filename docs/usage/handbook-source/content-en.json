@@ -1056,7 +1056,7 @@
       ],
       [
         "Release status",
-        "This handbook describes source version 1.0.1, prepared 11 October 2026. Publication is pending. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+        "This handbook describes source version 1.0.1, released 11 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
       ]
     ],
     "links": [

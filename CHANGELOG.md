@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.0.1 — 2026-10-11 (release preparation)
+## v1.0.1 — 2026-10-11
 - Show elapsed activity on the foreground paper dialog during TIFF16 preview generation and while finalizing C2 verification files.
 - Allow remeasuring a selected RGB control or restarting all controls in the same window, retaining previous evidence and clearing superseded check approval.
 - Move page RGB spot controls into the upper-right header and restore 16 mm of chart height for measurement rows.

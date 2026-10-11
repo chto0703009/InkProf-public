@@ -1,6 +1,6 @@
 # InkProf v1.0.1 workflow guide
 
-Prepared source build **1.0.1**, updated 2026-10-11. Publication is pending. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with `setupInkProf(CheckPython=true); startInkProfApp();` from the source folder.
+Source build **1.0.1**, released 2026-10-11. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with `setupInkProf(CheckPython=true); startInkProfApp();` from the source folder.
 
 ## One project, one source of settings
 
