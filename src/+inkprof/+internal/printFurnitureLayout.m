@@ -10,6 +10,7 @@ if layout.compact
  layout.footerReservedMm=30;layout.footerCenterInsetMm=19;
  layout.summaryInsetMm=27;layout.dateInsetMm=10;
 end
-layout.controlReservedMm=16;
+% RGB controls share the existing header; no extra footer band is needed.
+layout.controlReservedMm=0;
 layout.chartReservedMm=layout.footerReservedMm+layout.controlReservedMm;
 end

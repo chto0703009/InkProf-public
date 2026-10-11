@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.0.0 | 2026-10-09",
+    "tag": "InkProf | v1.0.1 | 2026-10-11",
     "title": "Your image deserves the right colours",
     "lead": "You chose the light, shaped the image and worked on every nuance. When the image reaches paper, that work should come with it.",
     "sections": [
@@ -218,7 +218,7 @@
     "callout": "These checks reduce the risk of carrying faulty prints or readings forward. A passed check still needs to be followed by profile review and verification."
   },
   {
-    "tag": "v1.0.0 | NEW OPTIONS",
+    "tag": "v1.0.1 | NEW OPTIONS",
     "title": "Understand your print system",
     "sections": [
       [
@@ -250,8 +250,8 @@
         "X-Rite has ended updates and support for i1Pro 2 and earlier generations. InkProf uses ArgyllCMS independently of i1Profiler. Compatible MATLAB, Python and ArgyllCMS versions run natively on Apple Silicon or Intel. On Apple Silicon, no Rosetta is needed, supporting continued use after its removal. The i1Pro 2 workflow is tested on current macOS; future macOS versions require verification."
       ],
       [
-        "Stable release",
-        "Source release v1.0.0, published 10 October 2026. Saved targets and measurements are preserved. Assess improvement through printing and measurement."
+        "Stable patch release",
+        "Source release 1.0.1, published 11 October 2026. Saved targets and measurements are preserved. Assess improvement through printing and measurement."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub.",

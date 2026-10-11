@@ -1,6 +1,6 @@
-# InkProf v1.0.0 workflow guide
+# InkProf v1.0.1 workflow guide
 
-Source build **1.0.0-rc.4**, updated 2026-10-09. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with `setupInkProf(CheckPython=true); startInkProfApp();` from the source folder.
+Source build **1.0.1**, released 2026-10-11. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with `setupInkProf(CheckPython=true); startInkProfApp();` from the source folder.
 
 ## One project, one source of settings
 
@@ -72,7 +72,7 @@ After row 17, run row 8. Then either perform current-iteration C2/C3 and approve
 
 ## Code, licensing and maintenance
 
-InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only preparation build: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.0.0.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits.
+InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only preparation build: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.0.1.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits.
 
 Existing ICC profiles can be tested in the separate **Verify existing ICC** project mode. See [Verify an existing printer ICC](verify-existing-icc.md).
 

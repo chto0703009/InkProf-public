@@ -44,7 +44,7 @@ Complete notices copied without alteration from the installed distributions:
 |---|---|---|
 | Colour Science | 0.4.6 | [BSD notice](licenses/dependencies/colour-science-0.4.6/) |
 | NumPy | 2.2.6 | [Core and bundled notices](licenses/dependencies/numpy-2.2.6/) |
-| SciPy | 1.15.3 | [Core and bundled notices](licenses/dependencies/scipy-1.15.3/) |
+| SciPy | 1.16.3 | [Core and bundled notices](licenses/dependencies/scipy-1.16.3/) |
 | ReportLab | 4.4.3 | [BSD notice](licenses/dependencies/reportlab-4.4.3/) |
 | ImageIO | 2.37.4 | [BSD notice](licenses/dependencies/imageio-2.37.4/) |
 | typing_extensions | 4.16.0 | [PSF/history notices](licenses/dependencies/typing_extensions-4.16.0/) |

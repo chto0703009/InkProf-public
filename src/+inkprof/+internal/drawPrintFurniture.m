@@ -9,7 +9,9 @@ function image=drawPrintFurniture(image,dpi,page,total,timestamp,filePath,summar
 if nargin<7,summary="";end
 if nargin<8,footerInsetMm=12;end
 widthMm=size(image,2)/dpi*25.4;heightMm=size(image,1)/dpi*25.4;
-image=textAt(image,"InkProf Quality Profiling RGB printer",[widthMm/2 9],dpi,20,"center",widthMm-16);
+% Leave the upper-right header free for the separate R/G/B spot controls.
+headingWidth=widthMm-60;
+image=textAt(image,"InkProf Quality Profiling RGB printer",[8+headingWidth/2 9],dpi,20,"center",headingWidth);
 layout=inkprof.internal.printFurnitureLayout(widthMm);
 if layout.compact
     if strlength(string(summary))>0

@@ -25,6 +25,8 @@ verifyGreaterThan(tc,m.pageCount,1);verifyEqual(tc,numel(controls.patches),3*m.p
 for control=reshape(controls.patches,1,[])
  for p=reshape(layout.patches([layout.patches.page]==control.page),1,[])
   r=p.rectMm;c=control.rectMm;
+  verifyLessThanOrEqual(tc,c(2)+c(4),20);
+  verifyGreaterThan(tc,c(1),148-45);
   overlap=max(0,min(r(1)+r(3),c(1)+c(3))-max(r(1),c(1)))*max(0,min(r(2)+r(4),c(2)+c(4))-max(r(2),c(2)));
   verifyEqual(tc,overlap,0,'Print controls must not overlap profiling patches.');
  end
@@ -74,7 +76,15 @@ end
 function testStationaryControlWizardOverride(tc)
 exerciseWizard(tc,true);
 end
-function exerciseWizard(tc,withOverride)
+function testRemeasureSelectedWithoutLeavingWizard(tc)
+exerciseWizard(tc,false,"selected");
+end
+function testRestartControlsWithoutLeavingWizard(tc)
+exerciseWizard(tc,false,"all");
+end
+function exerciseWizard(tc,withOverride,retryMode)
+if nargin<3,retryMode="";end
+retried=false;
 w=string(tempname);mkdir(w);clean=onCleanup(@()rmdir(w,'s'));
 pkg=fullfile(w,'target');inkprof.createTarget(pkg,PatchCount=20,GraySteps=3,DPI=100);
 folder=fullfile(w,'session');inkprof.prepareChart(fullfile(pkg,'target.ti2'),folder);
@@ -101,6 +111,14 @@ if withOverride
  verifyTrue(tc,any([report.readings.flagged]));inkprof.internal.requirePrintControls(folder);
 else,verifyEqual(tc,string(report.status),"reference-needed");end
 verifyTrue(tc,report.excludedFromProfiling);verifyEqual(tc,numel(report.readings),3);
+if retryMode~=""
+ verifyTrue(tc,retried);
+ attempts=dir(fullfile(folder,'print-control-spots','*','retry.json'));verifyEqual(tc,numel(attempts),1);
+ retry=jsondecode(fileread(fullfile(attempts(1).folder,attempts(1).name)));
+ if retryMode=="selected",verifyEqual(tc,retry.remeasuredIndices,2);else,verifyEqual(tc,numel(retry.remeasuredIndices),3);end
+ verifyTrue(tc,isfile(fullfile(retry.previousSpotFolder,'reading-002.json')));
+ verifyTrue(tc,isfile(fullfile(retry.previousSpotFolder,'superseded-check.json')));
+end
 verifyEqual(tc,inkprof.internal.sha256(fullfile(folder,'chart.json')),chartHash);
 verifyFalse(tc,isfile(fullfile(folder,'chart.ti3')),'Control spots must never become a profiling TI3.');
  function advance(~,~)
@@ -114,6 +132,17 @@ verifyFalse(tc,isfile(fullfile(folder,'chart.ti3')),'Control spots must never be
   end
   close=findall(fig,'Tag','printControlClose');if isempty(close),return;end
   if strcmp(close.Text,'Continue with saved chart')
+   if retryMode~=""&&~retried
+    retried=true;
+    if retryMode=="selected"
+     table=findall(fig,'Tag','printControlTable');table.CellSelectionCallback(table,struct('Indices',[2 1]));
+     button=findall(fig,'Tag','printControlRemeasure');
+    else,button=findall(fig,'Tag','printControlRestart');end
+    verifyEqual(tc,string(button.Enable),"on");button.ButtonPushedFcn(button,[]);
+    verifyFalse(tc,isfile(fullfile(folder,'print-control-check.json')),'An old pass must not survive an incomplete retry.');
+    verifyEqual(tc,numel(findall(groot,'Tag','InkProfPrintControls')),1);
+    return;
+   end
    override=findall(fig,'Tag','printControlOverride');
    if withOverride&&strcmp(override.Enable,'on'),override.ButtonPushedFcn(override,[]);else,close.ButtonPushedFcn(close,[]);end
    return;

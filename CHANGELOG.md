@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.0.1 — 2026-10-11
+- Show elapsed activity on the foreground paper dialog during TIFF16 preview generation and while finalizing C2 verification files.
+- Allow remeasuring a selected RGB control or restarting all controls in the same window, retaining previous evidence and clearing superseded check approval.
+- Move page RGB spot controls into the upper-right header and restore 16 mm of chart height for measurement rows.
+- Clarify extra reference-target repeat patches and validate their limit before C2 generation.
+- Step 8 displays elapsed-time activity on the matching visible result window while Grid and C1 checks prepare the next report, so an always-on-top result cannot hide the main-window progress indicator.
+- Import required Python packages before analysis; full setup checks exercise SciPy spatial and sparse linear-algebra imports. Failed imports show the selected environment and repair instructions. Standard-library-only measurement remains supported.
+- Pin SciPy 1.16.3 instead of 1.15.3 following the reported M4/Python 3.13 compiled-library failure and successful 1.16.3 import test. Update dependency notices and document repair of existing environments.
+
 ## v1.0.0 — 2026-10-10
 
 Stable source release.

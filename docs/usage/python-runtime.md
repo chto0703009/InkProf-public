@@ -1,6 +1,6 @@
 # Local and optional Python environment
 
-> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf v1.0.1; installation troubleshooting updated 2026-10-11. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
 
 Python is not needed for target generation in MATLAB. Python is used by the chartread bridge, spectral analysis, profiling and reports.
 
@@ -49,7 +49,7 @@ An explicit choice is checked before it is saved. The priority is:
 
 No automatic fallback via PATH is used at run time. An invalid local setting gives a clear error when Python is needed; replace it with a new explicit choice. Relative configuration paths are resolved from InkProf's root folder.
 
-To return to the project environment, give `PythonExecutable=".venv/bin/python"` (Windows: `.venv\Scripts\python.exe`). Automatic discovery does not save an absolute `.venv` path. `setupInkProf(CheckPython=true)` checks the current environment without requiring any terminal activation.
+To return to the project environment, give `PythonExecutable=".venv/bin/python"` (Windows: `.venv\Scripts\python.exe`). Automatic discovery does not save an absolute `.venv` path. `setupInkProf(CheckPython=true)` now imports the full analysis/report dependencies in the selected environment, including `scipy.spatial.cKDTree` and `scipy.sparse.linalg.svds`, without requiring terminal activation. Analysis operations also import their required packages before starting. Merely finding an installed package is not sufficient. A basic `inkprof.checkPython()` remains suitable for the standard-library measurement bridge.
 
 ## Calling bridge code
 
@@ -89,3 +89,28 @@ Install ArgyllCMS on each computer. Copy only the project folder between compute
 
 Sources: https://docs.brew.sh/Installation and
 https://formulae.brew.sh/formula/argyll-cms
+
+## SciPy compiled-library failure on Apple Silicon
+
+A reported M4 installation with Python 3.13, NumPy 2.2.6 and SciPy 1.15.3 failed while importing `scipy.spatial.cKDTree`. macOS rejected `_spropack.cpython-313-darwin.so` with `__DATA/__thread_bss ... zero-fill section type, but offset field is not zero`. The same error occurred in a fresh environment on the internal disk. This is an import/binary compatibility failure, before image refinement runs; it does not establish a fault in the printed chart or profiling algorithm. See [SciPy issue 25635](https://github.com/scipy/scipy/issues/25635).
+
+The user's separate M4 test successfully imported `cKDTree` and `svds` with NumPy 2.2.6 and SciPy 1.16.3. New installations therefore pin `scipy==1.16.3` in `requirements-analysis.txt`, also included by `requirements-report.txt`. This evidence is an import test, not qualification of every macOS version or a completed physical profiling workflow.
+
+InkProf stops the affected operation with `inkprof:PythonImport` and displays the selected Python path, repair commands and original error. Run the displayed commands on the affected computer. Packages are never installed automatically. For the default environment, run from the InkProf folder:
+
+```sh
+.venv/bin/python -m pip install --upgrade --force-reinstall --no-cache-dir --only-binary=:all: scipy==1.16.3
+.venv/bin/python -m pip check
+.venv/bin/python -c "from scipy.spatial import cKDTree; from scipy.sparse.linalg import svds; print('SciPy OK')"
+```
+
+Use the configured Python executable instead if it is outside `.venv`. On Windows use `.venv\Scripts\python.exe`. Restart MATLAB, then run:
+
+```matlab
+setupInkProf(CheckPython=true);
+startInkProfApp();
+```
+
+Retry **From image** only after the check passes. If it fails, retain the displayed package error and Python path for diagnosis. Existing projects and measurement files are not changed by this check or package repair.
+
+The published v1.0.0 archive retains its original dependencies. These safeguards and the new pin are post-release source changes; reinstalling its original requirements would restore SciPy 1.15.3.

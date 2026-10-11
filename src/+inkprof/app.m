@@ -369,9 +369,20 @@ end
             [o.ReferenceSet,cancelled]=inkprof.internal.chooseReferenceSet(fig,w.mode()~="verification");
             if cancelled,o=[];return;end
             if o.ReferenceSet~=""
-                a=inkprof.internal.withFocus(fig,@inputdlg,{'Extra repeat patches (0 = none)'},'Profile test target',1,{'12'});
-                if isempty(a),o=[];return;end
-                o.Repeats=str2double(a{1});validateattributes(o.Repeats,{'double'},{'scalar','integer','>=',0,'<=',500});
+                count=inkprof.internal.referenceSetCount(o.ReferenceSet);
+                prompt=sprintf(['The reference set contains %d patches.\n' ...
+                    'Extra copies for repeatability (0–%d; not the total patch count).\n' ...
+                    'For example, 12 adds 12 patches, giving %d in total.'],count,count,count+12);
+                while true
+                    a=inkprof.internal.withFocus(fig,@inputdlg,{prompt},'Profile test target',1,{char(string(min(12,count)))});
+                    if isempty(a),o=[];return;end
+                    o.Repeats=str2double(a{1});
+                    if isfinite(o.Repeats)&&o.Repeats==fix(o.Repeats)&&o.Repeats>=0&&o.Repeats<=count,break;end
+                    warning=inkprof.internal.withFocus(fig,@errordlg, ...
+                        sprintf('Enter a whole number from 0 to %d for extra repeat patches. This is not the total patch count.',count), ...
+                        'Extra repeat patches','modal');
+                    uiwait(warning);
+                end
                 return
             end
             if w.mode()=="verification"

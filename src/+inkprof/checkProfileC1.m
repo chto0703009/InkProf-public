@@ -13,6 +13,11 @@ if jobFolder==""
  p=uigetdir(pwd,'Select ICC job folder');if isequal(p,0),return;end;jobFolder=string(p);
 end
 jobFolder=inkprof.internal.absolutePath(jobFolder);paths=inkprof.paths();
+activity=[];
+if options.ShowDialog
+ activity=inkprof.internal.profileCheckProgress(jobFolder,"InkProfGridResult","Step 8 - C1 (3/3)", ...
+  "Grid checks are ready. Checking the colour engine, inverse neighbourhoods and damaged-profile controls before opening C1 results.");
+end
 bin=inkprof.internal.argyllBin("");exe=fullfile(bin,'xicclu');if ispc,exe=exe+".exe";end
 w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
 fprintf('InkProf C1: checking float CMM, inverse neighbourhoods and negative controls...\n');
@@ -31,6 +36,7 @@ if ~isempty(report.grossFailureAlerts)||~report.allNegativeControlsDetected
  warning('inkprof:C1Review','C1 diagnostic alerts require review; inspect the saved report.');
 end
 if ~options.ShowDialog,return;end
+clear activity
 f=uifigure('Name','InkProf - C1 numerical diagnostics','Position',[150 100 1000 700], ...
  'WindowStyle','alwaysontop','Visible','off');
 g=uigridlayout(f,[3 1]);g.RowHeight={75,'1x',36};

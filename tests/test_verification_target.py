@@ -9,6 +9,15 @@ import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'analysis'))
 from verification_target import select_indices,generate,balanced_indices,external_selection
 class VerificationTests(unittest.TestCase):
+ def test_reference_repeat_limit_explains_extra_count(self):
+  with tempfile.TemporaryDirectory() as directory:
+   job=Path(directory)/'imported';job.mkdir();profile=job/'profile.icc';profile.write_bytes(b'synthetic test only')
+   (job/'source.json').write_text(json.dumps({'profileSHA256':hashlib.sha256(profile.read_bytes()).hexdigest()}))
+   request=dict(externalProfile=True,printing={},referenceSet={'file':'unused'},repeats=200)
+   with patch('verification_target.require_profile'),patch('verification_target.reference_sets.load',return_value={'count':140}):
+    with self.assertRaisesRegex(ValueError,'0..140; received 200.*not the total patch count'):
+     generate(job,'unused',request,Path(directory)/'target')
+   self.assertFalse((Path(directory)/'target').exists())
  def test_training_and_duplicates_excluded(self):
   rgb=np.array([[0,0,0],[.5,.5,.5],[.5,.5,.5],[.7,.2,.6]])
   self.assertEqual(select_indices(rgb,np.zeros((1,3)),2,.01),[1,3])

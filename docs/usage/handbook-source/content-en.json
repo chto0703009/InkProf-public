@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.0.0 | 2026-10-10",
+    "tag": "USER HANDBOOK | v1.0.1 | 2026-10-11",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -55,7 +55,7 @@
     ],
     "links": [
       [
-        "Download InkProf v1.0.0 (prerelease)",
+        "InkProf source and published releases",
         "https://github.com/chto0703009/InkProf-public"
       ]
     ],
@@ -1056,7 +1056,7 @@
       ],
       [
         "Release status",
-        "This handbook describes release candidate 1.0.0, dated 9 October 2026. It is not the stable v1.0.0 release. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+        "This handbook describes source version 1.0.1, released 11 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
       ]
     ],
     "links": [
@@ -1644,7 +1644,7 @@
       ],
       [
         "2. Measure the three controls before the strips",
-        "Each new TIFF16 page has red, green and blue 8 × 8 mm squares below the profiling grid. Select Start measurement. InkProf starts with the RGB check: calibrate as instructed and hold i1 Pro 2 stationary at the centre of each square with the same backing. Select Measure square; do not swipe. The check uses native M0. Follow the displayed page and R, G or B."
+        "Each new TIFF16 page has red, green and blue 8 × 8 mm squares above the profiling grid at the upper right. Older targets have them below the grid. Select Start measurement. InkProf starts with the RGB check: calibrate as instructed and hold i1 Pro 2 stationary at the centre of each square with the same backing. Click the measurement button for the displayed page and colour; do not swipe. The check uses native M0. Follow the displayed page and R, G or B. If placement or order was wrong, select a measured row and Remeasure page, or Restart all RGB checks to redo the sequence in the same window."
       ],
       [
         "3. Approve a known-correct print as the reference",
@@ -1746,5 +1746,39 @@
       ]
     ],
     "callout": "Soft proof is the profile prediction on screen, not a physical measurement or approval. JPG is 8-bit and may introduce gradient steps itself. Inspect on a calibrated display and retain physical print verification."
+  },
+  {
+    "tag": "TROUBLESHOOTING | PYTHON ON A NEW COMPUTER",
+    "title": "If SciPy cannot load",
+    "lead": "InkProf detects failed Python imports and explains how to repair the selected environment. The profiling algorithm does not need to be changed.",
+    "sections": [
+      [
+        "Check the installation first",
+        "After installing on another computer, run setupInkProf(CheckPython=true) in MATLAB. The updated check imports analysis and report packages and tests SciPy compiled libraries. Finding an installed package is not sufficient."
+      ],
+      [
+        "What does InkProf do when an import fails?",
+        "The affected analysis stops before starting. The message identifies the selected Python environment, the original error and commands to repair it. InkProf never reinstalls packages automatically. The standard measurement bridge can run without analysis packages."
+      ],
+      [
+        "Follow the instructions on the affected computer",
+        "Copy the repair commands from the message into Terminal on the computer where the failure occurs. They target the Python used by InkProf. Also run pip check as instructed. Do not copy .venv or local-config from another computer."
+      ],
+      [
+        "Check again and continue",
+        "Restart MATLAB and run setupInkProf(CheckPython=true). Once the check passes, retry the operation, for example From image in step 15. If it still fails, retain the complete message and Python path for diagnosis."
+      ],
+      [
+        "The reported M4 failure",
+        "On an M4 with Python 3.13, SciPy 1.15.3 could not load _spropack. The message included __thread_bss and non-zero offset. The import test passed with NumPy 2.2.6 and SciPy 1.16.3. Updated installation sources therefore use SciPy 1.16.3. This is a verified import test, not qualification of every macOS version."
+      ]
+    ],
+    "callout": "This guidance describes the post-v1.0.0 source update dated 2026-10-11. The original release archive retains its older dependencies. Checks and package installation do not change saved projects or measurement files.",
+    "links": [
+      [
+        "Details and repair commands",
+        "https://github.com/chto0703009/InkProf-public/blob/main/docs/usage/python-runtime.md"
+      ]
+    ]
   }
 ]
