@@ -37,7 +37,7 @@ class Pages(canvas.Canvas):
    self.setFillColor(MUTED)
    self.setStrokeColor(LINE);self.setLineWidth(.6)
    self.line(18*mm,273.5*mm,192*mm,273.5*mm);self.line(18*mm,22*mm,192*mm,22*mm)
-   self.setFont('Vera',8);self.drawString(18*mm,16*mm,'2026-10-11');self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber} ({n})')
+   self.setFont('Vera',8);self.drawString(18*mm,16*mm,'2026-10-12');self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber} ({n})')
    self.setFillColor(TEAL);self.drawCentredString(105*mm,11*mm,'christer@borgasundsfotografiska.se')
    url='https://github.com/chto0703009/InkProf-public';self.setFont('Vera',7);self.drawCentredString(105*mm,6*mm,'GitHub | InkProf v'+VERSION);self.linkURL(url,(45*mm,4*mm,165*mm,9*mm),relative=0)
    ann=self._annotationCount;super().showPage()

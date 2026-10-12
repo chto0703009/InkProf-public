@@ -80,10 +80,10 @@ def run(folder):
         mode = recipe['colorimetry']['mode']
         if mode not in ('spectral', 'storedXYZ'):
             raise ValueError('Unsupported recipe colourimetry.')
-        if recipe['engine']['quality'] not in ('medium', 'high') or recipe['engine']['algorithm'] != 'Lab cLUT':
+        if recipe['engine']['quality'] not in ('medium', 'high', 'ultra') or recipe['engine']['algorithm'] != 'Lab cLUT':
             raise ValueError('Unsupported recipe algorithm/quality.')
         pre = preregularize.settings(recipe)
-        quality_args = ['-qh' if recipe['engine']['quality']=='high' else '-qm']
+        quality_args = [{'medium': '-qm', 'high': '-qh', 'ultra': '-qu'}[recipe['engine']['quality']]]
         colour_args = []
         prepared_fwa = recipe['colorimetry'].get('fwaCompensation') and recipe['colorimetry'].get('fwaPreparation')=='white-reference-spec2cie-v1'
         if mode == 'spectral' and not prepared_fwa:
@@ -103,9 +103,9 @@ def run(folder):
         # Legacy recipes omit this field and retain their exact original arguments.
         b2a = recipe['engine'].get('b2aQuality')
         if b2a is not None:
-            if b2a not in ('medium', 'high'):
+            if b2a not in ('medium', 'high', 'ultra'):
                 raise ValueError('Unsupported B2A quality.')
-            args += ['-bh' if b2a == 'high' else '-bm']
+            args += [{'medium': '-bm', 'high': '-bh', 'ultra': '-bu'}[b2a]]
         mapping = recipe['engine'].get('gamutMapping')
         if isinstance(mapping, dict):
             compression = mapping.get('compressionPercent')

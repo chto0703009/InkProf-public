@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.0.1 | 2026-10-11",
+    "tag": "ANVÄNDARHANDBOK | v1.1.0 | 2026-10-12",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Öppen metod och tydliga förutsättningar",
-        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver 1.0.0; appens knappar och fältnamn är engelska."
+        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver 1.1.0; appens knappar och fältnamn är engelska."
       ]
     ],
     "callout": "InkProf samlar profilering, kontroll och dokumentation i ett projekt. Utskriften av färgmålen gör du i ett separat utskriftsprogram."
@@ -41,8 +41,8 @@
         "MATLAB kräver egen licens; InkProf har testats med R2025b utan obligatoriska tilläggsverktygslådor. Installera Python 3.11-3.13 (testat med 3.13) och ArgyllCMS (3.5.0 användes i utvecklingen). Git behövs om du använder kloningskommandot nedan. På macOS kan Python, Git och ArgyllCMS installeras med Homebrew; med Homebrew installerat: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Hämta InkProf v1.0.0",
-        "Öppna v1.0.0-länken nedan och hämta källkodens ZIP, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.0.0 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
+        "2. Hämta InkProf v1.1.0",
+        "Hämta källkodens ZIP för v1.1.0, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.1.0 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
       ],
       [
         "3. Installera Python-paketen i InkProf-mappen",
@@ -614,8 +614,8 @@
   },
   {
     "title": "Välj nya färgprov",
-    "tag": "RAD 15 / ERRORS, IMAGE OR GAMUT",
-    "lead": "Välj From verification errors, From image eller From gamut selection. Gamutvalet förstärker manuellt mätunderlaget kring valda färger; se steg-för-steg på sidan 56.",
+    "tag": "15 | REFINEMENT TOOLS",
+    "lead": "Refinement tools samlar fotografi, manuella gamutpunkter, inre skal, sparade gamutförslag, verifieringsfel och prov med högre ICC-grid. Skal och manuella val beskrivs på sidan 56; gridprovet i det nya tillägget sist i handboken.",
     "sections": [
       [
         "Från verifieringsfel",
@@ -986,7 +986,7 @@
       ],
       [
         "Underlag för denna handbok",
-        "Svenska och engelska handboken har samma kapitelordning och motsvarande innehåll. v1.0.0-utgåvan den 9 oktober 2026 har stämts av mot arbetsflöde, recept, radommätning, gradienter, C2/C3 samt ICC-inläsning och leverans. Separata felsökningsskript är inte inbyggda appfunktioner. Dokumentation och numeriska tester är inte ny fysisk validering."
+        "Båda handböckerna beskriver programversion 1.1.0 med skalrefinement och aktuella arbetsflödesförbättringar, dokumentrevision 2026-10-12. Version 1.1.0 publicerades 12 oktober 2026; releasetaggen identifierar denna källversion. Dokumentation och numeriska tester är inte ny fysisk validering."
       ]
     ],
     "links": [
@@ -1009,7 +1009,7 @@
     ]
   },
   {
-    "tag": "v1.0.0 | MATERIAL OCH SKUGGOR",
+    "tag": "v1.1.0 | MATERIAL OCH SKUGGOR",
     "title": "Fler mätpunkter i mörka färger",
     "sections": [
       [
@@ -1035,7 +1035,7 @@
     ]
   },
   {
-    "tag": "v1.0.0 | LEVERANS OCH LICENS",
+    "tag": "v1.1.0 | LEVERANS OCH LICENS",
     "title": "Gamut, certifikat och källkod",
     "sections": [
       [
@@ -1056,7 +1056,7 @@
       ],
       [
         "Utgåvestatus",
-        "Handboken beskriver källversion 1.0.1, publicerad 11 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
+        "Handboken beskriver källversion 1.1.0, publicerad 12 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
       ]
     ],
     "links": [
@@ -1598,36 +1598,36 @@
     ]
   },
   {
-    "title": "Manuell förstärkning via gamutvyn",
-    "tag": "TILLÄGG | VIEW GAMUT OCH RAD 15-17",
-    "lead": "Använd klickvalet för att manuellt förstärka mätunderlaget i ett valt färgområde. Du väljer var fler färgprov behövs; profilen förbättras först efter utskrift, mätning och ett nytt profilbygge.",
+    "tag": "FÖRTÄTNING | RAD 15-17",
+    "title": "Manuella punkter och inre skal",
+    "lead": "Refinement tools är den gemensamma ingången. Välj Manual gamut points / inner shell. Aktuell profil och C1-kontroller måste vara klara.",
     "sections": [
       [
-        "1. Kontrollera att profilen är klar",
-        "Rad 7 ska visa Complete. Kör rad 8, C1. Fit, Grid and C1, tills även den visar Complete. Rad 15 kräver dessa aktuella numeriska kontroller. Om rad 15 är Locked, kontrollera rad 8 och klicka Refresh efter avslutad körning."
+        "1. Välj metod",
+        "Whole inner gamut shell är standard och täcker hela gamutytan. Selected inner shell areas begränsar skalet till Lab-områden kring klickade ytpunkter. Selected RGB neighbourhoods ger grannar i enhets-RGB. Select area aktiverar klickval; Rotate view återgår till rotation."
       ],
       [
-        "2. Välj området manuellt",
-        "Öppna View gamut. Vrid ytan med Rotate view, klicka Select area i panelen till höger och klicka på den färgade ytan. En vit markering visar valet. Markera flera punkter runt området du vill undersöka, exempelvis en inbuktning. Clear selection tar bort valen."
+        "2. Ange tjocklek och mängd",
+        "Shell thickness anges i ΔE76: kortaste geometriska Lab-avståndet innanför gamutytan. Standard är 3, högst 50. Linjer nära ytan kan vägleda tjockleken; de upptäcks inte automatiskt. Minimum spacing anges i RGB-procentenheter; Maximum new patches är en övre gräns."
       ],
       [
-        "3. Granska och spara färgproven",
-        "Neighbour radius anger grannområdet i RGB-procentenheter; standard är 3. Minimum spacing är normalt 1 och Maximum new patches 100. Klicka Review patches / create TIFF16, avmarkera oönskade rutor och klicka Create TIFF16 target. Befintliga träningsfärger och nära dubbletter filtreras bort; kontrollrutor tillkommer."
+        "3. Granska den ritade kontrollen",
+        "Review patches / create TIFF16 visar föreslagna punkter mot gamutytan i 3D och deras djup mot skaltjockleken. Avmarkera oönskade patchar. Bilderna visar ICC-beräkningar, inte uppmätta utskriftsfel. Fler punkter prioriteras i luckor mellan modellens befintliga färger."
       ],
       [
-        "4. Välj papper och avsluta gamutvyn",
-        "Granska pappersförslaget. Preview selected dimensions visar endast en tillfällig förhandsgranskning: stäng den med det röda krysset och klicka Use these dimensions i fönstret bakom för att spara. Gamutfönstret stängs inte automatiskt; stäng det när sparandet är klart."
+        "4. Skapa och kopiera TIFF16",
+        "Granska pappersmåtten och välj Create TIFF16 target. Statusfältet visar arbetsfas och förfluten tid, även vid kopiering och filkontroll. Välj en annan sparplats för kopian eller avbryt sparfrågan för att behålla endast projektkopian. Close stänger gamutvyn."
       ],
       [
-        "5. Koppla urvalet till rad 15",
-        "Välj rad 15 och Run selected step. Välj From gamut selection och Use latest selection. Ange varför du förstärker området och bekräfta pappersmåtten. Vänta tills rad 15 visar Complete. Detta steg sparar arbetsflödets utskriftsark och tar med väntande C2-färger när det är aktuellt."
+        "5. Registrera exakt utskrift i steg 15",
+        "Efter stängning återgår steg 15 till registreringen. För redan utskrivna ark: From saved gamut selection, välj rätt proposal.json och Use existing print package. Ange motivering. Samma TI2 och patchordning bevaras; inga väntande C2-patchar läggs till. Create new print package kräver en ny utskrift."
       ],
       [
-        "6. Skriv ut, mät och bygg nästa profil",
-        "Markera rad 15 och välj \"Copy TIFF16 for printing…\". Skriv ut detta ark i 100 % storlek utan färghantering, med samma skrivare, papper och inställningar. Låt det torka. Kör rad 16, Measure refinement, och därefter rad 17, Build next iteration. Bedöm den nya profilen med en ny oberoende kontrollutskrift."
+        "6. Mät och bygg vidare",
+        "Steg 15 ska visa Complete innan steg 16 blir tillgängligt. Skriv ut i 100 % utan färgomvandling och låt torka. Mät med paketets matchande TI2 i steg 16 och bygg nästa iteration i steg 17. Bedöm resultatet med en ny oberoende kontrollutskrift."
       ]
     ],
-    "callout": "Klickvalet är manuell komplettering, inte automatisk felupptäckt. Skrivar-RGB kopplas ungefärligt till den valda ytpunkten via profilens framåtberäkning. ΔE76 offset visar kopplingsavståndet, inte ett uppmätt utskriftsfel. Fler mätpunkter kan ge bättre modellunderlag, men utökar inte skrivarens fysiska gamut och garanterar inte att ett synligt hack försvinner."
+    "callout": "Skalet följer den uppskattade ICC-gamuten. Extra mätningar kan förbättra modellunderlaget men utökar inte skrivarens fysiska gamut. ΔE76 är geometrisk tjocklek, inte ΔE00 eller uppmätt utskriftsfel."
   },
   {
     "tag": "FÖRE RADMÄTNING | RGB-UTSKRIFTSKONTROLL",
@@ -1640,15 +1640,15 @@
       ],
       [
         "2. Mät de tre kontrollrutorna före raderna",
-        "Varje nytt TIFF16-ark har en röd, grön och blå ruta, 8 × 8 mm, ovanför profileringsrutnätet, uppe till höger. Äldre mål har rutorna nedanför. Välj Start measurement. InkProf börjar med RGB-kontrollen: kalibrera enligt anvisningen och placera i1 Pro 2 stilla mitt på varje ruta med samma underlag. Klicka mätknappen för visad sida och färg; svep inte. Kontrollen använder instrumentets M0-läge. Följ anvisad sida och R, G eller B. Vid fel: välj en uppmätt rad och Remeasure page, eller Restart all RGB checks för att göra om hela ordningen i samma fönster."
+        "Varje TIFF16-sida har R, G och B uppe till höger. Rutorna är nominellt 8 × 8 mm och utökas med 1 pixel på varje sida; texten under hålls fri. Äldre ark har rutorna nedanför. Kalibrera i1 Pro 2 enligt anvisning och mät stilla i M0, med samma underlag. Mät varje ruta EN gång: tre mätningar per sida. Klicka programknappen, inte instrumentknappen; svep inte. Bekräfta att nästa ark ligger framme när Change printed page visas. Alla sidor ska kontrolleras."
       ],
       [
         "3. Godkänn en känd korrekt utskrift som referens",
         "Första gången behövs en utskrift vars papper och färginställningar du själv har kontrollerat. Efter punktmätningarna väljer du Approve as print reference. InkProf sparar RGB-värdena som projektets referens. Utan godkänd referens jämförs sidorna med första sidan; det avslöjar inte ett gemensamt fel på alla ark. Ändrade registrerade skrivar-, pappers- eller utskriftsvillkor kräver en ny referens."
       ],
       [
-        "4. Failed eller ett motiverat override",
-        "Över standardgränsen 5 ΔE00 stoppas radmätningen och mätsteget får Failed. Sida, färg och avvikelse sparas. Kontrollera aktiva utskriftsinställningar och skriv ut igen vid behov. Vill du ändå acceptera avvikelsen, välj Override…, skriv orsaken och välj Save override and continue. Motivering, datum och ursprungliga värden sparas; referens och gräns ändras inte. Saknade mätvärden kan inte kringgås."
+        "4. För stor avvikelse: Remeasure",
+        "Över kontrollgränsen, normalt 5 ΔE00, markeras sida, färg och avvikelse. Välj den markerade raden och Remeasure page / colour för en ny mätning av just denna ruta. Det gamla värdet sparas som historik. Restart all RGB checks gör om hela ordningen. Om avvikelsen kvarstår, kontrollera papper och utskriftsinställningar och skriv ut igen vid behov. Override… kräver en skriftlig motivering; saknade mätvärden kan inte kringgås."
       ],
       [
         "Separata från profileringen; äldre ark fungerar",
@@ -1769,12 +1769,56 @@
         "På en M4 med Python 3.13 kunde SciPy 1.15.3 inte ladda _spropack. Meddelandet innehöll __thread_bss och non-zero offset. Importtestet fungerade med NumPy 2.2.6 och SciPy 1.16.3. Uppdaterad installationskälla använder därför SciPy 1.16.3. Detta är ett verifierat importtest, inte en garanti för alla macOS-versioner."
       ]
     ],
-    "callout": "Denna hjälp gäller källuppdateringen efter v1.0.0, daterad 2026-10-11. Det ursprungliga releasearkivet har kvar sina äldre beroenden. Kontroll och paketinstallation ändrar inte sparade projekt eller mätfiler.",
+    "callout": "Anvisningen gäller 1.1.0 med aktuella källuppdateringar, dokumentrevision 2026-10-12. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
     "links": [
       [
         "Detaljer och reparationskommandon",
         "https://github.com/chto0703009/InkProf-public/blob/main/docs/usage/python-runtime.md"
       ]
     ]
+  },
+  {
+    "tag": "TILLÄGG | ICC-GRIDPROV",
+    "title": "Prova högre ICC-grid",
+    "lead": "Ett tätare ICC-grid är ett separat prov från samma sparade mätningar. Det skapar ingen ny mätinformation och kräver inget nytt utskriftsmål.",
+    "sections": [
+      [
+        "Starta från samma meny",
+        "Refinement tools  >  Try higher ICC grid (same measurements). Välj High eller Ultra för B2A eller för både A2B och B2A. Nivån måste vara högre än originalets. Standard är B2A: Ultra. Argyll bestämmer n via kvalitetsnivån; ett godtyckligt n kan inte anges."
+      ],
+      [
+        "Vad ändras?",
+        "B2A är omvandlingen till skrivar-RGB. B2A-only behåller framåtmodellens och föranpassningens kvalitet. Both ändrar också A2B och, när förutjämning används, föranpassningens upplösning. Mätningar, utjämningsvärde, kolorimetri, FWA och gamutmappning följer originalreceptet. En separat kandidat sparas; arbetsflödets profil ersätts inte."
+      ],
+      [
+        "Utritad numerisk kontroll",
+        "Tabell och stapeldiagram visar faktiskt n och n³ i original och kandidat. Välj en testgradient för överlagrade RGB-kurvor och beräknad L*. Streckat är originalet, heldraget kandidaten. Samma nio sRGB-vägar används med relativ kolorimetri, BPC av och float LittleCMS. grid-curves.json sparar värden och ICC-hashar."
+      ],
+      [
+        "Bedöm nyttan",
+        "Fit-, grid- och fotografiska gradientkontroller sparas med kandidaten. Träningsfel är inte oberoende verifiering. Ett tätare grid kan återge modellen mer detaljerat men ersätter inte fler mätpunkter om underlaget är glest. Använd skalutskrift och mätning för att undersöka sådana områden; fysisk förbättring måste bedömas med utskrift."
+      ]
+    ],
+    "callout": "Skalförtätning ändrar mätunderlaget. Gridprovet ändrar profilens beräknade tabeller. Prova dem separat för att förstå vad som påverkar resultatet."
+  },
+  {
+    "tag": "v1.1.0 | ARBETSGÅNG OCH CERTIFIKAT",
+    "title": "Nästa steg och tydlig leverans",
+    "lead": "Skalrefinement är huvudnyheten i 1.1.0. Samtliga refinementverktyg finns på samma ställe.",
+    "sections": [
+      [
+        "Nästa steg",
+        "Programmet föreslår nästa steg utifrån sparade och giltiga resultat. Efter steg 15: mät i 16, bygg i 17 och jämför i 18. Knappen Go to suggested next step väljer steget; den kör det inte."
+      ],
+      [
+        "Stoppat profilbygge",
+        "Vid numeriska fel: öppna steg 17:s resultat och granska senaste C1- och Grid-rapporterna. Mätningar och tidigare aktiv ICC bevaras. Kandidaten aktiveras inte automatiskt. Upprepa inte samma bygge utan att granska orsaken."
+      ],
+      [
+        "Certifikat och bilaga",
+        "Huvudcertifikatet innehåller sammanfattningen och ColorChecker-rutor med referensfärg, uppmätt färg och ΔE00. Fullständiga mätlistor och tekniska detaljer finns i measurement-appendix.pdf, även för steg 19. Bilagan har samma certifikat-ID och ICC-hash. Steg 19 sparar ett numeriskt certifikat utan separat utskriftsverifiering; tidigare mätningar märks som historik. Välj extern sparplats för att kopiera hela leveransmappen; projektets original behålls."
+      ]
+    ],
+    "callout": "Starta om InkProf efter koduppdatering så att nya dialoger och vägledning läses in."
   }
 ]

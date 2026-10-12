@@ -7,7 +7,7 @@ const c = document.getElementById('view'), ctx = c.getContext('2d');
 const slice = document.getElementById('slice');
 const light = document.getElementById('lightness'), width = document.getElementById('width');
 const words = Object.assign({previous:'previous',current:'current',visible:'Visible samples',sparse:'Samples within the L* band; a sparse slice does not imply missing printable colours.',all:'All lightness levels shown.',rotate:'3D Lab - drag to rotate; L* increases upwards'}, typeof viewLabels === 'undefined' ? {} : viewLabels);
-let angle = .6, drag = false, last = 0;
+let angle = .6, pitch = .175, drag = false, last = 0, lastY = 0;
 // Fixed scale across both profiles and all L* slices, with equal a*/b* units.
 const extent = Math.max(20, ...groups.flatMap(g => g.flatMap(p => [Math.abs(p[1]), Math.abs(p[2])])));
 const limit = Math.ceil(extent / 20) * 20;
@@ -16,7 +16,7 @@ function projectPoint(p) {
     if (slice.checked) return [450 + p[1] * scale, 230 - p[2] * scale];
     const x = p[1] * Math.cos(angle) - p[2] * Math.sin(angle);
     const z = p[1] * Math.sin(angle) + p[2] * Math.cos(angle);
-    return [450 + x * 2, 380 - p[0] * 3 - z * .35];
+    return [450 + x * 2, 230 - (p[0]-50)*3*Math.cos(pitch) - z*2*Math.sin(pitch)];
 }
 function drawAxes() {
     ctx.font = '13px system-ui'; ctx.lineWidth = 1;
@@ -31,7 +31,6 @@ function drawAxes() {
     ctx.fillText('a*', 650, 235);ctx.fillText('b*', 444, 38);
 }
 function draw() {
-    drag = false;
     ctx.clearRect(0, 0, 900, 460);ctx.globalAlpha = 1;
     const level = Number(light.value), half = Math.min(50, Math.max(1, Number(width.value) || 5));
     light.disabled = width.disabled = !slice.checked;
@@ -71,11 +70,13 @@ function draw() {
     document.getElementById('counts').textContent = words.visible + ': ' + words.previous + ' ' + counts[0] + ', ' + words.current + ' ' + counts[1] +
         '. ' + (slice.checked ? words.sparse : words.all);
 }
-[slice, light, width].forEach(e => e.oninput = draw);
-c.onpointerdown = e => { if (slice.checked) return;drag = true;last = e.clientX;c.setPointerCapture(e.pointerId); };
+c.style.touchAction='none';
+[slice, light, width].forEach(e => {e.oninput=e.onchange=()=>{drag=false;draw();};});
+c.onpointerdown = e => { if (slice.checked) return;drag = true;last = e.clientX;lastY=e.clientY||0;c.setPointerCapture(e.pointerId); };
 c.onpointerup = c.onpointercancel = () => drag = false;
 c.onpointermove = e => {
     if (!drag || slice.checked) return;
-    angle += (e.clientX - last) * .01;last = e.clientX;draw();drag = true;
+    angle += (e.clientX - last) * .01;
+    const y=e.clientY||0;pitch=Math.max(-1.3,Math.min(1.3,pitch+(y-lastY)*.01));last=e.clientX;lastY=y;draw();
 };
 draw();

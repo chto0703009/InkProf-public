@@ -15,6 +15,9 @@ nodes.slice.checked=false;dots.length=0;nodes.slice.oninput();assert.equal(dots.
 assert.equal(nodes.lightness.disabled,true);assert.equal(nodes.width.disabled,true);
 nodes.view.onpointerdown({clientX:0,pointerId:1});nodes.view.onpointermove({clientX:20});
 assert.notEqual(vm.runInContext('angle',sandbox),initial);
+const pitchBefore=vm.runInContext('pitch',sandbox);
+nodes.view.onpointermove({clientX:20,clientY:30});
+assert.notEqual(vm.runInContext('pitch',sandbox),pitchBefore);
 nodes.slice.checked=true;nodes.lightness.value='50';dots.length=0;nodes.slice.oninput();
 assert.deepEqual(dots[0],dots[1]);assert.equal(nodes.lightness.disabled,false);
 console.log('2D projection, lightness slicing, fixed scale, 3D toggle and rotation passed.');

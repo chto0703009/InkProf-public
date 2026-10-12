@@ -87,3 +87,15 @@ See [Profiling paths, regularisation and refinement](profiling-paths.md) for the
 ## Complete profiling best practice
 
 The [best-practice guide](profiling-best-practice.md) and matching handbook appendices (pages 38–44, updated 2026-10-09) follow the full job and decision points: existing-ICC target placement, measurement budget, printing, revisions and white references, smoothing, refinement selection, stopping, independent final print and reviewer approval. Source guidance from Torger and i1Profiler is compared with the actual InkProf route. Practical stopping recommendations are not automatic approval rules; row 19 does not replace measured final verification.
+
+## Suggested next step
+
+The main window displays **Suggested next step** with a reason. **Go to
+suggested next step** selects that row; it does not execute it or approve
+anything. Guidance uses current valid project evidence, including after
+reopening a project. A registered refinement target leads to measurement
+(step 16), then the next profile build (step 17). Profile comparison does not
+replace up-to-date step-8 checks. After current checks, print verification is
+the normal route; numerical-only delivery (step 19) and additional refinement
+remain explicit alternatives. Creating or copying a TIFF cannot confirm that
+it has been physically printed or dried.

@@ -1,8 +1,8 @@
-# InkProf v1.0.1 — stable source release
+# InkProf v1.1.0 — stable source release
 
 **InkProf - When colours have to be right**
 
-Stable release: **[v1.0.1](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.1)**, released 2026-10-11. Source version: **1.0.1**. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.0.1.md).
+Stable release: **[v1.1.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0)**, released 2026-10-12. Source version: **1.1.0**. Inner-shell refinement is the main new feature. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.1.0.md).
 
 
 For photographers, the carefully crafted image should reach paper with its intended colours, tones and expression. A smooth workflow builds confidence and satisfaction for photographers, printing businesses and clients. Calibration and verification can reduce reprints, save time, paper and ink, and improve consistency.
@@ -19,7 +19,7 @@ InkProf reads supported RGB printer ICC profiles in v2 and v4. For newly built p
 
 **Platform testing:** InkProf has been tested on macOS only. Windows and Linux have not been tested. See [tested platforms and limitations](docs/usage/tested-platforms.md).
 
-Download the current stable version from **[v1.0.1](https://github.com/chto0703009/InkProf-public/releases/tag/v1.0.1)**. The release includes source code, English and Swedish documentation, validation records and SHA-256 checksums.
+Download the current stable version from **[v1.1.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0)**. The release includes source code, English and Swedish documentation, validation records and SHA-256 checksums.
 
 ## Install and start
 
@@ -34,7 +34,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 Clone the stable source release:
 
 ```sh
-git clone --branch v1.0.1 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.1.0 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
@@ -56,14 +56,14 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.0.1 release notes](docs/releases/v1.0.1.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.1.0 preparation notes](docs/releases/v1.1.0.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
 
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.0.1.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.1.0.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 

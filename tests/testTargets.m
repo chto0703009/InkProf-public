@@ -40,6 +40,17 @@ write(file,strrep(raw,'NUMBER_OF_SETS'+string(char(9))+'2033','NUMBER_OF_SETS 20
 verifyError(tc,@()inkprof.importTarget(file,RGBScale=255),'inkprof:CGATS');
 write(file,raw);verifyError(tc,@()inkprof.importTarget(file,RGBScale=100),'inkprof:Scale');
 end
+function testPreviewParentIsNotSerialized(tc)
+parent=uifigure('Visible','off','CloseRequestFcn',@(~,~)[]);
+clean=onCleanup(@()delete(parent)); %#ok<NASGU>
+folder=fullfile(tc.TestData.scratch,'preview-with-parent');
+m=inkprof.createTarget(folder,PatchCount=20,GraySteps=4,DPI=100,ProgressParent=parent);
+verifyFalse(tc,isfield(m.options,'ProgressParent'));
+verifyFalse(tc,isfield(m.options,'Continue'));
+stored=jsondecode(fileread(fullfile(folder,'manifest.json')));
+verifyFalse(tc,isfield(stored.options,'ProgressParent'));
+report=inkprof.verifyPackage(folder);verifyGreaterThan(tc,report.sourcePatches,0);
+end
 function testGeneratedAndRandomization(tc)
 a=fullfile(tc.TestData.scratch,'generated');
 m=inkprof.createTarget(a,PatchCount=40,GraySteps=5,DPI=100,Randomize=true,Seed=17);

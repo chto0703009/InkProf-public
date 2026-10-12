@@ -155,6 +155,7 @@ function testFinalReportSavedWithICC(tc)
 w=finalReportFixture(tc);inkprof.updateProject(w.Root,Printing=struct('printer',"Certificate printer <demo>"));w.run('export',struct('ReportUser',"Christer Törnkvist"));
 verifyTrue(tc,w.valid('export'));
 for key=["profile","finalReport","reportJSON","reportText","reportPDF"],verifyTrue(tc,isfile(w.output('export',key)));end
+verifyTrue(tc,isfile(w.output('export','measurementAppendix')));
 r=jsondecode(fileread(w.output('export','reportJSON')));
 verifyEqual(tc,string(r.profile.sha256),inkprof.internal.sha256(w.output('export','profile')));
 verifyEqual(tc,string(r.iterationId),string(w.State.iterationId));verifyEqual(tc,r.iteration,1);

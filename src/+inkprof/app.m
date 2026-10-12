@@ -8,7 +8,7 @@ function fig=app(projectFolder)
 arguments
  projectFolder (1,1) string = ""
 end
-w=[];busy=false;selected="definition";defs=inkprof.internal.workflowSteps();
+w=[];busy=false;suggested="";selected="definition";defs=inkprof.internal.workflowSteps();
 fig=uifigure('Name',char("InkProf "+inkprof.version()+" | Projects and iterations"),'Position',[80 70 1220 810],'Tag','InkProfWorkflow');
 fig.CloseRequestFcn=@closeApp;
 g=uigridlayout(fig,[5 1]);g.RowHeight={42,40,48,'1x',42};g.Padding=[18 14 18 14];
@@ -29,14 +29,17 @@ gamutButton=uibutton(projectBar,'Text','View gamut','Tag','showGamut','Enable','
 verifyButton=uibutton(projectBar,'Text','Verify project','Tag','verifyProject','Enable','off','ButtonPushedFcn',@verifyCurrentProject);
 body=uigridlayout(g,[1 2]);body.ColumnWidth={490,'1x'};body.Padding=[0 0 0 0];
 table=uitable(body,'ColumnName',{'Step','Status'},'ColumnWidth',{350,105},'ColumnEditable',false,'Tag','workflowSteps','CellSelectionCallback',@select);
-right=uigridlayout(body,[9 1]);right.RowHeight={34,100,'1x',42,42,42,36,36,36};right.Padding=[10 0 0 0];
+right=uigridlayout(body,[10 1]);right.RowHeight={34,100,'1x',42,42,42,36,36,36,36};right.Padding=[10 0 0 0];
 titleLabel=uilabel(right,'FontSize',18,'FontWeight','bold','Text','Workflow');
 hint=uitextarea(right,'Editable','off','Value',{'Select a project.'});
 details=uitextarea(right,'Editable','off','Tag','workflowDetails');
-runButton=uibutton(right,'Text','Run selected step','Tag','runWorkflowStep','Enable','off','ButtonPushedFcn',@run);
+stepActions=uigridlayout(right,[1 2]);stepActions.Padding=[0 0 0 0];
+runButton=uibutton(stepActions,'Text','Run selected step','Tag','runWorkflowStep','Enable','off','ButtonPushedFcn',@run);
+nextButton=uibutton(stepActions,'Text','Go to suggested next step','Tag','goToSuggestedStep','Enable','off','ButtonPushedFcn',@goNext);
 uibutton(right,'Text','Open selected step results','ButtonPushedFcn',@openResult);
 printButton=uibutton(right,'Text','Copy TIFF16 for printing…','Tag','copyPrintTIFF','Enable','off','ButtonPushedFcn',@copyPrint);
 compareButton=uibutton(right,'Text','Compare accuracy and gradients','Tag','compareProfileTradeoffs','Enable','off','ButtonPushedFcn',@compareTradeoffs);
+refinementButton=uibutton(right,'Text','Refinement tools','Tag','refinementTools','Enable','off','ButtonPushedFcn',@openRefinementTools);
 photoButton=uibutton(right,'Text','Photographic gradients','Tag','photoGradientCheck','Enable','off','ButtonPushedFcn',@photoCheck);
 legal=uigridlayout(right,[1 2]);legal.Padding=[0 0 0 0];legal.ColumnWidth={'1x',170};
 uilabel(legal,'Text','Results and progress are saved in the project.','WordWrap','on');
@@ -163,6 +166,7 @@ end
             gamutButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid);
             compareButton.Enable=matlab.lang.OnOffSwitchState(assessment.input.valid);
             photoButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid);
+            refinementButton.Enable=matlab.lang.OnOffSwitchState(assessment.refine.ready);
             table.Data=data;index=find(string({defs.id})==selected);titleLabel.Text=defs(index).label;
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
             runButton.Text='Run selected step';
@@ -173,7 +177,11 @@ end
                 if selected=="c2",guide="Save TIFF16 with the ICC applied once. Print at 100% with further colour management OFF. Let the print dry before measuring.";end
                 if selected=="export",guide="Save the measurement certificate and its evidence in a portable folder. Results apply to this print and these settings; no new ICC is built.";end
             end
-            hint.Value=cellstr([reason;guide]);
+            recommendation=inkprof.internal.recommendWorkflowStep(w.State,assessment,w.mode());
+            suggested=recommendation.id;nextButton.Enable=matlab.lang.OnOffSwitchState(recommendation.ready);
+            suggestion="Suggested next step: "+recommendation.label;
+            if suggested=="",suggestion="Workflow guidance";end
+            hint.Value=cellstr([suggestion;recommendation.reason;"";reason;guide]);
             printButton.Enable=matlab.lang.OnOffSwitchState(assessment.(selected).valid&&any(startsWith(string(fieldnames(w.State.steps.(selected).outputs)),"TIFF16_")));
             printButton.Text='Copy TIFF16 for printing…';
             if any(selected==["export","numericalExport"])
@@ -228,6 +236,15 @@ end
             if w.mode()=="verification",heading.Text="InkProf | Verify existing ICC";end
             status.Text="Last active step: "+string(w.State.currentStep)+" | saved revision "+w.State.revision;
         catch err,status.Text=err.message;runButton.Enable='off';end
+    end
+    function goNext(~,~)
+        if isempty(w)||busy,return;end
+        refresh();if suggested=="",return;end
+        selected=suggested;index=find(string({defs.id})==selected,1);table.Selection=[index 1];refresh();
+    end
+    function openRefinementTools(~,~)
+        if isempty(w)||busy,return;end
+        selected="refine";refresh();run([],[]);
     end
     function photoCheck(~,~)
         if isempty(w)||busy,return;end
@@ -286,12 +303,10 @@ end
         stopProgress();busy=false;
         if finished&&active~="export"
             w.reload();assessment=w.inspect();
-            for next=index+1:numel(defs)
-                id=string(defs(next).id);
-                if assessment.(id).ready&&~assessment.(id).valid
-                    selected=id;table.Selection=[next 1];
-                    message=message+" Next: "+string(defs(next).label);break
-                end
+            recommendation=inkprof.internal.recommendWorkflowStep(w.State,assessment,w.mode());
+            if recommendation.id~=""&&recommendation.ready
+                selected=recommendation.id;next=find(string({defs.id})==selected,1);table.Selection=[next 1];
+                message=message+" Next: "+recommendation.label;
             end
         end
         refresh();status.Text=message;
@@ -342,9 +357,11 @@ end
         parent=inkprof.internal.withFocus(fig,@uigetdir,char(fileparts(w.Root)),'Choose destination for TIFF16 print copies');
         if isequal(parent,0),return;end
         try
-            destination=w.savePrintCopy(id,string(parent));refresh();
+            copyActivity=inkprof.internal.calculationProgress("Copying print files", ...
+                "Copying TIFF16 pages and checking file checksums. Please wait.",Parent=fig);
+            destination=w.savePrintCopy(id,string(parent));clear copyActivity;refresh();
             uialert(fig,"TIFF16 print copies and PRINTING.txt saved in:"+newline+destination,'Print files saved','Icon','success');
-        catch err,uialert(fig,err.message,'Print copy');end
+        catch err,clear copyActivity;uialert(fig,err.message,'Print copy');end
     end
     function o=optionsFor(id,saveElsewhere)
         o=struct;
@@ -431,9 +448,24 @@ end
             o=inkprof.internal.approvalDialog(w);
         elseif any(id==["review","refine"])
             if id=="refine"
-                choice=uiconfirm(fig,'Choose how to propose additional patches. Image and gamut selections require a current checked ICC. For gamut patches, first select an area in View gamut and save the selection. Error-driven refinement also requires C3 feedback.', ...
-                    'Refinement source','Options',{'From image','From gamut selection','From verification errors','Cancel'},'CancelOption',4);
-                if strcmp(choice,'Cancel'),o=[];return;end
+                sources={'From image','Manual gamut points / inner shell','From saved gamut selection','From verification errors','Try higher ICC grid (same measurements)'};
+                [index,accepted]=inkprof.internal.withFocus(fig,@listdlg,'PromptString','Refinement tools: choose additional measurements or a separate ICC grid trial.', ...
+                    'SelectionMode','single','ListString',sources,'Name','Refinement tools','ListSize',[430 150]);
+                if ~accepted,o=[];return;end
+                choice=sources{index};
+                if strcmp(choice,'Try higher ICC grid (same measurements)')
+                    inkprof.internal.profileGridTrialDialog(w,fig);o=[];return;
+                end
+                if strcmp(choice,'Manual gamut points / inner shell')
+                    previous=inkprof.internal.latestGamutProposal(w.Root,w.output('profile','profile'));
+                    gamutFigure=inkprof.showGamut(w.output('profile','profile'));waitfor(gamutFigure);
+                    latest=inkprof.internal.latestGamutProposal(w.Root,w.output('profile','profile'));
+                    if latest==""||latest==previous,o=[];return;end
+                    w.reload();
+                    if w.valid('refine')&&w.output('refine','proposal')==latest,o=[];refresh();return;end
+                    choice='From gamut selection';
+                end
+                if strcmp(choice,'From saved gamut selection'),choice='From gamut selection';end
                 o.Method="image";
                 if strcmp(choice,'From gamut selection')
                     o.Method="gamut";latest=inkprof.internal.latestGamutProposal(w.Root,w.output('profile','profile'));
@@ -449,6 +481,12 @@ end
                     if o.ExistingProposal=="",o=[];return;end
                     saved=jsondecode(fileread(o.ExistingProposal));
                     assert(string(saved.documentType)=="inkprof.gamut-refinement",'inkprof:Gamut','Select a gamut-area proposal.');
+                    if isfield(saved,'print')
+                        action=uiconfirm(fig,'Reuse this exact TIFF16 package if you have printed it. Creating a new package may change patch order or add C2 patches and requires a new print.', ...
+                            'Register gamut print for measurement','Options',{'Use existing print package','Create new print package','Cancel'},'DefaultOption',1,'CancelOption',3);
+                        if strcmp(action,'Cancel'),o=[];return;end
+                        o.UseExistingPrint=strcmp(action,'Use existing print package');
+                    end
                 end
                 if strcmp(choice,'From verification errors')
                     mode=uiconfirm(fig,'Argyll only: preconditioned targen patches, colprof -r 1.0, no InkProf Jacobian or pre-regularization. Current InkProf: C3 residuals and Jacobian-guided patches. Both require a new measurement and independent print verification.', ...
@@ -462,6 +500,7 @@ end
             if id=="refine"&&any(o.Method==["image","gamut"])
                 reference=inkprof.internal.pendingVerification(w);
                 o.IncludeC2=reference~="";o.C2Reference=reference;
+                if isfield(o,'UseExistingPrint')&&o.UseExistingPrint,o.IncludeC2=false;o.C2Reference="";end
                 if o.Method=="image"&&w.valid('refine')&&isfield(w.State.steps.refine,'method')&&string(w.State.steps.refine.method)=="image"
                     choice=uiconfirm(fig,'Reuse your saved image-patch selection or select another image? Any current C2 patches without a saved measurement will be included automatically.', ...
                         'Image patches','Options',{'Use saved image patches','Choose another image','Cancel'},'CancelOption',3);
@@ -481,7 +520,7 @@ end
                 if isempty(a),o=[];return;end
                 o.Notes=inkprof.internal.dialogText(a{1});
                 if strlength(strtrim(o.Notes))==0,o=[];return;end
-                answer=uiconfirm(fig,'Numeriskt kontrollerad; denna iteration är inte verifierad genom separat utskrift och mätning.','Confirm report scope', ...
+                answer=uiconfirm(fig,'Numerically checked; this iteration has not been verified by a separate print and measurement.','Confirm report scope', ...
                     'Options',{'Save with this statement','Cancel'},'DefaultOption',2,'CancelOption',2);
                 if strcmp(answer,'Cancel'),o=[];return;end
                 o.Confirmed=true;
@@ -592,7 +631,18 @@ end
     end
     function openResult(~,~)
         if isempty(w)||busy,return;end
-        s=w.State.steps.(selected);names=fieldnames(s.outputs);
+        w.reload();s=w.State.steps.(selected);
+        if selected=="continue"&&string(s.status)=="failed"
+            reports=inkprof.internal.failedIterationReports(w.Root);
+            if ~isempty(reports)
+                [index,ok]=inkprof.internal.withFocus(fig,@listdlg,'ListString',cellstr(string({reports.name})), ...
+                    'SelectionMode','single','PromptString','Review reports for the latest stopped build:', ...
+                    'Name','Stopped profile build');
+                if ok,edit(reports(index).path);end
+                return;
+            end
+        end
+        names=fieldnames(s.outputs);
         if isempty(names),return;end
         labels=names;
         deliveryStep=any(selected==["export","numericalExport"]);
@@ -654,7 +704,7 @@ switch id
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
  case "compare",s="Compare this ICC with the previous iteration on common RGB and Lab samples. Profile differences do not prove improved print accuracy; fresh independent print verification is still required.";
  case "approve",s="Record the intended use, quality requirements and accepted limitations. This is the user's decision after physical C2/C3 verification, not ISO certification.";
- case "refine",s="Add patches from an image, a saved gamut-area selection, or current verification errors. For gamut patches, first use View gamut → Select area → Review patches / create TIFF16, then choose From gamut selection here. Image and gamut refinement use the current checked ICC; error-driven refinement requires C3 feedback. Print the TIFF16 package saved by this step. Record why you are adding patches.";
+ case "refine",s="Add patches from an image, a saved gamut-area selection, or current verification errors. Use Manual gamut points / inner shell here to create a proposal, then From saved gamut selection to make the step-15 print package. Try higher ICC grid builds a separate candidate from the same measurements. Image and gamut refinement use the current checked ICC; error-driven refinement requires C3 feedback. Print the TIFF16 package saved by this step. Record why you are adding patches.";
  case "profile",s="Automatic iteration or manual B3. Manual B3 requires B2. A successful job produces a candidate, not an approval of print quality.";
  case "checks",s="Run numerical checks. Review the reports before printing; these checks do not replace C2/C3.";
  case "continue",s="Link refinement to previous inputs and patch roles. The next iteration requires new checks and new physical C2/C3 verification.";

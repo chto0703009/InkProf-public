@@ -31,6 +31,8 @@ switch id
   report=inkprof.internal.writeNumericalReport(w,file,folder,string(o.Notes));
   out=struct('profile',file,'finalReport',report.html,'reportJSON',report.json,'reportText',report.text,'reportPDF',report.pdf);
   inkprof.internal.prepareICCVariants(w,folder);
+  appendix=fullfile(folder,'measurement-appendix.pdf');
+  if isfile(appendix),out.measurementAppendix=appendix;end
   named=inkprof.internal.nameWorkflowReport(w,folder);out.finalReport=named.html;out.reportText=named.text;out.reportPDF=named.pdf;
   if isfield(o,'ICCDestination')||isfield(o,'ReportDestination')
    assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose both delivery destinations.');
@@ -165,11 +167,11 @@ switch id
   activity=inkprof.internal.calculationProgress("Step 8 - ICC checks","Checking the profile. Three numerical checks are in progress."); %#ok<NASGU>
   job=fileparts(w.output('profile','job'));
   phase=inkprof.internal.calculationProgress("Step 8 - Fit (1/3)","Comparing ICC predictions with the measured profiling patches.");
-  [~,a]=inkprof.checkProfileFit(job);clear phase
+  [~,a]=inkprof.checkProfileFit(job,ShowDialog=get(o,'ShowDialog',true));clear phase
   phase=inkprof.internal.calculationProgress("Step 8 - Grid (2/3)","Checking colour grids, inverse conversion and gradients.");
-  [~,b]=inkprof.checkProfileGrid(job);clear phase
+  [~,b]=inkprof.checkProfileGrid(job,ShowDialog=get(o,'ShowDialog',true));clear phase
   phase=inkprof.internal.calculationProgress("Step 8 - C1 (3/3)","Checking the colour engine and damaged-profile controls.");
-  [c1,c]=inkprof.checkProfileC1(job);clear phase
+  [c1,c]=inkprof.checkProfileC1(job,ShowDialog=get(o,'ShowDialog',true));clear phase
   assert(c1.allNegativeControlsDetected&&isempty(c1.grossFailureAlerts),'inkprof:WorkflowNumerical','C1 reports serious problems. Review the reports before C2.');
   out.fit=a;out.grid=b;out.c1=c;files=[a;b;c];
  case "c2"
@@ -244,6 +246,8 @@ switch id
   report=inkprof.internal.writeWorkflowFinalReport(w,file,folder,User=get(o,'ReportUser',get(project,'user',string(java.lang.System.getProperty('user.name')))));
   out.profile=file;out.finalReport=report.html;out.reportJSON=report.json;out.reportText=report.text;out.reportPDF=report.pdf;
   inkprof.internal.prepareICCVariants(w,folder);
+  appendix=fullfile(folder,'measurement-appendix.pdf');
+  if isfile(appendix),out.measurementAppendix=appendix;end
   named=inkprof.internal.nameWorkflowReport(w,folder);out.finalReport=named.html;out.reportText=named.text;out.reportPDF=named.pdf;
   if isfield(o,'ICCDestination')||isfield(o,'ReportDestination')
    assert(isfield(o,'ICCDestination')&&isfield(o,'ReportDestination'),'inkprof:Delivery','Choose save locations for both the ICC profile and report.');
@@ -268,7 +272,12 @@ switch id
     expected="inkprof.image-refinement";if method=="gamut",expected="inkprof.gamut-refinement";end
     assert(string(saved.documentType)==expected,'inkprof:Refinement','Wrong saved proposal type.');
     assert(string(saved.sourceProfileSHA256)==inkprof.internal.sha256(w.output('profile','profile')),'inkprof:Integrity','Saved selection belongs to another profile.');
-    [proposal,folder]=inkprof.rebuildImageRefinement(string(o.ExistingProposal),VerificationFile=reference,PlanPaper=get(o,'PlanPaper',true));
+    if get(o,'UseExistingPrint',false)
+     assert(method=="gamut",'inkprof:Refinement','Existing-print reuse is for saved gamut packages.');
+     [proposal,folder]=inkprof.internal.existingGamutPrint(string(o.ExistingProposal),w.Root,w.output('profile','profile'));
+    else
+     [proposal,folder]=inkprof.rebuildImageRefinement(string(o.ExistingProposal),VerificationFile=reference,PlanPaper=get(o,'PlanPaper',true));
+    end
    else
    assert(method=="image",'inkprof:Gamut','Select a saved gamut proposal.');
    [proposal,folder]=inkprof.refineFromImage(w.output('profile','job'),FitReport=w.output('checks','fit'),VerificationFile=reference, ...

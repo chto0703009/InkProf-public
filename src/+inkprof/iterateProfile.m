@@ -162,7 +162,9 @@ try
  [grid,gridFile]=inkprof.checkProfileGrid(jobs(selected),ShowDialog=false);
  result.gridReport=relative(gridFile);result.roundtripDeltaE00=grid.roundtripDeltaE00;
  [c1,c1File]=inkprof.checkProfileC1(jobs(selected),ShowDialog=false);result.c1Report=relative(c1File);
- assert(c1.allNegativeControlsDetected&&isempty(c1.grossFailureAlerts),'inkprof:IterationNumerical','Numerical checks require review; no print target produced.');
+ if ~c1.allNegativeControlsDetected||~isempty(c1.grossFailureAlerts)
+  error('inkprof:IterationNumerical','%s',inkprof.internal.iterationNumericalMessage(c1,grid,c1File,gridFile));
+ end
  event("numerical-checks","completed","Grid, inverse and CMM diagnostics saved. Success does not establish print quality or noise stability.");checkCancel();
  if ~isempty(devIds)
   p=proposals{selected};

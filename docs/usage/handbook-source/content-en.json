@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.0.1 | 2026-10-11",
+    "tag": "USER HANDBOOK | v1.1.0 | 2026-10-12",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Open methods and clear conditions",
-        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.0.0; app buttons and field names are English."
+        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.1.0; app buttons and field names are English."
       ]
     ],
     "callout": "InkProf brings profiling, checks and documentation together in one project. Print the colour targets using a separate printing application."
@@ -41,8 +41,8 @@
         "MATLAB requires its own licence; InkProf was tested with R2025b and no mandatory add-on toolboxes. Install Python 3.11-3.13 (tested with 3.13) and ArgyllCMS (3.5.0 was used in development). Git is needed for the clone command below. On macOS, Python, Git and ArgyllCMS can be installed using Homebrew; with Homebrew installed: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Download InkProf v1.0.0",
-        "Open the v1.0.0 link below, download the source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.0.0 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
+        "2. Download InkProf v1.1.0",
+        "Download the v1.1.0 source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.1.0 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
       ],
       [
         "3. Install Python packages in the InkProf folder",
@@ -614,7 +614,7 @@
   },
   {
     "title": "Select new colour patches",
-    "tag": "ROW 15 / ERRORS, IMAGE OR GAMUT",
+    "tag": "15 | REFINEMENT TOOLS",
     "sections": [
       [
         "From verification errors",
@@ -641,7 +641,7 @@
         "Confirm the selected patches and review the suggested paper layout. Use saved image patches can reuse a saved selection. The app saves inputs and choices for traceability. Read the patch count and TIFF path in the result before printing."
       ]
     ],
-    "lead": "Choose From verification errors, From image or From gamut selection. Gamut selection manually strengthens measurement coverage around chosen colours; see the walkthrough on page 56."
+    "lead": "Refinement tools groups photographs, manual gamut points, inner shells, saved gamut proposals, verification errors and higher ICC-grid trials. See page 56 for gamut/shell selection and the new appendix for grid trials."
   },
   {
     "title": "Choose the error-driven refinement method",
@@ -948,7 +948,7 @@
       ],
       [
         "Basis of this handbook",
-        "The Swedish and English handbooks share the same chapter order and corresponding content. The v1.0.0 edition prepared on 10 October 2026 was checked against workflow, recipes, row remeasurement, gradients, C2/C3 and ICC import/delivery. Separate diagnostic scripts are not built-in app features. Documentation and numerical tests are not new physical validation."
+        "Both handbooks describe program version 1.1.0 with inner-shell refinement and current workflow updates, document revision 2026-10-12. Version 1.1.0 was released on 12 October 2026; the release tag identifies this source version. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -1010,11 +1010,11 @@
   },
   {
     "title": "More samples in dark colours",
-    "tag": "v1.0.0 | MATERIALS AND SHADOWS",
+    "tag": "v1.1.0 | MATERIALS AND SHADOWS",
     "sections": [
       [
         "Matte paper",
-        "Project details → Profiling offers Extra shadow detail for Matte. It is used when Paper finish is Matte. Standard distribution disables this adaptation."
+        "Project details  >  Profiling offers Extra shadow detail for Matte. It is used when Paper finish is Matte. Standard distribution disables this adaptation."
       ],
       [
         "Editable starting values",
@@ -1036,7 +1036,7 @@
   },
   {
     "title": "Gamut, certificates and source code",
-    "tag": "v1.0.0 | DELIVERY AND LICENSING",
+    "tag": "v1.1.0 | DELIVERY AND LICENSING",
     "sections": [
       [
         "Surfaces and measurement points are different views",
@@ -1056,7 +1056,7 @@
       ],
       [
         "Release status",
-        "This handbook describes source version 1.0.1, released 11 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+        "This handbook describes source version 1.1.0, released 12 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
       ]
     ],
     "links": [
@@ -1602,36 +1602,36 @@
     ]
   },
   {
-    "title": "Manual gamut reinforcement",
-    "tag": "ADDENDUM | VIEW GAMUT AND ROWS 15-17",
-    "lead": "Manually strengthen measurement coverage in a chosen colour region. You choose where more samples are needed; refinement requires printing, measurement and a new profile build.",
+    "tag": "REFINEMENT | STEPS 15-17",
+    "title": "Manual points and an inner shell",
+    "lead": "Refinement tools is the shared entry point. Choose Manual gamut points / inner shell. The current profile and C1 checks must be complete.",
     "sections": [
       [
-        "1. Check the current profile",
-        "Rows 7 and 8 (C1. Fit, Grid and C1) must show Complete. Row 15 requires current numerical checks. If it is Locked, complete row 8 and click Refresh."
+        "1. Choose a method",
+        "Whole inner gamut shell defaults to the entire surface. Selected inner shell areas restricts it to Lab regions around clicked vertices. Selected RGB neighbourhoods adds device-RGB neighbours. Select area enables picking; Rotate view restores rotation."
       ],
       [
-        "2. Select the region manually",
-        "Open View gamut. Use Rotate view to expose the region, then Select area in the right panel. Click the coloured surface; a white marker identifies the selection. Choose several points around an indentation if needed. Clear selection removes all markers."
+        "2. Set thickness and budget",
+        "Shell thickness is ΔE76: shortest geometric Lab distance inward from the surface. Default 3, maximum 50. Near-surface lines may guide thickness; there is no automatic detection. Minimum spacing uses RGB percentage points; Maximum new patches is an upper limit."
       ],
       [
-        "3. Review and save the samples",
-        "Defaults: Neighbour radius 3 RGB percentage points, Minimum spacing 1, Maximum new patches 100. Click Review patches / create TIFF16, uncheck unwanted rows, then Create TIFF16 target. Existing training colours and near duplicates are excluded. Extra controls increase the printed total."
+        "3. Review the visual check",
+        "Review patches / create TIFF16 shows proposed points against the 3D gamut and their depth against shell thickness. Uncheck unwanted patches. These are ICC predictions, not measured print errors. Selection prioritises gaps in modelled colour coverage."
       ],
       [
-        "4. Choose paper and close the gamut view",
-        "Review the paper suggestion. Preview selected dimensions opens a temporary preview. Close it with the red window button, then click Use these dimensions behind it to save. Close the gamut window after saving; it stays open until you close it."
+        "4. Create and copy TIFF16",
+        "Review paper dimensions and choose Create TIFF16 target. Status shows phase and elapsed time, including copying and checksum checks. Select another destination or cancel the copy chooser to retain only the project package. Close exits the gamut view."
       ],
       [
-        "5. Link the selection to row 15",
-        "Select row 15 and Run selected step. Choose From gamut selection and Use latest selection. Record your reason and confirm the paper dimensions. Wait for Complete. This saves the workflow print package, including pending C2 colours when applicable."
+        "5. Register the exact print in step 15",
+        "After closing, step 15 returns to registration. For already printed sheets: From saved gamut selection, select the correct proposal.json and Use existing print package. Record your reason. The same TI2 and patch order are preserved; pending C2 patches are not added. Create new print package requires a new print."
       ],
       [
-        "6. Print, measure and rebuild",
-        "Select row 15 and \"Copy TIFF16 for printing…\". Print this package at 100% with colour management disabled and the same printer, paper and settings. Let it dry. Run row 16, Measure refinement, then row 17, Build next iteration. Assess the new profile with a fresh independent verification print."
+        "6. Measure and rebuild",
+        "Step 15 must be Complete before step 16 unlocks. Print at 100% without colour conversion and allow drying. Measure the matching TI2 in step 16 and build the next iteration in step 17. Assess it with a fresh independent verification print."
       ]
     ],
-    "callout": "Manual supplementation is not automatic error detection. Printer RGB is approximately associated with the selected vertex through forward ICC samples. ΔE76 offset is the association distance, not measured print error. More measurements may strengthen the model, but cannot extend physical gamut or guarantee that an indentation disappears."
+    "callout": "The shell follows the estimated ICC gamut. Extra measurements may improve the model but cannot expand physical printer gamut. ΔE76 is geometric thickness, not ΔE00 or measured print error."
   },
   {
     "tag": "BEFORE STRIP MEASUREMENT | RGB PRINT CHECK",
@@ -1644,15 +1644,15 @@
       ],
       [
         "2. Measure the three controls before the strips",
-        "Each new TIFF16 page has red, green and blue 8 × 8 mm squares above the profiling grid at the upper right. Older targets have them below the grid. Select Start measurement. InkProf starts with the RGB check: calibrate as instructed and hold i1 Pro 2 stationary at the centre of each square with the same backing. Click the measurement button for the displayed page and colour; do not swipe. The check uses native M0. Follow the displayed page and R, G or B. If placement or order was wrong, select a measured row and Remeasure page, or Restart all RGB checks to redo the sequence in the same window."
+        "Every TIFF16 page has R, G and B at the upper right. Nominal 8 × 8 mm squares expand by one pixel on every side, with clearance for the caption. Older targets place them below. Calibrate i1 Pro 2 as instructed; measure stationary in M0 on the same backing. Measure each square ONCE: three readings per page. Use the program button, not the instrument button; do not swipe. Confirm the next sheet at Change printed page. All pages are checked."
       ],
       [
         "3. Approve a known-correct print as the reference",
         "The first check needs a print whose paper and colour settings you have independently checked. After the spot readings, select Approve as print reference. InkProf saves the RGB values as the project reference. Without an approved reference, pages are compared with page 1; this cannot detect a shared error on all pages. Changed recorded printer, paper or print conditions require a new reference."
       ],
       [
-        "4. Failed or a reasoned override",
-        "Above the default 5 ΔE00 threshold, strip measurement is stopped and the step receives Failed. Page, colour and difference are saved. Check active print settings and reprint if needed. To accept the difference anyway, select Override…, enter your reason and select Save override and continue. The reason, date and original values are retained; the reference and threshold are unchanged. Missing readings cannot be bypassed."
+        "4. Excessive deviation: Remeasure",
+        "Above the review threshold, normally 5 ΔE00, the page, colour and deviation are flagged. Select the row and Remeasure page / colour to read that square once again. The previous value remains in history. Restart all RGB checks repeats the sequence. If the deviation persists, check paper and print settings and reprint as needed. Override… requires a written reason; missing readings cannot be bypassed."
       ],
       [
         "Separate from profiling; older pages still work",
@@ -1773,12 +1773,56 @@
         "On an M4 with Python 3.13, SciPy 1.15.3 could not load _spropack. The message included __thread_bss and non-zero offset. The import test passed with NumPy 2.2.6 and SciPy 1.16.3. Updated installation sources therefore use SciPy 1.16.3. This is a verified import test, not qualification of every macOS version."
       ]
     ],
-    "callout": "This guidance describes the post-v1.0.0 source update dated 2026-10-11. The original release archive retains its older dependencies. Checks and package installation do not change saved projects or measurement files.",
+    "callout": "This guidance applies to 1.1.0 with current source updates, document revision 2026-10-12. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
     "links": [
       [
         "Details and repair commands",
         "https://github.com/chto0703009/InkProf-public/blob/main/docs/usage/python-runtime.md"
       ]
     ]
+  },
+  {
+    "tag": "APPENDIX | ICC GRID TRIAL",
+    "title": "Try a higher ICC grid",
+    "lead": "A denser ICC grid is a separate trial from the same saved measurements. It adds no measured information and requires no new chart.",
+    "sections": [
+      [
+        "Start from the shared menu",
+        "Refinement tools  >  Try higher ICC grid (same measurements). Choose High or Ultra for B2A or both A2B and B2A, above the original level. Default: B2A: Ultra. Argyll chooses n through quality levels; arbitrary n is not offered."
+      ],
+      [
+        "What changes?",
+        "B2A converts to printer RGB. B2A-only retains forward-model and pre-fit quality. Both also changes A2B and pre-fit resolution when pre-smoothing is enabled. Measurements, smoothing value, colourimetry, FWA and mapping follow the original recipe. A separate candidate is saved; the active profile is retained."
+      ],
+      [
+        "Visual numerical verification",
+        "Table and bars show actual n and n³ for source and candidate. Select a test gradient for overlaid printer-RGB curves and predicted L*. Dashed: source; solid: candidate. The same nine sRGB paths use relative colorimetric, BPC off and float LittleCMS. grid-curves.json stores values and ICC hashes."
+      ],
+      [
+        "Assess the benefit",
+        "Fit, grid and photographic-gradient checks are saved with the candidate. Training error is not independent validation. A denser grid may describe the model in more detail but cannot replace measurements in sparse regions. Use shell printing and measurement to investigate those areas; physical improvement requires print assessment."
+      ]
+    ],
+    "callout": "Shell refinement changes the measurement set. Grid trials change computed profile tables. Test separately to understand their effects."
+  },
+  {
+    "tag": "v1.1.0 | WORKFLOW AND CERTIFICATES",
+    "title": "Next steps and clear delivery",
+    "lead": "Inner-shell refinement is the main addition in 1.1.0. All refinement tools share one place.",
+    "sections": [
+      [
+        "Next step",
+        "The app suggests the next step from saved, valid results. After step 15, measure in 16, build in 17 and compare in 18. Go to suggested next step selects the step; it does not run it."
+      ],
+      [
+        "Stopped profile build",
+        "When numerical checks stop a build, open step 17 results and inspect the latest C1 and Grid reports. Measurements and the previous active ICC are retained. The candidate is not activated automatically. Review the cause before repeating the build."
+      ],
+      [
+        "Certificate and appendix",
+        "The main certificate contains the summary and ColorChecker pairs with reference colour, measured colour and ΔE00. Complete measurement lists and technical details are in measurement-appendix.pdf, including step 19. The appendix shares the certificate ID and ICC hash. Step 19 saves a numerical certificate without separate print verification; earlier measurements are labelled historical evidence. Choose an external destination to copy the complete delivery folder; project originals are retained."
+      ]
+    ],
+    "callout": "Restart InkProf after updating the code to load the new dialogs and guidance."
   }
 ]

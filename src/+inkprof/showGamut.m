@@ -21,6 +21,8 @@ annotation(f,'textbox',[.04 .01 .61 .15],'String',string(name)+string(ext)+newli
  "A2B surface; sRGB preview colours. Not a measurement or a quality score.",'Interpreter','none','EdgeColor','none');
 f.UserData=data;
 inkprof.internal.gamutPicker(f,ax,surface,data,profile);
+uicontrol(f,'Style','pushbutton','String','Close','Tag','closeGamut', ...
+ 'Units','normalized','Position',[.70 .002 .28 .026],'Callback',@(~,~)delete(f));
 end
 function reason=getReason(ref)
 reason="";if isfield(ref,'reason'),reason=string(ref.reason);end

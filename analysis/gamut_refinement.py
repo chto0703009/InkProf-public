@@ -38,24 +38,41 @@ def run(request, folder):
     profile = Path(request['profile'])
     if digest(profile) != request['profileSHA256']:
         raise ValueError('Selected ICC changed.')
-    rows, sources = candidates(request['anchorRGBPercent'], request['existingRGBPercent'],
-                               request['radiusPercent'], request['minSpacingPercent'], request['maxPatches'])
+    shell = request.get('samplingMode', 'neighbour') in ('shell', 'shell-region')
+    if shell:
+        from gamut_shell import candidates as shell_candidates
+        rows, lab, depths = shell_candidates(request, profile)
+        sources = [0] * len(rows)
+    else:
+        rows, sources = candidates(request['anchorRGBPercent'], request['existingRGBPercent'],
+                                   request['radiusPercent'], request['minSpacingPercent'], request['maxPatches'])
     if not rows:
         raise ValueError('No new patches remain. Increase the radius or reduce the minimum spacing.')
-    lab = forward_lookup(request['xicclu'], profile, np.asarray(rows) / 100)
+    if not shell:
+        lab = forward_lookup(request['xicclu'], profile, np.asarray(rows) / 100)
     white = colour.CCS_ILLUMINANTS['CIE 1931 2 Degree Standard Observer']['D50']
     preview = np.clip(colour.XYZ_to_sRGB(colour.Lab_to_XYZ(lab, illuminant=white), illuminant=white,
                                         chromatic_adaptation_transform='Bradford'), 0, 1)
     if digest(profile) != request['profileSHA256']:
         raise ValueError('ICC changed during patch calculation.')
     patches = [dict(patchId=f'GAM-{i+1:04d}', rgbPercent=rgb, anchorIndex=source, predictedLab=pred.tolist(),
-                    previewRGB=colour_rgb.tolist(), kind='gamut-neighbour')
+                    previewRGB=colour_rgb.tolist(), kind='gamut-shell' if shell else 'gamut-neighbour')
                for i, (rgb, source, pred, colour_rgb) in enumerate(zip(rows, sources, lab, preview))]
     result = dict(schemaVersion=1, documentType='inkprof.gamut-refinement', status='proposal-review-required',
                   sourceProfileSHA256=request['profileSHA256'], anchors=request['anchors'],
                   parameters=dict(radiusPercent=request['radiusPercent'], minSpacingPercent=request['minSpacingPercent'],
                                   maxPatches=request['maxPatches']), candidates=patches,
                   caveat='User-directed sampling, not measured error feedback. Selected gamut vertices are associated with approximate nearest forward RGB samples; extra measurements cannot extend the physical printer gamut.')
+    if shell:
+        for patch, depth in zip(patches, depths):
+            patch['surfaceDistanceDeltaE76'] = float(depth)
+        result['samplingMode'] = request['samplingMode']
+        if request['samplingMode'] == 'shell-region':
+            result['parameters']['regionRadiusDeltaE76'] = request['regionRadiusDeltaE76']
+        result['parameters']['shellThicknessDeltaE76'] = request['shellThicknessDeltaE76']
+        result['parameters']['candidateSeed'] = 42
+        result['surface'] = request['surface']
+        result['caveat'] = 'Forward ICC predictions within the inner Lab shell, not measured print errors. Extra measurements cannot extend physical gamut.'
     folder = Path(folder); folder.mkdir(parents=True)
     (folder / 'proposal.json').write_text(json.dumps(result, indent=2, allow_nan=False))
     return result

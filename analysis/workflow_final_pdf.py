@@ -39,6 +39,9 @@ def create(folder):
     styles['Title'].fontName = styles['Heading2'].fontName = 'ReportBold'
     styles['Title'].textColor = colors.HexColor('#19303c')
     story = []
+    measurement_story = []
+    appendix_name = 'measurement-appendix.pdf'
+
 
     def p(text, style='BodyReport'):
         text = str(text).replace('–', '-').replace('—', '-')
@@ -60,24 +63,35 @@ def create(folder):
         story += [p('Regularization - method, inputs and results', 'Heading2'), p(r['regularization']['summaryText'])]
     story += pdf_section(r, p)
     if r.get('patchOutliers'):
+        overview = r['patchOutliers']
+        story += [p('Measurement result summary', 'Heading2'),
+                  p(overview.get('overviewText', 'See the measurement appendix for the complete results.'))]
+        for key, label in [('desired', 'Measured print vs desired colour'), ('predicted', 'Measured print vs profile prediction')]:
+            values = r.get('verificationSummary', {}).get(key)
+            if values:
+                story.append(p(f"{label}: mean {values['mean']:.3f}, P95 {values['p95']:.3f}, maximum {values['max']:.3f} Delta E00 ({values['count']} unique colours)."))
+    story += [p('Detailed measurement evidence', 'Heading2'),
+              p('The separate measurement-appendix.pdf contains the complete colour list, deviations, technical diagnostics and history. It belongs to this certificate and the same checked ICC. All measurements are retained, including colours with larger deviations.')]
+    if r.get('patchOutliers'):
         outliers=r['patchOutliers']
-        story += [PageBreak(),p('Whole-target result overview','Heading2'),p(outliers.get('overviewText','Whole-target distribution unavailable.')),p('Technical diagnostic colours: deviations above 5 dE00','Heading2'),p('Desired colour, profile prediction and measured colour are shown as sRGB previews. Delta E00 compares measurement with desired colour (above 5). See Appendix A.'),p(outliers['message']),p(outliers.get('contextText','Reachability evidence unavailable.'))]
+        measurement_story += [PageBreak(),p('Whole-target result overview','Heading2'),p(outliers.get('overviewText','Whole-target distribution unavailable.')),p('Technical diagnostic colours: deviations above 5 dE00','Heading2'),p('Desired colour, profile prediction and measured colour are shown as sRGB previews. Delta E00 compares measurement with desired colour (above 5). See Appendix A.'),p(outliers['message']),p(outliers.get('contextText','Reachability evidence unavailable.'))]
         # All colours are shown, in target order, before individual diagnostic cards.
         from reportlab.lib.colors import HexColor
         patches=outliers.get('allPatches',[])
+        if isinstance(patches,dict):patches=[patches]
         if patches:
             cells=[]
             for patch in patches:
                 swatch=Table([['']],colWidths=[18*mm],rowHeights=[8*mm])
                 swatch.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),HexColor(patch['hex']))]))
-                cells.append([swatch,p(f"{patch['sampleId']} · {patch['deltaE00']:.1f}")])
+                cells.append([swatch,p(f"{patch['sampleId']} · {patch['deltaE00']:.1f}",'DetailReport')])
             rows=[cells[i:i+8]+['']*(8-len(cells[i:i+8])) for i in range(0,len(cells),8)]
-            story += [p('Every unique measured colour — target order','Heading3'),Table(rows,colWidths=[22*mm]*8),PageBreak()]
+            measurement_story += [p('Every unique measured colour — target order','Heading3'),Table(rows,colWidths=[22*mm]*8),PageBreak()]
         if r.get('verificationSummary'):
-            story += [p('Two separate comparisons (Delta E00)', 'Heading2')]
+            measurement_story += [p('Two separate comparisons (Delta E00)', 'Heading2')]
             for key,label in [('desired','Measured print vs desired colour'),('predicted','Measured print vs current profile prediction')]:
                 v=r['verificationSummary'][key]
-                story += [p(label+f": mean {v['mean']:.3f}, median {v['median']:.3f}, P95 {v['p95']:.3f}, max {v['max']:.3f} ({v['count']} unique patches)")]
+                measurement_story += [p(label+f": mean {v['mean']:.3f}, median {v['median']:.3f}, P95 {v['p95']:.3f}, max {v['max']:.3f} ({v['count']} unique patches)")]
         cards=[]
         patches=outliers['patches']
         if isinstance(patches,dict):patches=[patches]
@@ -93,7 +107,7 @@ def create(folder):
             rows=[cards[i:i+3]+['']*(3-len(cards[i:i+3])) for i in range(0,len(cards),3)]
             grid=Table(rows,colWidths=[57*mm]*3,hAlign='LEFT')
             grid.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('GRID',(0,0),(-1,-1),.3,colors.lightgrey),('LEFTPADDING',(0,0),(-1,-1),1),('RIGHTPADDING',(0,0),(-1,-1),1)]))
-            story += [grid,Spacer(1,3*mm)]
+            measurement_story += [grid,Spacer(1,3*mm)]
     story += pdf_table(r, styles, "en")
     if r.get('fwa'):
         story += [KeepTogether([p('FWA/OBA - settings and results','Heading2'),p(r['fwa']['summaryText'])])]
@@ -111,7 +125,7 @@ def create(folder):
         story += [p(gamut_surface.caption("en")), p('ICC SHA-256: '+r['profile']['sha256']), gamut_surface.pdf_drawing(gamut)]
     else:
         story += [p('Gamut unavailable: '+r.get('gamut', {}).get('reason', 'No surface saved.'))]
-    story += [PageBreak(), p('Complete results and history', 'Heading2')]
+    measurement_story += [PageBreak(), p('Complete results and history', 'Heading2')]
     # Flowing paragraphs paginate long notes, file paths and histories safely.
     in_results = False
     for line in (folder / 'final-report.txt').read_text(encoding='utf-8').rsplit('\nSIGNATURE\n',1)[0].splitlines():
@@ -122,9 +136,9 @@ def create(folder):
         if in_results:
             continue
         if line.strip():
-            story.append(p(line, 'DetailHeading' if line.isupper() and len(line)<120 else 'DetailReport'))
+            measurement_story.append(p(line, 'DetailHeading' if line.isupper() and len(line)<120 else 'DetailReport'))
         else:
-            story.append(Spacer(1, 2*mm))
+            measurement_story.append(Spacer(1, 2*mm))
 
     if r.get('signature'):
         story += [PageBreak(), p('Measurement certificate signature','Title'),
@@ -185,6 +199,36 @@ def create(folder):
             from pdf_notices import attach
             attach(self)
             super().save()
+
+    compact = []
+    for item in measurement_story:
+        if isinstance(item, PageBreak) and (not compact or isinstance(compact[-1], PageBreak)):
+            continue
+        compact.append(item)
+    measurement_story = compact
+    while measurement_story and isinstance(measurement_story[-1], PageBreak):
+        measurement_story.pop()
+    while measurement_story and isinstance(measurement_story[0], PageBreak):
+        measurement_story.pop(0)
+    appendix_story = [p('Measurement appendix', 'Title'),
+                      p('Project: '+r['project']['name']),
+                      p('Certificate ID: '+r.get('certificateId', 'Not specified')),
+                      p('Checked ICC SHA-256: '+r['profile']['sha256']),
+                      p('Companion to final-report.pdf. Detailed evidence, not a separate approval. Includes all recorded colours and deviations.'),
+                      Spacer(1, 4*mm)] + measurement_story
+    SimpleDocTemplate(str(folder / appendix_name), pagesize=(210*mm, 297*mm),
+                      leftMargin=18*mm, rightMargin=18*mm, topMargin=28*mm, bottomMargin=26*mm,
+                      title='InkProf - Measurement appendix', author=r.get('reportUser', 'InkProf')).build(appendix_story, canvasmaker=NumberedCanvas)
+    import hashlib
+    appendix_record = dict(documentType='inkprof.measurement-appendix', schemaVersion=1,
+                           certificateId=r.get('certificateId'), sourceProfileSHA256=r['profile']['sha256'],
+                           file=appendix_name, sha256=hashlib.sha256((folder/appendix_name).read_bytes()).hexdigest())
+    (folder/'measurement-appendix.json').write_text(json.dumps(appendix_record, indent=2), encoding='utf-8')
+    if html_path.exists():
+        html = html_path.read_text(encoding='utf-8')
+        if 'measurement-appendix.pdf' not in html:
+            html = html.replace('</body>', '<p><a href="measurement-appendix.pdf">Detailed measurement appendix (PDF)</a></p></body>') if '</body>' in html else html+'<p><a href="measurement-appendix.pdf">Detailed measurement appendix (PDF)</a></p>'
+            html_path.write_text(html, encoding='utf-8')
 
     SimpleDocTemplate(str(folder / 'final-report.pdf'), pagesize=(210*mm, 297*mm),
                       leftMargin=18*mm, rightMargin=18*mm, topMargin=28*mm, bottomMargin=26*mm,

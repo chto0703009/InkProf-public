@@ -64,8 +64,14 @@ def create(folder, language="en"):
     else:
         decision_lines.append('No current profile comparison attached. Run step 18 before export to include it.')
     sections.insert(2, ('Comparison evidence for the decision', decision_lines))
+    fitting_records = []
+    fitting_title = 'Complete fitting measurements - training evidence only'
     for key, source in r['sources'].items():
         data = json.loads((folder / source['file']).read_text(encoding='utf-8'))
+        if key == 'fit':
+            fitting_records = data.get('patches', [])
+            if isinstance(fitting_records, dict):
+                fitting_records = [fitting_records]
         lines = [f"Evidence: {source['file']}", 'SHA-256: '+source['sha256']]
         if 'summary' in data:
             lines.append('Fit error (Delta E00): '+stats(data['summary']))
@@ -76,6 +82,8 @@ def create(folder, language="en"):
         if 'grossFailureAlerts' in data:
             lines.append('Gross numerical alerts: '+(str(data['grossFailureAlerts']) if data['grossFailureAlerts'] else 'None'))
         sections.append(('Numerical evidence: '+key, lines))
+    if fitting_records:
+        sections.append((fitting_title, ['All recorded fitting patches. Measured values and model predictions are training evidence, not independent print verification. Original full precision values remain in the checks-fit.json evidence file.']))
     if r.get('regularization'):
         sections.append(('Regularization - method, inputs and results', r['regularization']['summaryText'].splitlines()))
     if r.get('shadow'):
@@ -85,6 +93,10 @@ def create(folder, language="en"):
     if figure_groups is not None:
         sections.append((figure_title, ['Blue: previous profile. Orange: current profile. Shared RGB samples predicted in CIELAB D50; not measured gamut boundaries.', 'HTML starts in 2D at L*=50 with half-width 5. Change L* to view other slices. Clear 2D and drag to rotate the 3D view. PDF shows an a*/b* slice at L* = 50 +/- 5.']))
     historical = r.get('historicalCertificate', {})
+    historical_reference = None
+    historical_reference_title = "Previous reference target colours - historical evidence"
+    historical_all = []
+    complete_title = "Complete previous measurement records - historical evidence"
     historical_patches = []
     historical_measured = None
     measured_title = "Previous measured print colours - historical evidence"
@@ -95,6 +107,9 @@ def create(folder, language="en"):
         if hashlib.sha256(source.read_bytes()).hexdigest() != historical['sha256']:
             raise ValueError('Historical certificate checksum mismatch')
         old = json.loads(source.read_text(encoding='utf-8'))
+        if old.get('referenceTarget'):
+            historical_reference = old
+            sections.append((historical_reference_title, [historical['scope'], 'Iteration: '+str(historical['iteration']), 'These ColorChecker/reference measurements do not verify the current ICC.']))
         from lab_views import measured_data
         historical_measured = measured_data(old,source.parent)
         if historical_measured:
@@ -112,6 +127,11 @@ def create(folder, language="en"):
         lines.append('The complete previous certificate is included in the previous-certificate folder in its original language.')
         sections.append(('Previous print measurements - historical evidence', lines))
         outliers = old.get('patchOutliers', {})
+        historical_all = outliers.get('allPatches', [])
+        if isinstance(historical_all, dict):
+            historical_all = [historical_all]
+        if historical_all:
+            sections.append((complete_title, [historical['scope'], 'Iteration: '+str(historical['iteration']), 'All recorded unique colours, including accepted measurements and larger deviations. Original source records remain in previous-certificate/final-report.json.']))
         historical_patches = outliers.get('patches', [])
         if isinstance(historical_patches, dict):
             historical_patches = [historical_patches]
@@ -146,12 +166,22 @@ def create(folder, language="en"):
     project_section = next(section for section in sections if section[0] == 'Project and printing settings')
     sections.remove(project_section)
     sections.insert(1, project_section)
+    sections.insert(3, ('Measurement appendix', ['measurement-appendix.pdf contains complete measurement records, numerical evidence and technical details. It belongs to this certificate and the same ICC. Historical measurements do not verify the current profile.']))
+    def in_appendix(title):
+        return (title.startswith('Numerical evidence:') or title in (
+            'Comparison evidence for the decision', 'Regularization - method, inputs and results',
+            'Shadow processing in saved profile recipe', 'FWA/OBA - settings and results',
+            figure_title, measured_title, complete_title, fitting_title,
+            'Latest measured print - colour swatches and Delta E00', content(r, 'en')['appendixTitle']))
     text = '\n\n'.join(title+'\n'+'\n'.join(lines + [': '.join(row) for row in content(r, "en")['rows']] if title == reference_title else lines) for title, lines in sections)
     (folder / 'final-report.txt').write_text(text, encoding='utf-8')
     # Each HTML section is a page with an explicit footer, also when printed.
     pages = []
     for i, (title, lines) in enumerate(sections, 1):
         body = ''.join('<p>'+html.escape(str(line))+'</p>' for line in lines)
+        if title == historical_reference_title and historical_reference:
+            from certificate_reference import html_section
+            body += html_section(historical_reference)
         if title == reference_title:
             body = table_html(r, "en").replace('<h2>'+html.escape(reference_title)+'</h2>', '')
         if title == content(r, "en")['appendixTitle']:
@@ -178,6 +208,7 @@ def create(folder, language="en"):
     if r.get('deliveryProfile'):
         from urllib.parse import quote
         delivery_link = "<a href='"+quote(r['deliveryProfile']['file'])+"'>Named delivery profile</a> | "
+    delivery_link += "<a href='measurement-appendix.pdf'>Measurement appendix (PDF)</a> | "
     links = ''.join(f"<li><a href='{html.escape(s['file'], quote=True)}'>{html.escape(k)}</a></li>" for k, s in r['sources'].items())
     document = "<!doctype html><html lang='en'><meta charset='utf-8'><title>InkProf - Measurement certificate</title><style>body{font:16px system-ui;background:#eef2f4;color:#19303c}article{background:white;max-width:850px;margin:24px auto;padding:35px;overflow-wrap:anywhere}header,footer{font-size:13px;color:#52656e}footer{border-top:1px solid #ccc;margin-top:30px;padding-top:15px}h1{font-size:24px}table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:8px;border-bottom:1px solid #ccd8de;text-align:left}.patches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.patch{border:1px solid #ccc;padding:5px;font-size:12px;break-inside:avoid}@media print{article{break-after:page;margin:0}}</style>"+''.join(pages)+"<nav>"+delivery_link+"<a href='final-report.pdf'>PDF</a> | <a href='final-report.json'>JSON</a> | <a href='profile.icc'>ICC</a><ul>"+links+'</ul></nav></html>'
     (folder / 'final-report.html').write_text(document, encoding='utf-8')
@@ -188,10 +219,26 @@ def create(folder, language="en"):
         style.fontName = 'Report'
     styles['Heading2'].fontName = styles['Title'].fontName = 'ReportBold'
     styles['Title'].textColor = colors.HexColor('#19303c')
+    styles.add(ParagraphStyle('RecordCell', fontName='Report', fontSize=6, leading=8))
     styles.add(ParagraphStyle('ReportBody', fontName='Report', fontSize=9, leading=13, spaceAfter=7, wordWrap='CJK'))
-    story = []
+    main_story = []
+    appendix_story = [Paragraph('Measurement appendix', styles['Title']),
+        Paragraph(html.escape('Certificate ID: '+r.get('certificateId', 'Not specified')), styles['ReportBody']),
+        Paragraph(html.escape('ICC SHA-256: '+r['profile']['sha256']), styles['ReportBody']),
+        Paragraph(html.escape(r['scopeStatement']), styles['ReportBody'])]
     for title, lines in sections:
+        story = appendix_story if in_appendix(title) else main_story
         section_start = len(story)
+        if title == historical_reference_title and historical_reference:
+            from certificate_reference import pdf_section
+            def reference_paragraph(text, style='BodyReport'):
+                return Paragraph(html.escape(str(text)).replace('\n','<br/>'), styles['Normal'])
+            story.append(PageBreak())
+            story.append(Paragraph(html.escape(historical_reference_title), styles['Heading2']))
+            for scope_line in lines:
+                story.append(Paragraph(html.escape(scope_line), styles['ReportBody']))
+            story += pdf_section(historical_reference, reference_paragraph)[1:]
+            continue
         if title == reference_title:
             story += pdf_table(r, styles, "en")
             continue
@@ -204,6 +251,28 @@ def create(folder, language="en"):
             if title == 'Signature':
                 story.append(Spacer(1, 8*mm))
 
+        if title == fitting_title:
+            def cell(value):
+                return Paragraph(html.escape(str(value)), styles['RecordCell'])
+            def triplet(value):
+                return ' / '.join(format(v, '.3f') for v in value) if isinstance(value, list) else 'Not recorded'
+            rows = [[cell(label) for label in ['Index', 'Patch ID / location', 'RGB %', 'Measured Lab', 'Predicted Lab', 'Delta E00']]]
+            for patch in fitting_records:
+                rows.append([cell(patch.get('sourceIndex', '')), cell(str(patch.get('sampleId', ''))+' / '+str(patch.get('coordinate', ''))),
+                    cell(triplet(patch.get('rgbPercent'))), cell(triplet(patch.get('measuredLab'))),
+                    cell(triplet(patch.get('predictedLab'))), cell(format(patch['deltaE00'], '.4f'))])
+            grid = Table(rows, colWidths=[10*mm, 47*mm, 29*mm, 35*mm, 35*mm, 18*mm], repeatRows=1)
+            grid.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('GRID',(0,0),(-1,-1),.2,colors.lightgrey)]))
+            story.append(grid)
+        if title == complete_title:
+            rows = [[Paragraph('Patch / name', styles['ReportBody']), Paragraph('Delta E00', styles['ReportBody']), Paragraph('Recorded values', styles['ReportBody'])]]
+            for patch in historical_all:
+                label = str(patch['sampleId'])+' '+str(patch.get('referenceName', ''))
+                values = json.dumps({k: v for k, v in patch.items() if k not in ('sampleId', 'referenceName', 'deltaE00')}, ensure_ascii=False)
+                rows.append([Paragraph(html.escape(label), styles['ReportBody']), Paragraph(str(patch.get('deltaE00', 'Not recorded')), styles['ReportBody']), Paragraph(html.escape(values), styles['ReportBody'])])
+            grid = Table(rows, colWidths=[35*mm, 23*mm, 116*mm], repeatRows=1)
+            grid.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('GRID',(0,0),(-1,-1),.3,colors.lightgrey)]))
+            story.append(grid)
         if title == gamut_title and gamut:
             story.append(gamut_surface.pdf_drawing(gamut, language))
         if title == figure_title:
@@ -256,7 +325,15 @@ def create(folder, language="en"):
 
     SimpleDocTemplate(str(folder / 'final-report.pdf'), pagesize=(210*mm, 297*mm),
         leftMargin=18*mm, rightMargin=18*mm, topMargin=28*mm, bottomMargin=28*mm,
-        title='InkProf - Measurement certificate', author=r['reportUser']).build(story, canvasmaker=NumberedCanvas)
+        title='InkProf - Measurement certificate', author=r['reportUser']).build(main_story, canvasmaker=NumberedCanvas)
+    SimpleDocTemplate(str(folder / 'measurement-appendix.pdf'), pagesize=(210*mm,297*mm),
+        leftMargin=18*mm, rightMargin=18*mm, topMargin=28*mm, bottomMargin=28*mm,
+        title='InkProf - Measurement appendix', author=r['reportUser']).build(appendix_story, canvasmaker=NumberedCanvas)
+    import hashlib
+    metadata = dict(documentType='inkprof.measurement-appendix', schemaVersion=1,
+        certificateId=r.get('certificateId', 'Not specified'), profileSHA256=r['profile']['sha256'],
+        file='measurement-appendix.pdf', sha256=hashlib.sha256((folder/'measurement-appendix.pdf').read_bytes()).hexdigest())
+    (folder/'measurement-appendix.json').write_text(json.dumps(metadata, indent=2), encoding='utf-8')
 
 
 if __name__ == '__main__':

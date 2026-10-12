@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.0.1 | 2026-10-11",
+    "tag": "InkProf | v1.1.0 | 2026-10-12",
     "title": "Your image deserves the right colours",
     "lead": "You chose the light, shaped the image and worked on every nuance. When the image reaches paper, that work should come with it.",
     "sections": [
@@ -218,7 +218,7 @@
     "callout": "These checks reduce the risk of carrying faulty prints or readings forward. A passed check still needs to be followed by profile review and verification."
   },
   {
-    "tag": "v1.0.1 | NEW OPTIONS",
+    "tag": "v1.1.0 | NEW OPTIONS",
     "title": "Understand your print system",
     "sections": [
       [
@@ -250,8 +250,8 @@
         "X-Rite has ended updates and support for i1Pro 2 and earlier generations. InkProf uses ArgyllCMS independently of i1Profiler. Compatible MATLAB, Python and ArgyllCMS versions run natively on Apple Silicon or Intel. On Apple Silicon, no Rosetta is needed, supporting continued use after its removal. The i1Pro 2 workflow is tested on current macOS; future macOS versions require verification."
       ],
       [
-        "Stable patch release",
-        "Source release 1.0.1, published 11 October 2026. Saved targets and measurements are preserved. Assess improvement through printing and measurement."
+        "Stable feature release",
+        "Source release 1.1.0, published 12 October 2026. Saved targets and measurements are preserved. Assess improvement through printing and measurement."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub.",
@@ -263,6 +263,21 @@
       [
         "X-Rite: i1Pro 1 support",
         "https://www.xrite.com/service-support/i1pro1supportdroppedini1profiler320"
+      ]
+    ]
+  },
+  {
+    "tag": "v1.1.0 | REFINEMENT",
+    "title": "An inner shell near the gamut surface",
+    "lead": "Add measured points where existing coverage is weak.",
+    "sections": [
+      [
+        "Shell and review",
+        "Choose the whole inner shell or selected areas, set thickness in ΔE76 and inspect plotted proposals before printing. ΔE76 measures geometric distance; quality reports use ΔE00."
+      ],
+      [
+        "Measure and compare",
+        "Steps 15–18 save the target, measurements, next candidate and comparison. Numerical stops preserve the previous profile. Improvement requires print and measurement verification."
       ]
     ]
   }

@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.0.1 | 2026-10-11",
+    "tag": "InkProf | v1.1.0 | 2026-10-12",
     "title": "Din bild förtjänar rätt färger",
     "lead": "Du valde ljuset, formade bilden och arbetade med varje nyans. Det arbetet ska följa med till papperet.",
     "sections": [
@@ -218,7 +218,7 @@
     "callout": "Kontrollerna minskar risken att felaktiga utskrifter eller mätningar går vidare. En godkänd kontroll behöver fortfarande följas av granskning och verifiering av profilen."
   },
   {
-    "tag": "v1.0.1 | NYA MÖJLIGHETER",
+    "tag": "v1.1.0 | NYA MÖJLIGHETER",
     "title": "Förstå ditt utskriftssystem",
     "sections": [
       [
@@ -250,8 +250,8 @@
         "X-Rite har avslutat uppdateringar och stöd för i1Pro 2 och tidigare i1Pro-generationer. InkProf använder ArgyllCMS för instrumentkommunikation och är oberoende av i1Profiler. InkProf är utformat för en mjukvarumiljö där kompatibla versioner av MATLAB, Python och ArgyllCMS körs direkt på Macens processor, både Apple Silicon och Intel. På Apple Silicon behövs då inte Rosetta, vilket ger förutsättningar för fortsatt användning när Rosetta tas bort från macOS. i1Pro 2-flödet är testat på dagens macOS; framtida macOS-versioner behöver verifieras."
       ],
       [
-        "Stabil korrigeringsrelease",
-        "Källkodsrelease 1.0.1, publicerad 11 oktober 2026. Sparade mål och mätningar bevaras. Bedöm förbättring genom utskrift och mätning."
+        "Stabil funktionsrelease",
+        "Källkodsrelease 1.1.0, publicerad 12 oktober 2026. Sparade mål och mätningar bevaras. Bedöm förbättring genom utskrift och mätning."
       ]
     ],
     "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. Externa komponenter har egna licenser. Kod, villkor och verifieringsstatus finns på GitHub.",
@@ -263,6 +263,21 @@
       [
         "X-Rite: i1Pro 1 support",
         "https://www.xrite.com/service-support/i1pro1supportdroppedini1profiler320"
+      ]
+    ]
+  },
+  {
+    "tag": "v1.1.0 | REFINEMENT",
+    "title": "Skal nära gamutytan",
+    "lead": "Fler mätpunkter där befintlig täckning är svag.",
+    "sections": [
+      [
+        "Skal och granskning",
+        "Välj hela inre skalet eller markerade områden, ange tjocklek i ΔE76 och granska utritade förslag före utskrift. ΔE76 används för geometriskt avstånd; kvalitetsrapporter använder ΔE00."
+      ],
+      [
+        "Mät och jämför",
+        "Steg 15–18 sparar mål, mätningar, nästa kandidat och jämförelse. Numeriska stopp bevarar tidigare profil. Förbättring behöver verifieras med utskrift och mätning."
       ]
     ]
   }

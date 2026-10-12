@@ -1,0 +1,3 @@
+-r requirements-report.txt
+# PDF inspection for certificate/appendix regression tests only.
+pypdf==6.20.1

@@ -39,3 +39,103 @@ In the MATLAB **View gamut** window:
 The mesh comes from Argyll's envelope and does not carry original device RGB coordinates. The interactive window therefore associates vertices with nearest forward samples from 65-level RGB cube faces and a 17-level interior grid, in absolute CIELAB D50. This is an approximate association; its distance and sampled Lab are retained in the saved anchors. A picked point is not proof of a profile defect, and extra measurements cannot extend the physical gamut. Assess the rebuilt profile with a fresh independent verification print.
 
 ICC files outside a successful InkProf profile job can be inspected and selected, but cannot create a project refinement target. Report viewers retain their existing rotation-only behaviour.
+
+## Add measurements in an inner gamut shell
+
+In **View gamut**, the sampling menu defaults to **Whole inner gamut shell**.
+No surface selection is needed. Set **Shell thickness (ΔE76)** (default 3,
+maximum 50), **Minimum spacing** in device RGB percentage points, and
+**Maximum new patches**. Review the proposal and continue through the same
+step 15–17 print, measurement and rebuild workflow described above.
+
+Thickness is the shortest Euclidean Lab distance to a surface triangle,
+measured inward from the current ICC gamut. RGB lines or other features near
+the surface can guide the chosen thickness; InkProf does not automatically
+detect them or infer their cause. The shell covers the entire gamut, not only
+blue colours. Boundary points are included. The mesh must be closed;
+Concavities are retained rather than replaced by a convex hull.
+
+InkProf forward-transforms a reproducible pool of 16,384 scrambled Sobol RGB
+samples plus 17-level RGB cube faces, quantised to RGB16. It retains only
+samples inside the mesh and within the chosen thickness, excludes existing
+training RGB and nearby duplicates, then selects candidates by greatest Lab
+distance from existing measurements and previously selected candidates.
+The requested budget is an upper limit; a very thin shell or large spacing
+may yield fewer points. This is finite candidate sampling, not exhaustive
+coverage. A larger fitting target does not by itself prove improved accuracy.
+
+**Selected inner shell areas** optionally restricts the same shell to Lab
+spheres around clicked surface vertices; **Selected shell area radius**
+(default 15 ΔE76) sets their extent. **Selected RGB neighbourhoods** retains
+the earlier device-neighbourhood method. The proposal stores the source mesh,
+ICC hash, parameters, predicted Lab and each shell patch's surface distance.
+
+Programmatic use: `inkprof.refineFromGamut(jobFile, anchors,
+SamplingMode="shell", Surface=surfaceData, ShellThicknessDeltaE76=3)`.
+For the whole shell, `anchors` may be an empty struct array; `surfaceData`
+must contain the current profile hash, Lab vertices and zero-based triangles
+from InkProf's Argyll gamut result.
+
+## Shared refinement tools and higher ICC grid trials
+
+Use **Refinement tools** in the main app (also the menu in step 15).
+It groups **From image**, **Manual gamut points / inner shell**,
+**From saved gamut selection**, **From verification errors**, and
+**Try higher ICC grid (same measurements)**. Manual gamut / shell opens the
+same gamut viewer; save the reviewed proposal there, then choose the saved
+gamut selection in this menu to create the step-15 measurement package.
+
+The grid trial offers High or Ultra for **B2A only** or **A2B and B2A**.
+Argyll controls resolution through its `-q` and `-b` quality settings; this
+feature does not accept an arbitrary n. The source recipe is copied, keeping
+the same locked B1 measurements, smoothing, colourimetry, FWA and gamut
+mapping. B2A-only trials retain forward-model and pre-fit quality. A both-table
+trial also changes the pre-fit resolution if pre-smoothing was enabled.
+Choose a level higher than the source; Ultra defaults to B2A only.
+
+A separate candidate job and `grid-trial.json` are saved under the project,
+with source ICC/recipe hashes. `grid-comparison.json` reads actual n and n³
+from the source and new ICC tables; the dialog displays both. Training fit,
+grid and photographic-gradient checks run on the candidate. The original
+profile and active workflow selection are retained. A denser LUT does not
+supply new measured information or demonstrate improved print accuracy.
+No new chart or measurement is required for this trial.
+
+Programmatic use: `inkprof.rebuildProfileGrid(b1Folder, sourceJobFolder,
+Quality="ultra", Tables="B2A")`. Use `RunBuild=false` to save a trial recipe
+without starting Argyll. Reference: [Argyll colprof](https://www.argyllcms.com/doc/colprof.html).
+
+## Visual numerical verification
+
+The gamut patch review includes a rotatable 3D Lab plot of proposed patches
+against the translucent source gamut when a shell mesh is available. A second
+plot shows each shell patch's inward ΔE76 distance and the chosen thickness.
+These plots show all proposed candidates; the Use checkboxes determine which
+are printed. The underlying mesh, predicted positions and depths remain in
+the saved proposal.
+
+The ICC grid trial shows a grouped chart of actual source/candidate n³,
+plus selectable matching test-gradient curves: printer R/G/B percentages
+and predicted L*. Dashed curves are the original; solid curves are the trial.
+Nine identical sRGB test paths are converted with relative colorimetric,
+BPC off and float LittleCMS buffers. `grid-curves.json` saves their values
+and both ICC hashes. These are numerical verification plots, not a print
+measurement or proof that a visible artefact has been removed.
+
+After a direct gamut proposal creates its print package, a folder chooser
+lets you save a complete copy elsewhere. Cancel retains the project copy.
+Copied files are hash-checked and existing deliveries are not overwritten.
+This direct package remains the proposal package; for workflow measurement,
+use the step-15 package described above. The gamut viewer also has a visible
+**Close** button below its sampling panel.
+
+## Register an already printed shell for step 16
+
+If a shell was printed directly from the gamut viewer but step 16 is locked,
+choose **Refinement tools → From saved gamut selection**, select its proposal,
+and choose **Use existing print package**. This registers the exact saved TI2
+and patch roles in step 15, after verifying the current ICC and print-package
+hashes. It does not regenerate the target or add pending C2 patches. Complete
+the assessment note; step 16 then measures that same printed package.
+When the gamut viewer was opened from step 15, close it after saving to return
+to this registration flow. A new print package always requires its own print.

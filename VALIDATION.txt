@@ -1,3 +1,50 @@
+InkProf v1.1.0 — 2026-10-12
+Publication authorised by the maintainer on 2026-10-12.
+Historical validation follows unchanged.
+
+Completed development checks on the current working source:
+- Python unittest discovery: 204 tests passed, 0 failed (23.639 seconds).
+  Test dependencies: requirements-test.txt; pypdf is PDF inspection tooling.
+- MATLAB selected suites: 11 passed, 0 failed: workflow recommendations (8),
+  portable HTML evidence links (2), certificate delivery naming (1).
+- Node viewer suites passed: change-event handling, auto-rotation, 2D/3D,
+  lightness slicing and drag rotation.
+- Certificate regression tests cover both verified and numerical-only reports:
+  all recorded fitting and historical measurement records in the appendix,
+  ColorChecker reference/measured pairs in the main certificate, preserved
+  historical scope, matching certificate ID/ICC hash and appendix checksum.
+- External HTML links support both attribute quote styles; URLs and fragments
+  are preserved. Full MATLAB delivery/instrument workflows were not rerun.
+- Source release check: 426 source files have notices; version, schema and
+  additional resource hashes match. Code whitespace check passed.
+- Five maintained PDFs display 1.1.0 on every page: handbooks 64 physical
+  pages each, presentations 9 pages each, English MATLAB guide 9 pages.
+  Changed certificate/reference/fitting tables and documentation pages were
+  rendered and visually inspected. Downloads copies match by SHA-256.
+- Private project reports used for local layout inspection are excluded from
+  source publication. No private measurement or profile is a release asset.
+
+No new physical print, instrument or platform qualification is claimed.
+Public-checkout checks completed for v1.1.0:
+- Python unittest discovery: 204 passed, 0 failed (25.388 seconds).
+- MATLAB: 55 selected tests passed, 0 failed, 0 incomplete, across workflow
+  recommendations, portable report links, certificate naming, gamut picker,
+  gamut activity, ICC-grid trial, RGB print controls and ProjectWorkflow.
+  Synthetic test data only; private reference fixtures were not included.
+- Both Node viewer suites passed.
+- Source release check: 425 source files have notices; version, schema and
+  additional resource hashes match. Dependency inventory hashes/versions and
+  code whitespace checks passed.
+- Public source contains reviewed current files without private Git history.
+  Private projects, profiles, measurements, vendor reference fixtures,
+  runtime binaries and local environment configuration are excluded.
+- Five final PDFs show 1.1.0 on every page. Release date/status corrected;
+  representative changed pages visually checked. Repository, public checkout
+  and Downloads copies match exactly.
+Prior platform limitations and ISSUE-001 remain applicable.
+
+Historical validation records:
+
 InkProf v1.0.1 — released 2026-10-11
 Publication approved by Christer Törnkvist on 2026-10-11.
 The preparation record below retains its original validation scope. Final

@@ -250,3 +250,19 @@ must not be described as byte-identical to the checked v2 or as independently
 print-verified in every intent. With Both, both named profiles are retained in
 the portable report bundle. Imported v4 verification uses the original profile
 through LittleCMS rather than the Argyll compatibility reconstruction.
+
+## Separate detailed measurement appendix
+
+New print-verified PDF certificates retain the assessment, print conditions,
+whole-target summary and aggregate errors in the main certificate. Complete
+unique-colour lists, reference-target swatches, diagnostic cards and technical
+history are generated as `measurement-appendix.pdf` in the same delivery
+folder. It includes the same certificate ID and checked ICC SHA-256;
+`measurement-appendix.json` records its checksum. It is also registered among
+the workflow outputs and linked from HTML. Full data and colours with larger
+deviations remain available; moving them does not alter approval scope.
+
+Deliver the companion folder with the certificate. Existing issued PDFs are
+not rewritten. Numerical-only certificates retain their explicitly limited
+scope and their historical references; this separation applies to the
+print-verified certificate's measured-colour detail sections.

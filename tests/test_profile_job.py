@@ -79,6 +79,20 @@ class JobTests(unittest.TestCase):
             self.assertIn('media white',result['error'])
             self.assertFalse((p/'result').exists())
 
+    def test_ultra_grid_quality_arguments(self):
+        with tempfile.TemporaryDirectory() as d:
+            p=self.prepare(d);recipe=json.loads((p/'recipe.json').read_text())
+            recipe['engine'].update(quality='ultra',b2aQuality='ultra')
+            recipe['engine']['plannedArguments'][0]='-qu'
+            recipe['engine']['plannedArguments'][-2:-2]=['-bu']
+            (p/'recipe.json').write_text(json.dumps(recipe))
+            request=json.loads((p/'request.json').read_text())
+            request['files']['recipe.json']=hashlib.sha256((p/'recipe.json').read_bytes()).hexdigest()
+            (p/'request.json').write_text(json.dumps(request))
+            result=self.execute(p)
+            self.assertEqual(result['status'],'succeeded')
+            self.assertIn('-qu',result['arguments']);self.assertIn('-bu',result['arguments'])
+
     def test_success(self):
         with tempfile.TemporaryDirectory() as d:
             p=self.prepare(d);r=self.execute(p);self.assertEqual(r['status'],'succeeded');self.assertTrue((p/r['profileFile']).exists())

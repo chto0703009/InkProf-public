@@ -3,7 +3,7 @@
 # InkProf is free software under GNU GPL version 3 or later.
 # Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 from pathlib import Path
-import json, os, sys
+import json, os, sys, subprocess
 from xml.sax.saxutils import escape
 import reportlab
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, Table, TableStyle, Flowable, Image
@@ -15,7 +15,8 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 ROOT=Path(__file__).resolve().parent
 VERSION=(ROOT.parents[2]/'VERSION').read_text().strip()
-DATE='2026-10-11'
+DATE='2026-10-12'
+CODE_REVISION='v'+VERSION
 LANG=sys.argv[2] if len(sys.argv)>2 else 'en'
 if LANG not in ('sv','en'):raise ValueError('Language must be sv or en.')
 def local(sv,en):return sv if LANG=='sv' else en
@@ -126,10 +127,10 @@ story=[Spacer(1,8*mm),p(local('ANVÄNDARHANDBOK','USER HANDBOOK'),'tag'),
  Spacer(1,9*mm),
  Image(str(ROOT/'examples/cover-gamut.png'),width=174*mm,height=100*mm,kind='proportional'),
  Spacer(1,5*mm),Paragraph('<b>Christer Törnkvist</b>',coverAuthor),
- Paragraph(local('Datum: ','Date: ')+DATE+'<br/>'+local('Programversion: ','Program version: ')+escape(VERSION),coverDetails),PageBreak()]
+ Paragraph(local('Datum: ','Date: ')+DATE+'<br/>'+local('Programversion: ','Program version: ')+escape(VERSION)+'<br/>'+local('Dokumentrevision: ','Document revision: ')+DATE+' | '+local('Kod: ','Code: ')+CODE_REVISION,coverDetails),PageBreak()]
 for i,page in enumerate(json.loads((ROOT/f'content-{LANG}.json').read_text())):
  if i:story.append(PageBreak())
- story.extend([p(escape(page['tag']),'tag'),p(escape(page['title']),'title')])
+ story.extend([p(escape(page['tag'].replace('v1.0.1','v'+VERSION)),'tag'),p(escape(page['title']),'title')])
  if page.get('lead'):story.append(p(escape(page['lead']),'lead'))
  if page.get('diagram'):story.extend([Diagram(),Spacer(1,3*mm)])
  if page.get('overviewDiagram'):story.extend([OverviewDiagram(),Spacer(1,3*mm)])

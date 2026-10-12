@@ -1,5 +1,43 @@
 # Changelog
 
+## v1.1.0 — 2026-10-12
+
+- Preserve portable HTML evidence links for both single- and double-quoted attributes, including the measurement appendix in external delivery bundles.
+
+- Create a separate measurement appendix for numerical-only step 19 too, retaining complete historical measurement records and technical evidence, with matching certificate ID, ICC hash and appendix checksum. Keep historical ColorChecker swatches and the current scope in the main certificate.
+
+- Keep named ColorChecker/reference swatch pairs and Delta E00 in the main certificate. Numerical-only certificates label earlier reference measurements as historical evidence, never verification of the current ICC.
+
+- Explain failed iteration numerical checks with the specific alert, roundtrip maximum and C1/Grid report paths; recommend reviewing a stopped build rather than blindly repeating it.
+
+- Recommend the next workflow step from valid project evidence and add a Go to suggested next step button. Prioritise measuring registered refinements, building the next iteration, and current ICC checks; offer verification and numerical-only alternatives explicitly.
+
+- Automatically register reviewed gamut/shell TIFF16 packages as completed step 15 before offering print copies, so step 16 becomes ready without a separate selection-registration action.
+
+- Handle change events as well as input in HTML Lab viewers; auto-rotation enters 3D directly. Add vertical drag rotation and touch handling to the profile comparison.
+
+- Move complete measured-colour lists, diagnostic cards and technical history into a separate measurement-appendix.pdf, preserving certificate/ICC identity and a checksummed appendix record. Keep summary results in the customer certificate.
+
+- Require complete RGB control definitions on every page and explicitly confirm the physical sheet when advancing to a new page during spot measurement.
+
+- Extend printed R/G/B spot-control squares by one pixel on every side and record the actual rendered bounds.
+
+- Register completed gamut/shell print packages in step 15 without regenerating the target, preserving printed patch order and unlocking step 16 after integrity checks.
+
+- Keep elapsed activity visible during external print-package copying and checksum verification, including the main workflow print-copy action.
+
+- Show elapsed activity in the foreground gamut panel while calculating patches and creating TIFF16; pause the timer during patch review/save selection and clean it up on completion or error.
+
+- Offer another save location after creating a gamut refinement print package; keep project originals and verify copied files. Add a visible Close button to the gamut viewer.
+
+- Fix paper-preview JSON encoding by excluding the runtime progress-window handle from target manifest options.
+
+- Plot proposed gamut points and shell depths during review; show actual n³ changes and matching source/candidate RGB and L* gradient curves for ICC-grid trials. Save curve values with source ICC hashes.
+
+- Group image, manual gamut/shell, verification-error and higher ICC-grid trials in Refinement tools. Grid trials preserve the source recipe and measurements, build a separate High/Ultra candidate and report actual source/candidate n³ table sizes.
+
+- Add inner gamut shell patch sampling with adjustable ΔE76 thickness, whole-surface coverage, optional selected areas, and forward RGB candidates chosen to fill Lab gaps. Preserve the existing review, print and measurement continuation.
+
 ## v1.0.1 — 2026-10-11
 - Show elapsed activity on the foreground paper dialog during TIFF16 preview generation and while finalizing C2 verification files.
 - Allow remeasuring a selected RGB control or restarting all controls in the same window, retaining previous evidence and clearing superseded check approval.

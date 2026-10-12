@@ -78,7 +78,7 @@ try
     text=string(fileread(fullfile(assets,'final-report.html')));
     [~,assetName]=fileparts(assets);
     prefix=string(java.net.URLEncoder.encode(char(assetName),'UTF-8'));prefix=replace(prefix,"+","%20");
-    text=regexprep(text,"(href|src)='(?![A-Za-z][A-Za-z0-9+.-]*:|//|#)","$1='"+prefix+"/");
+    text=inkprof.internal.portableReportLinks(text,prefix);
     text=replace(text,"</body>","<p><a href='gradients.html'>Gradient soft proof / Gradienter med ICC-profilen</a></p></body>");
    else
     text=string(fileread(fullfile(assets,'final-report.txt')))+newline+newline+"Rapportunderlag: "+assets;

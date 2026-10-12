@@ -16,6 +16,12 @@ if ~isfield(chart,'printControls'),return;end % Legacy prints have no requiremen
 controlFile=fullfile(folder,chart.printControls.file);
 assert(inkprof.internal.sha256(controlFile)==string(chart.printControls.sha256),'inkprof:Integrity','Print-control definition changed.');
 controls=jsondecode(fileread(controlFile));
+pageCount=numel(chart.passesInStrips);
+for page=1:pageCount
+ labels=sort(string({controls.patches([controls.patches.page]==page).label}));
+ assert(isequal(labels,["B","G","R"]),'inkprof:PrintControl','Page %d must contain exactly R, G and B controls.',page);
+end
+assert(numel(controls.patches)==3*pageCount,'inkprof:PrintControl','Control plan must cover every printed page.');
 source=options.SourceTI3;if source=="",source=fullfile(folder,'chart.ti3');end
 standard="XRGA";serial="";
 if isfile(source)
@@ -45,14 +51,14 @@ for k=1:numel(controls.patches)
 end
 base=fullfile(folder,'print-control-spots',string(java.util.UUID.randomUUID()));mkdir(base);
 request=struct('documentType',"inkprof.print-control-test",'schemaVersion',1,'calibrationStandard',standard, ...
- 'instrumentSerial',serial,'condition',"M0",'port',options.Port,'readings',readings,'context',context,'pageCount',numel(chart.passesInStrips));
+ 'instrumentSerial',serial,'condition',"M0",'port',options.Port,'measurementsPerPatch',1,'readings',readings,'context',context,'pageCount',numel(chart.passesInStrips));
 inkprof.internal.writeJson(fullfile(base,'request.json'),request);
 session=[];closed=false;busy=false;index=1;referenceUsed="";check=struct;
-sessionBase=base;pendingIndices=1:numel(readings);selected=1;complete=false;
+shownPage=1;sessionBase=base;pendingIndices=1:numel(readings);selected=1;complete=false;
 fig=uifigure('Name','InkProf - Page RGB print controls','Position',[160 110 850 690],'WindowStyle','modal','Tag','InkProfPrintControls');
 g=uigridlayout(fig,[7 1]);g.RowHeight={35,100,65,'1x',55,38,50};g.Padding=[18 16 18 16];
 uilabel(g,'Text','Separate RGB print checks','FontSize',22,'FontWeight','bold');
-uilabel(g,'Text','On new targets, the R, G and B squares sit at the upper right above the profiling grid. Older targets have them below the grid. Measure one square at a time with i1 Pro 2 stationary at its centre, using the same backing. Do not swipe. Click Measure square, not the instrument button. Follow the displayed page and colour. If placement or order was wrong, restart the checks or select a measured row and remeasure it here. These readings never enter the profiling data.','WordWrap','on');
+uilabel(g,'Text','On new targets, the R, G and B squares sit at the upper right above the profiling grid. Older targets have them below the grid. Measure each square once. Each page requires three measurements: R, G and B. Keep i1 Pro 2 stationary at the centre, using the same backing. Do not swipe. Click Measure square, not the instrument button. Follow the displayed page and colour. If placement or order was wrong, restart the checks or select a measured row and remeasure it here. These readings never enter the profiling data.','WordWrap','on');
 status=uilabel(g,'Text','Start to connect and calibrate.','WordWrap','on','FontSize',18,'FontWeight','bold','Tag','printControlStatus');
 table=uitable(g,'Data',cell(numel(readings),4),'ColumnName',{'Page','Control','Status','Delta E00'}, ...
  'ColumnWidth',{70,90,450,'auto'},'ColumnEditable',false,'RowName',{},'Tag','printControlTable','CellSelectionCallback',@selectReading);
@@ -95,7 +101,13 @@ uiwait(fig);
        action.Text='Calibrate';action.Enable='on';restart.Enable='on';status.BackgroundColor=[.94 .94 .94];status.FontColor=[0 0 0];status.Text='Place i1 Pro 2 on its white calibration reference, then click Calibrate.';
       elseif any(string(e.kind)==["ready","retry"])&&index<=numel(pendingIndices)
        action.Text='Measure square';action.Enable='on';restart.Enable='on';q=readings(pendingIndices(index));
-       showSquare(q);
+       if q.page~=shownPage
+        action.Enable='off';
+        uiconfirm(fig,sprintf('Place printed PAGE %d in front of you. Measure its R, G and B control squares before continuing. Do not reuse the previous page.',q.page), ...
+         'Change printed page','Options',{'This page is ready'},'Icon','info');
+        shownPage=q.page;
+       end
+       showSquare(q);action.Enable='on';
        action.Text=sprintf('Measure page %d - %s',q.page,string(q.colour));
        status.Text=sprintf('PAGE %d — %s\nKeep the instrument still at the centre. Then click Measure page %d - %s. (%d/%d)',q.page,string(q.colour),q.page,string(q.colour),index,numel(pendingIndices));
       else,action.Enable='off';end
@@ -104,7 +116,7 @@ uiwait(fig);
       if sessionBase~=base
        copyfile(fullfile(sessionBase,sprintf('reading-%03d.json',index)),fullfile(base,sprintf('reading-%03d.json',row)));
       end
-      table.Data{row,3}='Measured and saved separately';index=index+1;
+      table.Data{row,3}='Measured once and saved';index=index+1;
      case 'completed'
       stop(poller);action.Enable='off';analyse();complete=true;redo.Enable='on';restart.Enable='on';updateSelected();finish.Text='Continue with saved chart';
       if ~check.referenceAvailable&&check.status~="review-required",reference.Enable='on';end
@@ -160,7 +172,7 @@ uiwait(fig);
   if isfile(active),copyfile(active,fullfile(previous,'superseded-check.json'));delete(active);end
   inkprof.internal.writeJson(fullfile(base,'retry.json'),struct('previousSpotFolder',previous,'remeasuredIndices',indices));
   for row=reshape(indices,1,[]),table.Data(row,3:4)={'Waiting for remeasurement',''};end
-  index=1;pendingIndices=indices;complete=false;referenceUsed="";check=struct;reportFile="";
+  shownPage=readings(indices(1)).page;index=1;pendingIndices=indices;complete=false;referenceUsed="";check=struct;reportFile="";
   reference.Enable='off';override.Enable='off';redo.Enable='off';restart.Enable='off';
   finish.Text='Skip / close';action.Text='Start RGB checks';action.Enable='on';
   q=readings(indices(1));showSquare(q);status.Text=sprintf('Remeasure page %d, %s. Start RGB checks, calibrate, then measure the displayed square.',q.page,string(q.colour));
@@ -183,6 +195,12 @@ uiwait(fig);
   end
   status.BackgroundColor=[.94 .94 .94];status.FontColor=[0 0 0];
   status.Text="RGB print check: "+string(check.status)+". These readings do not affect profile fitting.";
+  failed=find([check.readings.flagged]);
+  if ~isempty(failed)
+   selected=failed(1);table.Selection=[selected 1];updateSelected();
+   status.Text=sprintf('Deviation exceeds %.2f ΔE00. Select a flagged row and click Remeasure page / colour.',check.thresholdDeltaE00);
+   notice.Text='Remeasure the selected square once. The previous reading is retained as evidence and replaced in the check. If the deviation remains, check the print settings and paper.';
+  end
  end
  function publish()
   check.definitionSHA256=chart.printControls.sha256;check.spotFolder=extractAfter(base,strlength(string(folder))+1);

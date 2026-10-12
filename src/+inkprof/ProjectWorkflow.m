@@ -179,6 +179,22 @@ classdef ProjectWorkflow < handle
                 names=fieldnames(outputs);
                 for k=1:numel(names),outputs.(names{k})=obj.relative(outputs.(names{k}));end
                 obj.State.steps.(id)=struct('status',"completed",'outputs',outputs,'artifacts',artifacts,'message',"Complete");
+                if id=="checks"&&string(previousState.steps.refine.status)=="completed"&& ...
+                        isfield(previousState.steps.refine,'method')&&string(previousState.steps.refine.method)=="gamut"
+                    % Rechecking the identical ICC must not discard its printed target.
+                    saved=previousState.steps.refine;
+                    try
+                        inkprof.internal.existingGamutPrint(obj.resolve(saved.outputs.proposal),obj.Root,obj.output('profile','profile'));
+                        intact=true;
+                        for artifact=reshape(saved.artifacts,1,[])
+                            file=obj.resolve(artifact.path);
+                            intact=intact&&isfile(file)&&inkprof.internal.sha256(file)==string(artifact.sha256);
+                        end
+                        if intact,obj.State.steps.refine=saved;end
+                    catch
+                        % Changed ICC or print evidence remains stale.
+                    end
+                end
                 if id=="refine"
                     method="errors";if isfield(options,'Method'),method=string(options.Method);end
                     obj.State.steps.refine.method=method;
@@ -259,7 +275,7 @@ classdef ProjectWorkflow < handle
                 source=obj.resolve(outputs.(key));[~,name,ext]=fileparts(source);name=name+ext;
                 copyfile(source,fullfile(destination,name));hash=inkprof.internal.sha256(source);
                 assert(inkprof.internal.sha256(fullfile(destination,name))==hash,'inkprof:Integrity','Print copy checksum mismatch.');
-                files(end+1)=struct('name',name,'sha256',hash);
+                files(end+1)=struct('name',name,'sha256',hash);drawnow;
             end
             if string(id)=="c2"
                 instructions="C2 verification target. The ICC profile has already been applied once. Print at 100% with ALL further colour conversion OFF."+newline+ ...
