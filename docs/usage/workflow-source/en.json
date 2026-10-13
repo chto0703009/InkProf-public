@@ -1,35 +1,48 @@
 [
   {
-    "tag": "WORKFLOW AND MATLAB | v1.1.0",
+    "tag": "MATLAB WORKFLOW | v1.1.0",
     "title": "From colour target to ICC",
     "sections": [
       [
-        "",
-        "Source version 1.1.0, released 2026-10-12. Document updated 2026-10-13. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with setupInkProf(CheckPython=true); startInkProfApp(); from the source folder."
+        "Requirements and startup",
+        "Source version 1.1.0, released 2026-10-12; guide updated 2026-10-13. Tested with base MATLAB R2025b (no additional MATLAB toolboxes), Python 3.13 and ArgyllCMS on macOS. Python performs colour analysis and report generation; MATLAB provides the application and workflow. Install these runtimes separately. Windows and Linux are untested; use of a POSIX measurement bridge does not establish Linux compatibility. Run the commands below from the InkProf source folder."
+      ],
+      [
+        "How to use this guide",
+        "A step is a numbered row in the application’s left-hand workflow table. Follow the saved status and suggested next step. A completed calculation is evidence, not automatic approval of print quality."
       ]
     ],
-    "lead": "InkProf - When colours have to be right"
+    "lead": "InkProf - Quality profiling for RGB printers",
+    "printedURL": true,
+    "codeBlocks": [
+      "setupInkProf(CheckPython=true);\nstartInkProfApp();"
+    ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.1.0",
+    "tag": "MATLAB WORKFLOW | v1.1.0",
     "title": "One project, one source of settings",
     "sections": [
       [
         "",
-        "Use New project once, then Open project to resume. Project details has Project and materials, Printing settings, Profiling and Target paper tabs. Record the user, printer, paper name/finish, ink and dye/pigment/mixed/unknown type, printer coating and its settings, print application, media/driver/quality/colour management, drying hours, profile name, D50 colour-data choices, FWA and paper/sled limits. Unknown values remain unknown. Recipe fields managed here are read-only in the recipe dialog. FWA changes made later are reflected in the project. Changing relevant inputs invalidates dependent results, preserving earlier evidence."
+        "Use \"New project\" once, then \"Open project\" to resume. \"Project details\" contains the \"Project and materials\", \"Printing settings\", \"Profiling\" and \"Target paper\" tabs. Record printer, paper, ink/coating, application and driver settings, drying time, profile name, colour-data choices and paper/sled limits. Unknown values remain unknown. Shared project-controlled recipe fields are read-only in the recipe dialog. The separate \"Compensate to D50 (also updates Project details)\" FWA checkbox remains editable when spectral data are available; saving the recipe also updates the project’s FWA setting. Relevant changes invalidate dependent results while preserving earlier evidence."
       ],
       [
         "",
-        "Rename through Project details to rename the project folder too. External folder renaming is detected for confirmation. Move the entire project folder between computers; locally discovered Python and Argyll paths belong to the computer, not the portable project. Verify project checks recorded file hashes. Close app after saving/completing the active operation; reopen the same project after drying."
+        "Rename through \"Project details\" to rename the project folder too. External folder renaming is detected for confirmation. Move the entire project folder between computers; locally discovered Python and Argyll paths belong to the computer, not the portable project. \"Verify project\" checks recorded file hashes. \"Close app\" after saving/completing the active operation; reopen the same project after drying."
+      ],
+      [
+        "FWA and measurement conditions",
+        "FWA compensation models D50 effects from suitable M0 spectra. It does not convert an M0 instrument measurement into a native M1 measurement. Record the actual instrument conditions and compensation used."
       ]
-    ]
+    ],
+    "printedURL": true
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.1.0",
-    "title": "The 19 rows",
+    "tag": "MATLAB WORKFLOW | v1.1.0",
+    "title": "The 19 steps",
     "rows": [
       [
-        "Row",
+        "Step",
         "Action",
         "What it creates or decides"
       ],
@@ -83,14 +96,21 @@
         "Measure verification",
         "Saved verification revision"
       ]
+    ],
+    "printedURL": true,
+    "sections": [
+      [
+        "Build and check labels",
+        "B1 freezes validated input; B2 records the build recipe; B3 builds the ICC. C1 checks numerical transformations, inverse behaviour and CMM consistency. C2 produces a profile-applied print target; C3 compares its measured colours with desired colours and profile predictions. The Grid check samples an RGB lattice and checks round trips and ramps. Automatic iteration builds and evaluates candidates under its recorded selection rules; it does not approve a profile."
+      ]
     ]
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.1.0",
-    "title": "The 19 rows — continued",
+    "tag": "MATLAB WORKFLOW | v1.1.0",
+    "title": "The 19 steps - continued",
     "rows": [
       [
-        "Row",
+        "Step",
         "Action",
         "What it creates or decides"
       ],
@@ -116,8 +136,8 @@
       ],
       [
         "15",
-        "Save refinement TIFF16",
-        "Added fitting patches, development checks and controls"
+        "Refinement tools",
+        "Image, manual gamut/shell, errors or ICC-grid trials; saved refinement target"
       ],
       [
         "16",
@@ -132,7 +152,7 @@
       [
         "18",
         "Compare previous/current ICC",
-        "Shared RGB/Lab comparisons, independent of original meshes"
+        "Both ICCs evaluated at common RGB sample points; not dependent on their measurement grids"
       ],
       [
         "19",
@@ -143,30 +163,36 @@
     "sections": [
       [
         "",
-        "Ready: Required inputs are available. Select the step and Run selected step to start.\nComplete: The step’s result or decision is saved and the app’s requirements for that step are met. This does not itself mean approved print quality.\nLocked: The step cannot start yet. Read its description and first complete the prerequisite steps.\nStale: An earlier result needs updating because its inputs or settings have changed. Repeat the affected steps.\nUse the dialog’s intended save or acceptance button. Simply opening and closing the dialog does not complete the step.\nRefresh reloads saved status; it does not save edits still open in a dialog. Finish or cancel the active dialog before starting another operation."
+        "Ready: Required inputs are available. Select the step and \"Run selected step\" to start.\nComplete: The step’s result or decision is saved and the app’s requirements for that step are met. This does not itself mean approved print quality.\nLocked: The step cannot start yet. Read its description and first complete the prerequisite steps.\nStale: An earlier result needs updating because its inputs or settings have changed. Repeat the affected steps.\nUse the dialog’s intended save or acceptance button. Simply opening and closing the dialog does not complete the step.\n\"Refresh\" reloads saved status; it does not save edits still open in a dialog. Finish or cancel the active dialog before starting another operation."
       ]
-    ]
+    ],
+    "printedURL": true
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.1.0",
+    "tag": "MATLAB WORKFLOW | v1.1.0",
     "title": "Targets, paper and measurement",
     "sections": [
       [
-        "",
-        "TIFF16 files are saved, not sent to the printer. Copy TIFF16 for printing copies the selected target; retain matching TI2/layout data in the project. Use the documented colour-management path: base/refinement device RGB targets must not receive an unintended additional ICC conversion; C2 already contains the intended profile transform. Print under the recorded conditions and allow drying. Row labels are on both sides; compact layouts reserve a footer band."
+        "Print the matching target",
+        "TIFF16 is saved, not sent to the printer. Use \"Copy TIFF16 for printing\" and read the accompanying PRINTING.txt. Print at 100% under the recorded conditions and allow drying. Base and refinement targets contain device RGB: disable further application/driver ICC conversion. C2 colours have already been converted once through the selected ICC; do not convert them again. Device-RGB reference patches in C2 retain their specified values. Keep matching TI2 and layout data in the project. Patch-row labels appear on both sides; compact layouts reserve a footer band."
       ],
       [
-        "",
-        "Target paper suggests cut sheets A5 through A3+ or a roll/custom size according to patch count and equipment limits. Defaults 320 mm scan width and 370 mm length describe one sled, not a universal limit; edit the JSON-backed Project details values and review suggestions before saving. Smaller iterations can therefore use smaller sheets."
+        "Choose paper dimensions",
+        "\"Target paper\" suggests cut sheets A5 through A3+ or roll/custom sizes according to patch count and equipment limits. The 320 mm scan-width and 370 mm length defaults describe one sled, not universal instrument limits. Edit the limits in \"Project details\" and review the proposed layout."
       ],
       [
-        "",
-        "Measure through the app, review instrument prompts and allow calibration. Instrument model and serial are captured from output when available, otherwise remain unknown. A remeasured patch is a candidate until accepted/saved as a new revision. Select that revision and repeat the dependent review/checks. Absolute Lab and change in Lab are separate quantities. See instrument-startup and chart-measurement guides for reconnect/retry behaviour."
+        "Measure and review",
+        "Follow calibration and measurement prompts. Instrument identity is recorded when available. A remeasured patch remains a candidate until accepted and saved as a new revision. Select that revision and repeat dependent reviews/checks. A Lab value describes one measured colour; a change in Lab compares two readings of that patch. Optional ColorChecker reference targets can support comparison with familiar reference colours; their presence depends on the selected target and recorded evidence."
+      ],
+      [
+        "Instrument instructions",
+        "See docs/usage/instrument-startup.md and docs/usage/chart-measurement.md for calibration, reconnect and retry instructions."
       ]
-    ]
+    ],
+    "printedURL": true
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.1.0",
+    "tag": "MATLAB WORKFLOW | v1.1.0",
     "title": "Refinement and shadows",
     "sections": [
       [
@@ -175,48 +201,18 @@
       ],
       [
         "",
-        "Unmeasured C2 colours can be included with the new target. C2 colour/gray/challenge patches train the next iteration; repeated and paper-white patches retain control roles. Once used for fitting they are not independent validation of that next ICC."
+        "Unmeasured C2 colours can be included with the new target. C2 colour/gray/challenge patches train the next iteration; repeated and paper-white patches retain control roles. Once used for fitting they are not independent validation of that next ICC. Challenge patches deliberately probe difficult colours or transitions; they are not automatic proof of print accuracy."
       ],
       [
         "",
-        "For Matte paper, the configurable InkProf shadow strategy defaults to targen emphasis 2, colprof grid emphasis 1.3 and up to 48 additional dark fitting patches per iteration. Initial targets redistribute their selected budget; iteration targets add dark patches without removing selected image/C3 colours. Selection uses the current ICC's lower quarter of its black-to-white L* range and excludes RGB16 duplicates. Actual counts and the source ICC hash are saved. This is not an official Argyll matte preset, and improved print accuracy requires measurement. Existing targets are unchanged."
+        "For Matte paper, the configurable shadow strategy defaults to targen patch emphasis 2 (-V2), colprof grid emphasis 1.3 (-V 1.3) and up to 48 extra dark fitting patches per iteration. The first target has no current ICC: emphasis redistributes its chosen patch budget. Later refinement can use the current ICC to select the lower quarter of its black-to-white L* range and exclude RGB16 duplicates. Additional dark patches do not remove chosen image/C3 colours. Counts and source ICC identity are recorded. This is an InkProf strategy, not an official Argyll matte preset; improvement requires measurement. Existing targets remain unchanged."
       ]
-    ]
+    ],
+    "printedURL": true,
+    "lead": "Open step 15, \"Refinement tools\", to choose the source of additional patches."
   },
   {
-    "tag": "WORKFLOW AND MATLAB | v1.1.0",
-    "title": "Interpret and deliver",
-    "sections": [
-      [
-        "",
-        "Fit error against training data, numerical consistency and physical print verification answer different questions. Large desired-colour errors with small model-vs-print errors may reflect gamut limits; this alone does not prove the cause. Shared-sample profile comparisons show change, not which profile is more accurate. Compare in 2D starting at L*=50, or switch to 3D. View gamut shows a separate ICC-derived surface; HTML can rotate it, PDF shows a still view."
-      ],
-      [
-        "",
-        "The project already retains the ICC candidate. External saving creates a delivery copy with project name and date (YYMMDD); its ICC description is updated consistently, and original/delivery hashes distinguish the files. Export the complete HTML certificate folder with its supporting files. PDF can be handed over separately."
-      ],
-      [
-        "",
-        "Certificates include project/material/coating/ink settings, instrument identity when available, FWA usage, ICC identity, scope, final measured colours, decision and dated signature space. Appendix A explains methods and ISO-related references; Appendix B contains legal terms. Selected ISO 12647-7:2016 comparison limits are referenced through MediaStandard Print 2018, published by Bundesverband Druck und Medien (bvdm, German printing and media industry association). This custom workflow is not ISO certification."
-      ],
-      [
-        "",
-        "After row 17, run row 8. Then either perform current-iteration C2/C3 and approve for row 14, or use row 18 as decision support and row 19 for an explicitly numerical-only certificate. Earlier measurements remain historical evidence, not current-iteration verification. FWA models D50 effects from suitable M0 spectra; it does not turn an M0 instrument measurement into native M1. BPC (black point compensation) is not applied to the diagnostic absolute-colour comparison."
-      ]
-    ]
-  },
-  {
-    "tag": "WORKFLOW AND MATLAB | v1.1.0",
-    "title": "Code, licensing and maintenance",
-    "sections": [
-      [
-        "",
-        "InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only release: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.1.0.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits."
-      ]
-    ]
-  },
-  {
-    "tag": "WORKFLOW AND MATLAB | v1.1.0",
+    "tag": "MATLAB WORKFLOW | v1.1.0",
     "title": "Shell refinement and continuation",
     "lead": "Use Refinement tools to strengthen coverage near the gamut surface.",
     "sections": [
@@ -226,12 +222,52 @@
       ],
       [
         "Continue from measurements",
-        "Measure in step 16, build in 17 and compare in 18. The app suggests the next valid step. A stopped build retains measurements and the previous active ICC; inspect the latest C1/Grid reports from step 17 results before retrying."
+        "Measure in step 16 and build in step 17. Step 17 runs Fit, Grid and C1 as part of the build. Compare in step 18; if the current checks are missing or stale, run step 8 before delivery or verification. Follow the app’s suggested next step. A build stopped by numerical alerts retains measurements and the previous active ICC. Open step 17 results and inspect the latest C1/Grid reports before retrying."
       ],
       [
-        "Deliver with clear scope",
-        "Both print-verified and numerical-only certificates separate complete measurement records and technical details into measurement-appendix.pdf, linked by certificate ID and ICC hash. ColorChecker reference/measured pairs stay in the main certificate. Step 19 saves a numerical-only report and records the absence of separate print verification. External copies include the complete delivery bundle."
+        "Choose the delivery path",
+        "With current numerical checks, choose either steps 9-11 for a new verification print and measurement, step 12 to review feedback, step 13 to approve intended use and step 14 to deliver; or step 18 for comparison and step 19 for explicitly numerical-only delivery. Earlier measurements are historical evidence, not verification of the new ICC."
       ]
-    ]
+    ],
+    "printedURL": true,
+    "callout": "Iteration: 16 -> 17 (includes Fit, Grid and C1) -> 18\nIf checks are missing/stale: step 8.\nPrint-verified delivery: 9 -> 10 -> 11 -> 12 -> 13 -> 14\nNumerical-only delivery: 18 -> 19"
+  },
+  {
+    "tag": "MATLAB WORKFLOW | v1.1.0",
+    "title": "Interpret and deliver",
+    "sections": [
+      [
+        "",
+        "Fit error against training data, numerical consistency and physical print verification answer different questions. Large desired-colour errors with small model-vs-print errors may reflect gamut limits; this alone does not prove the cause. Shared-sample profile comparisons show change, not which profile is more accurate. Compare in 2D starting at L*=50, or switch to 3D. View gamut shows a separate ICC-derived surface; HTML can rotate it, PDF shows a still view. BPC (black point compensation) is not applied to the diagnostic absolute-colour comparison."
+      ],
+      [
+        "Stable delivery names and HTML support",
+        "The project retains the checked ICC candidate. The proposed external filename combines the profile name, iter-N and the final eight characters of the iteration UUID; the save dialog lets you choose its destination. The same stem identifies the ICC and certificate. The delivery ICC description is updated, so its file hash differs from the checked candidate even though colour-tag payloads are preserved. Keep the complete delivery folder and its underlag support folder for portable HTML, linked reports and assets."
+      ],
+      [
+        "Certificate and separate measurement appendix",
+        "The main certificate contains scope, project/printing conditions, ICC identity, summary, available ColorChecker reference/measured pairs, decision and signature space. Historical ColorChecker results are labelled as such. Complete accepted measurements and technical details are in the separate measurement-appendix.pdf. Appendix A and Appendix B inside the certificate explain methods/standards and legal terms; they are distinct from that separate PDF. The measurement appendix is linked by certificate ID and the checked candidate’s SHA-256. The certificate separately records the named delivery ICC and its SHA-256."
+      ],
+      [
+        "Interpret standards carefully",
+        "Selected ISO 12647-7:2016 comparison limits are referenced through MediaStandard Print 2018, published by Bundesverband Druck und Medien (bvdm). This custom workflow is not ISO certification. Numerical-only delivery explicitly records the absence of separate print verification."
+      ]
+    ],
+    "printedURL": true
+  },
+  {
+    "tag": "MATLAB WORKFLOW | v1.1.0",
+    "title": "Code, licensing and runtime checks",
+    "sections": [
+      [
+        "",
+        "InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only release: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.1.0.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits. The v1.0.0 licence review is a historical review, not a new legal clearance for every v1.1.0 change."
+      ],
+      [
+        "Version checks and reporting problems",
+        "InkProf checks required tool versions and Python imports during setup. Incompatible versions or unavailable imports can prevent operations. Use the setup diagnostics and saved job logs when reporting a problem through the public repository’s Issues page. This guide does not promise a support service."
+      ]
+    ],
+    "printedURL": true
   }
 ]
