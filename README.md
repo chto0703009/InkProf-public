@@ -1,25 +1,35 @@
 # InkProf v1.1.0 — stable source release
 
-**InkProf - When colours have to be right**
+**Keep your i1Pro 2. Take control of your prints.**
 
-Stable release: **[v1.1.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0)**, released 2026-10-12. Source version: **1.1.0**. Inner-shell refinement is the main new feature. See [release notes](CHANGELOG.md), [validation](VALIDATION.txt) and [release checklist](docs/releases/v1.1.0.md).
+Find out what your printer, paper and ink can reproduce. Build a profile, check the result and give your client measured evidence of what you deliver.
 
+InkProf is an open-source MATLAB app for RGB printer profiling and verification. It communicates with the i1Pro 2 through ArgyllCMS, independently of i1Profiler. The workflow is tested with the i1Pro 2 on macOS.
 
-For photographers, the carefully crafted image should reach paper with its intended colours, tones and expression. A smooth workflow builds confidence and satisfaction for photographers, printing businesses and clients. Calibration and verification can reduce reprints, save time, paper and ink, and improve consistency.
+<img src="docs/usage/handbook-source/examples/measurement-instrument.jpg" alt="Spectrophotometer positioned on a printed RGB colour target" width="640">
 
-InkProf brings measurement, profiling and print verification together. Open source reveals the methods; saved measurements, settings and decisions make results traceable. This helps you find errors and explain results to clients. Transparency builds understanding of the workflow and helps you handle challenging colours, right up to the limits of your chosen printer, paper and ink.
+*Spectral measurement of a printed target: the basis for profiling and verification.*
 
-Documented comparisons with standards-based limits support quality assessment without certifying full compliance. Verification results help establish what the chosen combination can achieve: a profile cannot reproduce colours, black density or contrast beyond the capabilities of the printer, paper and ink.
+## What you gain
 
-InkProf is an open-source MATLAB application for RGB printer profiling: colour targets, spectral measurements, ICC generation, independent print verification and traceable refinement. Each project has its own folder, a persistent JSON workflow, prerequisites and a readable results log. You can close the app while prints dry and resume the same project later.
+- **Keep using your existing instrument.** ArgyllCMS handles instrument communication, so your profiling workflow is independent of i1Profiler.
+- **Make better-informed image and paper choices.** An ICC profile describes your printing setup and supports soft proofing. A separate print and measurement checks the physical result.
+- **Reduce unnecessary test prints.** Saved settings, measurements and revisions help you repeat a working process and investigate changes. This can save time, paper and ink.
+- **Make quality clear to your client.** The certificate records reference colours, measurements, scope and reviewer decisions. The detailed measurement appendix retains the evidence.
 
-The app saves TIFF16 targets for separate printing. Measurement is started in the app using a compatible spectrometer. ICC candidates are built with ArgyllCMS, checked numerically and assessed against a separately printed and measured verification target. After user approval, save the ICC file and PDF/HTML reports to locations of your choice. A 2D view starts at L*=50, with a switch to rotatable 3D sample points. View gamut provides a separate ICC-derived 3D surface in the app and certificates.
+Each project preserves its inputs, profiles, checks and history. You can close it while prints dry and resume later. RGB printers receive RGB data through their driver; most inkjet photo printers use this workflow. InkProf saves TIFF16 targets for separate printing and performs measurement in the app.
 
-InkProf reads supported RGB printer ICC profiles in v2 and v4. For newly built profiles, choose **v2**, **v4.4** or **Both** in Project definition → Profiling. Argyll builds the internal v2 profile; optional v4.4 delivery includes conversion evidence. A higher version number does not by itself improve colour accuracy. See [ICC output settings](docs/usage/profiling-project.md#delivered-icc-versions) and the handbooks for guidance.
+Version **1.1.0** adds **inner gamut shell refinement**: place additional measured colours near the gamut surface, across the whole shell or selected areas, and review the proposal before printing. Image colours, verification errors, manual areas and ICC-grid trials share the same refinement tools. The app suggests the next valid workflow step.
 
-**Platform testing:** InkProf has been tested on macOS only. Windows and Linux have not been tested. See [tested platforms and limitations](docs/usage/tested-platforms.md).
+## Availability and requirements
 
-Download the current stable version from **[v1.1.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0)**. The release includes source code, English and Swedish documentation, validation records and SHA-256 checksums.
+InkProf is **free to download** under GPL version 3 or later. **MATLAB requires a licence**; base MATLAB is sufficient. Python, ArgyllCMS and a compatible spectrophotometer are installed separately. The complete workflow is tested on **macOS with the i1Pro 2**; Windows/Linux and all instrument modes are not qualified.
+
+[Download the stable v1.1.0 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
+
+The source release was published **2026-10-12**. Handbooks and presentations in this repository were revised **2026-10-13**; attached release assets preserve the original publication snapshot. See [release notes](docs/releases/v1.1.0.md) and [validation](VALIDATION.txt).
+
+Print accuracy depends on the printer, paper, ink and settings. Numerical checks and screen previews do not replace physical verification. Certificates document evidence and decisions; they are not accredited certification or a declaration of full ISO conformity.
 
 ## Install and start
 
@@ -56,11 +66,12 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.1.0 preparation notes](docs/releases/v1.1.0.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.1.0 release notes](docs/releases/v1.1.0.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
 
+- [Swedish presentation (PDF)](docs/usage/InkProf-presentation-svenska.pdf)
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
 - [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.1.0.md) and [public release scope](RELEASE_SCOPE.md)
