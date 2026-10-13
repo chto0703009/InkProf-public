@@ -1,53 +1,39 @@
 [
   {
-    "tag": "InkProf | v1.1.0 | 2026-10-12",
-    "title": "Din bild förtjänar rätt färger",
-    "lead": "Du valde ljuset, formade bilden och arbetade med varje nyans. Det arbetet ska följa med till papperet.",
-    "sections": [
+    "tag": "InkProf | v1.1.0 | 2026-10-13",
+    "images": [
       [
-        "Bevara bildens uttryck hela vägen till papperet",
-        "Hudtonernas värme, landskapets nyanser och balansen i en svartvit bild är en del av uttrycket. Ett genomtänkt färgarbetsflöde ger bättre förutsättningar att bevara det i utskriften. [1]"
-      ],
-      [
-        "Fatta kreativa beslut med större trygghet",
-        "Kunskap om skrivare, papper och bläck hjälper dig att välja papper och bedöma bilden före utskrift. En lämplig profil kan användas för soft proofing i bildprogrammet på en profilerad skärm. [1, 2]"
-      ],
-      [
-        "Mer utrymme för bilden och kunden",
-        "Ett kontrollerat och verifierat arbetsflöde kan minska onödiga provutskrifter. Det ger mer tid till bilder och kunder och mindre materialåtgång vid felsökning."
-      ],
-      [
-        "Skapa förtroende med begripliga resultat",
-        "Tydlig referens, registrerade inställningar och mätresultat ger fotograf, tryckverksamhet och kund en gemensam grund för att bedöma leveransen. [3]"
+        "../handbook-source/examples/measurement-instrument.jpg",
+        174,
+        62,
+        "Spektralmätning av ett utskrivet färgmål - grunden för profilering och verifiering."
       ]
     ],
-    "callout": "InkProf förenar färgmål, spektrala mätningar, profilering och verifiering. Du får en ICC-profil för ditt utskriftssystem och dokumenterat bedömningsunderlag."
+    "title": "Behåll din i1Pro 2.\nTa kontroll över utskriften.",
+    "callout": "Ditt befintliga instrument. En profil för ditt utskriftssystem. Ett resultat du kan kontrollera och dokumentera. InkProf är öppen källkod och kostnadsfritt att ladda ner; MATLAB kräver licens.",
+    "lead": "Ta reda på vad din skrivare, ditt papper och ditt bläck kan återge. Skapa en profil, kontrollera resultatet och visa kunden vad du levererar.",
+    "sections": [
+      [
+        "Behåll instrumentet - fortsätt skapa profiler",
+        "InkProf använder ArgyllCMS för att kommunicera med i1Pro 2. Du blir oberoende av i1Profiler. Du kan fortsätta använda instrumentet du redan äger."
+      ],
+      [
+        "Vet vad bilden klarar på ditt papper",
+        "En ICC-profil beskriver din kombination av skrivare, papper och bläck. Den ger underlag för soft proofing och kontrollutskrift. Du kan fatta säkrare beslut om bild och papper före leverans. [1, 2]"
+      ],
+      [
+        "Gör nästa utskrift lättare att lyckas med",
+        "Projektet sparar inställningar, mätningar och revisioner. Du kan följa vad som gav resultatet och undersöka förändringar. Det kan minska onödiga provutskrifter och spara tid, papper och bläck."
+      ],
+      [
+        "Ge kunden något konkret att bedöma",
+        "Certifikatet visar referensfärger, mätresultat och granskarens beslut. Kvaliteten går att diskutera med gemensamt underlag. Du kan förklara vad som kontrollerats och vad kunden kan förvänta sig. [3]"
+      ]
+    ],
+    "compact": true
   },
   {
     "tag": "NYTTA I VARDAGEN",
-    "title": "Mer kontroll. Mindre gissningar.",
-    "sections": [
-      [
-        "Gör återkommande arbete lättare att följa",
-        "InkProf samlar material, inställningar, mätningar och iterationer i ett projekt. Det hjälper dig att upprepa arbetsgången och upptäcka förändringar som behöver undersökas."
-      ],
-      [
-        "Öppen källkod ger insyn",
-        "Arbetsgången från färgpatchar till mätning, beräkning och dokumenterade resultat går att granska. Kod och sparat underlag hjälper dig att förstå svåra färger och fatta välgrundade beslut."
-      ],
-      [
-        "Beskriv kvaliteten",
-        "InkProf redovisar skillnader mellan börfärg, profilens förutsägelse och uppmätt utskrift. Standardreferenser ger sammanhang; mätcertifikatet dokumenterar omfattning, resultat och beslut."
-      ],
-      [
-        "Ett sammanhängande färgarbetsflöde",
-        "Kombinera skrivarprofilering med kalibrerad och profilerad skärm, rätt färghantering och lämpligt betraktarljus. Profilen gäller en bestämd kombination av skrivare, papper, bläck och inställningar. [1, 2]"
-      ],
-      [
-        "Källor bakom nyttan",
-        "Källor granskade 2026-10-03: Adobe beskriver färghantering och soft proofing, Fogra objektiv färgbedömning och ICC öppen färghantering. [1–4] Tillämpningen på InkProf och möjligheten att minska provutskrifter är vår sammanvägning, inte en uppmätt besparing eller ett godkännande från organisationerna."
-      ]
-    ],
     "links": [
       [
         "[1] Adobe - Understanding color management",
@@ -65,197 +51,188 @@
         "[4] International Color Consortium - mission",
         "https://www.color.org/"
       ]
+    ],
+    "title": "Mer kontroll. Mindre gissningar.",
+    "sections": [
+      [
+        "Gör återkommande arbete lättare att följa",
+        "När en kund beställer fler utskrifter eller bygger på en serie vill du veta vilka villkor som gav det tidigare resultatet. InkProf samlar material, inställningar, mätningar och iterationer i ett projekt. Det gör det lättare att upprepa arbetsgången och upptäcka förändringar som behöver utredas."
+      ],
+      [
+        "Öppen källkod ger insyn",
+        "InkProf är ingen sluten \"svart låda\". Vägen från färgpatchar till mätning, beräkning och dokumenterat resultat går att granska. Du kan följa hur svåra färger hanteras ända ut till gränsen för vad din skrivare, ditt papper och ditt bläck klarar. Koden och det sparade underlaget hjälper dig att utreda skillnader och fatta välgrundade beslut."
+      ],
+      [
+        "Beskriv kvaliteten med mätvärden",
+        "Mätning ger fotografer och tryckerier ett konkret språk för att diskutera kvalitet. InkProf redovisar skillnaden mellan den avsedda färgen, profilens förutsägelse och den uppmätta utskriften. Standardreferenser ger sammanhang. Mätcertifikatet dokumenterar omfattning, resultat och beslut."
+      ],
+      [
+        "Ett sammanhängande färgarbetsflöde",
+        "InkProf sköter skrivarprofileringen och dokumentationen av den. Kombinera den med en kalibrerad och profilerad skärm, korrekt färghantering vid utskrift och lämpligt betraktningsljus. En profil gäller en bestämd kombination av skrivare, papper, bläck och utskriftsinställningar. [1, 2]"
+      ],
+      [
+        "Källor bakom nyttan",
+        "Webbkällorna granskades 2026-10-03. Adobe beskriver förutsägbar färgåtergivning, soft proofing och sambandet mellan profiler och utskriftsvillkor. Fogra beskriver förutsägbara arbetsflöden och objektiv färgbedömning. International Color Consortium (ICC) verkar för öppen, leverantörsneutral färghantering. [1-4] Tillämpningen på InkProf och möjligheten att minska antalet provutskrifter är vår egen sammanvägning. Det är inte en uppmätt besparing och inte ett godkännande av InkProf från organisationerna."
+      ]
     ]
   },
   {
     "tag": "ARBETSGÅNGEN",
     "title": "Från färgmål till beslut",
-    "lead": "InkProf är en projektbaserad MATLAB-app för RGB-styrda skrivare. Den vägleder arbetet och bevarar kopplingen mellan underlag och resultat.",
+    "callout": "TIFF16 sparas för separat utskrift. Mätningen sker i appen. Spara ICC-profilen och PDF/HTML-certifikatet där du behöver dem; projektet bevarar underlag och historik.",
+    "lead": "InkProf är en projektbaserad MATLAB-app för profilering av RGB-styrda skrivare, alltså skrivare som tar emot RGB-data via drivrutinen. Dit hör de flesta fotoskrivare med bläckstråle. Appen vägleder arbetet och bevarar kopplingen mellan underlag och resultat.",
     "sections": [
       [
-        "01  Skapa eller öppna projekt",
-        "Registrera skrivare, papper, bläck, utskriftsinställningar och användare. Skapa eller importera RGB-målet och välj layout för papper och mätinstrument."
+        "01 Skapa eller öppna ett projekt",
+        "Registrera skrivare, papper, bläck, utskriftsinställningar och användare på ett ställe. Skapa eller importera RGB-målet och välj en layout som passar papperet och mätinstrumentet."
       ],
       [
-        "02  Spara TIFF16 och skriv ut separat",
-        "Appen sparar 16-bitars TIFF och matchande mätunderlag. Skriv ut i ditt vanliga program och låt arken torka. Projektet kan stängas och återupptas senare."
+        "02 Spara TIFF16 och skriv ut separat",
+        "Appen sparar 16-bitars TIFF-filer och matchande mätunderlag. Skriv ut i ditt vanliga program och låt arken torka. Du kan stänga projektet och fortsätta senare."
       ],
       [
-        "03  Mät och granska",
-        "Mät med en spektrofotometer, exempelvis i1Pro2. Appen hanterar instrumentmätning och sparade mätrevisioner. Granska och godkänn rätt revision före låsning."
+        "03 Mät och granska",
+        "Mät med en spektrofotometer, till exempel i1Pro 2. Appen sköter mätningen och sparar varje mätrevision. Granska och godkänn rätt revision innan underlaget låses."
       ],
       [
-        "04  Bygg och kontrollera ICC-profilen",
-        "ArgyllCMS bygger profilen. Profileringen tar hänsyn till både färgnoggrannhet och jämna tonövergångar för att gradienter ska återges jämnt. Numeriska kontroller granskar modellpassning och färgomvandlingar. En skapad profil behöver fortfarande bedömas med en verklig utskrift."
+        "04 Bygg och kontrollera ICC-profilen",
+        "ArgyllCMS bygger profilen. Profileringen väger in både färgnoggrannhet och jämna tonövergångar, så att gradienter återges jämnt i utskrift. Numeriska kontroller granskar modellens passning och färgomvandlingarna. En nybyggd profil behöver ändå bedömas med en verklig utskrift."
       ],
       [
-        "05  Verifiera en verklig utskrift",
-        "Spara kontrollmålet, skriv ut och mät det. Analysen skiljer felet mot börfärgen från felet mot modellens förutsägelse och hjälper dig att välja vad som behöver undersökas."
+        "05 Verifiera med en verklig utskrift",
+        "Spara kontrollmålet, skriv ut det och mät. Analysen skiljer avvikelsen från den avsedda färgen från avvikelsen mot profilens förutsägelse. Det visar vad som behöver undersökas närmare."
       ],
       [
-        "06  Godkänn, dokumentera eller förbättra",
-        "Bedöm mätresultatet och godkänn profilen för angiven användning eller lägg till färger för nästa iteration. När förbättringen upphör, verifiera exakt slutprofil med en ny kontrollutskrift före mätt leverans. Profiler kan jämföras vid gemensamma provpunkter. Leverans utan ny kontrollutskrift märks som enbart numerisk."
+        "06 Godkänn, dokumentera eller förbättra",
+        "Bedöm mätresultatet och godkänn profilen för angiven användning, eller lägg till färger i en ny iteration. När förbättringen avstannar verifierar du den slutliga profilen med en ny kontrollutskrift före leverans. Profiler kan jämföras vid gemensamma provpunkter. En leverans utan ny kontrollutskrift märks tydligt som enbart numerisk."
       ]
-    ],
-    "callout": "TIFF16 sparas för separat utskrift. Mätning sker i appen. Spara ICC och PDF/HTML-certifikat där du behöver dem; projektet bevarar underlag och historik."
+    ]
   },
   {
     "tag": "FUNKTIONER OCH DOKUMENTERAD LEVERANS",
-    "title": "Ett arbete som går att följa",
-    "sections": [
-      [
-        "Projekt som minns",
-        "JSON dokumenterar status, inställningar, iterationer och resultatkopplingar. Appen spärrar beroende steg när underlag saknas eller har ändrats. Kompletta projektmappar kan flyttas mellan datorer."
-      ],
-      [
-        "Förbättring med ett tydligt syfte",
-        "Välj fler patchar från kontrollfel, bildfärger eller ett markerat gamut-område. Skriv ut och mät för att förfina. Pappersförslag anpassas efter patchantal och utrustning. Jämför iterationer vid L*=50 eller i 3D."
-      ],
-      [
-        "Ett mätcertifikat att lämna vidare",
-        "PDF och HTML dokumenterar mätningar, aktuell ICC och granskarbeslut. ColorChecker-verifiering visar namngivna referensfärger och uppmätta färger med Delta E00. ICC, certifikat, HTML, underlag och gradient-JPG sparas i en flyttbar mapp. Soft proof är en modellförutsägelse, skild från uppmätt utskriftsnoggrannhet."
-      ],
-      [
-        "Standardreferenser som stöd",
-        "InkProf använder jämförelsereferenser, bland annat ISO 12647-7:2016 via bvdm:s MediaStandard Print 2018. Utvalda gränser ger stöd för bedömningen; ett eget RGB-mål utgör inte en fullständig standardprovning eller ISO-certifiering."
-      ],
-      [
-        "Öppen källkod och teknisk grund",
-        "InkProf har licensen GNU GPL version 3 eller senare. Det använder MATLAB utan obligatoriska tilläggsverktyg, Python och ArgyllCMS. Externa beroenden har egna licenser. Kod och licenser finns på GitHub."
-      ],
-      [
-        "Testmiljö och användning",
-        "Programmet har testats på macOS. Det fullständiga arbetsflödet är inte verifierat på Windows eller Linux. Programmet tillhandahålls utan garantier enligt GPL; användaren bedömer profiler och utskrifter för avsett bruk."
-      ]
-    ],
     "links": [
       [
         "MediaStandard Print 2018, Table 30, page 50",
         "https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50"
       ],
       [
-        "InkProf – källkod och releaseinformation",
+        "InkProf - källkod och releaseinformation",
         "https://github.com/chto0703009/InkProf-public"
       ],
       [
         "Licensing and third-party references",
         "https://github.com/chto0703009/InkProf-public/blob/main/THIRD_PARTY_NOTICES.md"
       ]
-    ]
+    ],
+    "title": "Ett arbete som går att följa",
+    "requirementsTitle": "Det här behöver du",
+    "requirements": "MATLAB med licens (grundversionen räcker). Python och ArgyllCMS, båda kostnadsfria. En spektrofotometer; flödet är testat med i1Pro 2. macOS; hela arbetsflödet är inte verifierat på Windows/Linux.",
+    "sections": [
+      [
+        "Upprepa ett resultat du redan lyckats med",
+        "Varje projekt har en egen mapp. JSON-filer dokumenterar status, inställningar, iterationer och hur resultaten hänger ihop. Appen spärrar beroende steg när underlag saknas eller har ändrats. Du kan öppna resultatloggen och flytta hela projektmappen mellan datorer."
+      ],
+      [
+        "Lägg mättiden där den kan göra nytta",
+        "Välj fler patchar utifrån kontrollfel, färger i dina bilder eller ett område du markerar i gamutdiagrammet. Skriv ut och mät för att förfina. Pappersförslagen anpassas efter antal patchar och utrustning. Jämför iterationer i ett snitt vid L* = 50 eller i 3D."
+      ],
+      [
+        "Gör leveransen begriplig för kunden",
+        "PDF och HTML dokumenterar mätningar, aktuell ICC- profil och granskarens beslut. ColorChecker-verifieringen visar namngivna referensfärger bredvid uppmätta färger med ΔE00, ett standardmått på färgskillnad där lägre värde betyder mindre skillnad. ICC-profil, certifikat, HTML, underlag och förhandsvisningar av gradienter i JPG sparas i en flyttbar mapp. Soft proof är en modellförutsägelse och ska inte förväxlas med uppmätt utskriftsnoggrannhet."
+      ],
+      [
+        "Standardreferenser som stöd",
+        "ISO står för International Organization for Standardization. InkProf dokumenterar jämförelsereferenser, bland annat ISO 12647-7:2016 via MediaStandard Print 2018 från bvdm, den tyska branschorganisationen för tryck och medier. Utvalda gränsvärden ger sammanhang för bedömningen. InkProfs egna RGB-mål utgör inte i sig en fullständig standardprovning eller ISO-certifiering."
+      ],
+      [
+        "Öppen källkod och ansvar",
+        "InkProf är licensierat under GNU GPL version 3 eller senare. Externa beroenden har egna licenser. Programmet tillhandahålls utan garantier; användaren ansvarar för att bedöma profiler och utskrifter för avsett bruk. Kod, licens och tredjepartsreferenser finns på GitHub. Se licensen och certifikatets juridiska bilaga för villkoren."
+      ]
+    ],
+    "compact": true
   },
   {
     "tag": "VISUELLA EXEMPEL FRÅN INKPROF",
-    "title": "Från färgpatchar till gamut",
-    "lead": "Ett utskrivet mål ger mätningar. Nästa sida visar ett snitt av färgomfånget som profilen beskriver.",
     "images": [
       [
         "patch-target.png",
         150,
         106,
-        "Exempelmål med 131 patchar, repetitioner, kontrastmarkörer och positionsetiketter. Använd inte den förminskade bilden för mätning."
+        "Exempelmål med 131 patchar, inklusive upprepningar, kontrastmarkörer och positionsetiketter. Använd inte den förminskade bilden för mätning."
       ]
     ],
+    "title": "Från färgpatchar till gamut",
+    "small": "Befintligt InkProf-exempel från 2026-09-29. Bilden är inte ett nytt verifieringsresultat.",
+    "lead": "Ett utskrivet färgmål ger mätvärden, och mätvärdena blir en profil. Nästa sida visar hur stort färgomfång den profilen beskriver.",
     "sections": [
       [
         "Mätning och modell kompletterar varandra",
-        "Modellen möjliggör färgomvandling. Mätningen visar vad som faktiskt hamnade på papperet. Tillsammans stöder de beslutet att använda profilen, kontrollera en patch eller lägga till färger."
+        "Profilen är en modell som gör färgomvandlingen möjlig. Mätningen visar vad som faktiskt hamnade på papperet. Tillsammans stöder de nästa beslut: använd profilen, kontrollera en avvikande patch eller lägg till färger i en ny iteration."
       ]
     ],
-    "small": "Befintligt InkProf-exempel från 2026-09-29. Bilden är inte ett nytt verifieringsresultat."
+    "targetExample": true
   },
   {
     "tag": "ICC-GAMUT | CIELAB D50 | L* = 50",
-    "title": "Färgomfånget vid L* = 50",
-    "lead": "Ett CIELAB-snitt visar profilens färgomfång vid en bestämd ljushet. a*-axeln är horisontell och b*-axeln vertikal.",
     "images": [
       [
-        "gamut-L50-en.png",
+        "gamut-L50-sv.png",
         174,
-        111,
-        "Epson Stylus Pro 3880, Photo Rag Baryta 315, InkProf iteration 3. ICC-beräknad absolut kolorimetrisk gamut; färgvisning i sRGB."
+        95,
+        "Epson Stylus Pro 3880, Photo Rag Baryta 315, InkProf iteration 3. Absolut kolorimetrisk gamut beräknad från ICC-profilen; färgerna visas i sRGB."
       ]
     ],
-    "sections": [
-      [
-        "Läs gamutgränsen",
-        "Konturen är skärningen mellan profilens beräknade gamut och planet L*=50. Den visar modellens färgomfång vid denna ljushet, inte hela gamut eller en ny mätning."
-      ],
-      [
-        "Pappersvitt visas separat",
-        "Krysset visar projektionen av profilens beräknade pappersvitt på a*/b*: L*=97,28, a*=−0,19, b*=1,06. Dess verkliga ljushet ligger utanför snittet L*=50. Vitt beräknas vid skrivar-RGB=(1,1,1)."
-      ]
-    ],
-    "small": "ArgyllCMS A2B, absolut kolorimetrisk, Lab D50. Triangelskärning, inte konvext hölje. Profil SHA-256: c6b94a0c30ebb5dd… Skärmfärger kan klippas till sRGB.",
     "links": [
       [
         "ArgyllCMS: ICC gamut surface",
         "https://www.argyllcms.com/doc/iccgamut.html"
+      ]
+    ],
+    "title": "Färgomfånget vid L* = 50",
+    "small": "ArgyllCMS A2B, absolut kolorimetrisk, Lab D50. Triangel-plan-skärning, inget konvext hölje. Profil SHA-256: c6b94a0c30ebb5dd… Skärmfärger kan klippas till sRGB.",
+    "lead": "Diagrammet visar profilens färgomfång vid medelljushet. I varje riktning visar konturen hur långt färgmättnaden sträcker sig. Färger utanför konturen vid denna ljushet behöver anpassas vid färgomvandlingen. L* = 50 är mitt i Lab-skalan 0-100; a* går från grönt till rött och b* från blått till gult.",
+    "sections": [
+      [
+        "Läs gamutgränsen",
+        "Konturen är där profilens beräknade gamut skär planet L* = 50. Den visar färgomfånget vid just denna ljushet, inte hela gamut och inte en ny mätning."
+      ],
+      [
+        "Pappersvitt visas separat",
+        "Krysset markerar profilens beräknade pappersvitt, projicerat på a*/b*: L* = 97,28, a* = −0,19, b* = 1,06. Pappersvittets verkliga ljushet ligger alltså långt ovanför snittet. Värdet är beräknat vid skrivar-RGB = (1, 1, 1)."
       ]
     ]
   },
   {
     "tag": "MÄTKVALITET OCH TIDIGA KONTROLLER",
     "title": "Upptäck fel innan de följer med",
-    "lead": "InkProf hjälper dig att hantera felmätningar och kontrollera att mätvärdena är rimliga innan de används som underlag för profilen.",
+    "callout": "Kontrollerna minskar risken att felaktiga utskrifter eller mätningar går vidare. En godkänd kontroll behöver fortfarande följas av granskning och verifiering av profilen.",
+    "lead": "InkProf hjälper dig att hantera felmätningar och kontrollera att mätvärdena är rimliga innan de används för att bygga profilen.",
     "sections": [
       [
         "Mät om när en avläsning blir fel",
-        "Läsfel kan följas av en ny skanning av raden. Appen håller reda på bekräftade avläsningar och visar vilka rader som återstår innan mätningen kan sparas."
+        "Vid ett läsfel kan raden skannas på nytt. Appen håller reda på bekräftade avläsningar och visar vilka rader som återstår innan mätningen kan sparas."
       ],
       [
         "Granska rimlighet och avvikelser",
-        "Mätvärden, upprepade färgprover och skanningsriktning ger underlag för att upptäcka avvikelser. Resultaten granskas före godkännande, så att misstänkta värden kan utredas eller mätas om."
+        "Mätvärden, upprepade färgprover och skanningsriktning hjälper till att avslöja avvikelser. Resultaten granskas före godkännande, så att misstänkta värden kan utredas eller mätas om."
       ],
       [
         "Kontrollera utskriften före en lång mätning",
-        "Nya mål har separata röda, gröna och blå kontrollrutor. De mäts först och jämförs med en godkänd referens för samma utskriftsvillkor. Stora avvikelser stoppar fortsatt mätning och kan avslöja felaktig färghantering, även när en preset har använts i Adobe Photoshop."
+        "Nya mål har separata röda, gröna och blå kontrollrutor. De mäts först och jämförs med en godkänd referens för samma utskriftsvillkor. Stora avvikelser stoppar mätningen. De kan avslöja felaktig färghantering, även när en färdig förinställning i Adobe Photoshop har använts."
       ],
       [
         "Beslutet blir spårbart",
-        "En slutförd RGB-kontroll med stora avvikelser kan åsidosättas med en skriftlig motivering, exempelvis när ett papper behöver utredas. Mätvärden, gränser och beslut sparas. Äldre mål utan kontrollrutor kan fortfarande mätas."
+        "En slutförd RGB-kontroll med stora avvikelser kan åsidosättas med en skriftlig motivering, till exempel när ett papper behöver utredas. Mätvärden, gränser och beslut sparas. Äldre mål utan kontrollrutor kan fortfarande mätas."
       ]
-    ],
-    "callout": "Kontrollerna minskar risken att felaktiga utskrifter eller mätningar går vidare. En godkänd kontroll behöver fortfarande följas av granskning och verifiering av profilen."
+    ]
   },
   {
     "tag": "v1.1.0 | NYA MÖJLIGHETER",
-    "title": "Förstå ditt utskriftssystem",
-    "sections": [
-      [
-        "Utskriftssystemets begränsningar",
-        "Färgnoggrannheten begränsas av vad skrivare, papper, bläck och utskriftsinställningar fysiskt kan återge. InkProf hjälper dig att bedöma det möjliga resultatet och dokumenterar kvarstående färgskillnader. Utebliven förbättring bevisar inte ensam att en fysisk gräns nåtts; vald profil behöver fortfarande verifieras med en uppmätt utskrift."
-      ],
-      [
-        "En gemensam projektdefinition",
-        "Skrivare, papper, yta, färgämnes- eller pigmentbläck, coating och torktid registreras centralt och ingår i mätcertifikatet."
-      ],
-      [
-        "Korrigering för optiska vitmedel",
-        "Korrigering för optiska vitmedel i papper kan väljas vid behov. Vald korrigering dokumenteras med profilen och resultaten."
-      ],
-      [
-        "Fler mörka färgprover för matt papper",
-        "En justerbar skuggstrategi föreslår upp till 48 extra mörka passningspatchar per iteration och tätare numeriska skuggtabeller. Färgvalet följer aktuell profils svart-till-vitt-område."
-      ],
-      [
-        "Papper efter behov",
-        "Förslag för ark eller rulle anpassas efter patchantal och mätutrustningens mått. Förslag och gränser kan ändras."
-      ],
-      [
-        "Stöd genom hela arbetet",
-        "Handboken stöder hela profileringen från planering och utskrift till bedömning och slutverifiering. Praktiska råd hjälper dig att välja när du ska förfina, avsluta och bedöma slutresultatet."
-      ],
-      [
-        "Fortsätt använda befintliga instrument",
-        "X-Rite har avslutat uppdateringar och stöd för i1Pro 2 och tidigare i1Pro-generationer. InkProf använder ArgyllCMS för instrumentkommunikation och är oberoende av i1Profiler. InkProf är utformat för en mjukvarumiljö där kompatibla versioner av MATLAB, Python och ArgyllCMS körs direkt på Macens processor, både Apple Silicon och Intel. På Apple Silicon behövs då inte Rosetta, vilket ger förutsättningar för fortsatt användning när Rosetta tas bort från macOS. i1Pro 2-flödet är testat på dagens macOS; framtida macOS-versioner behöver verifieras."
-      ],
-      [
-        "Stabil funktionsrelease",
-        "Källkodsrelease 1.1.0, publicerad 12 oktober 2026. Sparade mål och mätningar bevaras. Bedöm förbättring genom utskrift och mätning."
-      ]
-    ],
-    "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. Externa komponenter har egna licenser. Kod, villkor och verifieringsstatus finns på GitHub.",
     "links": [
+      [
+        "Öppen källkod och nedladdning",
+        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0"
+      ],
       [
         "X-Rite: i1Pro 2 EOL",
         "https://www.xrite.com/service-support/i1pro-2-eol-notes-compatibility-issues-with-windows-11-macos"
@@ -264,21 +241,43 @@
         "X-Rite: i1Pro 1 support",
         "https://www.xrite.com/service-support/i1pro1supportdroppedini1profiler320"
       ]
-    ]
-  },
-  {
-    "tag": "v1.1.0 | REFINEMENT",
-    "title": "Skal nära gamutytan",
-    "lead": "Fler mätpunkter där befintlig täckning är svag.",
+    ],
+    "title": "Förstå ditt utskriftssystem",
+    "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. Externa komponenter har egna licenser. Kod, villkor och verifieringsstatus finns på GitHub.",
     "sections": [
       [
-        "Skal och granskning",
-        "Välj hela inre skalet eller markerade områden, ange tjocklek i ΔE76 och granska utritade förslag före utskrift. ΔE76 används för geometriskt avstånd; kvalitetsrapporter använder ΔE00."
+        "Fortsätt använda befintliga instrument",
+        "X-Rite har avslutat uppdateringar och support för i1Pro 2 och tidigare i1Pro-generationer. InkProf kommunicerar med instrumentet via ArgyllCMS och är oberoende av i1Profiler. Med kompatibla versioner av MATLAB, Python och ArgyllCMS körs allt direkt på både Apple Silicon och Intel. På Apple Silicon behövs inte Rosetta, så arbetsflödet kan fungera även när Rosetta tas bort ur macOS. i1Pro 2-flödet är testat på dagens macOS; framtida versioner behöver verifieras."
       ],
       [
-        "Mät och jämför",
-        "Steg 15–18 sparar mål, mätningar, nästa kandidat och jämförelse. Numeriska stopp bevarar tidigare profil. Förbättring behöver verifieras med utskrift och mätning."
+        "Utskriftssystemets gränser",
+        "Färgnoggrannheten begränsas av vad skrivare, papper, bläck och inställningar fysiskt kan återge. InkProf hjälper dig att bedöma vad som är möjligt och dokumenterar kvarstående färgskillnader. Att förbättringen avstannar bevisar inte i sig att en fysisk gräns är nådd; den valda profilen behöver fortfarande verifieras med en uppmätt utskrift."
+      ],
+      [
+        "En gemensam projektdefinition",
+        "Skrivare, papper och yta, färgämnes- eller pigmentbläck, coating och torktid registreras på ett ställe och följer med i mätcertifikatet."
+      ],
+      [
+        "Korrigering för optiska vitmedel",
+        "Många papper innehåller optiska vitmedel som får papperet att se vitare ut i UV-haltigt ljus. Korrigering för detta kan väljas vid behov och dokumenteras med profilen och resultaten."
+      ],
+      [
+        "Fler mörka färgprover för matt papper",
+        "En justerbar skuggstrategi föreslår upp till 48 extra mörka patchar per iteration och tätare numeriska tabeller i skuggorna. Färgvalet följer den aktuella profilens omfång från svart till vitt."
+      ],
+      [
+        "Papper efter behov",
+        "Förslag för ark eller rulle anpassas efter antal patchar och mätlinjalens mått. Förslag och gränser kan ändras."
+      ],
+      [
+        "Stöd genom hela arbetet",
+        "Handboken stöder hela profileringen, från planering och utskrift till bedömning och slutverifiering. Praktiska råd hjälper dig att avgöra när du ska förfina, när du ska avsluta och hur du bedömer slutresultatet."
+      ],
+      [
+        "Stabil funktionsrelease",
+        "Källkodsrelease 1.1.0, publicerad 12 oktober 2026. Sparade mål och mätningar följer med. Bedöm förbättringar genom utskrift och mätning."
       ]
-    ]
+    ],
+    "compact": true
   }
 ]

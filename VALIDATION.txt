@@ -1,3 +1,18 @@
+Documentation update — 2026-10-13
+Program version remains 1.1.0. The published release/tag is preserved.
+- Swedish/English handbooks reviewed against current application choices,
+  workflow numbering, smoothing modes, certificate structure and references.
+- Both handbooks: 70 physical pages, with 69 numbered pages and a cover.
+  Page headings/numbering and referenced page ranges checked.
+- Both benefit presentations: 8 pages; the MATLAB workflow guide: 9 pages.
+- Revised layouts rendered and inspected. Source PDFs and Downloads copies
+  verified identical. Source notice/version/resource and whitespace checks pass.
+- Documentation sources, measurement photo and Swedish gamut labels included.
+  No private projects, measurements, profiles or runtime binaries added.
+- No new application, physical print, instrument or platform qualification.
+
+Historical release validation follows unchanged:
+
 InkProf v1.1.0 — 2026-10-12
 Publication authorised by the maintainer on 2026-10-12.
 Historical validation follows unchanged.

@@ -1,5 +1,9 @@
 # Changelog
 
+## Documentation — 2026-10-13
+
+- Review Swedish and English handbooks against current app behaviour: correct B2 smoothing choices, row references, automatic smoothing conditions, certificate appendices and initial-target budgets; clarify Photoshop handling and terminology.
+
 ## v1.1.0 — 2026-10-12
 
 - Preserve portable HTML evidence links for both single- and double-quoted attributes, including the measurement appendix in external delivery bundles.

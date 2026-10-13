@@ -1,53 +1,39 @@
 [
   {
-    "tag": "InkProf | v1.1.0 | 2026-10-12",
-    "title": "Your image deserves the right colours",
-    "lead": "You chose the light, shaped the image and worked on every nuance. When the image reaches paper, that work should come with it.",
-    "sections": [
+    "tag": "InkProf | v1.1.0 | 2026-10-13",
+    "images": [
       [
-        "Carry the image's expression all the way to print",
-        "The warmth of skin tones, the nuances of a landscape and the balance of a black-and-white image are part of what you want to convey. A considered colour workflow gives you a stronger basis for preserving that intended expression in print. For the photographer, it brings confidence to the final, decisive step from image file to finished photograph. [1]"
-      ],
-      [
-        "Make creative decisions with greater confidence",
-        "Knowing how your printer, paper and ink reproduce colour makes it easier to choose a paper and assess the image before printing. A suitable profile can also be used for soft proofing: simulating the print on a profiled display in your image editor. This helps you make informed adjustments before committing paper and ink. [1, 2]"
-      ],
-      [
-        "Make room for the image and the client",
-        "Every additional test print takes time: adjust, print, wait and assess again. A controlled and verified workflow can reduce unnecessary trials and the need to make new prints. The practical benefit is more time for your images and clients, with less material spent searching for the cause of a colour problem."
-      ],
-      [
-        "Build confidence through results people can understand",
-        "For a printing business, colour accuracy is also about cooperation. A clear reference, recorded settings and measured results make it easier to explain what has been delivered and what a client can expect. They provide a shared basis for assessing quality. [3]"
+        "../handbook-source/examples/measurement-instrument.jpg",
+        174,
+        62,
+        "Spectral measurement of a printed colour target - the basis for profiling and verification."
       ]
     ],
-    "callout": "InkProf connects colour targets, spectrometer measurements, profiling and verification. You get both an ICC profile for your printing setup and documented evidence for assessing the result."
+    "title": "Keep your i1Pro 2.\nTake control of your prints.",
+    "callout": "Your existing instrument. A profile for your print system. A result you can check and document. InkProf is open source and free to download; MATLAB requires a licence.",
+    "lead": "Find out what your printer, paper and ink can reproduce. Build a profile, check the result and show your client what you deliver.",
+    "sections": [
+      [
+        "Keep your instrument - keep building profiles",
+        "InkProf uses ArgyllCMS to communicate with the i1Pro 2. You are independent of i1Profiler. Keep using the instrument you already own."
+      ],
+      [
+        "Know what your image can achieve on your paper",
+        "An ICC profile describes your printer, paper and ink combination. It supports soft proofing and print verification. Make better-informed image and paper decisions before delivery. [1, 2]"
+      ],
+      [
+        "Make the next print easier to get right",
+        "The project saves settings, measurements and revisions. Trace what produced the result and investigate changes. This can reduce unnecessary test prints and save time, paper and ink."
+      ],
+      [
+        "Give your client concrete evidence",
+        "The certificate shows reference colours, measurements and reviewer decisions. Discuss quality using shared evidence. Explain what was checked and what the client can expect. [3]"
+      ]
+    ],
+    "compact": true
   },
   {
     "tag": "EVERYDAY BENEFITS",
-    "title": "More control. Less guesswork.",
-    "sections": [
-      [
-        "Make repeat work easier to follow",
-        "When a client orders more prints or adds to a series, you want to know which conditions produced the earlier result. InkProf collects materials, settings, measurements and iterations in one project. This helps you reproduce the working process and identify changes that need investigation."
-      ],
-      [
-        "Open source brings confidence and transparency",
-        "Open source gives you the confidence of being able to follow and inspect how InkProf works. The workflow is visible: from colour patches and measurement to calculation and documented results. InkProf is not a closed “black box”. This transparency helps you understand how difficult colours are handled, right up to the limits of your chosen printer, paper and ink. The code and saved evidence let you investigate differences and make informed decisions."
-      ],
-      [
-        "Choose quality you can describe",
-        "Measurement gives photographers and printing businesses a concrete language for discussing quality. InkProf reports differences between the desired colour, the profile's prediction and the measured print. Documented standards references provide context; the measurement certificate records the scope, results and decision."
-      ],
-      [
-        "A connected colour workflow",
-        "InkProf handles printer profiling and its documentation. Combine it with a calibrated and profiled display for image assessment, correct print colour management and suitable viewing light. The profile describes a particular combination of printer, paper, ink and settings. [1, 2]"
-      ],
-      [
-        "Sources behind the motivation",
-        "Web sources checked on 2026-10-03. Adobe describes predictable colour output, soft proofing and the link between profiles and printing conditions. Fogra describes predictable workflows and objective colour assessment. The International Color Consortium (ICC) promotes open, vendor-neutral colour management. [1-4] Applying these ideas to InkProf and explaining the potential to reduce trials is our synthesis, not a measured saving or an endorsement of InkProf by these organizations."
-      ]
-    ],
     "links": [
       [
         "[1] Adobe - Understanding color management",
@@ -65,197 +51,188 @@
         "[4] International Color Consortium - mission",
         "https://www.color.org/"
       ]
+    ],
+    "title": "More control. Less guesswork.",
+    "sections": [
+      [
+        "Make repeat work easier to follow",
+        "When a client orders more prints or adds to a series, you want to know which conditions produced the earlier result. InkProf keeps materials, settings, measurements and iterations together in one project. This makes it easier to reproduce the process and spot changes that need investigating."
+      ],
+      [
+        "Open source means transparency",
+        "InkProf is not a closed \"black box\". Every step, from colour patches to measurement, calculation and documented results, can be inspected. You can follow how difficult colours are handled, right up to the limits of your printer, paper and ink. The code and saved evidence help you investigate differences and make informed decisions."
+      ],
+      [
+        "Describe quality with measurements",
+        "Measurement gives photographers and print businesses a concrete language for discussing quality. InkProf reports the difference between the intended colour, the profile's prediction and the measured print. Standards references provide context. The measurement certificate records the scope, results and decision."
+      ],
+      [
+        "A connected colour workflow",
+        "InkProf handles printer profiling and its documentation. Combine it with a calibrated and profiled display, correct colour management when printing and suitable viewing light. A profile applies to one specific combination of printer, paper, ink and print settings. [1, 2]"
+      ],
+      [
+        "Sources behind these benefits",
+        "Web sources checked on 2026-10-03. Adobe describes predictable colour output, soft proofing and the link between profiles and printing conditions. Fogra describes predictable workflows and objective colour assessment. The International Color Consortium (ICC) promotes open, vendor-neutral colour management. [1-4] Applying these ideas to InkProf, and the potential to reduce test prints, is our own synthesis. It is not a measured saving or an endorsement of InkProf by these organisations."
+      ]
     ]
   },
   {
     "tag": "THE WORKFLOW",
     "title": "From colour target to decision",
-    "lead": "InkProf is a project-based MATLAB app for profiling RGB-driven printers. It guides the work and preserves the connection between inputs and results.",
+    "callout": "TIFF16 files are saved for separate printing. Measurement takes place in the app. Save the ICC profile and the PDF/HTML certificate wherever you need them; the project keeps the evidence and history.",
+    "lead": "InkProf is a project-based MATLAB app for profiling RGB printers, meaning printers that receive RGB data through their driver. This includes most inkjet photo printers. The app guides the work and preserves the link between inputs and results.",
     "sections": [
       [
-        "01  Create or open a project",
-        "Record the printer, paper, ink, print settings and user in one place. Create or import the RGB target and choose a layout that suits the paper and measurement equipment."
+        "01 Create or open a project",
+        "Record the printer, paper, ink, print settings and user in one place. Create or import the RGB target and choose a layout that suits the paper and your instrument."
       ],
       [
-        "02  Save TIFF16 and print separately",
-        "The app saves 16-bit TIFF files and matching measurement inputs. Print in your usual application and allow the sheets to dry. You can close the project and resume later."
+        "02 Save TIFF16 and print separately",
+        "The app saves 16-bit TIFF files and matching measurement data. Print from your usual application and let the sheets dry. You can close the project and resume later."
       ],
       [
-        "03  Measure and review",
-        "Measure with a high-quality spectrometer, such as the i1Pro 2. The app handles instrument measurement and saved measurement revisions. Review and accept the correct revision before locking the inputs."
+        "03 Measure and review",
+        "Measure with a spectrophotometer, such as the i1Pro 2. The app handles the measurement and saves each measurement revision. Review and accept the correct revision before the inputs are locked."
       ],
       [
-        "04  Build and check the ICC profile",
-        "ArgyllCMS builds the profile. The profiling process considers both colour accuracy and smooth tonal transitions, helping gradients reproduce evenly in print. Numerical checks examine model fit and colour transformations. A generated profile still needs assessment with a real print."
+        "04 Build and check the ICC profile",
+        "ArgyllCMS builds the profile. Profiling balances colour accuracy against smooth tonal transitions, so gradients print evenly. Numerical checks examine model fit and colour transformations. A new profile still needs to be assessed with a real print."
       ],
       [
-        "05  Verify a real print",
-        "Save the verification target, print it and measure it. The analysis separates the difference from the desired colour from the difference against the model's prediction. This helps you decide what needs closer investigation."
+        "05 Verify with a real print",
+        "Save the verification target, print it and measure it. The analysis separates the difference from the intended colour from the difference against the profile's prediction. This shows what needs closer investigation."
       ],
       [
-        "06  Approve, document or improve",
-        "Review the measured result and approve the profile for its stated use, or add colours for another iteration. When improvement stops, verify the exact final profile with a fresh control print before measured delivery. Profiles can also be compared at shared sample points. Delivery without a new verification print is explicitly labelled numerical-only."
+        "06 Approve, document or improve",
+        "Review the measured result and approve the profile for its stated use, or add colours in another iteration. When improvement levels off, verify the final profile with a fresh control print before delivery. Profiles can also be compared at shared sample points. A delivery without a new control print is clearly labelled numerical- only."
       ]
-    ],
-    "callout": "TIFF16 is saved for separate printing. Measurement takes place in the app. Save the ICC and PDF/HTML certificate where you need them, while the project preserves the evidence and history."
+    ]
   },
   {
     "tag": "FEATURES AND DOCUMENTED DELIVERY",
-    "title": "Work you can trace",
-    "sections": [
-      [
-        "Projects that remember",
-        "Each project has its own folder. JSON records workflow state, settings, iterations and result relationships. The app blocks dependent operations when inputs are missing or have changed. You can open the results log and move the complete project folder between computers."
-      ],
-      [
-        "Improvement with a clear purpose",
-        "Select additional patches from verification errors, image colours or a clicked gamut area, then print and measure to refine. Paper suggestions adapt to patch count and equipment. Compare iterations in a 2D slice at L*=50 or in 3D."
-      ],
-      [
-        "A measurement certificate to hand over",
-        "PDF and HTML document measurements, the current ICC and reviewer decisions. ColorChecker verification adds named reference and measured swatches with Delta E00. ICC, certificate, HTML, evidence and gradient JPG previews are saved in one movable folder. Soft proof is a model prediction, distinct from measured print accuracy."
-      ],
-      [
-        "Standards references supporting assessment",
-        "ISO stands for International Organization for Standardization. InkProf documents comparison references including ISO 12647-7:2016 through MediaStandard Print 2018, published by Bundesverband Druck und Medien (bvdm), the German printing and media industry association. Selected limits provide context for assessment; InkProf's custom RGB targets do not by themselves constitute a complete standards test or ISO certification."
-      ],
-      [
-        "Open source and technical foundation",
-        "InkProf is open source under GNU GPL version 3 or later. It uses base MATLAB without mandatory add-on toolboxes, together with Python and ArgyllCMS. External dependencies have their own licences. The code, licence and third-party references are available on GitHub."
-      ],
-      [
-        "Test environment and use",
-        "The software has been tested on macOS. The complete InkProf workflow has not been verified on Windows or Linux. The program is provided without warranties under the GPL; users are responsible for assessing profiles and prints for their intended use. See the licence and the certificate's legal appendix for the terms."
-      ]
-    ],
     "links": [
       [
         "MediaStandard Print 2018, Table 30, page 50",
         "https://www.medienverbaende.de/fileadmin/user_upload/01_Global/Downloads_PDF_DOC/Downloads_Technik/MediaStandard_Print_2018.pdf#page=50"
       ],
       [
-        "InkProf – source and release information",
+        "InkProf - source and release information",
         "https://github.com/chto0703009/InkProf-public"
       ],
       [
         "Licensing and third-party references",
         "https://github.com/chto0703009/InkProf-public/blob/main/THIRD_PARTY_NOTICES.md"
       ]
-    ]
+    ],
+    "title": "Work you can trace",
+    "requirementsTitle": "What you need",
+    "requirements": "Licensed MATLAB (base MATLAB is sufficient). Python and ArgyllCMS, both free. A spectrophotometer; the workflow is tested with the i1Pro 2. macOS; the full workflow is not verified on Windows/Linux.",
+    "sections": [
+      [
+        "Repeat a result that worked",
+        "Each project has its own folder. JSON files record workflow state, settings, iterations and how results relate to each other. The app blocks dependent steps when inputs are missing or have changed. You can open the results log and move the whole project folder between computers."
+      ],
+      [
+        "Spend measurement time where it can help",
+        "Add patches based on verification errors, colours in your images or an area you select in the gamut plot. Then print and measure to refine. Paper suggestions adapt to the patch count and your equipment. Compare iterations in a slice at L* = 50 or in 3D."
+      ],
+      [
+        "Make the delivery clear to your client",
+        "PDF and HTML reports document the measurements, the current ICC profile and reviewer decisions. ColorChecker verification shows named reference colours beside measured colours with ΔE00, a standard measure of colour difference where lower means closer. The ICC profile, certificate, HTML, evidence and JPG gradient previews are saved in one portable folder. Soft proofing is a model prediction and should not be confused with measured print accuracy."
+      ],
+      [
+        "Standards references supporting assessment",
+        "ISO stands for International Organization for Standardization. InkProf documents comparison references, including ISO 12647- 7:2016 via MediaStandard Print 2018, published by bvdm, the German printing and media industry association. Selected limits provide context for assessment. InkProf's own RGB targets do not by themselves constitute a complete standards test or ISO certification."
+      ],
+      [
+        "Open source and responsibility",
+        "InkProf is licensed under the GNU GPL version 3 or later. External dependencies have their own licences. The software is provided without warranty; users are responsible for assessing profiles and prints for their intended use. Code, licence and third-party references are on GitHub. See the licence and the certificate's legal appendix for the terms."
+      ]
+    ],
+    "compact": true
   },
   {
     "tag": "VISUAL EXAMPLES FROM INKPROF",
-    "title": "From colour patches to gamut",
-    "lead": "A printed target provides measurements. The following page shows a cross-section of the colour gamut described by the resulting profile.",
     "images": [
       [
         "patch-target.png",
         150,
         106,
-        "Patch target. An example with 131 patches, including repetitions, contrast markers and position labels. Do not use this reduced image as a measurement print."
+        "Example target with 131 patches, including repeats, contrast markers and position labels. Do not use this reduced image for measurement."
       ]
     ],
+    "title": "From colour patches to gamut",
+    "small": "Existing InkProf example from 2026-09-29. The image is not a new verification result.",
+    "lead": "A printed colour target provides measurements, and the measurements become a profile. The next page shows how large a colour range that profile describes.",
     "sections": [
       [
         "Measurement and model complement each other",
-        "A model makes colour conversion possible. Measurement shows what actually reached the paper. Together, they support the next decision: use the profile, check a deviating patch or add more colours in another iteration."
+        "The profile is a model that makes colour conversion possible. Measurement shows what actually reached the paper. Together they support the next decision: use the profile, check a deviating patch or add colours in another iteration."
       ]
     ],
-    "small": "Existing InkProf target example, 2026-09-29. The illustration is not a new validation result."
+    "targetExample": true
   },
   {
     "tag": "ICC GAMUT | CIELAB D50 | L* = 50",
-    "title": "The colour gamut at L* = 50",
-    "lead": "A CIELAB cross-section shows the profile gamut at a fixed lightness. The a* axis is horizontal and b* is vertical.",
     "images": [
       [
         "gamut-L50-en.png",
         174,
-        111,
-        "Epson Stylus Pro 3880, Photo Rag Baryta 315, InkProf iteration 3. ICC-derived absolute colorimetric gamut; sRGB colour previews."
+        95,
+        "Epson Stylus Pro 3880, Photo Rag Baryta 315, InkProf iteration 3. Absolute colorimetric gamut derived from the ICC profile; colours previewed in sRGB."
       ]
     ],
-    "sections": [
-      [
-        "Read the gamut boundary",
-        "The contour is the intersection of the ICC-derived gamut surface with the L* = 50 plane. It shows the described colour extent at this lightness, not the entire gamut or a new measurement."
-      ],
-      [
-        "Paper white is shown separately",
-        "The cross marks the a*/b* projection of the profile-predicted paper white: L* = 97.28, a* = −0.19, b* = 1.06. Its actual lightness lies outside the L* = 50 slice. The white point is calculated at printer RGB = (1, 1, 1)."
-      ]
-    ],
-    "small": "ArgyllCMS A2B, absolute colorimetric, Lab D50. Triangle/plane intersection; no convex hull. Profile SHA-256: c6b94a0c30ebb5dd… Screen colours may be clipped to sRGB.",
     "links": [
       [
         "ArgyllCMS: ICC gamut surface",
         "https://www.argyllcms.com/doc/iccgamut.html"
+      ]
+    ],
+    "title": "The colour gamut at L* = 50",
+    "small": "ArgyllCMS A2B, absolute colorimetric, Lab D50. Triangle/plane intersection, no convex hull. Profile SHA-256: c6b94a0c30ebb5dd… Screen colours may be clipped to sRGB.",
+    "lead": "The plot shows the profile colour range at mid-lightness. In each direction the contour indicates how far saturation extends. Colours outside it at this lightness need adjustment during conversion. L* = 50 is midway on the Lab scale from 0 to 100; a* runs from green to red and b* from blue to yellow.",
+    "sections": [
+      [
+        "Reading the gamut boundary",
+        "The outline is where the profile's computed gamut intersects the L* = 50 plane. It shows the colour range at this lightness only, not the entire gamut and not a new measurement."
+      ],
+      [
+        "Paper white is shown separately",
+        "The cross marks the profile's predicted paper white, projected onto a*/b*: L* = 97.28, a* = −0.19, b* = 1.06. Its actual lightness therefore lies well above this slice. The value is calculated at printer RGB = (1, 1, 1)."
       ]
     ]
   },
   {
     "tag": "MEASUREMENT QUALITY AND EARLY CHECKS",
     "title": "Catch errors before they carry forward",
-    "lead": "InkProf helps handle measurement errors and check whether readings are plausible before they are used to build the profile.",
+    "callout": "These checks reduce the risk of carrying faulty prints or readings forward. A passed check must still be followed by profile review and verification.",
+    "lead": "InkProf helps you handle measurement errors and check that readings are plausible before they are used to build the profile.",
     "sections": [
       [
         "Remeasure a faulty reading",
-        "Reading errors can be followed by another scan of the row. The app tracks confirmed readings and shows which rows remain before the measurement can be saved."
+        "After a reading error, the row can be scanned again. The app tracks confirmed readings and shows which rows remain before the measurement can be saved."
       ],
       [
         "Review plausibility and deviations",
-        "Measured values, repeated colour patches and scan direction help reveal deviations. Results are reviewed before acceptance so suspicious readings can be investigated or measured again."
+        "Measured values, repeated patches and scan direction help reveal deviations. Results are reviewed before acceptance, so suspicious readings can be investigated or remeasured."
       ],
       [
         "Check the print before a long measurement",
-        "New targets have separate red, green and blue control squares. These are measured first and compared with an approved reference for the same printing conditions. Large deviations stop further measurement and can reveal incorrect colour management, even when an Adobe Photoshop preset was used."
+        "New targets have separate red, green and blue control squares. These are measured first and compared with an approved reference for the same printing conditions. Large deviations stop the measurement. They can reveal incorrect colour management, even when an Adobe Photoshop preset was used."
       ],
       [
         "Keep decisions traceable",
-        "A completed RGB check with large deviations can be overridden with a written reason, for example when a paper needs investigation. Readings, thresholds and the decision are retained. Older targets without control squares can still be measured."
+        "A completed RGB check with large deviations can be overridden with a written reason, for example when a paper needs investigating. Readings, thresholds and the decision are retained. Older targets without control squares can still be measured."
       ]
-    ],
-    "callout": "These checks reduce the risk of carrying faulty prints or readings forward. A passed check still needs to be followed by profile review and verification."
+    ]
   },
   {
     "tag": "v1.1.0 | NEW OPTIONS",
-    "title": "Understand your print system",
-    "sections": [
-      [
-        "The limits of the print system",
-        "Colour accuracy is limited by what the printer, paper, ink and print settings can physically reproduce. InkProf helps assess the achievable result and documents remaining colour differences. A lack of further improvement does not by itself prove that a physical limit has been reached; the selected profile still needs verification with a measured print."
-      ],
-      [
-        "One project definition",
-        "Printer, paper and finish, dye or pigment ink, printer coating and drying time are recorded centrally and included in the measurement certificate."
-      ],
-      [
-        "Correction for optical brighteners",
-        "Correction for optical brighteners in paper can be selected when needed. The selected correction is documented with the profile and results."
-      ],
-      [
-        "More dark colour samples for matte paper",
-        "An editable shadow strategy proposes up to 48 extra dark fitting patches per iteration and denser numerical shadow tables. Colour selection follows the current profile’s black-to-white range."
-      ],
-      [
-        "Paper according to need",
-        "Cut-sheet or roll suggestions adapt to patch count and your measurement sled dimensions. Suggestions and limits remain editable."
-      ],
-      [
-        "Support throughout the work",
-        "The user handbook supports the complete profiling process, from planning and printing to assessment and final verification. Practical guidance helps you decide when to refine, when to stop and how to evaluate the finished result."
-      ],
-      [
-        "Keep using existing instruments",
-        "X-Rite has ended updates and support for i1Pro 2 and earlier generations. InkProf uses ArgyllCMS independently of i1Profiler. Compatible MATLAB, Python and ArgyllCMS versions run natively on Apple Silicon or Intel. On Apple Silicon, no Rosetta is needed, supporting continued use after its removal. The i1Pro 2 workflow is tested on current macOS; future macOS versions require verification."
-      ],
-      [
-        "Stable feature release",
-        "Source release 1.1.0, published 12 October 2026. Saved targets and measurements are preserved. Assess improvement through printing and measurement."
-      ]
-    ],
-    "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub.",
     "links": [
+      [
+        "Open source and downloads",
+        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0"
+      ],
       [
         "X-Rite: i1Pro 2 EOL",
         "https://www.xrite.com/service-support/i1pro-2-eol-notes-compatibility-issues-with-windows-11-macos"
@@ -264,21 +241,43 @@
         "X-Rite: i1Pro 1 support",
         "https://www.xrite.com/service-support/i1pro1supportdroppedini1profiler320"
       ]
-    ]
-  },
-  {
-    "tag": "v1.1.0 | REFINEMENT",
-    "title": "An inner shell near the gamut surface",
-    "lead": "Add measured points where existing coverage is weak.",
+    ],
+    "title": "Understand your print system",
+    "small": "Copyright 2026 Christer Törnkvist. InkProf: GPL-3.0-or-later. External components retain their own licences. Source, notices and validation status are on GitHub.",
     "sections": [
       [
-        "Shell and review",
-        "Choose the whole inner shell or selected areas, set thickness in ΔE76 and inspect plotted proposals before printing. ΔE76 measures geometric distance; quality reports use ΔE00."
+        "Keep using existing instruments",
+        "X-Rite has ended updates and support for the i1Pro 2 and earlier i1Pro generations. InkProf communicates with the instrument through ArgyllCMS and is independent of i1Profiler. With compatible versions of MATLAB, Python and ArgyllCMS, everything runs natively on both Apple Silicon and Intel. On Apple Silicon no Rosetta is needed, so the workflow can keep working after Rosetta is removed from macOS. The i1Pro 2 workflow is tested on current macOS; future versions will need verification."
       ],
       [
-        "Measure and compare",
-        "Steps 15–18 save the target, measurements, next candidate and comparison. Numerical stops preserve the previous profile. Improvement requires print and measurement verification."
+        "The limits of the print system",
+        "Colour accuracy is limited by what the printer, paper, ink and settings can physically reproduce. InkProf helps you assess what is achievable and documents the remaining colour differences. A lack of further improvement does not by itself prove that a physical limit has been reached; the selected profile still needs verification with a measured print."
+      ],
+      [
+        "One project definition",
+        "Printer, paper and finish, dye or pigment ink, printer coating and drying time are recorded in one place and included in the measurement certificate."
+      ],
+      [
+        "Correction for optical brighteners",
+        "Many papers contain optical brighteners that make them look whiter under UV-rich light. Correction for this can be selected when needed and is documented with the profile and results."
+      ],
+      [
+        "More dark patches for matte paper",
+        "An adjustable shadow strategy proposes up to 48 extra dark patches per iteration and denser numerical tables in the shadows. Patch selection follows the current profile's black-to-white range."
+      ],
+      [
+        "Paper to suit your needs",
+        "Cut-sheet or roll suggestions adapt to the patch count and the dimensions of your measurement ruler. Suggestions and limits remain editable."
+      ],
+      [
+        "Support throughout the work",
+        "The user handbook covers the complete profiling process, from planning and printing to assessment and final verification. Practical guidance helps you decide when to refine, when to stop and how to evaluate the finished result."
+      ],
+      [
+        "Stable feature release",
+        "Source release 1.1.0, published 12 October 2026. Saved targets and measurements are preserved. Assess improvements by printing and measuring."
       ]
-    ]
+    ],
+    "compact": true
   }
 ]

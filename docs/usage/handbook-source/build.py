@@ -15,7 +15,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 ROOT=Path(__file__).resolve().parent
 VERSION=(ROOT.parents[2]/'VERSION').read_text().strip()
-DATE='2026-10-12'
+DATE='2026-10-13'
 CODE_REVISION='v'+VERSION
 LANG=sys.argv[2] if len(sys.argv)>2 else 'en'
 if LANG not in ('sv','en'):raise ValueError('Language must be sv or en.')
@@ -39,7 +39,7 @@ class Pages(canvas.Canvas):
    if self._pageNumber==1:
     super().showPage()
     continue
-   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf Quality Profiling RGB printer | '+VERSION)
+   self.setFont('VeraBold',10);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,local('InkProf - Kvalitetsprofilering för RGB-skrivare | ','InkProf - Quality profiling for RGB printers | ')+VERSION)
    self.setFillColor(MUTED)
    self.setStrokeColor(LINE);self.setLineWidth(.6)
    self.line(18*mm,273.5*mm,192*mm,273.5*mm);self.line(18*mm,22*mm,192*mm,22*mm)
@@ -59,14 +59,14 @@ class Diagram(Flowable):
    c.setFillColor(bg);c.setStrokeColor(LINE);c.roundRect(x*mm,y*mm,w*mm,h*mm,2*mm,fill=1,stroke=1)
    q=p(txt,'cell');qw,qh=q.wrap((w-6)*mm,h*mm);q.drawOn(c,(x+3)*mm,(y+h)*mm-qh-3*mm)
   box(0,43,174,14,local('<b>Projektverktyg</b> | namn, inställningar, logg, historik och rapport','<b>Project tools</b> | name, settings, log, history and report'))
-  box(0,9,63,31,local('<b>Vänster: steg 1-19</b><br/>Välj rad.<br/>Läs statusen.','<b>Left: steps 1-19</b><br/>Select a row.<br/>Read the status.'))
-  box(66,9,108,31,local('<b>Höger: valt steg</b><br/>Beskrivning och sparade resultat.<br/>Kör steget eller öppna resultatet.','<b>Right: selected step</b><br/>Description and saved results.<br/>Run the step or open its result.'))
+  box(0,9,63,31,local('<b>Vänster: rader 1-19</b><br/>Välj rad.<br/>Läs statusen.','<b>Left: steps 1-19</b><br/>Select a row.<br/>Read the status.'))
+  box(66,9,108,31,local('<b>Höger: vald rad</b><br/>Beskrivning och sparade resultat.<br/>Kör raden eller öppna resultatet.','<b>Right: selected step</b><br/>Description and saved results.<br/>Run the step or open its result.'))
   c.setFillColor(MUTED);c.setFont('Vera',7.5);c.drawString(0,1*mm,local('Schematisk läshjälp, inte skärmbild. Status och aktivitet visas också i appen.','Schematic guide, not a screenshot. The app also displays status and activity.'))
 class OverviewDiagram(Flowable):
  def __init__(self):Flowable.__init__(self);self.width=174*mm;self.height=49*mm
  def draw(self):
   c=self.canv
-  labels=[local('1. Projekt och färgmål','1. Project and target'),local('2. Skriv ut, torka, mät','2. Print, dry, measure'),local('3. Bygg och kontrollera ICC','3. Build and check ICC'),local('4. Verifiera utskriften','4. Verify the print'),local('5. Förbättra vid behov','5. Improve if needed'),local('6. Godkänn och spara','6. Approve and save')]
+  labels=[local('1. Planera projekt och mål','1. Plan project and target'),local('2. Skriv ut, torka, mät','2. Print, dry, measure'),local('3. Granska och lås','3. Review and lock'),local('4. Bygg och kontrollera ICC','4. Build and check ICC'),local('5. Verifiera utskriften','5. Verify the print'),local('6. Godkänn och spara','6. Approve and save')]
   positions=[(0,29),(61,29),(122,29),(0,4),(61,4),(122,4)]
   for label,(x,y) in zip(labels,positions):
    c.setFillColor(PALE);c.setStrokeColor(LINE);c.roundRect(x*mm,y*mm,52*mm,13*mm,2*mm,fill=1,stroke=1)
@@ -79,7 +79,7 @@ class OverviewDiagram(Flowable):
   for y in [35.5,10.5]:
    for x in [52,113]:arrow([(x,y),(x+9,y)])
   arrow([(148,29),(148,23),(26,23),(26,17)])
-  c.setFillColor(MUTED);c.setFont('Vera',7.5);c.drawCentredString(87*mm,0,local('Efter förbättring: bygg igen och verifiera med en ny utskrift (steg 3–4).','After improvement: rebuild and verify with a fresh print (steps 3–4).'))
+  c.setFillColor(MUTED);c.setFont('Vera',7.5);c.drawCentredString(87*mm,0,local('Vid förfining: bygg igen och verifiera med ny utskrift (moment 4-5).','After refinement: rebuild and verify with a fresh print (moments 4-5).'))
 
 class WorkflowDiagram(Flowable):
  def __init__(self):Flowable.__init__(self);self.width=174*mm;self.height=160*mm
@@ -137,6 +137,13 @@ for i,page in enumerate(json.loads((ROOT/f'content-{LANG}.json').read_text())):
  if page.get('workflowDiagram'):story.extend([WorkflowDiagram(),Spacer(1,3*mm)])
  for filename,w,h,caption in page.get('images',[]):
   story.extend([Image(str(ROOT/filename),width=w*mm,height=h*mm,kind='proportional'),p(escape(caption),'small'),Spacer(1,3*mm)])
+ for image_row in page.get('imageRows',[]):
+  columns=[]
+  for filename,caption in image_row:
+   columns.append([Image(str(ROOT/filename),width=82*mm,height=90*mm,kind='proportional'),Spacer(1,2*mm),p(escape(caption),'small')])
+  paired=Table([columns],colWidths=[87*mm]*len(columns),hAlign='LEFT')
+  paired.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),0),('RIGHTPADDING',(0,0),(-1,-1),5)]))
+  story.extend([paired,Spacer(1,4*mm)])
  if page.get('rows'):story.extend([table(page['rows']),Spacer(1,3*mm)])
  for title,body in page.get('sections',[]):story.extend([p(escape(title),'h'),p(escape(body).replace('\n','<br/>'))])
  if page.get('callout'):

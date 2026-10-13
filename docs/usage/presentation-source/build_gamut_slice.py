@@ -47,7 +47,22 @@ def render(data,white,loops,lang,path):
     def font(size):return ImageFont.truetype(str(regular),size)
     ink='#182f42';teal='#007f83';muted='#50616c';red='#a73f24'
     en=lang=='en'
-    draw.text((85,20),'Gamut at L* = 50',font=font(44),fill=ink)
+    translations={
+     'Gamut at L* = 50':'Gamut vid L* = 50',
+     'Gamut boundary':'Gamutgräns',
+     'Cross-section at L* = 50.':'Snitt vid L* = 50.',
+     'sRGB preview; colours may be clipped.':'Förhandsvisning i sRGB; färger kan klippas.',
+     'Paper white':'Pappersvitt',
+     'Predicted at printer RGB = (1, 1, 1).':'Beräknat vid skrivar-RGB = (1, 1, 1).',
+     'The cross shows its a*, b* position.':'Krysset visar läget i a*/b*.',
+     'The actual white point lies outside':'Den verkliga vitpunkten ligger utanför',
+     'the L* = 50 plane.':'planet L* = 50.',
+     'D50 neutral axis: a* = 0, b* = 0.':'Neutral axel (D50): a* = 0, b* = 0.',
+     'White is predicted by the profile;':'Vitt är beräknat av profilen;',
+     'this is not a new paper measurement.':'det är inte en ny pappersmätning.'}
+    def label(value):return value if en else translations.get(value,value)
+
+    draw.text((85,20),label('Gamut at L* = 50'),font=font(44),fill=ink)
     draw.text((85,80),'CIELAB D50 · Epson 3880 · Photo Rag Baryta 315 · InkProf iteration 3',font=font(23),fill=muted)
     left,top,size=100,155,850;limit=100
     def point(v):return (left+size*(v[0]+limit)/(2*limit),top+size*(limit-v[1])/(2*limit))
@@ -79,7 +94,7 @@ def render(data,white,loops,lang,path):
     draw.line((wx-13,wy,wx+13,wy),fill=red,width=5);draw.line((wx,wy-13,wx,wy+13),fill=red,width=5)
     draw.line((wx+18,wy-10,1010,370),fill=red,width=2)
     draw.line((1030,185,1110,185),fill=teal,width=6)
-    draw.text((1130,167),'Gamut boundary',font=font(29),fill=ink)
+    draw.text((1130,167),label('Gamut boundary'),font=font(29),fill=ink)
     texts=[('Cross-section at L* = 50.',225),
            ('sRGB preview; colours may be clipped.',263),
            ('Paper white',340),
@@ -91,8 +106,8 @@ def render(data,white,loops,lang,path):
            ('D50 neutral axis: a* = 0, b* = 0.',715),
            ('White is predicted by the profile;',800),
            ('this is not a new paper measurement.',842)]
-    for t,y in texts:draw.text((1030,y),t,font=font(27 if y!=340 else 34),fill=red if 340<=y<=437 else ink)
-    draw.text((85,1100),'Absolute colorimetric A2B · triangle/plane intersection · profile SHA-256 '+data['profileSHA256'][:16],font=font(20),fill=muted)
+    for t,y in texts:draw.text((1030,y),label(t),font=font(27 if y!=340 else 34),fill=red if 340<=y<=437 else ink)
+    draw.text((85,1100),('Absolute colorimetric A2B · triangle/plane intersection · profile SHA-256 ' if en else 'Absolut kolorimetrisk A2B · triangel/plan-skärning · profil SHA-256 ')+data['profileSHA256'][:16],font=font(20),fill=muted)
     im.save(path)
 
 
@@ -105,6 +120,6 @@ if __name__=='__main__':
     white=lookup(a.xicclu,a.profile,[[1,1,1]],intent='a')[0]
     if any(abs(v)>100 for loop in loops for point in loop for v in point):raise ValueError('Contour exceeds plotting limits.')
     out=Path(a.output);out.mkdir(exist_ok=True,parents=True)
-    for lang in ('en',):render(data,white,loops,lang,out/f'gamut-L50-{lang}.png')
+    for lang in ('en','sv'):render(data,white,loops,lang,out/f'gamut-L50-{lang}.png')
     metadata=dict(profileSHA256=sha,lightness=50,whitePointLab=white.tolist(),whitePointMethod='xicclu forward absolute colorimetric D50 at device RGB 1 1 1',whitePointDisplay='a,b projection; actual L shown separately',sectionMethod='triangle-plane intersection; no convex hull',segments=count,closedContours=len(loops))
     (out/'gamut-L50.json').write_text(json.dumps(metadata,indent=2)+'\n');print(json.dumps(metadata))

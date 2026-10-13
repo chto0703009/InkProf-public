@@ -5,7 +5,7 @@
     "sections": [
       [
         "",
-        "Source build 1.1.0, updated 2026-10-12. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with setupInkProf(CheckPython=true); startInkProfApp(); from the source folder."
+        "Source version 1.1.0, released 2026-10-12. Document updated 2026-10-13. Base MATLAB R2025b and Python 3.13 tested on macOS. Windows and Linux are untested; the measurement bridge uses POSIX. Install runtimes and ArgyllCMS separately. Start with setupInkProf(CheckPython=true); startInkProfApp(); from the source folder."
       ]
     ],
     "lead": "InkProf - When colours have to be right"
