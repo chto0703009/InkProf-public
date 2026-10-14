@@ -10,6 +10,7 @@ root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));
 work=string(tempname);mkdir(work);clean=onCleanup(@()rmdir(work,'s'));
 package=fullfile(work,'target');out=fullfile(work,'txf');
 template=fullfile(root,'tests','fixtures','i1profiler','chart-2033','Chart 2033 Patches.txf');
+assumeTrue(tc,isfile(template),'Private TXF fixture is excluded from the public release.');
 t=inkprof.importTarget(template);t.ids=t.ids(1:200);t.names=t.names(1:200);t.rgbOriginal=t.rgbOriginal(1:200,:);
 source=fullfile(work,'patches.txt');inkprof.exportCgats(source,t);
 % Allow the full temporary path in the footer, including macOS temp roots.

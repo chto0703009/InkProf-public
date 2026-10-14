@@ -1,8 +1,8 @@
-# InkProf documentation — v1.1.0
+# InkProf documentation — v1.1.1
 
-Source version **1.1.0**, released 2026-10-12. Current documentation revised 2026-10-13; the v1.1.0 release assets remain the original publication snapshot. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release notes](releases/v1.1.0.md).
+Source version **1.1.1**, released 2026-10-14. Documentation updated for this release on 2026-10-14. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release notes](releases/v1.1.1.md).
 
-The Swedish and English user handbooks contain 69 numbered pages plus a cover. Covers identify the handbook, program, language, author, date and version. Five maintained PDFs are rebuilt for v1.1.0: both handbooks, both presentations and the English MATLAB workflow guide. Their links point to the public repository for source and release information.
+The Swedish and English user handbooks contain 72 numbered pages plus a cover. Covers identify the handbook, program, language, author, date and version. Five maintained PDFs are rebuilt for v1.1.1: both handbooks, both presentations and the English MATLAB workflow guide. Their links point to the public repository for source and release information.
 
 Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.
 
@@ -10,7 +10,7 @@ Last published candidate: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md).
 
 ## PDF guides
 
-PDF layout updated 2026-10-12: handbooks have an illustrated cover with the author, language, date and version. Handbooks and presentations display version 1.1.0 and link to the public repository, https://github.com/chto0703009/InkProf-public. The current release is [v1.1.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0).
+PDF layout updated 2026-10-14: handbooks have an illustrated cover with the author, language, date and version. Handbooks and presentations display version 1.1.1 and link to the public repository, https://github.com/chto0703009/InkProf-public. The current release is [v1.1.1](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.1).
 
 - [Swedish user handbook](usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook](usage/InkProf-user-handbook-English.pdf)
@@ -23,7 +23,6 @@ Earlier release candidate notes: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). The cur
 
 ## Research notes
 
-- [Pre-regularization, noise-matched smoothing and target placement methods (2026-10-06)](research/preregularization-and-target-methods-20261006.md)
 - [ICC v2 and v4.4 for RGB printer profiles: v4 → v2 copy accuracy and v4 output (2026-10-09)](research/icc-v2-v4-compatibility-20261009.md)
 
 ## Detailed usage
@@ -104,9 +103,9 @@ The [best-practice guide](usage/profiling-best-practice.md) and both handbook ap
 
 Photographic assessment resource: [Keith Cooper — Printer Test Images, Northlight Images](https://www.northlight-images.co.uk/printer-test-images/), including the Datacolor test image available courtesy of Datacolor. See the best-practice guide for sky-gradient checks and the distinction between source photographs and prepared device-RGB targets. The image itself is not included in this repository.
 
-Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-13 for v1.1.0. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support. Pages 1 and 8 describe continued use of older i1Pro instruments through ArgyllCMS after X-Rite support ends, and the goal of operating beyond Rosetta removal with compatible native runtimes; future macOS compatibility still requires verification.
+Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-14 for v1.1.1. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support. Pages 1 and 8 describe continued use of older i1Pro instruments through ArgyllCMS after X-Rite support ends, and the goal of operating beyond Rosetta removal with compatible native runtimes; future macOS compatibility still requires verification.
 
-Current handbooks: 70 physical pages in each language, including the cover and 69 numbered pages, updated 2026-10-13 for v1.1.0 with shell refinement, workflow guidance and certificate appendix instructions. Covers inner-shell refinement, registration of printed targets, higher ICC-grid trials, visual diagnostics and one RGB-control reading per patch on every page. They explain installation, project steps, measurement checks, manual refinement, verification and certificate delivery.
+Current handbooks: 70 physical pages in each language, including the cover and 72 numbered pages, updated 2026-10-14 for v1.1.1 with shell refinement, workflow guidance and certificate appendix instructions. Covers inner-shell refinement, registration of printed targets, higher ICC-grid trials, visual diagnostics and one RGB-control reading per patch on every page. They explain installation, project steps, measurement checks, manual refinement, verification and certificate delivery.
 
 Six original example figures illustrate the actual app: main window (page 7), Project details (9), Profiling settings and ICC delivery choice (11), measurement (14), profiling recipe (17), and gamut (34). Values are fictional; the gamut uses an sRGB ICC example, not a measured printer. The gamut export includes top margin to prevent title clipping. Blue callouts have 4 mm of additional space before following text or links.
 
@@ -116,7 +115,7 @@ ICC import supports suitable RGB printer profiles in v2 and v4, including v4.2; 
 
 Earlier RC4 fact-check corrections included page references, FWA terminology and appendix headings. The v1.0.0 editions include subsequent workflow and delivery updates.
 
-Current PDF footers link to the public repository. The release URL is https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0. The ICC specification link points to https://www.color.org/specifications/.
+Current PDF footers link to the public repository. The release URL is https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.1. The ICC specification link points to https://www.color.org/specifications/.
 
 Manual gamut reinforcement: page 56 in both handbooks explains selecting an area in View gamut, reviewing device-RGB neighbours, saving paper dimensions, registering the selection in step 15, and printing/measuring/rebuilding in steps 16–17. It distinguishes manually strengthening measurement coverage from automatic error detection and physical gamut expansion; pages 21 and 34 point to the walkthrough.
 
@@ -126,16 +125,18 @@ Verification approval: page 58 walks through C2 target selection, printing, matc
 
 Python installation troubleshooting: page 61 in both handbooks explains actual import checks, the reported M4 SciPy failure, repair commands for the selected environment, and restarting/checking before retrying. These safeguards belong to the post-v1.0.0 source update; the original release archive is unchanged.
 
-Handbook update 2026-10-13: page 14 pairs the measurement-window example with a photograph of the spectrometer on a printed target, with Swedish/English captions and positioning guidance. Program version remains 1.1.0.
+Handbook update 2026-10-14: page 14 pairs the measurement-window example with a photograph of the spectrometer on a printed target, with Swedish/English captions and positioning guidance. Program version is 1.1.1.
 
-Presentation update 2026-10-13: the Swedish and English first pages include the measurement photograph, with compact introductory text. Both now have 8 pages; the final shell-refinement detail page was removed to keep the presentations focused on benefits.
+Presentation update 2026-10-14: the Swedish and English first pages include the measurement photograph, with compact introductory text. Both now have 8 pages; the final shell-refinement detail page was removed to keep the presentations focused on benefits.
 
-Handbook expansion 2026-10-13: pages 64-67 explain every initial-target Method choice, n³ levels, total/control/repeat budgets, interior placements and geometric stopping settings. Pages 68-69 explain Jacobian sensitivity, its numerical example, actual scoring and interpretation. Earlier pages link to these additions; existing page numbers are preserved.
+Handbook expansion 2026-10-14: pages 64-67 explain every initial-target Method choice, n³ levels, total/control/repeat budgets, interior placements and geometric stopping settings. Pages 68-69 explain Jacobian sensitivity, its numerical example, actual scoring and interpretation. Earlier pages link to these additions; existing page numbers are preserved.
 
-Presentation revision 2026-10-13 follows the supplied revised-text proposal: matching Swedish/English content, i1Pro 2 benefit on page 1, requirements box, explained colour terms, localised headers and Swedish gamut labels. The target illustration hides its source path and uses a corrected heading. A discreet open-source/download link is retained without a Get started section; both remain 8-page benefit presentations.
+Presentation revision 2026-10-14 follows the supplied revised-text proposal: matching Swedish/English content, i1Pro 2 benefit on page 1, requirements box, explained colour terms, localised headers and Swedish gamut labels. The target illustration hides its source path and uses a corrected heading. A discreet open-source/download link is retained without a Get started section; both remain 8-page benefit presentations.
 
-First-page pitch strengthened 2026-10-13: keep using the i1Pro 2, assess the printing setup, reduce unnecessary test prints and provide measured evidence for clients. Swedish and English headlines and benefits are aligned.
+First-page pitch strengthened 2026-10-14: keep using the i1Pro 2, assess the printing setup, reduce unnecessary test prints and provide measured evidence for clients. Swedish and English headlines and benefits are aligned.
 
-Handbook review 2026-10-13: corrected B2 choices and smoothing fields, differentiated B2 and row-15 Argyll modes, unified row references and six overview moments, repaired cross-references, harmonised patch budgets and clarified certificate/appendix structure. Photoshop missing/embedded-profile cases and conditional automatic smoothing are documented. Historical update notes removed; Swedish terminology and both language headers revised.
+Handbook review 2026-10-14: corrected B2 choices and smoothing fields, differentiated B2 and row-15 Argyll modes, unified row references and six overview moments, repaired cross-references, harmonised patch budgets and clarified certificate/appendix structure. Photoshop missing/embedded-profile cases and conditional automatic smoothing are documented. Historical update notes removed; Swedish terminology and both language headers revised.
 
-The English MATLAB workflow guide was rebuilt on 2026-10-13 with the shared current header and matching delivery/appendix guidance. Downloads copies match repository PDFs.
+The English MATLAB workflow guide was rebuilt on 2026-10-14 with the shared current header and matching delivery/appendix guidance. Downloads copies match repository PDFs.
+
+- [Save and resume chart measurement](usage/measurement-resume.md) - whole-row checkpoints, same-print confirmation and resumed page/row instructions.

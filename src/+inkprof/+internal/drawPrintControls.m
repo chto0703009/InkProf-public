@@ -7,13 +7,14 @@ width=size(image,2)/dpi*25.4;
 patches=struct('page',{},'tiff',{},'label',{},'rgbPercent',{},'rgb16',{},'rectMm',{});
 labels=["R","G","B"];
 for k=1:3
- rect=[width-40+(k-1)*12,7,8,8];
+ % Add 0.5 mm on each edge; retain the existing one-pixel raster guard.
+ rect=[width-40+(k-1)*12-0.5,6.5,9,9];
  rgb=zeros(1,3);rgb(k)=100;codes=round(rgb/100*65535);
  % Extend the rendered control by one pixel on every side.
  x=max(1,floor(rect(1)*dpi/25.4)):min(size(image,2),ceil((rect(1)+rect(3))*dpi/25.4)+1);
  y=max(1,floor(rect(2)*dpi/25.4)):min(size(image,1),ceil((rect(2)+rect(4))*dpi/25.4)+1);
  image(y,x,:)=repmat(reshape(uint16(codes),1,1,3),numel(y),numel(x),1);
- image=inkprof.internal.drawBitmapText(image,labels(k),[rect(1)+4,rect(2)-2.4],dpi,1.6,"center",uint16(0));
+ image=inkprof.internal.drawBitmapText(image,labels(k),[rect(1)+rect(3)/2,rect(2)-2.4],dpi,1.6,"center",uint16(0));
  actualRect=[x(1)-1,y(1)-1,numel(x),numel(y)]/dpi*25.4;
  patches(k)=struct('page',page,'tiff',string(tiff),'label',labels(k),'rgbPercent',rgb,'rgb16',codes,'rectMm',actualRect);
 end

@@ -1,0 +1,247 @@
+[
+  {
+    "tag": "UTVECKLINGSUNDERLAG | 2026-10-13",
+    "title": "InkProf: framtida möjligheter",
+    "lead": "Färgmätning, adaptiv refinement och svåra färgövergångar",
+    "sections": [
+      [
+        "Syfte",
+        "Sammanställning av diskussionen om utveckling efter v1.1.0. Underlaget förenar användarens erfarenheter, befintliga funktioner i InkProf och källor om färgprofilering och gamut mapping. Det är ett beslutsunderlag; inga nya funktioner eller förbättringar är verifierade genom denna rapport."
+      ],
+      [
+        "Utgångspunkt",
+        "InkProf har refinement från bildfärger, fel och manuella gamutområden samt ett inre skal nära gamutytan. Fit, Grid och C1 undersöker modellen och numeriska transformer. C2/C3 tillför fysisk utskrift och mätning. Dessa olika slags belägg måste hållas åtskilda."
+      ],
+      [
+        "Huvudriktning",
+        "Utveckla stöd för att avgöra var nästa mätning gör mest nytta, varför den föreslås och om resultatet faktiskt förbättras. Koppla detta till en diagnostik som skiljer mätluckor från profilkonvertering och utskriftskombinationens begränsningar."
+      ],
+      [
+        "Underlag",
+        "Diskussionen omfattar MATLAB-guiden, den bifogade genomgången ICC-gamut-mapping-svara-farger.pdf och nätkällorna på sista sidan. De bifogade dokumentens slutsatser behandlas som förslag att granska, inte som bevis för orsaken till ett enskilt utskriftsfel."
+      ]
+    ],
+    "printedURL": true
+  },
+  {
+    "tag": "UTVECKLINGSUNDERLAG | 2026-10-13",
+    "title": "Blågradienten: vad vi vet",
+    "lead": "Erfarenheten styr nästa undersökning.",
+    "sections": [
+      [
+        "Användarens observationer",
+        "En problematisk blågradient kvarstår på Epson Stylus Pro 3880. Skal-refinement förbättrade resultatet marginellt. På Canon 2600, som i diskussionen avser imagePROGRAF PRO-2600 med blått bläck, blev gradienten bra. Detta är användarens rapporterade erfarenhet; en kontrollerad jämförelse med sparade mätningar redovisas inte här."
+      ],
+      [
+        "Vad observationerna inte avgör",
+        "Skillnaden visar inte att det blå bläcket ensamt är orsaken. Papper, mediatyp, driver, utskriftskvalitet, profil, intent, BPC och bilddata kan också skilja sig. Marginell förbättring efter refinement visar inte heller att glesa punkter är huvudorsaken."
+      ],
+      [
+        "Kända ledtrådar",
+        "Forskning beskriver upplevd blå-till-lila nyansförskjutning vid mapping i CIELAB [1]. DisplayCAL beskriver kanter i en blågradient när färger utanför en bildskärms gamut mappas mot en mindre jämn gräns [2]. Det senare är en möjlig mekanism att pröva för skrivaren, inte direkt bevis för Epson-felet."
+      ],
+      [
+        "Är det ett känt 3880-fel?",
+        "Sökningen gav ingen belagd generell modellbrist med exakt denna blågradient. Ett praktiskt 3880-test beskriver svåra djupblå färger och möjliga nyansskiftningar för färger utanför gamut [3]. Epsons bandningsråd gäller utskriftsränder och ska inte likställas med en kant vid en viss färg [4]."
+      ]
+    ],
+    "printedURL": true,
+    "callout": "Nästa prioritet: lokalisera var övergången uppstår innan ytterligare generell förtätning."
+  },
+  {
+    "tag": "UTVECKLINGSUNDERLAG | 2026-10-13",
+    "title": "Bläck, papper och driver",
+    "lead": "Profilen beskriver en bestämd utskriftskombination.",
+    "sections": [
+      [
+        "Bläck och fysisk gamut",
+        "Bläckens spektrala egenskaper och blandning påverkar färgomfång och svärta. Canon listar blått i PRO-2600-systemet [5]. Epson beskriver hur violett bläck i ett senare system utökar blå nyanser [6]. Detta stöder att bläckuppsättningen spelar roll, men fastställer inte orsaken till användarens skillnad."
+      ],
+      [
+        "Papper och beläggning",
+        "Pappersvithet, fluorescens, yta, bläckupptagning och torkning påverkar den uppmätta responsen. InkProf bör jämföra dokumenterade utskrifter och vid behov samma kontrollpatchar efter olika torktider. Spektral omräkning och FWA-kompensation ersätter inte native M1-mätning."
+      ],
+      [
+        "Driver och skrivarens tillstånd",
+        "I ett RGB-driverflöde är RGB inte en direkt styrning av enskilda bläckkanaler. Mediatyp och kvalitet behöver låsas och registreras. Munstyckskontroll och stabilitet bör undersökas innan nya mätningar används för modellförbättring."
+      ],
+      [
+        "Möjlig utveckling",
+        "Jämför utskriftskombinationer med samma kontrollmål och ändra en faktor åt gången. Redovisa gamut, svartpunkt, regionala färgfel och övergångarnas jämnhet. Ange om underlaget stödjer en fysisk begränsning, en modellbrist eller ännu inte räcker."
+      ]
+    ],
+    "printedURL": true
+  },
+  {
+    "tag": "UTVECKLINGSUNDERLAG | 2026-10-13",
+    "title": "Diagnos före mer refinement",
+    "lead": "Ett riktat blågradienttest kan skilja flera orsaker åt.",
+    "sections": [
+      [
+        "Tre jämförelser på Epson",
+        "1. Den ursprungliga källgradienten konverterad med InkProf-profilen.\n2. Samma källgradient med en annan profil för exakt samma utskriftskombination.\n3. En dokumenterad device-RGB-ramp utan ytterligare ICC-konvertering. Den tredje är ett responsprov och har inte nödvändigtvis samma avsedda färger som de två första."
+      ],
+      [
+        "Mät runt övergången",
+        "Spara RGB-koder och konverterade utskriftsvärden. Markera den synliga kantens position och välj tätare patchar före, vid och efter den. Undersök ljushet, kroma och nyans samt avstånd till gamutytan. Testa intents och BPC separat utan att samtidigt ändra papper eller driver."
+      ],
+      [
+        "Tolkning",
+        "En abrupt övergång i den direkt uppmätta device-RGB-responsen pekar mot utskriftskombinationen. En jämn uppmätt respons men ojämn profilprediktion pekar mot modellen. Ett fel som varierar mellan intents stärker spåret profilkonvertering eller mapping. Flera orsaker kan samverka."
+      ],
+      [
+        "Jämförelse med Canon",
+        "Lägg den gemensamma källgradientens färgförlopp mot båda profilerna och deras gamuter. Kontrollera om Epson måste komprimera där Canon har utrymme. Profilhärledda ytor är modeller; lokal mätning behövs för att bekräfta slutsatsen."
+      ]
+    ],
+    "printedURL": true
+  },
+  {
+    "tag": "UTVECKLINGSUNDERLAG | 2026-10-13",
+    "title": "Smartare val av mätpunkter",
+    "lead": "Bygg vidare på skal, Jacobian och sparade mätningar.",
+    "sections": [
+      [
+        "Täthetskarta",
+        "Visa avstånd till verkliga mätpunkter över ljushet och kulör samt nära gamutytan. En gles grön region vid vissa L*-nivåer ska kunna upptäckas och markeras. Knyt varje föreslagen punkt till en begriplig anledning."
+      ],
+      [
+        "Adaptivt skal",
+        "Behåll ΔE76 som geometrisk skaltjocklek. Prioritera kandidater med lokal gleshet, uppmätta fel, skillnader mellan modeller och Jacobianens känslighet. ΔE00 kan användas för färgskillnader utan att förväxlas med skalets geometriska avstånd. Jacobianens nuvarande roll är lokal känslighet, inte en verifierad direkt invers korrigering."
+      ],
+      [
+        "Osäkerhetsindikator",
+        "Jämför flera profilkandidaters förutsägelser på gemensamma RGB-punkter. Spridningen kan prioritera nya mätningar, men är inte kalibrerad mätosäkerhet eller ett bevis för verkligt färgfel. Visa detta uttryckligen."
+      ],
+      [
+        "Mät om eller lägg till",
+        "En isolerad misstänkt mätning bör kunna föreslås för ommätning. Ett sammanhängande glest område kan föreslås för refinement. Användaren väljer en patchbudget och granskar placeringen. Argylls targen stöder redan profilbaserad adaptiv fördelning och lokal Lab-filtrering [7]."
+      ],
+      [
+        "Bevisa förbättringen",
+        "Behåll oberoende kontrollfärger som inte används för träning eller kandidatval. Redovisa regionala fel och försämringar, inte bara ett totalmedelvärde. Punkter som tas in i träningen förlorar sin roll som oberoende verifiering."
+      ]
+    ],
+    "printedURL": true
+  },
+  {
+    "tag": "UTVECKLINGSUNDERLAG | 2026-10-13",
+    "title": "Mapping och svåra färger",
+    "lead": "Komplettera diagnostiken innan en egen algoritm införs.",
+    "sections": [
+      [
+        "Nyans och sammanfallande färger",
+        "Komplettera ΔE00 med förändring i ljushet, kroma och nyans. Prova OKLab eller IPT som extra diagnostik, särskilt i blå-lila förlopp. Nyansvinklar nära neutralt är instabila. Markera när olika källfärger blir nästan samma utskriftsfärg och skilj detta från kvantiseringsplatåer."
+      ],
+      [
+        "Bildanpassad konvertering",
+        "Argyll collink -g och -G kan använda en bildgamut från tiffgamut [8]. Ett separat experimentläge kan jämföra detta med den allmänna skrivarprofilen. Spara bild- eller jobbspecifik DeviceLink, källa, betraktningsvillkor och inställningar separat. Bildfärger för refinement är inte i sig en korrekt gamutfil för collink."
+      ],
+      [
+        "Begränsningar i idéerna",
+        "W3C:s OKLCH-mapping gäller RGB-destinationer och anger uttryckligen att skrivarens svart- och vitpunkt kräver andra algoritmer [9]. En v4-fil innebär inte automatiskt PRMG-baserade transformer [10]. Direkt automatisk färgkorrigering i en ny rymd behöver därför fysisk och visuell validering."
+      ],
+      [
+        "Gamutexport och certifikat",
+        "InkProf har redan hörnpunkter och trianglar. Export enligt iccMAX kräver korrekt PCS, kodning, ytorientering och validering [11]. Lägre prioritet än diagnostiken. Certifikatet bör skilja kolorimetrisk noggrannhet från testad perceptuell återgivning och ange exakt källa, intent och metod."
+      ],
+      [
+        "Övriga spår",
+        "Kort återkommande kontrollmål för drift; belysningsjämförelser från spektra med fluorescensbegränsningar; separat abstrakt korrigeringsprofil med Argyll refine [12]. PDF:ens patentexempel är inte rättsligt granskade här och används inte som färdiga implementeringsrecept."
+      ]
+    ],
+    "printedURL": true
+  },
+  {
+    "tag": "UTVECKLINGSUNDERLAG | 2026-10-13",
+    "title": "Prioritering och beslut",
+    "lead": "Små verifierbara steg före större nya transformer.",
+    "sections": [
+      [
+        "Först: förstå blågradienten",
+        "Genomför det dokumenterade jämförelsetestet på Epson och Canon. Spara källbild, profiler, RGB-värden, utskriftsinställningar, patchidentiteter och mätningar. Målet är att lokalisera felet, inte att på förhand välja en förklaring."
+      ],
+      [
+        "Sedan: gemensam diagnostik",
+        "Utöka gradientanalysen med ljushet, kroma, nyans och kollapsade färgsteg. Visa förloppet tillsammans med gamutytan och faktisk mättäthet. Återanvänd refinement och profiljämförelsen så att verktygen hålls samlade."
+      ],
+      [
+        "Därefter: adaptivt skal",
+        "Inför punktbudget, motiverade prioriteringar och oberoende före/efter-kontroller. Börja med en försiktig heuristik och dokumentera när den hjälper, försämrar eller inte ger säker förbättring."
+      ],
+      [
+        "Senare: bildanpassad mapping",
+        "Prova Argylls befintliga DeviceLink-funktion på utvalda bilder. Godkänn ingen metod enbart för att en numerisk diagnostik blir bättre. Jämför utskrifter och gradienter och redovisa räckvidden."
+      ],
+      [
+        "Leverans och spårbarhet",
+        "Behåll stabila filnamn och skilj kandidat, leveransprofil och jobbspecifik transform. Huvudcertifikatet bör vara begripligt; fullständiga mätningar och tekniska detaljer kan fortsatt ligga i separat bilaga."
+      ]
+    ],
+    "printedURL": true,
+    "callout": "Beslutsfråga för användaren: behövs fler mätningar, en annan konvertering eller en annan utskriftskombination?"
+  },
+  {
+    "tag": "UTVECKLINGSUNDERLAG | 2026-10-13",
+    "title": "Källor och avgränsning",
+    "lead": "Webbkällor kontrollerade under diskussionen 13 oktober 2026.",
+    "sections": [
+      [
+        "Hur källorna används",
+        "Forskningsartikeln stödjer nyansproblemet; tillverkarnas dokumentation beskriver deras produkter och uppgifter, inte en oberoende jämförelse av användarens utskrifter. DisplayCAL-exemplet gäller bildskärm. Northlight är ett förstahandstest. Ingen källa nedan bevisar orsaken till den aktuella Epson-gradienten."
+      ]
+    ],
+    "printedURL": true,
+    "links": [
+      [
+        "1. Braun, Fairchild och Ebner: hue-linjäriserad CIELAB\nhttps://library.imaging.org/cic/articles/6/1/art00034",
+        "https://library.imaging.org/cic/articles/6/1/art00034"
+      ],
+      [
+        "2. DisplayCAL: profilinställningar och blågradient\nhttps://displaycal.net/#profile-settings",
+        "https://displaycal.net/#profile-settings"
+      ],
+      [
+        "3. Keith Cooper: praktiskt Epson 3880-test\nhttps://www.northlight-images.co.uk/epson-stylus-pro-3880-review/",
+        "https://www.northlight-images.co.uk/epson-stylus-pro-3880-review/"
+      ],
+      [
+        "4. Epson 3880: ränder och bandning\nhttps://epson.com/faq/SPT_CA61201-VM~faq-00009eb-shared?faq_cat=faq-topFaqs",
+        "https://epson.com/faq/SPT_CA61201-VM~faq-00009eb-shared?faq_cat=faq-topFaqs"
+      ],
+      [
+        "5. Canon PRO-2600: bläcksystem och bildkvalitet\nhttps://canon.jp/biz/product/printer/imageprograf/lineup/pro6600-4600-2600/feature-highquality",
+        "https://canon.jp/biz/product/printer/imageprograf/lineup/pro6600-4600-2600/feature-highquality"
+      ],
+      [
+        "6. Epson: violett bläck och utökat blått omfång\nhttps://epson.com/For-Home/Ink/Epson-56N-Ink-Cartridge/i/T56ND20",
+        "https://epson.com/For-Home/Ink/Epson-56N-Ink-Cartridge/i/T56ND20"
+      ],
+      [
+        "7. ArgyllCMS: targen\nhttps://www.argyllcms.com/doc/targen.html",
+        "https://www.argyllcms.com/doc/targen.html"
+      ],
+      [
+        "8. ArgyllCMS: collink\nhttps://argyllcms.com/doc/collink.html",
+        "https://argyllcms.com/doc/collink.html"
+      ],
+      [
+        "9. W3C CSS Color 4: gamut mapping\nhttps://www.w3.org/TR/css-color-4/#gamut-mapping",
+        "https://www.w3.org/TR/css-color-4/#gamut-mapping"
+      ],
+      [
+        "10. ICC: Perceptual Reference Medium Gamut\nhttps://www.color.org/v4_prmg/",
+        "https://www.color.org/v4_prmg/"
+      ],
+      [
+        "11. ICC: iccMAX-specifikationen\nhttps://www.color.org/iccmax/",
+        "https://www.color.org/iccmax/"
+      ],
+      [
+        "12. ArgyllCMS: refine\nhttps://www.argyllcms.com/doc/refine.html",
+        "https://www.argyllcms.com/doc/refine.html"
+      ]
+    ],
+    "compact": true
+  }
+]

@@ -39,8 +39,12 @@ end
 function testRepeatedStartDuringPreparation(tc)
 runFlow(tc,"paired",true);
 end
-function runFlow(tc,mode,reenter)
+function testSaveCheckpointAndReopen(tc)
+runFlow(tc,"single",false,true);
+end
+function runFlow(tc,mode,reenter,pauseInstead)
 if nargin<3,reenter=false;end
+if nargin<4,pauseInstead=false;end
 assumeTrue(tc,isunix);
 w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
 pkg=fullfile(w,'target');inkprof.createTarget(pkg,PatchCount=20,GraySteps=3,DPI=100);
@@ -100,7 +104,19 @@ if mode=="paired"
     verifyEqual(tc,string(findobj(dialog.Figure,'Tag','pageLoaded').Visible),"off");
     hardwareScan(dialog);
 end
-waitButton(dialog,'save');press(dialog,'save');
+waitButton(dialog,'save');
+if pauseInstead
+    waitButton(dialog,'pause');press(dialog,'pause');
+    t=tic;while ~isfile(fullfile(folder,'measurement-checkpoint.json'))&&toc(t)<15,pause(.1);drawnow;end
+    checkpoint=inkprof.internal.measurementCheckpoint(folder);
+    verifyFalse(tc,checkpoint.complete);verifyEqual(tc,checkpoint.confirmedPasses,1);verifyEmpty(tc,dialog.Result);
+    verifyFalse(tc,isfile(fullfile(folder,'measurement.json')));
+    resumed=inkprof.MeasurementDialog(folder,ArgyllBin=bin);resumeCleanup=onCleanup(@()delete(resumed));
+    verifyEqual(tc,string(findobj(resumed.Figure,'Tag','begin').Text),"Resume measurement");
+    verifyEqual(tc,string(findobj(resumed.Figure,'Tag','direction').Enable),"off");
+    return
+end
+press(dialog,'save');
 t=tic;while isempty(dialog.Result)&&toc(t)<15,pause(.1);drawnow;end
 verifyFalse(tc,isempty(dialog.Result));verifyTrue(tc,dialog.Result.complete);
 verifyEqual(tc,dialog.Result.measurementCondition.requested,"M0");

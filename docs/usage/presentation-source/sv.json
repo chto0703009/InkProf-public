@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.1.0 | 2026-10-13",
+    "tag": "InkProf | v1.1.1 | 2026-10-14",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -23,7 +23,7 @@
       ],
       [
         "Gör nästa utskrift lättare att lyckas med",
-        "Projektet sparar inställningar, mätningar och revisioner. Du kan följa vad som gav resultatet och undersöka förändringar. Det kan minska onödiga provutskrifter och spara tid, papper och bläck."
+        "Projektet sparar inställningar, mätningar och revisioner. Du kan följa vad som gav resultatet och undersöka förändringar. Det kan minska onödiga provutskrifter och spara tid, papper och bläck. Spara färdiga mätrader och fortsätt senare från nästa ofärdiga rad."
       ],
       [
         "Ge kunden något konkret att bedöma",
@@ -227,11 +227,11 @@
     ]
   },
   {
-    "tag": "v1.1.0 | NYA MÖJLIGHETER",
+    "tag": "v1.1.1 | NYA MÖJLIGHETER",
     "links": [
       [
         "Öppen källkod och nedladdning",
-        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0"
+        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.1"
       ],
       [
         "X-Rite: i1Pro 2 EOL",
@@ -275,7 +275,7 @@
       ],
       [
         "Stabil funktionsrelease",
-        "Källkodsrelease 1.1.0, publicerad 12 oktober 2026. Sparade mål och mätningar följer med. Bedöm förbättringar genom utskrift och mätning."
+        "Källkodsrelease 1.1.1, publicerad 14 oktober 2026. Sparade mål och mätningar följer med. Bedöm förbättringar genom utskrift och mätning."
       ]
     ],
     "compact": true

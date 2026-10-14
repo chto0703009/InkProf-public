@@ -1,3 +1,75 @@
+INKPROF v1.1.1 RELEASE VALIDATION - 2026-10-14
+
+ENVIRONMENT
+- macOS ARM; MATLAB R2025b; Python 3.13.6; ArgyllCMS 3.5.0.
+- numpy 2.2.6; scipy 1.16.3; colour-science 0.4.6; reportlab 4.4.3;
+  pypdf 6.20.1 (test/PDF inspection dependency).
+
+COMPLETED DEVELOPMENT CHECKS
+- Python unittest discovery: 204 tests, all passed.
+- Full MATLAB test suite: 263 passed, 0 failed, 0 incomplete.
+- Viewer JavaScript test: change-event controls and direct 3D rotation passed.
+- Current source release check: 433 source files with notices; version,
+  schema and resource hashes match. Licence inventory check passed.
+- Whole-row checkpoint tests cover partial snapshot filtering, paired-row
+  completion, altered-file rejection, saved settings, resume page/row/direction
+  messages and opening a saved partial session. Bridge tests verify -r and
+  retention of the previous TI3 snapshot. These are synthetic tests.
+
+PUBLIC CHECKOUT
+- Python unittest discovery: 204 tests, all passed.
+- MATLAB full suite plus 18 targeted reruns after correcting fixture/venv
+  assumptions: 263 cases; 247 passed, 16 intentionally skipped, 0 failed.
+  All 16 skipped cases require excluded private fixtures.
+- Public source release check: 432 source files with notices; version,
+  schema/resource hashes and licence inventory match.
+- Tests requiring excluded private i1Profiler/TIFF fixtures now explicitly
+  declare the missing fixture as an assumption rather than failing import.
+  Private development tests exercise those fixtures; they are not distributed.
+- An initial public run lacked Python configuration and expected private
+  fixtures. These setup issues were corrected. A concurrent graphics run
+  stalled; the subsequent public MATLAB suite ran separately with configured
+  Python. Additional missing Chart 575 assumptions and a linked-venv prefix
+  comparison were corrected; all affected tests were rerun. The updated Python
+  interpreter test also passed again in the private checkout.
+- No private project, measured profile, local runtime/configuration or real
+  i1Profiler fixture is added to the public source tree.
+
+DOCUMENTATION
+- Source version 1.1.1; release/document date 2026-10-14.
+- Both handbooks: 73 physical pages each (cover plus 72 numbered pages).
+- Both presentations: 8 pages each; MATLAB workflow guide: 9 pages.
+- Future-development discussion: 8 pages, explicitly a proposal, not implemented
+  features. Six PDFs total, 179 pages.
+- All page version labels checked; updated text/layout pages visually reviewed.
+- Current README, documentation index and usage Markdown local links checked.
+- Repository, public checkout and Downloads PDF copies are byte-identical.
+- Existing private measurement certificates were not regenerated or exported.
+
+QUALIFICATION LIMITS
+- New save/pause/resume behaviour still requires real-instrument qualification.
+  Automated results do not establish physical print or perceptual colour quality.
+- Resume requires the same printed sheets; checksums identify chart data, not
+  physical paper. A new/replaced print needs a new session and RGB controls.
+- Only completed physical rows enter a checkpoint. Unsaved scans after the last
+  checkpoint may be lost on interruption. A checkpoint is not a completed or
+  accepted workflow measurement.
+- Windows/Linux and other instrument modes retain their existing limits.
+- ISSUE-001 (inverse sensitivity to measurement noise) remains open.
+- Source-only distribution: MATLAB, Python and ArgyllCMS installed separately.
+  Notice/inventory checks are scoped checks, not a comprehensive legal clearance.
+
+REPRODUCE
+python -m unittest discover -s tests -p 'test_*.py'
+MATLAB: setupInkProf(PythonExecutable='/absolute/path/to/python',CheckPython=true);
+        r=runtests('tests'); disp(table(r)); assertSuccess(r)
+Set INKPROF_TEST_PYTHON to the same Python interpreter for integration tests.
+node tests/test_gamut_view.js
+python tools/check_release.py
+python tools/check_license_inventory.py
+
+HISTORICAL VALIDATION RECORDS FOLLOW (unchanged dates and qualification scope)
+
 Documentation update — 2026-10-13
 Program version remains 1.1.0. The published release/tag is preserved.
 - Swedish/English handbooks reviewed against current application choices,

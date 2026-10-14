@@ -15,6 +15,7 @@ function teardownOnce(tc)
 rmdir(tc.TestData.work,'s');
 end
 function testModelAndScale(tc)
+assumeTrue(tc,isfile(tc.TestData.reference),'Private reference TIFF is excluded from the public release.');
 w=tc.TestData.work;
 a=inkprof.createTiff16(tc.TestData.source,tc.TestData.reference,fullfile(w,'base.tif'),DPI=100,WriteTxfCandidate=false,Date="2026-09-26",Time="12:00");
 t=inkprof.importTarget(tc.TestData.source);t.rgbOriginal=t.rgbOriginal/255*100;t.rgbScale=100;
@@ -37,6 +38,7 @@ verifyEqual(tc,string(l.patches(27).column),"2A");
 verifyFalse(tc,contains(lower(a.title),'i1profiler'));
 end
 function testFailureDoesNotPublish(tc)
+assumeTrue(tc,isfile(tc.TestData.reference),'Private Chart 575 fixture is excluded from the public release.');
 w=tc.TestData.work;template=fullfile(w,'invalid.pxf');fid=fopen(template,'w');fprintf(fid,'invalid XML');fclose(fid);
 out=fullfile(w,'failure.tif');
 failed=false;
@@ -48,11 +50,13 @@ end
 verifyTrue(tc,failed);verifyEmpty(tc,dir(fullfile(w,'failure*')));
 end
 function testCandidateCollision(tc)
+assumeTrue(tc,isfile(tc.TestData.reference),'Private reference TIFF is excluded from the public release.');
 w=tc.TestData.work;file=fullfile(w,'collision-candidate.txf');fid=fopen(file,'w');fprintf(fid,'keep');fclose(fid);
 verifyError(tc,@()inkprof.createTiff16(tc.TestData.source,tc.TestData.reference,fullfile(w,'collision.tif'),DPI=100),'inkprof:Exists');
 verifyEqual(tc,fileread(file),'keep');verifyFalse(tc,isfile(fullfile(w,'collision.tif')));
 end
 function testCompactA4(tc)
+assumeTrue(tc,isfile(tc.TestData.source),'Private Chart 575 fixture is excluded from the public release.');
 out=fullfile(tc.TestData.work,'compact');
 inkprof.createTarget(out,Source=tc.TestData.source,CompactA4=true,DPI=100);
 l=jsondecode(fileread(fullfile(out,'layout.json')));
@@ -64,6 +68,7 @@ end
 function testMultiplePages(tc)
 w=tc.TestData.work;root=fileparts(fileparts(mfilename('fullpath')));
 source=fullfile(root,'tests','fixtures','i1profiler','chart-2033','Chart 2033 Patches.txf');
+assumeTrue(tc,isfile(source),'Private target fixture is excluded from the public release.');
 a=inkprof.createTiff16(source,fullfile(w,'multi.tif'),DPI=100,Randomize=true,Seed=42);
 map=jsondecode(fileread(a.layout));
 verifyEqual(tc,numel(a.txfCandidate),4);

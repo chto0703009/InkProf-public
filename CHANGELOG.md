@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.1.1 - 2026-10-14
+
+- Prefer creating a new C2 target when no saved target exists for the current ICC.
+- Update both handbooks, both presentations and the MATLAB workflow guide; clarify later OBA/FWA activation and measurement resume instructions.
+
+- Enlarge separate RGB print-control squares by 0.5 mm on each edge, with recorded measurement rectangles and labels following the geometry.
+
+- Save completed measurement rows as immutable checkpoints and resume the same session with its original chart and scan settings. Checkpoints retain only whole physical rows; a save requested during a scan waits for the next prompt and excludes the row in flight. A half-completed paired row is omitted and reread on resume. Checkpoints never count as complete workflow measurements.
+- Reuse approved RGB controls only after confirming the same physical print and validating the matching target; allow retry after cancelled or failed control checks.
+- Continue at the following scan after a manually selected row is reread successfully.
+
 ## Documentation — 2026-10-13
 
 - Review Swedish and English handbooks against current app behaviour: correct B2 smoothing choices, row references, automatic smoothing conditions, certificate appendices and initial-target budgets; clarify Photoshop handling and terminology.

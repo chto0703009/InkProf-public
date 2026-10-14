@@ -370,12 +370,15 @@ end
             if o.Source=="",o=[];end
             return
         elseif id=="c2"
-            choice=uiconfirm(fig,'Create a new verification target or select one you have already printed?', ...
-                'Verification target','Options',{'Select existing target','Create new target','Cancel'},'CancelOption',3);
+            targets=inkprof.internal.savedVerificationTargets(w);
+            choice='Create new target';
+            if ~isempty(targets)
+                choice=uiconfirm(fig,'Create a new verification target or select one you have already printed?', ...
+                    'Verification target','Options',{'Create new target','Select existing target','Cancel'}, ...
+                    'DefaultOption',1,'CancelOption',3);
+            end
             if strcmp(choice,'Cancel'),o=[];return;end
             if strcmp(choice,'Select existing target')
-                targets=inkprof.internal.savedVerificationTargets(w);
-                if isempty(targets),uialert(fig,'No saved verification targets for the current ICC were found.','Verification target');o=[];return;end
                 [index,ok]=inkprof.internal.withFocus(fig,@listdlg,'ListString',cellstr(string({targets.label})), ...
                     'SelectionMode','single','PromptString','Select the target matching your printed sheet:', ...
                     'Name','Saved verification targets','ListSize',[720 220]);

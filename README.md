@@ -1,4 +1,4 @@
-# InkProf v1.1.0 — stable source release
+# InkProf v1.1.1 — stable source release
 
 **Keep your i1Pro 2. Take control of your prints.**
 
@@ -19,15 +19,15 @@ InkProf is an open-source MATLAB app for RGB printer profiling and verification.
 
 Each project preserves its inputs, profiles, checks and history. You can close it while prints dry and resume later. RGB printers receive RGB data through their driver; most inkjet photo printers use this workflow. InkProf saves TIFF16 targets for separate printing and performs measurement in the app.
 
-Version **1.1.0** adds **inner gamut shell refinement**: place additional measured colours near the gamut surface, across the whole shell or selected areas, and review the proposal before printing. Image colours, verification errors, manual areas and ICC-grid trials share the same refinement tools. The app suggests the next valid workflow step.
+Version **1.1.1** adds saved whole-row measurement checkpoints and guided resumption, reuse of approved RGB controls for the same print, larger RGB squares and clearer verification-target creation. It retains **inner gamut shell refinement**: place additional measured colours near the gamut surface, across the whole shell or selected areas, and review the proposal before printing. Image colours, verification errors, manual areas and ICC-grid trials share the same refinement tools. The app suggests the next valid workflow step.
 
 ## Availability and requirements
 
 InkProf is **free to download** under GPL version 3 or later. **MATLAB requires a licence**; base MATLAB is sufficient. Python, ArgyllCMS and a compatible spectrophotometer are installed separately. The complete workflow is tested on **macOS with the i1Pro 2**; Windows/Linux and all instrument modes are not qualified.
 
-[Download the stable v1.1.0 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
+[Download the stable v1.1.1 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.1) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
 
-The source release was published **2026-10-12**. Handbooks and presentations in this repository were revised **2026-10-13**; attached release assets preserve the original publication snapshot. See [release notes](docs/releases/v1.1.0.md) and [validation](VALIDATION.txt).
+The source release was published **2026-10-14**. Handbooks, presentations and the MATLAB guide are updated for this release. Real-instrument validation of the new resume flow remains necessary. See [release notes](docs/releases/v1.1.1.md) and [validation](VALIDATION.txt).
 
 Print accuracy depends on the printer, paper, ink and settings. Numerical checks and screen previews do not replace physical verification. Certificates document evidence and decisions; they are not accredited certification or a declaration of full ISO conformity.
 
@@ -44,7 +44,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 Clone the stable source release:
 
 ```sh
-git clone --branch v1.1.0 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.1.1 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
@@ -66,7 +66,7 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.1.0 release notes](docs/releases/v1.1.0.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.1.1 release notes](docs/releases/v1.1.1.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
@@ -74,7 +74,7 @@ The user handbook is maintained in matching Swedish and English editions. App la
 - [Swedish presentation (PDF)](docs/usage/InkProf-presentation-svenska.pdf)
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.1.0.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.1.1.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 

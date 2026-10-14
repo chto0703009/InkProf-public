@@ -43,6 +43,7 @@ function remove(w)
 if isfolder(w),rmdir(w,'s');end
 end
 function testPageCountBeforeSaving(tc)
+assumeTrue(tc,isfile(fullfile(tc.TestData.root,'tests','fixtures','targets','chart-575','source.pxf')),'Private Chart 575 fixture is excluded from the public release.');
 source=fullfile(tc.TestData.root,'tests','fixtures','targets','chart-575','source.pxf');
 f=inkprof.renderTarget(source);cleanup=onCleanup(@()delete(f));
 set(findobj(f,'Tag','renderDPI'),'Value',100);

@@ -53,6 +53,9 @@ if ispc,exe=fullfile(p.Root,'.venv','Scripts','python.exe');else,exe=fullfile(p.
 assumeTrue(tc,isfile(exe),'Local .venv is optional.');
 r=inkprof.checkPython(PythonExecutable=exe);
 verifyEqual(tc,r.executable,exe);
-verifyEqual(tc,r.prefix,fullfile(p.Root,'.venv'));
+% A linked venv may report its physical prefix; the launcher stays unchanged.
+expected=string(java.io.File(char(fullfile(p.Root,'.venv'))).getCanonicalPath());
+actual=string(java.io.File(char(r.prefix)).getCanonicalPath());
+verifyEqual(tc,actual,expected);
 verifyNotEqual(tc,r.prefix,r.basePrefix);
 end

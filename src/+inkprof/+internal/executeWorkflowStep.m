@@ -92,6 +92,10 @@ switch id
    dialog=inkprof.measureChart(target,SessionFolder=dest,ScanMode="paired",Condition="M0");
    waitfor(dialog.Figure);
    assert(dialog.Failure=="",'inkprof:PrintControlFailed','%s',dialog.Failure);
+   dest=dialog.Folder;
+   if isempty(dialog.Result)&&isfile(fullfile(dest,'measurement-checkpoint.json'))
+    error('inkprof:Cancelled','Completed rows saved. Use Resume saved session to continue; this step remains pending.');
+   end
    source=inkprof.selectMeasurementRevision(dest,target);
   else
    [~,~,ext]=fileparts(source);

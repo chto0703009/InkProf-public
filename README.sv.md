@@ -1,4 +1,4 @@
-# InkProf v1.1.0 - stabil källkodsutgåva
+# InkProf v1.1.1 - stabil källkodsutgåva
 
 **Behåll din i1Pro 2. Ta kontroll över utskriften.**
 
@@ -19,7 +19,14 @@ InkProf är en MATLAB-app med öppen källkod för profilering och verifiering a
 
 Projektet håller ihop underlag, profiler, kontroller och historik. Du kan stänga det medan utskriften torkar och fortsätta senare. RGB-skrivare tar emot RGB-data via drivrutinen; de flesta fotoskrivare med bläckstråle använder detta flöde. InkProf sparar TIFF16 för separat utskrift och sköter mätningen i appen.
 
-## Nytt i 1.1.0
+## Nytt i 1.1.1
+
+- Spara hela mätrader och återuppta med besked om sida, rad och riktning.
+- Bekräfta samma utskrivna ark; återanvänd godkända RGB-kontroller för samma utskrift.
+- Större RGB-rutor och enklare skapande av verifieringsmål.
+- Uppdaterade handböcker; instrumentprov av återupptagning återstår.
+
+### Skal-refinement från 1.1.0
 
 **Skalförfining** lägger till mätpunkter nära gamutytan, över hela skalet eller i valda områden. Du granskar förslaget före utskrift. Bildfärger, kontrollfel, markerade områden och prov av tätare ICC-rutnät finns bland samma förfiningsverktyg. Appen föreslår nästa giltiga rad i arbetsgången.
 
@@ -27,16 +34,16 @@ Projektet håller ihop underlag, profiler, kontroller och historik. Du kan stän
 
 InkProf är **kostnadsfritt att ladda ner**, enligt GPL version 3 eller senare. **MATLAB kräver licens**; grundversionen räcker. Python, ArgyllCMS och en kompatibel spektrofotometer installeras separat. Det fullständiga arbetsflödet är testat på **macOS med i1Pro 2**; Windows/Linux och alla instrumentlägen är inte kvalificerade.
 
-[Hämta stabil källkod v1.1.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0) · [English overview](README.md) · [Svensk nyttopresentation](docs/usage/InkProf-presentation-svenska.pdf) · [Svensk användarhandbok](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
+[Hämta stabil källkod v1.1.1](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.1) · [English overview](README.md) · [Svensk nyttopresentation](docs/usage/InkProf-presentation-svenska.pdf) · [Svensk användarhandbok](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 
-Källkodsreleasen publicerades **2026-10-12**. Handböcker och presentationer i repot reviderades **2026-10-13**; releasefilerna behåller originalversionen från publiceringen.
+Källkodsreleasen publicerades **2026-10-14**. Handböcker, presentationer och MATLAB-guide är uppdaterade för denna release.
 
 ## Läs vidare
 
 - [Installationsanvisning](README.md#install-and-start)
 - [Engelsk handbok](docs/usage/InkProf-user-handbook-English.pdf)
 - [Engelsk presentation](docs/usage/InkProf-presentation-English.pdf)
-- [Releaseinformation](docs/releases/v1.1.0.md)
+- [Releaseinformation](docs/releases/v1.1.1.md)
 - [Validering](VALIDATION.txt)
 
 Färgnoggrannheten beror på skrivare, papper, bläck och inställningar. Numeriska kontroller och skärmförhandsvisningar ersätter inte fysisk verifiering. Certifikatet dokumenterar underlag och beslut; det är inte ackrediterad certifiering eller intyg om full ISO-överensstämmelse.

@@ -9,6 +9,7 @@ function setupOnce(tc)
 root=fileparts(fileparts(mfilename('fullpath')));addpath(fullfile(root,'src'));tc.TestData.root=root;
 end
 function testImportsAndDegenerateGrid(tc)
+assumeTrue(tc,isfile(fullfile(tc.TestData.root,'tests','fixtures','targets','chart-575','source.pxf')),'Private Chart 575 fixture is excluded from the public release.');
 p=fullfile(tc.TestData.root,'tests','fixtures','targets','chart-575','source.pxf');
 t=inkprof.importTarget(p);i=t.targetInfo;
 verifyEqual(tc,i.source.fileName,"source.pxf");verifyEqual(tc,i.source.sha256,t.sourceSHA256);

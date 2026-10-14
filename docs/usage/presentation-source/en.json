@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.1.0 | 2026-10-13",
+    "tag": "InkProf | v1.1.1 | 2026-10-14",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -23,7 +23,7 @@
       ],
       [
         "Make the next print easier to get right",
-        "The project saves settings, measurements and revisions. Trace what produced the result and investigate changes. This can reduce unnecessary test prints and save time, paper and ink."
+        "The project saves settings, measurements and revisions. Trace what produced the result and investigate changes. This can reduce unnecessary test prints and save time, paper and ink. Save completed measurement rows and continue later from the next unfinished row."
       ],
       [
         "Give your client concrete evidence",
@@ -227,11 +227,11 @@
     ]
   },
   {
-    "tag": "v1.1.0 | NEW OPTIONS",
+    "tag": "v1.1.1 | NEW OPTIONS",
     "links": [
       [
         "Open source and downloads",
-        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.0"
+        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.1"
       ],
       [
         "X-Rite: i1Pro 2 EOL",
@@ -275,7 +275,7 @@
       ],
       [
         "Stable feature release",
-        "Source release 1.1.0, published 12 October 2026. Saved targets and measurements are preserved. Assess improvements by printing and measuring."
+        "Source release 1.1.1, published 14 October 2026. Saved targets and measurements are preserved. Assess improvements by printing and measuring."
       ]
     ],
     "compact": true

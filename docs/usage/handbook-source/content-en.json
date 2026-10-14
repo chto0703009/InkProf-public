@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.1.0 | 2026-10-13",
+    "tag": "USER HANDBOOK | v1.1.1 | 2026-10-13",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -41,8 +41,8 @@
         "MATLAB requires its own licence; InkProf was tested with R2025b and no mandatory add-on toolboxes. Install Python 3.11-3.13 (tested with 3.13) and ArgyllCMS (3.5.0 was used in development). Git is needed for the clone command below. On macOS, Python, Git and ArgyllCMS can be installed using Homebrew; with Homebrew installed: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Download InkProf v1.1.0",
-        "Download the v1.1.0 source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.1.0 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
+        "2. Download InkProf v1.1.1",
+        "Download the v1.1.1 source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.1.1 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
       ],
       [
         "3. Install Python packages in the InkProf folder",
@@ -104,7 +104,7 @@
       ],
       [
         "Further reading: pages 25-69",
-        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian."
+        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian. 70: later OBA/FWA choice. 71-72: measurement checkpoints, resume and RGB controls (v1.1.1)."
       ]
     ],
     "lead": "The row number on the left and the internal step identifier are different things. This handbook uses row numbers to help you find the step in the app.",
@@ -766,7 +766,7 @@
       ],
       [
         "Certificate and final check",
-        "The certificate records white-reference source and count separately for training and verification and explains the M0 limitation. Original spectra remain unchanged. Compensation or averaging is not proof of improved reproduction: finish with a new C2 print and C3 measurement before approving the profile."
+        "The certificate records white-reference source and count separately for training and verification and explains the M0 limitation. Original spectra remain unchanged. Compensation or averaging is not proof of improved reproduction: finish with a new C2 print and C3 measurement before approving the profile. See page 70 for step-by-step later activation."
       ]
     ]
   },
@@ -1026,7 +1026,7 @@
   },
   {
     "title": "More samples in dark colours",
-    "tag": "v1.1.0 | MATERIALS AND SHADOWS",
+    "tag": "v1.1.1 | MATERIALS AND SHADOWS",
     "sections": [
       [
         "Matte paper",
@@ -1052,7 +1052,7 @@
   },
   {
     "title": "Gamut, certificates and source code",
-    "tag": "v1.1.0 | DELIVERY AND LICENSING",
+    "tag": "v1.1.1 | DELIVERY AND LICENSING",
     "sections": [
       [
         "Surfaces and measurement points are different views",
@@ -1822,7 +1822,7 @@
     "callout": "Shell refinement changes the measurement set. Grid trials change computed profile tables. Test separately to understand their effects."
   },
   {
-    "tag": "v1.1.0 | WORKFLOW AND CERTIFICATES",
+    "tag": "v1.1.1 | WORKFLOW AND CERTIFICATES",
     "title": "Next steps and clear delivery",
     "lead": "This page explains suggested next rows and how the delivery documents fit together.",
     "sections": [
@@ -2019,5 +2019,95 @@
         "Compare errors, development evidence, gradients and the earlier profile on equivalent terms. Better priority scores or lower training error do not establish improved print accuracy. Fresh physical verification is needed to assess the new ICC."
       ]
     ]
+  },
+  {
+    "title": "Enable OBA/FWA after measurement",
+    "tag": "B2 / B3 / REBUILD FROM SAVED SPECTRA",
+    "lead": "No code change is needed. The setting already exists; the profile must be rebuilt.",
+    "sections": [
+      [
+        "1. Check the measurement data",
+        "Native spectral measurements are required; stored XYZ alone is insufficient. OBA/FWA refers to optical brighteners. The setting enables compensation for their effect, not a new instrument measurement condition."
+      ],
+      [
+        "2. Change the setting",
+        "Open Project details and select Compensate optical brighteners (D50). Under Profiling, set Colour data to Spectra (D50 / 2 degrees). Alternatively use B2 > FWA / OBA > Compensate to D50 (also updates Project details). Save the dialog."
+      ],
+      [
+        "3. Rebuild",
+        "Save a new B2 recipe in row 6, build B3 in row 7, then run Fit, Grid and C1 in row 8. Manual uses the saved B2 recipe; Automatic creates its own recipes with the project’s FWA choice."
+      ],
+      [
+        "What remains available",
+        "Original spectral readings and the frozen B1 input are retained. Changing only the FWA choice normally does not require measuring the base target again. Earlier recipes, profiles and subsequent assessments become out of date. Earlier physical verification does not approve the new profile."
+      ],
+      [
+        "Paper white and verification",
+        "If usable paper-white data are missing, B2 offers blank-paper measurement, a saved approved white reference or Cancel. For physical verification of the new profile, perform a fresh C2 print, measurement, C3, feedback and approval in rows 9-14. Row 19 explicitly records the absence of separate print verification."
+      ],
+      [
+        "Limitation",
+        "Compensation simulates D50 from M0 spectra; it does not turn M0 into native M1 measurement or prove improved reproduction. Changed materials or printing conditions are a separate issue from changing compensation alone."
+      ]
+    ]
+  },
+  {
+    "title": "Save and resume a partial measurement",
+    "tag": "MEASUREMENT / NEW IN v1.1.1",
+    "lead": "For large targets, save completed physical rows and continue later.",
+    "sections": [
+      [
+        "Save before stopping",
+        "Select Save completed rows / pause. Wait for Completed rows saved - measurement paused before closing. Open results folder locates the session. A save requested during a scan waits for the instrument’s row prompt and excludes the row in flight from the checkpoint."
+      ],
+      [
+        "Whole rows only",
+        "Partial rows are excluded. With forward/reverse averaging, both scans are required for a completed physical row. A row with only one scan is omitted from the resume snapshot and measured again in both directions."
+      ],
+      [
+        "Open the saved session",
+        "Open the measurement routine for the same target. Choose Resume saved session… and the folder containing measurement-checkpoint.json. The dialog states the completed-row count, page, printed row and direction at which measurement resumes."
+      ],
+      [
+        "Confirm and continue",
+        "Choose Resume measurement and confirm Resume same printed sheets. Use exactly the same physical sheets. If you printed again or replaced a page, choose Cancel and start a new session with fresh RGB checks. The checksum identifies chart data, not physical paper."
+      ],
+      [
+        "Follow instrument instructions",
+        "Calibrate when prompted and wait for the displayed row instruction before scanning. Saved scan settings and RGB controls are reused. Restart the first unfinished row from its beginning; for paired measurements scan forward, then reverse."
+      ],
+      [
+        "Finish and review",
+        "After all rows, select Save and finish and review the measurement as usual. A checkpoint does not complete the workflow step. An unexpected interruption may lose scans since the last checkpoint. Changed chart data, settings or saved readings are rejected."
+      ]
+    ],
+    "callout": "Included in v1.1.1: automatically tested; real-instrument resume validation remains necessary."
+  },
+  {
+    "title": "Remeasurement and RGB controls",
+    "tag": "MEASUREMENT / NEW IN v1.1.1",
+    "sections": [
+      [
+        "Continue after rereading",
+        "When navigating back within an active measurement and rereading successfully, InkProf selects the following scan pass. For paired measurements follow the forward/reverse instructions for the same physical row. Separate remeasurement of a previously saved row creates a revision that must be reviewed and accepted."
+      ],
+      [
+        "Reuse only for the same print",
+        "A new session’s RGB dialog can offer Reuse checks for same print. Select the earlier session folder with approved RGB checks. Target and control-definition identities are checked. Do not reuse for reprinted or replaced pages, even when chart data are identical."
+      ],
+      [
+        "Check every page",
+        "For a new print, measure R, G and B on every page. These controls are separate from profiling patches and excluded from fitting. Approved controls are retained when resuming the same saved partial measurement."
+      ],
+      [
+        "Larger squares in newly generated targets",
+        "RGB squares gain 0.5 mm on each edge: 1 mm in nominal width and height. The existing one-pixel raster extension on each edge remains. Measurement rectangles and labels follow the geometry. Existing TIFF files are unchanged; generate a new target to use the larger squares."
+      ],
+      [
+        "If RGB checking is interrupted",
+        "A cancelled or failed RGB check no longer permanently disables startup. Correct the problem and start again. This does not automatically approve measurements or exceptions."
+      ]
+    ],
+    "callout": "Included in v1.1.1. Restart InkProf to load the updated code. Existing print files are unchanged."
   }
 ]

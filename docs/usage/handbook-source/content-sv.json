@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.1.0 | 2026-10-13",
+    "tag": "ANVÄNDARHANDBOK | v1.1.1 | 2026-10-13",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -41,8 +41,8 @@
         "MATLAB kräver egen licens; InkProf har testats med R2025b utan obligatoriska tilläggsverktygslådor. Installera Python 3.11-3.13 (testat med 3.13) och ArgyllCMS (3.5.0 användes i utvecklingen). Git behövs om du använder kloningskommandot nedan. På macOS kan Python, Git och ArgyllCMS installeras med Homebrew; med Homebrew installerat: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Hämta InkProf v1.1.0",
-        "Hämta källkodens ZIP för v1.1.0, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.1.0 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
+        "2. Hämta InkProf v1.1.1",
+        "Hämta källkodens ZIP för v1.1.1, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.1.1 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
       ],
       [
         "3. Installera Python-paketen i InkProf-mappen",
@@ -162,7 +162,7 @@
       ],
       [
         "Läs vidare: sidorna 25-69",
-        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian."
+        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian. 70: senare OBA/FWA-val. 71-72: delmätning, återupptagning och RGB-kontroller (v1.1.1)."
       ]
     ]
   },
@@ -766,7 +766,7 @@
       ],
       [
         "Certifikat och slutkontroll",
-        "Certifikatet anger vitreferensens källa och antal separat för träning och verifiering samt förklarar M0-begränsningen. Ursprungliga spektra bevaras. Kompensation eller medelvärdesbildning bevisar inte förbättrad återgivning: avsluta med ny C2-utskrift och C3-mätning före godkännande."
+        "Certifikatet anger vitreferensens källa och antal separat för träning och verifiering samt förklarar M0-begränsningen. Ursprungliga spektra bevaras. Kompensation eller medelvärdesbildning bevisar inte förbättrad återgivning: avsluta med ny C2-utskrift och C3-mätning före godkännande. Senare aktivering beskrivs steg för steg på sidan 70."
       ]
     ]
   },
@@ -1025,7 +1025,7 @@
     ]
   },
   {
-    "tag": "v1.1.0 | MATERIAL OCH SKUGGOR",
+    "tag": "v1.1.1 | MATERIAL OCH SKUGGOR",
     "title": "Fler mätpunkter i mörka färger",
     "sections": [
       [
@@ -1051,7 +1051,7 @@
     ]
   },
   {
-    "tag": "v1.1.0 | LEVERANS OCH LICENS",
+    "tag": "v1.1.1 | LEVERANS OCH LICENS",
     "title": "Gamut, certifikat och källkod",
     "sections": [
       [
@@ -1818,7 +1818,7 @@
     "callout": "Skalförtätning ändrar mätunderlaget. Gridprovet ändrar profilens beräknade tabeller. Prova dem separat för att förstå vad som påverkar resultatet."
   },
   {
-    "tag": "v1.1.0 | ARBETSGÅNG OCH CERTIFIKAT",
+    "tag": "v1.1.1 | ARBETSGÅNG OCH CERTIFIKAT",
     "title": "Nästa steg och tydlig leverans",
     "lead": "Här beskrivs rekommenderad nästa rad och hur leveransens dokument hänger ihop.",
     "sections": [
@@ -2015,5 +2015,95 @@
         "Jämför mätfel, utvecklingsunderlag, gradienter och den tidigare profilen på jämförbara villkor. En förbättrad prioriteringspoäng eller lägre fittingfel är inte en verifierad förbättring av utskriften. Ny fysisk verifiering krävs för att bedöma den nya ICC-profilens färgnoggrannhet."
       ]
     ]
+  },
+  {
+    "title": "Aktivera OBA/FWA i efterhand",
+    "tag": "B2 / B3 / NY PROFIL FRÅN SPARADE SPEKTRA",
+    "lead": "Ingen kodändring behövs. Funktionen finns redan; profilen måste däremot byggas om.",
+    "sections": [
+      [
+        "1. Kontrollera underlaget",
+        "Mätningen måste innehålla ursprungliga spektraldata. Enbart lagrade XYZ räcker inte. OBA/FWA är optiska vitmedel; inställningen aktiverar kompensation för deras effekt, inte en ny mätbetingelse i instrumentet."
+      ],
+      [
+        "2. Ändra inställningen",
+        "Öppna Project details och markera Compensate optical brighteners (D50). På Profiling ska Colour data vara Spectra (D50 / 2 degrees). Valet kan också göras i B2 under FWA / OBA: Compensate to D50 (also updates Project details). Spara dialogen."
+      ],
+      [
+        "3. Bygg om",
+        "Kör B2 i rad 6 och spara nytt recept. Kör B3 i rad 7 och därefter Fit, Grid and C1 i rad 8. Vid Manual används det sparade B2-receptet; Automatic skapar egna recept med projektets FWA-val."
+      ],
+      [
+        "Vad behålls?",
+        "De ursprungliga spektralmätningarna och låsta B1-underlaget bevaras. Enbart byte av FWA-val kräver normalt ingen ny grundmätning. Tidigare recept, profil och efterföljande bedömningar blir inaktuella. En gammal fysisk verifiering godkänner inte den nya profilen."
+      ],
+      [
+        "Vitreferens och verifiering",
+        "Om användbart pappersvitt saknas erbjuder B2 mätning av tomt papper, sparad godkänd vitreferens eller Cancel. För fysisk verifiering av nya profilen: ny C2-utskrift, mätning, C3, återkoppling och godkännande i raderna 9-14. Rad 19 anger uttryckligen frånvaro av separat utskriftsverifiering."
+      ],
+      [
+        "Begränsning",
+        "Kompensation simulerar D50 från M0-spektra. Den gör inte M0 till fysisk M1-mätning och bevisar inte att återgivningen blir bättre. Ändrade material eller utskriftsförhållanden är en annan fråga än enbart ändrat kompensationsval."
+      ]
+    ]
+  },
+  {
+    "title": "Spara och återuppta delmätning",
+    "tag": "MÄTNING / NYTT I v1.1.1",
+    "lead": "För stora mål kan färdiga hela rader sparas och mätningen fortsätta senare.",
+    "sections": [
+      [
+        "Spara före avbrott",
+        "Välj Save completed rows / pause. Vänta på Completed rows saved - measurement paused innan du stänger. Open results folder visar sessionens mapp. Om sparandet begärs under en skanning väntar programmet på radprompten och lämnar den pågående raden utanför sparpunkten."
+      ],
+      [
+        "Endast hela rader",
+        "En halv rad tas inte med. Vid framåt/bakåt-mätning krävs båda skanningarna för att raden ska räknas som färdig. En rad med bara en skanning utelämnas ur fortsättningsfilen och mäts om i båda riktningarna senare."
+      ],
+      [
+        "Öppna sparad session",
+        "Öppna mätrutinen för samma mål. Välj Resume saved session… och sessionens mapp med measurement-checkpoint.json. Dialogen anger antal sparade hela rader, sida, tryckt rad och skanningsriktning där mätningen fortsätter."
+      ],
+      [
+        "Bekräfta och fortsätt",
+        "Välj Resume measurement och bekräfta Resume same printed sheets. Använd exakt samma utskrivna ark. Om du har skrivit ut igen eller ersatt en sida: Cancel, ny mätsession och nya RGB-kontroller. Kontrollsumman identifierar målfilen, inte själva pappersarken."
+      ],
+      [
+        "Instrumentets instruktion gäller",
+        "Kalibrera när instrumentet begär det. Vänta på angiven radprompt innan du skannar. Sparade skanningsinställningar och RGB-kontroller återanvänds. Den första ofärdiga raden börjar från början; vid dubbelmätning först framåt, sedan bakåt."
+      ],
+      [
+        "Avsluta och granska",
+        "Efter alla rader: Save and finish och granska mätningen som vanligt. En delmätning markerar inte arbetsflödessteget som färdigt. Vid ett oväntat avbrott kan skanningar sedan senaste sparpunkten gå förlorade. Ändrat mål, inställningar eller sparad fil avvisas."
+      ]
+    ],
+    "callout": "Ingår i v1.1.1: automatiskt testad; prov av återupptagning med verkligt instrument återstår."
+  },
+  {
+    "title": "Ommätning och RGB-kontroller",
+    "tag": "MÄTNING / NYTT I v1.1.1",
+    "sections": [
+      [
+        "Fortsätt efter ommätt rad",
+        "När du går tillbaka i den pågående mätningen och skannar om, går programmet efter en lyckad skanning vidare till följande skanningspass. Vid dubbelmätning följer du framåt/bakåt-instruktionerna för samma fysiska rad. Separat ommätning av en redan sparad rad är en egen revision och ska granskas och accepteras."
+      ],
+      [
+        "Återanvänd endast för samma utskrift",
+        "Vid ny mätsession kan RGB-dialogen erbjuda Reuse checks for same print. Välj den tidigare mätsessionens mapp med godkända RGB-kontroller. Programmet kontrollerar att målet och kontrollernas definition matchar. Använd inte valet för en nyutskriven eller ersatt sida, även om målfilen är identisk."
+      ],
+      [
+        "Alla sidor kontrolleras",
+        "För en ny utskrift mäts R, G och B på varje sida. Kontrollerna är separata från profileringens färgprov och går inte in i modellträningen. Tidigare godkända kontroller kan behållas när samma sparade delmätning återupptas."
+      ],
+      [
+        "Större rutor i nya mål",
+        "RGB-kontrollrutorna ökas med 0,5 mm på varje sida, alltså 1 mm i nominell bredd och höjd. Det tidigare rastertillägget på en pixel per sida behålls. Registrerade mätområden och etiketter följer geometrin. Befintliga TIFF-filer ändras inte; skapa ett nytt mål för den nya storleken."
+      ],
+      [
+        "Om RGB-kontrollen avbryts",
+        "En avbruten eller underkänd kontroll låser inte starten permanent. Rätta till problemet och starta igen. Ingen mätning eller avvikelse blir automatiskt godkänd genom detta."
+      ]
+    ],
+    "callout": "Ingår i v1.1.1. Starta om InkProf för att läsa uppdaterad kod. Äldre sparade utskriftsfiler ändras inte."
   }
 ]

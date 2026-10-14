@@ -15,6 +15,7 @@ function teardownOnce(testCase)
 rmdir(testCase.TestData.scratch,'s');
 end
 function testReferenceImports(tc)
+assumeTrue(tc,isfile(fullfile(tc.TestData.fixtures,'Chart 2033 Patches.pxf')),'Private i1Profiler fixtures are excluded from the public release.');
 base=tc.TestData.fixtures;
 p=inkprof.importTarget(fullfile(base,'Chart 2033 Patches.pxf'));
 t=inkprof.importTarget(fullfile(base,'Chart 2033 Patches.txf'));
@@ -26,6 +27,7 @@ verifyEqual(tc,t.sourceLayout.NumberPatchColumns,"30");
 verifyError(tc,@()inkprof.importTarget(fullfile(base,'Chart 2033 Patches.txt')),'inkprof:Scale');
 end
 function testXmlSecurityAndMissingIds(tc)
+assumeTrue(tc,isfile(fullfile(tc.TestData.fixtures,'Chart 2033 Patches.pxf')),'Private i1Profiler fixtures are excluded from the public release.');
 file=fullfile(tc.TestData.scratch,'bad.pxf');
 write(file,'<!DOCTYPE x [<!ENTITY x SYSTEM "file:///etc/passwd">]><x>&x;</x>');
 verifyError(tc,@()inkprof.importTarget(file),'inkprof:XML');
@@ -34,6 +36,7 @@ raw=strrep(raw,'Id="c2"','Id="c1"');write(file,raw);
 verifyError(tc,@()inkprof.importTarget(file),'inkprof:Identity');
 end
 function testCgatsRejectsMalformed(tc)
+assumeTrue(tc,isfile(fullfile(tc.TestData.fixtures,'Chart 2033 Patches.pxf')),'Private i1Profiler fixtures are excluded from the public release.');
 file=fullfile(tc.TestData.scratch,'bad.txt');
 raw=fileread(fullfile(tc.TestData.fixtures,'Chart 2033 Patches.txt'));
 write(file,strrep(raw,'NUMBER_OF_SETS'+string(char(9))+'2033','NUMBER_OF_SETS 2032'));
@@ -72,6 +75,7 @@ write(fullfile(a,'PRINTING.txt'),'modified');
 verifyError(tc,@()inkprof.verifyPackage(a),'inkprof:Integrity');
 end
 function testImportedMultiPage(tc)
+assumeTrue(tc,isfile(fullfile(tc.TestData.fixtures,'Chart 2033 Patches.pxf')),'Private i1Profiler fixtures are excluded from the public release.');
 out=fullfile(tc.TestData.scratch,'imported spaces');
 source=fullfile(tc.TestData.fixtures,'Chart 2033 Patches.txf');
 m=inkprof.createTarget(out,Source=source,DPI=100,Randomize=true,Seed=31);
@@ -105,6 +109,7 @@ verifyEqual(tc,string(target.names{1}),"First patch");
 verifyTrue(tc,inkprof.verifyPackage(out).passed);
 end
 function testRelativePathsAfterCd(tc)
+assumeTrue(tc,isfile(fullfile(tc.TestData.fixtures,'Chart 2033 Patches.pxf')),'Private i1Profiler fixtures are excluded from the public release.');
 before=pwd;cleanup=onCleanup(@()cd(before));
 cd(tc.TestData.scratch);
 copyfile(fullfile(tc.TestData.fixtures,'Chart 2033 Patches.pxf'),'relative.pxf');
@@ -178,6 +183,7 @@ fid=fopen(path,'w');c=onCleanup(@()fclose(fid));fprintf(fid,'%s',text);
 end
 
 function testRejectCmykTarget(tc)
+assumeTrue(tc,isfile(fullfile(tc.TestData.fixtures,'Chart 2033 Patches.pxf')),'Private i1Profiler fixtures are excluded from the public release.');
 for ext=[".cgats",".ti1"]
     f=fullfile(tc.TestData.scratch,"cmyk"+ext);
     signature="CGATS.17";if ext==".ti1",signature="CTI1";end

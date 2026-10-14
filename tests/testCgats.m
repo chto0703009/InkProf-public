@@ -14,6 +14,7 @@ rmdir(tc.TestData.work,'s');
 end
 function testRealSpectralConditions(tc)
 base=fullfile(tc.TestData.root,'tests','fixtures','i1profiler','ui-verification-3.8.5');
+assumeTrue(tc,isfile(fullfile(base,'InkProf-2040-spectral-M0_M0.txt')),'Private i1Profiler measurement fixtures are excluded from the public release.');
 for mode=["M0","M1","M2"]
  d=inkprof.importCgats(fullfile(base,"InkProf-2040-spectral-M0_"+mode+".txt"));
  v=inkprof.cgatsData(d,RGBScale=255,SpectralScale=1);
@@ -28,6 +29,7 @@ end
 end
 function testTargetRoundTrip(tc)
 f=fullfile(tc.TestData.root,'tests','fixtures','i1profiler','chart-2033','Chart 2033 Patches.txt');
+assumeTrue(tc,isfile(f),'Private i1Profiler target fixture is excluded from the public release.');
 t=inkprof.importTarget(f,RGBScale=255);out=fullfile(tc.TestData.work,'patches.cgats');
 inkprof.exportCgats(out,t);u=inkprof.importTarget(out,RGBScale=255);
 verifyEqual(tc,t.rgbOriginal,u.rgbOriginal);verifyEqual(tc,t.ids,u.ids);verifyEqual(tc,t.names,u.names);

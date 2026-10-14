@@ -135,6 +135,21 @@ class BridgeTests(unittest.TestCase):
                 failed=subprocess.run([sys.executable,str(ROOT/'bridge/chartread_bridge.py'),str(folder),str(fake)],capture_output=True,text=True,timeout=5)
                 self.assertNotEqual(failed.returncode,0)
                 self.assertIn('use resume',failed.stdout)
+                resumed = subprocess.Popen(
+                    [sys.executable,str(ROOT/'bridge/chartread_bridge.py'),str(folder),str(fake),'--resume'],
+                    stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True)
+                try:
+                    while True:
+                        event=json.loads(resumed.stdout.readline())
+                        if event['event']=='started': self.assertIn('-r',event['arguments'])
+                        if event['event']=='output' and 'TEST prompt' in event['text']:
+                            resumed.stdin.write(json.dumps(dict(command='key',text='\r'))+'\n');resumed.stdin.flush()
+                        if event['event']=='exited': break
+                    self.assertEqual(resumed.wait(timeout=5),0)
+                    self.assertTrue(list(folder.glob('before-resume-*.ti3')))
+                finally:
+                    if resumed.poll() is None: resumed.kill();resumed.wait()
+                    resumed.stdin.close();resumed.stdout.close()
             finally:
                 if proc.poll() is None: proc.kill();proc.wait()
                 proc.stdin.close();proc.stdout.close()

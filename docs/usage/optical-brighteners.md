@@ -109,3 +109,12 @@ Sources: [Argyll colprof](https://www.argyllcms.com/doc/colprof.html), [spec2cie
 The [complete profiling appendix](profiling-best-practice.md) puts the compensation choice before comparable builds and final verification. Do not infer a need for compensation merely from yellowish white or fluorescence under a UV lamp. Review native data, paper and intended viewing conditions; preserve the selected policy in the recipe and reports.
 
 [X-Rite’s guidance](https://www.xrite.com/resources/successful-color-management-of-papers-with-optical-brighteners) favours actual M1 for OBA-enhanced substrates. The i1Pro2 hardware supports M1 in compatible workflows; InkProf’s current M0 simulation does not acquire M1 or determine calibrated UV excitation from short-wave spectral bands. White averaging reduces random variation, not this limitation. i1Profiler’s OBC and InkProf’s Argyll-based compensation are distinct implementations; do not claim equivalence or the same accuracy without a controlled comparison. Where the intended reference requires M1, use actual M1 measurement in a compatible workflow rather than labelling compensated M0 as M1.
+
+
+## Enable compensation after measurement (2026-10-14)
+
+No code change is needed. With saved native spectra, enable **Compensate optical brighteners (D50)** in **Project details**, select **Spectra (D50 / 2 degrees)** under **Profiling**, and save. Alternatively use the FWA/OBA checkbox in B2, which also updates the project.
+
+Save a new B2 recipe (row 6), build B3 (row 7), and run Fit, Grid and C1 (row 8). Original spectra and the locked B1 input remain available; changing compensation alone normally does not require repeating the base measurement. A usable paper-white reference is still required. Earlier recipes, profiles and subsequent assessments become out of date. Perform a new C2 print and measurement through C3 and approval for physically verified delivery; numerical-only delivery must state its limited scope. M0-based D50 compensation is not a native M1 measurement.
+
+For saving and resuming unfinished chart measurements, see [measurement checkpoints](measurement-resume.md). Checkpoint features are included in v1.1.1; the later FWA choice was already available.
