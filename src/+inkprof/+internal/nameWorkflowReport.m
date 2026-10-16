@@ -12,4 +12,8 @@ for pair=["pdf","pdf";"html","html";"text","txt"]'
  paths.(pair(1))=destination;
 end
 paths.json=fullfile(folder,'final-report.json');
+if isfile(fullfile(folder,'final-report-sv.pdf'))
+ paths.swedishPDF=fullfile(folder,stem+"-sv.pdf");
+ copyfile(fullfile(folder,'final-report-sv.pdf'),paths.swedishPDF);
+end
 end

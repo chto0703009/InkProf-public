@@ -143,8 +143,8 @@ def load(folder, report):
 
 def caption(language='sv'):
     if language == 'en':
-        return 'Predicted ICC gamut surface in CIELAB D50, calculated from the forward A2B table (absolute colorimetric). Surface detail approximately 5 Delta E; not an accuracy limit. Display colours are clipped sRGB previews. This is not a new measurement or a quality score.'
-    return 'ICC-profilens beräknade gamut i CIELAB D50, från framåttabellen A2B (absolut kolorimetriskt). Ytdetalj cirka 5 Delta E; detta är ingen noggrannhetsgräns. Skärmfärgerna är klippta sRGB-förhandsvisningar. Figuren är inte en ny mätning eller ett kvalitetsbetyg.'
+        return 'Predicted ICC gamut surface in CIELAB D50, calculated from the forward A2B table (absolute colorimetric). Surface detail approximately 5 ΔE; not an accuracy limit. Display colours are clipped sRGB previews. This is not a new measurement or a quality score.'
+    return 'ICC-profilens beräknade gamut i CIELAB D50, från framåttabellen A2B (absolut kolorimetrisk återgivning). Ytans upplösning är cirka 5 ΔE; detta är ingen noggrannhetsgräns. Skärmfärgerna är klippta sRGB-förhandsvisningar. Figuren är inte en ny mätning eller ett kvalitetsbetyg.'
 
 
 def slice_segments(data, level=50):
@@ -180,12 +180,12 @@ def pdf_drawing(data, language='en'):
     from reportlab.lib.colors import Color
     from lab_views import plane
     extent=max([20]+[abs(v) for p in data['vertices'] for v in p[1:]])
-    d,project=plane(extent,'ICC gamut | exact L* = 50 slice')
+    d,project=plane(extent,('ICC-gamut | snitt vid L* = 50' if language == 'sv' else 'ICC gamut | exact L* = 50 slice'))
     segments=slice_segments(data,50)
     for a,b,rgb in segments:
         d.add(Line(*project(*a),*project(*b),strokeColor=Color(*rgb),strokeWidth=2))
     if not segments:d.add(String(110,180,'No gamut intersection at L* = 50.',fontSize=11))
-    d.add(String(12,6,'CIELAB D50 | A2B | absolute colorimetric | ICC prediction',fontSize=9))
+    d.add(String(12,6,('CIELAB D50 | A2B | absolut kolorimetrisk | ICC-prediktion' if language == 'sv' else 'CIELAB D50 | A2B | absolute colorimetric | ICC prediction'),fontSize=9))
     return d
 
 

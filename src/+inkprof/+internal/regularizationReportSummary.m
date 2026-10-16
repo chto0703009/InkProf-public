@@ -3,7 +3,7 @@
 % SPDX-License-Identifier: GPL-3.0-or-later
 function s=regularizationReportSummary(w)
 % Use the selected job's saved evidence, never the current dialog settings.
-s=struct('summaryText',"Regularization: unavailable - no saved build recipe.");
+s=struct('summaryText',"Regularisation: unavailable - no saved build recipe.");
 job=w.output('profile','job');base=fileparts(job);file=fullfile(base,'recipe.json');
 if ~isfile(file)
  s=appendGradientEvidence(s,base);return;
@@ -40,12 +40,12 @@ end
 if isfield(status,'preRegularization')
  s.result=status.preRegularization;a=s.result;
  if isfield(a,'summary')
-  v=a.summary;lines(end+1)=sprintf('Model change versus raw measurements (Delta E00): mean %.3g, median %.3g, P95 %.3g, max %.3g.',v.mean,v.median,v.p95,v.max);
+  v=a.summary;lines(end+1)=sprintf('Model change versus raw measurements (ΔE00): mean %.3g, median %.3g, P95 %.3g, max %.3g.',v.mean,v.median,v.p95,v.max);
  end
 elseif ~isempty(fieldnames(s.parameters))
- lines(end+1)="Regularization result: unavailable in saved job evidence.";
+ lines(end+1)="Regularisation result: unavailable in saved job evidence.";
 end
-lines(end+1)="Raw measurements are preserved. Model change is not print accuracy or proof that visible banding is absent. Final-profile fit and print verification are reported separately.";
+lines(end+1)="Raw measurements are preserved. Model change is neither a measure of print accuracy nor proof that no visible banding occurs. Final-profile fit and print verification are reported separately.";
 s.summaryText=join(lines,newline);
 s=appendGradientEvidence(s,base);
 end
@@ -81,5 +81,5 @@ for index=order
   % An unreadable diagnostic must not become certificate evidence.
  end
 end
-s.summaryText=s.summaryText+newline+"Photographic gradient diagnostic: no readable saved report matching this ICC. Gradient smoothness has not been certified.";
+s.summaryText=s.summaryText+newline+"Photographic gradient diagnostic: no saved report matches this ICC, so gradient smoothness is not certified.";
 end

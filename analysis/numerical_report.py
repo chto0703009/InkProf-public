@@ -157,7 +157,7 @@ def create(folder, language="en"):
     sections.append((content(r, "en")['appendixTitle'], appendix_lines(r, "en") + measurement_explanations + explanatory))
     legal = r.get('legalAppendix', {})
     if legal:
-        sections.append(('Appendix B - Legal terms', [
+        sections.append(('Appendix B – Responsibilities and licences', [
             title+': '+legal[key] for key, title in [
                 ('reproductionLiability', 'Responsibility for equipment and material limitations'),
                 ('clientPrintResponsibility', 'Client prints and information'),
@@ -242,9 +242,9 @@ def create(folder, language="en"):
         if title == reference_title:
             story += pdf_table(r, styles, "en")
             continue
-        if title in (gamut_title, figure_title, measured_title, 'Latest measured print - colour swatches and Delta E00', 'Signature', 'Appendix B - Legal terms', content(r, "en")['appendixTitle']):
+        if title in (gamut_title, figure_title, measured_title, 'Latest measured print - colour swatches and Delta E00', 'Signature', 'Appendix B – Responsibilities and licences', content(r, "en")['appendixTitle']):
             story.append(PageBreak())
-        story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - Measurement certificate', 'Signature', 'Appendix B - Legal terms', content(r, "en")['appendixTitle']) else styles['Heading2']))
+        story.append(Paragraph(html.escape(title), styles['Title'] if title in ('InkProf - Measurement certificate', 'Signature', 'Appendix B – Responsibilities and licences', content(r, "en")['appendixTitle']) else styles['Heading2']))
         for line in lines:
             body = html.escape(str(line)).replace('\n', '<br/>')
             story.append(Paragraph(body, styles['ReportBody']))
@@ -334,6 +334,9 @@ def create(folder, language="en"):
         certificateId=r.get('certificateId', 'Not specified'), profileSHA256=r['profile']['sha256'],
         file='measurement-appendix.pdf', sha256=hashlib.sha256((folder/'measurement-appendix.pdf').read_bytes()).hexdigest())
     (folder/'measurement-appendix.json').write_text(json.dumps(metadata, indent=2), encoding='utf-8')
+
+    from certificate_swedish import create as create_swedish
+    create_swedish(folder)
 
 
 if __name__ == '__main__':

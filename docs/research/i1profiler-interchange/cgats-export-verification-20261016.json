@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-16",
+  "recipient": "i1Profiler 3.8.5 macOS",
+  "iccSHA256": "fea1b713ab5df6261e20a0d1fbcb26547497c2af6a8eb722dbcc84749bb8c553",
+  "measurementSHA256": "1e7067d380680236571ee76d5294d30943cdf2eb4aea83d3206fd26a247b0857",
+  "cgatsSHA256": "a30602d81dcf2452350ff1d049e51a5466d5aa814c7c2c895e612dfffc4570d6",
+  "userConfirmedImport": true,
+  "userConfirmedProfileCreation": true,
+  "embeddedTargetCount": 2200,
+  "embeddedMeasurementCount": 2200,
+  "spectralBands": 36,
+  "maxSpectralDifferencePercent": 1.4210854715202004e-14,
+  "maxRGBDifferencePercent": 0.39215666666666493,
+  "printQualityVerified": false,
+  "crossEngineComparison": {
+    "method": "LittleCMS double, no BPC",
+    "gridCount": 15625,
+    "profileSHA256": [
+      "fea1b713ab5df6261e20a0d1fbcb26547497c2af6a8eb722dbcc84749bb8c553",
+      "78fb2768298daef2690d51b069ac1a8fa8690500a3084c58e8aa9f62afca18b5",
+      "016a9d91d5ef12acc6058fa65a4c92404d7d79941de200056632ee2829279b24"
+    ],
+    "comparisons": {
+      "i1 vs OBA intent1": {
+        "mean": 1.0368792115667966,
+        "median": 0.8160277054633298,
+        "p95": 2.814790336696828,
+        "max": 4.873959396103295,
+        "worstRGB": [
+          0.0,
+          0.5833333333333333,
+          1.0
+        ]
+      },
+      "i1 vs no OBA intent1": {
+        "mean": 0.9107551923535497,
+        "median": 0.6935979054110377,
+        "p95": 2.5000322818268934,
+        "max": 4.311589816090079,
+        "worstRGB": [
+          0.041666666666666664,
+          0.5833333333333333,
+          1.0
+        ]
+      },
+      "OBA vs no OBA intent1": {
+        "mean": 0.24498222607943976,
+        "median": 0.2132797443647397,
+        "p95": 0.514491696753354,
+        "max": 0.920648297847822,
+        "worstRGB": [
+          0.041666666666666664,
+          0.041666666666666664,
+          0.041666666666666664
+        ]
+      },
+      "i1 vs OBA intent3": {
+        "mean": 1.4312383991910766,
+        "median": 1.2753448688206133,
+        "p95": 2.8310322686581864,
+        "max": 4.828115159702189,
+        "worstRGB": [
+          0.0,
+          0.375,
+          1.0
+        ]
+      },
+      "i1 vs no OBA intent3": {
+        "mean": 0.8683594796391396,
+        "median": 0.6689340272164656,
+        "p95": 2.3402825402506386,
+        "max": 3.950913768062223,
+        "worstRGB": [
+          0.041666666666666664,
+          0.5833333333333333,
+          1.0
+        ]
+      },
+      "OBA vs no OBA intent3": {
+        "mean": 0.8113595732568961,
+        "median": 0.7667324538024739,
+        "p95": 1.3419634956812665,
+        "max": 2.682168745050489,
+        "worstRGB": [
+          1.0,
+          1.0,
+          0.9166666666666666
+        ]
+      }
+    },
+    "conclusion": "Good overall agreement on this dataset; largest remaining differences in blue/cyan. Not a measurement-noise robustness or independent print-quality validation."
+  }
+}

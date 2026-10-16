@@ -88,3 +88,11 @@ M0/M1/M2, instrument, XRGA, observer and illuminant are preserved where they exi
 - faulty tables and spectra.
 
 The existing target suite also tests Argyll's CTI1/CTI2 files with helper tables.
+
+## Optional CGATS measurement delivery to i1Profiler
+
+In workflow row 14 or 19, tick **Include CGATS for i1Profiler when saving ICC/certificate** in the main window. No extra CGATS decision dialog is shown. The checkbox is initially unchecked. The delivery folder includes `i1profiler-measurement.txt` and its provenance JSON, also retained in the project export and supporting files.
+
+This exports the selected original complete native M0 profiling measurement (XRGA, 36 spectral bands), without applying OBA compensation. It does not merge later refinements or export C2 verification data. External-ICC verification projects do not offer this option. In i1Profiler use RGB Printer → Profiling → Measurement → Load and select CGATS text; do not rename the file to MXF.
+
+See the [export instructions and verified test](i1profiler-cgats-test.md) for precision, scope and recipient limitations.

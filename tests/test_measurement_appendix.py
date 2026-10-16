@@ -48,8 +48,9 @@ class AppendixTests(unittest.TestCase):
             create(folder)
             main=' '.join(p.extract_text() for p in PdfReader(folder/'final-report.pdf').pages)
             self.assertIn('ColorChecker synthetic',main)
-            self.assertIn('Dark skin',main)
-            self.assertIn('Delta E00 1.25',main)
+            self.assertNotIn('Dark skin',main)
+            self.assertIn('1.25',main)
+            self.assertIn('ΔE00',main)
 
 
     def test_numerical_certificate_has_complete_historical_appendix(self):
@@ -72,7 +73,8 @@ class AppendixTests(unittest.TestCase):
             numerical_create(folder)
             main=' '.join(p.extract_text() for p in PdfReader(folder/'final-report.pdf').pages)
             annex=' '.join(p.extract_text() for p in PdfReader(folder/'measurement-appendix.pdf').pages)
-            self.assertIn('Dark skin', main)
+            self.assertNotIn('Dark skin', main)
+            self.assertIn('1.25',main)
             self.assertNotIn('Numerical evidence: fit', main)
             self.assertIn('Numerical evidence: fit', annex)
             self.assertIn('ACCEPTED-01',annex)

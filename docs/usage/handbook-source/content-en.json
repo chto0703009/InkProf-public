@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.1.1 | 2026-10-13",
+    "tag": "USER HANDBOOK | v1.2.0 | 2026-10-16",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Open methods and clear conditions",
-        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.1.0; app buttons and field names are English."
+        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.2.0; app buttons and field names are English."
       ]
     ],
     "callout": "InkProf brings profiling, checks and documentation together in one project. Print the colour targets using a separate printing application."
@@ -41,8 +41,8 @@
         "MATLAB requires its own licence; InkProf was tested with R2025b and no mandatory add-on toolboxes. Install Python 3.11-3.13 (tested with 3.13) and ArgyllCMS (3.5.0 was used in development). Git is needed for the clone command below. On macOS, Python, Git and ArgyllCMS can be installed using Homebrew; with Homebrew installed: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Download InkProf v1.1.1",
-        "Download the v1.1.1 source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.1.1 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
+        "2. Download InkProf v1.2.0",
+        "Download the v1.2.0 source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.2.0 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
       ],
       [
         "3. Install Python packages in the InkProf folder",
@@ -104,7 +104,7 @@
       ],
       [
         "Further reading: pages 25-69",
-        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian. 70: later OBA/FWA choice. 71-72: measurement checkpoints, resume and RGB controls (v1.1.1)."
+        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian. 70: later OBA/FWA choice. 71-72: measurement checkpoints, resume and RGB controls (v1.2.0)."
       ]
     ],
     "lead": "The row number on the left and the internal step identifier are different things. This handbook uses row numbers to help you find the step in the app.",
@@ -614,8 +614,8 @@
         "The measurement certificate describes the project, materials, printing conditions, profile and check results. It should identify the iteration, the measurements supporting it and how FWA was handled. Instrument identity is reported when available. Report colour patches are screen previews, not substitutes for the original print. For v4.4 delivery, the report distinguishes the checked v2 from the converted v4.4 copy; it does not certify a separate verification print for its perceptual rendering.The certificate is in English. See page 63 for the document structure."
       ],
       [
-        "Where are reports saved?",
-        "The project retains its results. For external delivery, choose the certificate name and location. A folder named after the PDF without .pdf contains the ICC, PDF, HTML and supporting evidence. Both places both ICC versions in this folder. If the folder exists, a number is added to it and the reports. Move the whole folder for HTML; the PDF can be opened separately. Open report opens the project report."
+        "Certificate and separate supplement",
+        "The delivery folder contains the English certificate, a Swedish PDF with suffix -sv.pdf, English HTML, measurement-appendix.pdf and selected ICC files. Up to 100 largest deviations with ΔE00 > 1 are shown in ascending order. Left is desired colour, right is measured; the number below each pair is ΔE00. The supplement retains every patch, Lab values and traceability."
       ]
     ],
     "callout": "See page 63 for the main certificate, Appendices A/B and separate measurement appendix. It records scope and decisions; it is not accredited certification."
@@ -964,7 +964,7 @@
       ],
       [
         "Basis of this handbook",
-        "Both handbooks describe program version 1.1.0 with inner-shell refinement and current workflow updates, document revision 2026-10-13. Version 1.1.0 was released on 12 October 2026; the release tag identifies this source version. Documentation and numerical tests are not new physical validation."
+        "Both handbooks describe program version 1.2.0 with inner-shell refinement and current workflow updates, document revision 2026-10-16. Version 1.2.0 is released on 16 October 2026; the release tag identifies this source version. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -1026,7 +1026,7 @@
   },
   {
     "title": "More samples in dark colours",
-    "tag": "v1.1.1 | MATERIALS AND SHADOWS",
+    "tag": "v1.2.0 | MATERIALS AND SHADOWS",
     "sections": [
       [
         "Matte paper",
@@ -1052,7 +1052,7 @@
   },
   {
     "title": "Gamut, certificates and source code",
-    "tag": "v1.1.1 | DELIVERY AND LICENSING",
+    "tag": "v1.2.0 | DELIVERY AND LICENSING",
     "sections": [
       [
         "Surfaces and measurement points are different views",
@@ -1072,7 +1072,7 @@
       ],
       [
         "Release status",
-        "This handbook describes source version 1.1.0, released 12 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+        "This handbook describes source version 1.2.0, released 16 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
       ]
     ],
     "links": [
@@ -1789,7 +1789,7 @@
         "An incorrect or incompatible Python or dependency-package version can prevent analysis from working even when the package is installed. InkProf checks the Python version requirement and tests that required packages and their compiled libraries load. Setup also checks that Argyll tools start and report version information. Use the package versions in the requirements files supplied with your InkProf release. The checks test functionality and basic requirements; they do not replace the package versions specified in those files."
       ]
     ],
-    "callout": "This guidance applies to 1.1.0 with current source updates, document revision 2026-10-13. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
+    "callout": "This guidance applies to 1.2.0 with current source updates, document revision 2026-10-16. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
     "links": [
       [
         "Details and repair commands",
@@ -1822,7 +1822,7 @@
     "callout": "Shell refinement changes the measurement set. Grid trials change computed profile tables. Test separately to understand their effects."
   },
   {
-    "tag": "v1.1.1 | WORKFLOW AND CERTIFICATES",
+    "tag": "v1.2.0 | WORKFLOW AND CERTIFICATES",
     "title": "Next steps and clear delivery",
     "lead": "This page explains suggested next rows and how the delivery documents fit together.",
     "sections": [
@@ -1835,8 +1835,8 @@
         "When numerical checks stop a build, open step 17 results and inspect the latest C1 and Grid reports. Measurements and the previous active ICC are retained. The candidate is not activated automatically. Review the cause before repeating the build."
       ],
       [
-        "Certificate structure",
-        "The certificate is in English. Its main PDF contains summary, scope, ColorChecker swatches when available, decision and signature. Appendix B with legal terms is in the same PDF. For print-verified delivery, Appendix A with explanations/references is also in the main PDF; for numerical row 19 that technical part is in measurement-appendix.pdf. The separate measurement appendix contains complete records and technical evidence, with the same certificate ID and ICC hash. Earlier measurements are labelled historical. Keep the complete delivery folder, including evidence assets, for working HTML links."
+        "Optional 3D and measurement groups",
+        "During certificate export, choose All measurements, Latest measurements or Certificate only. The 3D viewer separates fitting data from current verification and filters on L*. Latest selects current verification in row 14 and fitting data in row 19. The PDF plot shows only verification colours within L* 40–60. Visible times use the local time zone and offset. Create a new export for revised reports; never overwrite registered export files."
       ]
     ]
   },
@@ -2053,7 +2053,7 @@
   },
   {
     "title": "Save and resume a partial measurement",
-    "tag": "MEASUREMENT / NEW IN v1.1.1",
+    "tag": "MEASUREMENT / NEW IN v1.2.0",
     "lead": "For large targets, save completed physical rows and continue later.",
     "sections": [
       [
@@ -2081,11 +2081,11 @@
         "After all rows, select Save and finish and review the measurement as usual. A checkpoint does not complete the workflow step. An unexpected interruption may lose scans since the last checkpoint. Changed chart data, settings or saved readings are rejected."
       ]
     ],
-    "callout": "Included in v1.1.1: automatically tested; real-instrument resume validation remains necessary."
+    "callout": "Included in v1.2.0: automatically tested; real-instrument resume validation remains necessary."
   },
   {
     "title": "Remeasurement and RGB controls",
-    "tag": "MEASUREMENT / NEW IN v1.1.1",
+    "tag": "MEASUREMENT / NEW IN v1.2.0",
     "sections": [
       [
         "Continue after rereading",
@@ -2108,6 +2108,34 @@
         "A cancelled or failed RGB check no longer permanently disables startup. Correct the problem and start again. This does not automatically approve measurements or exceptions."
       ]
     ],
-    "callout": "Included in v1.1.1. Restart InkProf to load the updated code. Existing print files are unchanged."
+    "callout": "Included in v1.2.0. Restart InkProf to load the updated code. Existing print files are unchanged."
+  },
+  {
+    "title": "Transfer measurements to i1Profiler",
+    "tag": "DATA EXCHANGE / VERIFIED TEST",
+    "lead": "An existing InkProf measurement can be transferred as CGATS text and used to build a profile in i1Profiler without a new print or measurement.",
+    "sections": [
+      [
+        "Save CGATS from the app",
+        "When saving the ICC and certificate in step 14 or 19, tick Include CGATS for i1Profiler when saving ICC/certificate in the main window. No additional CGATS dialog is shown. The delivery includes i1profiler-measurement.txt and its provenance JSON. This exports the selected original profiling measurement, not accumulated refinement data or C2 verification. The option is not shown for imported profiles without a profiling measurement. Only complete native M0 measurements with XRGA and 36 spectral bands are supported."
+      ],
+      [
+        "Use the correct workflow",
+        "In i1Profiler choose Printer, RGB Printer, then Profiling. Open Measurement, Load and select CGATS as the file type. Load the .txt file. Do not rename it to .mxf: changing the extension does not change the format and causes a CxF read error."
+      ],
+      [
+        "What the test verified",
+        "On macOS with i1Profiler 3.8.5, the user imported the Canon measurement of 2,200 patches and created an ICC profile. Inspection of its embedded CxF data found all 2,200 target and measurement objects; all 36 spectral values per patch matched the source within numerical precision. Chart 2033 Patches was a retained name, not the transferred patch count."
+      ],
+      [
+        "Precision and page layout",
+        "The exporter retains RGB precision, but i1Profiler rounded RGB to integers on the 0–255 scale in the inspected embedded data. The largest difference was about one RGB step. The import view showed one page; embedded location data listed four. Do not use the display layout to remeasure the original print."
+      ],
+      [
+        "Scope and limitations",
+        "The routine supports complete native M0 measurements, XRGA and 36 bands from 380 to 730 nm. Here M0 was inferred from the instrument workflow, not explicitly reported in TI3. No FWA compensation is applied during export. The accompanying JSON records checksums and provenance. Import and profile creation were tested for this case; print quality and other versions remain unverified."
+      ]
+    ],
+    "callout": "The original measurement and InkProf profile are unchanged. Preserve JSON/TI3 as the full-precision source."
   }
 ]

@@ -61,3 +61,40 @@ In the table, `Measured vs desired (dE00)` is the measured against the desired c
 New certificates record the selected job's saved pre-regularization method and its assumed noise (`avgdev`), final ICC `colprof -r`, rendering-intent settings and the saved model-change summary. Model change is measured against raw observations and is not print accuracy or evidence of absence of banding. Missing recipe/result evidence is stated explicitly; imported ICC verification cannot infer original build settings. The same summary is included in PDF, HTML and text, with structured parameters and result evidence in JSON. Existing certificates remain unchanged; rerun certificate export to create a new report.
 
 A photographic-gradient report is included only when its ICC SHA-256 matches the selected profile. CMM, samples, tested combinations, float-path coverage, reversals and curvature are summarized; complete diagnostic evidence and its hash are embedded in JSON. These are numerical observations, not perceptual acceptance thresholds or proof of absent banding.
+
+## Optional measurement point viewer in the certificate
+
+When saving a certificate in step 14 or step 19, choose **All measurements** or **Latest measurements** under **3D and patch comparison**
+to include `all-measurements.html` and its JSON data in the delivery folder.
+Open the link **Open 3D and patch comparison** in the certificate HTML.
+The viewer works offline and needs no external libraries or network connection.
+
+It includes every patch in the current ICC's fitting report, including accumulated
+refinement inputs, and (step 14 only) all current C3 measurement patches as a
+separate group. It does not merge unrelated measurements from the project.
+Imported profiles have no fitting cloud when the original data are unavailable.
+Circles and squares distinguish fitting and verification; controls hide groups,
+filter L*, and show the translucent predicted ICC surface. Drag to rotate and
+click a point for its ID, measured Lab, available device RGB and the group's
+Delta E00 comparison. Fitting Lab follows the saved fit colourimetry (including
+FWA compensation); verification Lab follows C3 colourimetry. Repeated colours
+and paper white remain included. These points do not establish a measured gamut
+boundary or independent verification of the fitting data.
+
+This option adds an interactive HTML companion; the PDF certificate keeps its
+existing figures. Share the whole delivery folder so that the viewer link works.
+
+The same choice controls a compact comparison table in the certificate HTML and
+the interactive viewer. It selects up to 100 largest unrounded ΔE00 values strictly above
+1 and displays the selected patches in ascending order, with desired, predicted and measured swatches when available.
+This display threshold is not an acceptance limit. Latest selects current C3
+measurements in step 14, or fitting measurements in step 19. All includes fitting
+and current C3. Group controls and the L* filter also update the viewer table.
+
+Certificate export also creates a Swedish PDF (`-sv.pdf`). English PDF, Swedish
+PDF and the English-only measurement supplement are published at the delivery
+folder root. The HTML remains English. The full supplement includes every fitting
+and current verification patch, colour previews, Lab values, hashes and history.
+Visible timestamps use local time with a UTC offset. The PDF verification plot
+shows the L* 40–60 band. Never regenerate a registered export in place; use a new
+workflow export to keep project and workflow artifact checksums consistent.

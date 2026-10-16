@@ -29,7 +29,7 @@ gamutButton=uibutton(projectBar,'Text','View gamut','Tag','showGamut','Enable','
 verifyButton=uibutton(projectBar,'Text','Verify project','Tag','verifyProject','Enable','off','ButtonPushedFcn',@verifyCurrentProject);
 body=uigridlayout(g,[1 2]);body.ColumnWidth={490,'1x'};body.Padding=[0 0 0 0];
 table=uitable(body,'ColumnName',{'Step','Status'},'ColumnWidth',{350,105},'ColumnEditable',false,'Tag','workflowSteps','CellSelectionCallback',@select);
-right=uigridlayout(body,[10 1]);right.RowHeight={34,100,'1x',42,42,42,36,36,36,36};right.Padding=[10 0 0 0];
+right=uigridlayout(body,[11 1]);right.RowHeight={34,100,'1x',42,42,28,42,36,36,36,36};right.Padding=[10 0 0 0];
 titleLabel=uilabel(right,'FontSize',18,'FontWeight','bold','Text','Workflow');
 hint=uitextarea(right,'Editable','off','Value',{'Select a project.'});
 details=uitextarea(right,'Editable','off','Tag','workflowDetails');
@@ -38,6 +38,8 @@ runButton=uibutton(stepActions,'Text','Run selected step','Tag','runWorkflowStep
 nextButton=uibutton(stepActions,'Text','Go to suggested next step','Tag','goToSuggestedStep','Enable','off','ButtonPushedFcn',@goNext);
 uibutton(right,'Text','Open selected step results','ButtonPushedFcn',@openResult);
 printButton=uibutton(right,'Text','Copy TIFF16 for printing…','Tag','copyPrintTIFF','Enable','off','ButtonPushedFcn',@copyPrint);
+cgatsCheck=uicheckbox(right,'Text','Include CGATS for i1Profiler when saving ICC/certificate','Value',false,'Tag','includeI1ProfilerCGATS','Enable','off', ...
+ 'Tooltip','Selected original native M0 measurement only; not accumulated refinements or C2. TXT and provenance JSON are included in the delivery.');
 compareButton=uibutton(right,'Text','Compare accuracy and gradients','Tag','compareProfileTradeoffs','Enable','off','ButtonPushedFcn',@compareTradeoffs);
 refinementButton=uibutton(right,'Text','Refinement tools','Tag','refinementTools','Enable','off','ButtonPushedFcn',@openRefinementTools);
 photoButton=uibutton(right,'Text','Photographic gradients','Tag','photoGradientCheck','Enable','off','ButtonPushedFcn',@photoCheck);
@@ -107,7 +109,7 @@ end
             candidate.reconcileFolderName(action);
             if action=="cancel",return;end
         end
-        w=candidate;defs=w.definitions();defs=defs([defs.enabled]);selected=string(w.State.currentStep);refresh();
+        w=candidate;cgatsCheck.Value=false;defs=w.definitions();defs=defs([defs.enabled]);selected=string(w.State.currentStep);refresh();
     end
     function newProject(~,~)
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
@@ -153,7 +155,7 @@ end
     function refresh()
         if isempty(w)||busy,return;end
         try
-            w.reload();detailsButton.Enable='on';verifyButton.Enable='on';assessment=w.inspect();data=cell(numel(defs),2);
+            w.reload();cgatsCheck.Enable=matlab.lang.OnOffSwitchState(w.mode()~="verification"&&any(selected==["export","numericalExport"]));detailsButton.Enable='on';verifyButton.Enable='on';assessment=w.inspect();data=cell(numel(defs),2);
             remeasureButton.Enable=matlab.lang.OnOffSwitchState(isfield(w.State.steps.refine.outputs,'proposal')&&isfield(w.State.steps.refine.outputs,'target'));
             for k=1:numel(defs)
                 id=string(defs(k).id);valid=assessment.(id).valid;ready=assessment.(id).ready;
@@ -534,6 +536,11 @@ end
             if id=="numericalExport"
                 message="Save the current ICC and a measurement certificate (PDF and HTML) with the numerical-only verification scope. This does not approve print accuracy. Project copies are retained; external copies include all supporting files.";
             end
+            viewChoice=uiconfirm(fig,'Include an interactive 3D view and a compact patch comparison table (up to 100 largest deviations with Delta E00 > 1, displayed smallest first) in the HTML delivery? Choose all fitting measurements for this ICC plus current verification, or the latest measurement group only. In step 19, latest means fitting data because no current print verification exists. Imported profiles may have no fitting data. Other project measurements are excluded.', ...
+                '3D and patch comparison','Options',{'All measurements','Latest measurements','Certificate only'},'DefaultOption',1,'CancelOption',3);
+            o.IncludeMeasurement3D=~strcmp(viewChoice,'Certificate only');
+            o.MeasurementViewScope="all";if strcmp(viewChoice,'Latest measurements'),o.MeasurementViewScope="latest";end
+            o.IncludeI1ProfilerCGATS=cgatsCheck.Value&&w.mode()~="verification";
             choice='Also save copies elsewhere';
             if ~saveElsewhere
                 choice=uiconfirm(fig,message,'Save profile and report', ...

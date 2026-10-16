@@ -24,8 +24,9 @@ for k=1:numel(p)
     rows(k,:)={char(string(p(k).coordinate)),char(string(p(k).role)),p(k).deltaE00,p(k).predictedDeltaE00, ...
         char(string(p(k).gamutAssessment))};
 end
-uitable(g,'Data',rows,'ColumnName',{'Patch','Role','Measured vs desired ΔE00','Model vs measurement ΔE00','Model gamut assessment'}, ...
+t=uitable(g,'Data',rows,'ColumnName',{'Patch','Role','Measured vs desired ΔE00','Model vs measurement ΔE00','Model gamut assessment'}, ...
     'ColumnWidth',{65,100,200,210,'auto'},'RowName',{},'ColumnEditable',false,'Tag','approvalPatches');
+addStyle(t,uistyle('HorizontalAlignment','right'),'column',3:4);
 uilabel(g,'Text','Largest colour differences are listed first. Consider print settings, measurement repeatability and the limits of the printer, paper and ink. Approval is for your stated use; it is not ISO certification.','WordWrap','on');
 uilabel(g,'Text','Your assessment: intended use, quality requirements and accepted limitations');
 notes=uitextarea(g,'Value',{''},'Tag','approvalNotes');

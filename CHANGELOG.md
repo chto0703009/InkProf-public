@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.2.0 — released 2026-10-16
+
+- Add optional native M0 CGATS measurement delivery for i1Profiler through a main-window checkbox in rows 14/19, with provenance JSON and verified delivery copies. Import/profile creation tested with 2,200 patches in i1Profiler 3.8.5; document RGB rounding and cross-engine comparison limits.
+
+- Add an optional offline 3D measurement viewer with fitting and current verification groups.
+- Summarise up to 100 largest ΔE00 deviations above 1 in ascending order, with paired desired/measured swatches; retain all points and traceability in the English PDF supplement.
+- Add a Swedish certificate PDF alongside English PDF/HTML, and deliver both PDFs and the separate supplement at the bundle root, including when re-exporting older packages.
+- Use local timestamps, clearer bilingual wording, L* 40–60 verification plots and headings kept with their content. Right-align approval-table numeric columns.
+
 ## v1.1.1 - 2026-10-14
 
 - Prefer creating a new C2 target when no saved target exists for the current ICC.

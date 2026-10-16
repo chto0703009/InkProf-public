@@ -5,6 +5,7 @@
 """Create the printable counterpart of the persisted InkProf final report."""
 from certificate_swatches import enrich, pdf_chips
 from certificate_reference import html_section, pdf_section
+from certificate_supplement import complete_table
 import json
 import sys
 from pathlib import Path
@@ -25,8 +26,14 @@ def create(folder):
     html_path = folder / 'final-report.html'
     if html_path.exists():
         html = html_path.read_text(encoding='utf-8')
-        if '<!--REFERENCE-TARGET-->' in html:
-            html_path.write_text(html.replace('<!--REFERENCE-TARGET-->', html_section(r)), encoding='utf-8')
+        import re
+        # Render this section in Python too, so a running MATLAB session cannot
+        # preserve an older legend or one-colour mosaic in the delivery HTML.
+        pattern = r'(?:<!--REFERENCE-TARGET-->)?<h3>(?:Top 100 measured colour deviations|Measured colours with ΔE00|Every unique measured colour).*?(?=<h2>Technical diagnostic colours)'
+        html = re.sub(pattern, lambda _: html_section(r), html, count=1, flags=re.S)
+        from certificate_editorial import english
+        html = re.sub(r'<h2>Top 100 measured colour deviations.*?</h2><p>.*?</p><div style="display:grid;grid-template-columns:repeat\(6,1fr\);gap:6px">.*?</div>(?=<h3>|<h2>)', lambda _: html_section(r), html, count=1, flags=re.S)
+        html_path.write_text(english(html), encoding='utf-8')
     for name in ['Report', 'ReportBold']:
         pdfmetrics.registerFont(TTFont(name, str(Path(__file__).resolve().parents[1]/'resources/fonts/DejaVuSans.ttf')))
     styles = getSampleStyleSheet()
@@ -37,6 +44,9 @@ def create(folder):
     styles.add(ParagraphStyle('DetailHeading', fontName='ReportBold', fontSize=8, leading=11, spaceAfter=5, keepWithNext=True))
     styles.add(ParagraphStyle('FooterUser', fontName='Report', fontSize=8, leading=10, alignment=1))
     styles['Title'].fontName = styles['Heading2'].fontName = 'ReportBold'
+    for name, style in styles.byName.items():
+        if name == 'Title' or name.startswith('Heading') or name == 'DetailHeading':
+            style.keepWithNext = True
     styles['Title'].textColor = colors.HexColor('#19303c')
     story = []
     measurement_story = []
@@ -44,23 +54,31 @@ def create(folder):
 
 
     def p(text, style='BodyReport'):
-        text = str(text).replace('–', '-').replace('—', '-')
+        from certificate_editorial import english
+        text = english(str(text))
+        if 'SHA-256' in text and len(text) < 230:
+            from copy import copy
+            hash_style=copy(styles[style]);hash_style.fontSize=7;hash_style.wordWrap=None
+            return Paragraph(escape(text),hash_style)
         return Paragraph(escape(text).replace('\n', '<br/>'), styles[style])
 
-    story += [p('InkProf - Measurement certificate', 'Title'), p(r['project']['name'], 'Heading2'),
-              p(f"Iteration {r['iteration']} | {r['createdUTC']}"),
-              p('Iteration UUID: '+r.get('iterationId','Not recorded')),
+    story += [p('InkProf – Measurement certificate', 'Title'), p(r['project']['name'], 'Heading2'),
+              p(f"Iteration {r['iteration']} | {r.get('createdLocal', r['createdUTC'])}"),
               p('Certificate ID: '+r.get('certificateId','Not specified')),
-              p(r.get('certificateScope','')), p('How to interpret these results','Heading2'), p(r.get('resultInterpretation','Interpretation not recorded in this historical certificate.')), p('Project and printing conditions','Heading2')]
+              p('Iteration UUID: '+r.get('iterationId','Not recorded')),
+              p(r.get('certificateIntro', 'This certificate records the current ICC profile, verification measurements and the user assessment under the stated conditions. It is not an accredited certification or proof of ISO conformity. Requirements that are not met are reported as not met.')), p('Reading the results','Heading2'), p(r.get('resultInterpretationShort', 'ΔE00 describes colour difference; lower is better. Verification compares the measured print with the desired colour. Profile fit describes agreement with training data, not independent accuracy. Printer, ink and paper limit reproduction. Full methods, limitations and traceability are in the measurement supplement.')), p('Project and printing conditions','Heading2')]
     for item in r.get('projectDetails',[]):
         story.append(p(item['label']+': '+item['value']))
     if r.get('deliveryProfile'):
         from delivery_report import details
         story += [p('Delivered ICC profile', 'Heading2')]+[p(x) for x in details(r['deliveryProfile'])]
+    if r.get('secondaryDeliveryProfile'):
+        from delivery_report import details
+        story += [p('Additional delivered ICC version', 'Heading2')]+[p(x) for x in details(r['secondaryDeliveryProfile'])]
     story += [p('Checked ICC candidate (project original)' if r.get('deliveryProfile') else 'Saved ICC profile', 'Heading2'), p('profile.icc'), p('SHA-256: ' + r['profile']['sha256']),
-              p('Final assessment', 'Heading2'), p(r['approval']['notes'])]
+              p('User’s assessment', 'Heading2'), p(r['approval']['notes'])]
     if r.get('regularization'):
-        story += [p('Regularization - method, inputs and results', 'Heading2'), p(r['regularization']['summaryText'])]
+        story += [p('Regularisation - method, inputs and results', 'Heading2'), p(r['regularization']['summaryText'])]
     story += pdf_section(r, p)
     if r.get('patchOutliers'):
         overview = r['patchOutliers']
@@ -69,26 +87,18 @@ def create(folder):
         for key, label in [('desired', 'Measured print vs desired colour'), ('predicted', 'Measured print vs profile prediction')]:
             values = r.get('verificationSummary', {}).get(key)
             if values:
-                story.append(p(f"{label}: mean {values['mean']:.3f}, P95 {values['p95']:.3f}, maximum {values['max']:.3f} Delta E00 ({values['count']} unique colours)."))
+                story.append(p(f"{label}: mean {values['mean']:.2f}, median {values['median']:.2f}, P95 {values['p95']:.2f}, maximum {values['max']:.2f} ΔE00 ({values['count']} unique colours)."))
     story += [p('Detailed measurement evidence', 'Heading2'),
               p('The separate measurement-appendix.pdf contains the complete colour list, deviations, technical diagnostics and history. It belongs to this certificate and the same checked ICC. All measurements are retained, including colours with larger deviations.')]
     if r.get('patchOutliers'):
         outliers=r['patchOutliers']
-        measurement_story += [PageBreak(),p('Whole-target result overview','Heading2'),p(outliers.get('overviewText','Whole-target distribution unavailable.')),p('Technical diagnostic colours: deviations above 5 dE00','Heading2'),p('Desired colour, profile prediction and measured colour are shown as sRGB previews. Delta E00 compares measurement with desired colour (above 5). See Appendix A.'),p(outliers['message']),p(outliers.get('contextText','Reachability evidence unavailable.'))]
+        measurement_story += [PageBreak(),p('Whole-target result overview','Heading2'),p(outliers.get('overviewText','Whole-target distribution unavailable.')),p('Technical diagnostic colours: deviations above 5 dE00','Heading2'),p('Desired colour, profile prediction and measured colour are shown as sRGB previews. ΔE00 compares measurement with desired colour (above 5). See Appendix A.'),p(outliers['message']),p(outliers.get('contextText','Reachability evidence unavailable.'))]
         # All colours are shown, in target order, before individual diagnostic cards.
         from reportlab.lib.colors import HexColor
         patches=outliers.get('allPatches',[])
         if isinstance(patches,dict):patches=[patches]
-        if patches:
-            cells=[]
-            for patch in patches:
-                swatch=Table([['']],colWidths=[18*mm],rowHeights=[8*mm])
-                swatch.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),HexColor(patch['hex']))]))
-                cells.append([swatch,p(f"{patch['sampleId']} · {patch['deltaE00']:.1f}",'DetailReport')])
-            rows=[cells[i:i+8]+['']*(8-len(cells[i:i+8])) for i in range(0,len(cells),8)]
-            measurement_story += [p('Every unique measured colour — target order','Heading3'),Table(rows,colWidths=[22*mm]*8),PageBreak()]
         if r.get('verificationSummary'):
-            measurement_story += [p('Two separate comparisons (Delta E00)', 'Heading2')]
+            measurement_story += [p('Two separate comparisons (ΔE00)', 'Heading2')]
             for key,label in [('desired','Measured print vs desired colour'),('predicted','Measured print vs current profile prediction')]:
                 v=r['verificationSummary'][key]
                 measurement_story += [p(label+f": mean {v['mean']:.3f}, median {v['median']:.3f}, P95 {v['p95']:.3f}, max {v['max']:.3f} ({v['count']} unique patches)")]
@@ -113,9 +123,9 @@ def create(folder):
         story += [KeepTogether([p('FWA/OBA - settings and results','Heading2'),p(r['fwa']['summaryText'])])]
     from lab_views import measured_data, point_drawing
     measured=measured_data(r,folder)
-    story += [PageBreak(),p('Measured print colours - L* = 50','Heading2')]
+    story += [PageBreak(),p('Measured verification print colours - L* 40–60','Heading2')]
     if measured:
-        story += [p('Actual measured Lab. Points within L* = 50 +/- 5 are shown in the a*/b* plane; this band is not a gamut boundary.'),point_drawing(measured['vertices'],measured['rgb'])]
+        story += [p('Current verification measurements, excluding repeats and paper-white controls. Points within L* 40–60 (50 ± 10) are shown in the a*/b* plane; this band is not a gamut boundary.'),point_drawing(measured['vertices'],measured['rgb'],title='Measured verification colours',level=50,half=10)]
     else:
         story += [p('No measured Lab points available for this profile.')]
     import gamut_surface
@@ -125,6 +135,8 @@ def create(folder):
         story += [p(gamut_surface.caption("en")), p('ICC SHA-256: '+r['profile']['sha256']), gamut_surface.pdf_drawing(gamut)]
     else:
         story += [p('Gamut unavailable: '+r.get('gamut', {}).get('reason', 'No surface saved.'))]
+    measurement_story += [PageBreak(), p('All measurement patches — increasing ΔE00', 'Heading2')]
+    measurement_story += complete_table(r, folder, p)
     measurement_story += [PageBreak(), p('Complete results and history', 'Heading2')]
     # Flowing paragraphs paginate long notes, file paths and histories safely.
     in_results = False
@@ -180,7 +192,7 @@ def create(folder):
                 self._annotationCount = annotation_count
                 self.setFillColor(colors.HexColor('#19303c'))
                 self.setFont('Report', 15)
-                self.drawCentredString(105*mm, 281*mm, r.get('pageHeader', 'InkProf Quality Profiling RGB printer'))
+                self.drawCentredString(105*mm, 281*mm, __import__('certificate_editorial').english(r.get('pageHeader', 'InkProf – Quality profiling for RGB printers')))
                 self.setFillColor(colors.HexColor('#52656e'))
                 self.setFont('Report', 8)
                 self.drawString(18*mm, 12*mm, r.get('reportDate', r['createdUTC'][:10]))
@@ -232,7 +244,10 @@ def create(folder):
 
     SimpleDocTemplate(str(folder / 'final-report.pdf'), pagesize=(210*mm, 297*mm),
                       leftMargin=18*mm, rightMargin=18*mm, topMargin=28*mm, bottomMargin=26*mm,
-                      title='InkProf - Measurement certificate', author=r.get('reportUser', 'InkProf')).build(story, canvasmaker=NumberedCanvas)
+                      title='InkProf – Measurement certificate', author=r.get('reportUser', 'InkProf')).build(story, canvasmaker=NumberedCanvas)
+
+    from certificate_swedish import create as create_swedish
+    create_swedish(folder)
 
 
 if __name__ == '__main__':

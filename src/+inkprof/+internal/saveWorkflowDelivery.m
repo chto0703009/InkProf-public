@@ -31,6 +31,22 @@ end
 reportParent=reportBundle;reportDestination=fullfile(reportParent,stem+reportExt);
 iccParent=reportBundle;iccDestination=fullfile(iccParent,iccName+iccExt);
 destinations=unique([iccDestination,reportDestination,fullfile(reportParent,stem+".pdf"),fullfile(reportParent,stem+".html")],'stable');
+% Delivery rendering creates the Swedish PDF even for an older export package.
+% Reserve its destination now rather than inspecting pre-render source files.
+swedishIndex=numel(destinations)+1;
+destinations(swedishIndex)=fullfile(reportParent,stem+"-sv.pdf");
+appendixIndex=0;
+if isfile(fullfile(folder,'measurement-appendix.pdf'))
+ appendixIndex=numel(destinations)+1;
+ destinations(appendixIndex)=fullfile(reportParent,'measurement-appendix.pdf');
+end
+cgatsIndices=[];
+cgatsNames=["i1profiler-measurement.txt","i1profiler-measurement.json"];
+if isfile(fullfile(folder,cgatsNames(1)))
+ assert(isfile(fullfile(folder,cgatsNames(2))),'inkprof:Delivery','CGATS provenance JSON is missing.');
+ cgatsIndices=numel(destinations)+(1:2);
+ destinations(cgatsIndices)=fullfile(reportParent,cgatsNames);
+end
 variant=struct('primaryFile',"profile.icc",'secondaryFile',"");
 if isfile(fullfile(folder,'icc-variants.json')),variant=jsondecode(fileread(fullfile(folder,'icc-variants.json')));end
 secondaryIndex=0;
@@ -70,6 +86,25 @@ try
   [stages(1),reportBundle],RequiredModules="PIL",WorkingDirectory=config.Root);
  for k=2:numel(destinations)
   if k==secondaryIndex,continue;end
+  if any(k==cgatsIndices)
+   index=find(cgatsIndices==k,1);cgatsSource=fullfile(assets,cgatsNames(index));
+   copyfile(cgatsSource,stages(k));
+   assert(inkprof.internal.sha256(stages(k))==inkprof.internal.sha256(cgatsSource),'inkprof:Integrity','CGATS delivery copy changed.');
+   continue
+  end
+  if k==swedishIndex
+   assert(isfile(fullfile(assets,'final-report-sv.pdf')),'inkprof:Delivery','Swedish certificate was not generated.');
+   copyfile(fullfile(assets,'final-report-sv.pdf'),stages(k));
+   assert(inkprof.internal.sha256(stages(k))==inkprof.internal.sha256(fullfile(assets,'final-report-sv.pdf')), ...
+    'inkprof:Integrity','Swedish certificate copy changed.');
+   continue
+  end
+  if k==appendixIndex
+   copyfile(fullfile(assets,'measurement-appendix.pdf'),stages(k));
+   assert(inkprof.internal.sha256(stages(k))==inkprof.internal.sha256(fullfile(assets,'measurement-appendix.pdf')), ...
+    'inkprof:Integrity','Measurement supplement copy changed.');
+   continue
+  end
   [~,~,ext]=fileparts(destinations(k));
   if lower(ext)==".pdf"
    copyfile(fullfile(assets,'final-report.pdf'),stages(k));

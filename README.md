@@ -1,4 +1,6 @@
-# InkProf v1.1.1 — stable source release
+# InkProf v1.2.0 — Measurements, certificates and i1Profiler exchange
+
+> **New in v1.2.0:** bilingual PDF certificates, a complete English supplement, optional 3D measurement views and CGATS delivery to i1Profiler.
 
 **Keep your i1Pro 2. Take control of your prints.**
 
@@ -25,9 +27,9 @@ Version **1.1.1** adds saved whole-row measurement checkpoints and guided resump
 
 InkProf is **free to download** under GPL version 3 or later. **MATLAB requires a licence**; base MATLAB is sufficient. Python, ArgyllCMS and a compatible spectrophotometer are installed separately. The complete workflow is tested on **macOS with the i1Pro 2**; Windows/Linux and all instrument modes are not qualified.
 
-[Download the stable v1.1.1 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.1) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
+[Download the stable v1.2.0 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.0) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
 
-The source release was published **2026-10-14**. Handbooks, presentations and the MATLAB guide are updated for this release. Real-instrument validation of the new resume flow remains necessary. See [release notes](docs/releases/v1.1.1.md) and [validation](VALIDATION.txt).
+The source release was published **2026-10-16**. Handbooks, presentations and the MATLAB guide are updated for this release. Real-instrument validation of the new resume flow remains necessary. See [release notes](docs/releases/v1.2.0.md) and [validation](VALIDATION.txt).
 
 Print accuracy depends on the printer, paper, ink and settings. Numerical checks and screen previews do not replace physical verification. Certificates document evidence and decisions; they are not accredited certification or a declaration of full ISO conformity.
 
@@ -44,7 +46,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 Clone the stable source release:
 
 ```sh
-git clone --branch v1.1.1 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.2.0 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
@@ -66,7 +68,7 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.1.1 release notes](docs/releases/v1.1.1.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.2.0 release notes](docs/releases/v1.2.0.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
@@ -74,7 +76,7 @@ The user handbook is maintained in matching Swedish and English editions. App la
 - [Swedish presentation (PDF)](docs/usage/InkProf-presentation-svenska.pdf)
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.1.1.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.2.0.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 
@@ -143,3 +145,5 @@ The current app has 19 workflow rows. [Start with the complete workflow guide](d
 ### Apple Silicon SciPy installation troubleshooting
 
 Post-release source update (2026-10-11): full Python setup checks now test actual package imports and compiled SciPy modules. A broken import stops analysis with repair instructions for the selected environment. New source installations use SciPy 1.16.3 after a reported M4/Python 3.13 import failure with SciPy 1.15.3. See [Python runtime troubleshooting](docs/usage/python-runtime.md#scipy-compiled-library-failure-on-apple-silicon). The original v1.0.0 release archive is unchanged.
+
+Optional CGATS delivery for i1Profiler is available through a checkbox in workflow rows 14/19. See [export instructions, supported measurements and verified import](docs/usage/i1profiler-cgats-test.md).

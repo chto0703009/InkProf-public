@@ -1,11 +1,11 @@
 [
   {
-    "tag": "MATLAB WORKFLOW | v1.1.1",
+    "tag": "MATLAB WORKFLOW | v1.2.0",
     "title": "From colour target to ICC",
     "sections": [
       [
         "Requirements and startup",
-        "Source version 1.1.1, released 2026-10-14; guide updated 2026-10-14. Tested with base MATLAB R2025b (no additional MATLAB toolboxes), Python 3.13 and ArgyllCMS on macOS. Python performs colour analysis and report generation; MATLAB provides the application and workflow. Install these runtimes separately. Windows and Linux are untested; use of a POSIX measurement bridge does not establish Linux compatibility. Run the commands below from the InkProf source folder."
+        "Source version 1.2.0, released 2026-10-16; guide updated 2026-10-16. Tested with base MATLAB R2025b (no additional MATLAB toolboxes), Python 3.13 and ArgyllCMS on macOS. Python performs colour analysis and report generation; MATLAB provides the application and workflow. Install these runtimes separately. Windows and Linux are untested; use of a POSIX measurement bridge does not establish Linux compatibility. Run the commands below from the InkProf source folder."
       ],
       [
         "How to use this guide",
@@ -19,7 +19,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.1.1",
+    "tag": "MATLAB WORKFLOW | v1.2.0",
     "title": "One project, one source of settings",
     "sections": [
       [
@@ -38,7 +38,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.1.1",
+    "tag": "MATLAB WORKFLOW | v1.2.0",
     "title": "The 19 steps",
     "rows": [
       [
@@ -106,7 +106,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.1.1",
+    "tag": "MATLAB WORKFLOW | v1.2.0",
     "title": "The 19 steps - continued",
     "rows": [
       [
@@ -169,7 +169,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.1.1",
+    "tag": "MATLAB WORKFLOW | v1.2.0",
     "title": "Targets, paper and measurement",
     "sections": [
       [
@@ -196,7 +196,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.1.1",
+    "tag": "MATLAB WORKFLOW | v1.2.0",
     "title": "Refinement and shadows",
     "sections": [
       [
@@ -216,7 +216,7 @@
     "lead": "Open step 15, \"Refinement tools\", to choose the source of additional patches."
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.1.1",
+    "tag": "MATLAB WORKFLOW | v1.2.0",
     "title": "Shell refinement and continuation",
     "lead": "Use Refinement tools to strengthen coverage near the gamut surface.",
     "sections": [
@@ -237,7 +237,7 @@
     "callout": "Iteration: 16 -> 17 (includes Fit, Grid and C1) -> 18\nIf checks are missing/stale: step 8.\nPrint-verified delivery: 9 -> 10 -> 11 -> 12 -> 13 -> 14\nNumerical-only delivery: 18 -> 19"
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.1.1",
+    "tag": "MATLAB WORKFLOW | v1.2.0",
     "title": "Interpret and deliver",
     "sections": [
       [
@@ -260,12 +260,12 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.1.1",
+    "tag": "MATLAB WORKFLOW | v1.2.0",
     "title": "Code, licensing and runtime checks",
     "sections": [
       [
         "",
-        "InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only release: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.1.1.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits. The v1.0.0 licence review is a historical review, not a new legal clearance for every v1.1.1 change."
+        "InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only release: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.2.0.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits. The v1.0.0 licence review is a historical review, not a new legal clearance for every v1.2.0 change."
       ],
       [
         "Version checks and reporting problems",

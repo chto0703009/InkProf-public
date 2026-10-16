@@ -34,13 +34,15 @@ def create(folder):
         if conversion['inputSHA256']!=r['profile']['sha256'] or conversion['outputSHA256']!=second['sourceSHA256'] or conversion['problems']:
             raise ValueError('Secondary delivery lacks matching conversion evidence')
         r['secondaryDeliveryProfile']=second
-        delivery['conversionNote']='Also delivered: '+Path(second['file']).name+'. The v4.4 copy preserves colorimetric tables but remaps perceptual/saturation mapping. The certificate identifies the checked v2; assess v4.4 prints in the intended application.'
+        delivery['conversionNote']='Also delivered: '+Path(second['file']).name+'. The v4.4 copy keeps the colorimetric tables but has re-mapped perceptual and saturation tables. The certificate identifies the checked v2; assess v4.4 prints in the intended application.'
     r['deliveryProfile'] = delivery
     (folder/'final-report.json').write_text(json.dumps(r,indent=2,ensure_ascii=False),encoding='utf-8')
     if r['documentType'] == 'inkprof.numerical-report':
         from numerical_report import create as render
     else:
         section = '<h2>Delivered ICC profile</h2>'+''.join('<p>'+html.escape(x)+'</p>' for x in details(delivery))
+        if r.get('secondaryDeliveryProfile'):
+            section += '<h3>Additional delivered ICC version</h3>'+''.join('<p>'+html.escape(x)+'</p>' for x in details(r['secondaryDeliveryProfile']))
         section += "<p><a href='"+quote(delivery['file'])+"'>Download named ICC profile</a></p>"
         page = (folder/'final-report.html').read_text(encoding='utf-8')
         page = page.replace('<h2>Saved ICC profile</h2>',section+'<h2>Checked ICC candidate (project original)</h2>',1)

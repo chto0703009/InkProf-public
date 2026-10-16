@@ -29,7 +29,7 @@ def point_drawing(lab,rgb=None,title='Measured colours',level=50,half=5):
     from reportlab.graphics.shapes import Circle,String
     from reportlab.lib.colors import Color
     extent=max([20]+[abs(v) for p in lab for v in p[1:]])
-    d,project=plane(extent,f'{title} | L* = {level:g} +/- {half:g}')
+    d,project=plane(extent,f'{title} | L* = {level:g} ± {half:g}')
     shown=0
     for i,p in enumerate(lab):
         if abs(p[0]-level)>half:continue

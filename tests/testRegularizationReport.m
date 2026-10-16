@@ -42,5 +42,5 @@ verifyTrue(tc,contains(s.summaryText,'total L* reversals on those paths: 2'));
 r.profileSHA256='another-profile';inkprof.internal.writeJson(fullfile(folder,'photo-gradients.json'),r);
 s=inkprof.internal.regularizationReportSummary(w);
 verifyFalse(tc,isfield(s,'photographicGradients'));
-verifyTrue(tc,contains(s.summaryText,'no readable saved report matching this ICC'));
+verifyTrue(tc,contains(s.summaryText,'no saved report matches this ICC'));
 end

@@ -33,7 +33,7 @@ r.summaryText="Applied in the delivered profile: "+r.status+newline+ ...
  describe("Verification print",r.verificationResult)+newline+ ...
  "FWA effect compared with no compensation: "+r.effectComparedWithUncompensated;
 if ~isempty(r.applied)&&r.applied
- r.summaryText=r.summaryText+newline+"Compensation calculates a simulated D50 response from native M0 spectra; this is not a direct UV excitation measurement or measured M1. White-spectrum averaging reduces random variation but cannot recover missing UV excitation. A weak fluorescence signal may remain uncertain.";
+ r.summaryText=r.summaryText+newline+"Compensation calculates a simulated D50 response from native M0 spectra; this is not a direct UV excitation measurement or measured M1. White-spectrum averaging reduces random variation but cannot recover missing UV excitation. A weak fluorescence signal may not be determined reliably.";
  if isfield(fit,'fwaPreparation')&&isstruct(fit.fwaPreparation)&&isfield(fit.fwaPreparation,'white')
   r.preparation=fit.fwaPreparation;
   r.summaryText=r.summaryText+newline+"Training white reference: "+string(fit.fwaPreparation.white.source)+"; readings: "+string(fit.fwaPreparation.white.count)+". Compensation applied once before fitting/smoothing.";

@@ -1,6 +1,7 @@
 # ISSUE-001 – Sensitivity of the inverse to measurement noise
 
-Status: **Open**. Recorded 2026-09-27 at the user's request.
+Status: **Open research question, not a confirmed defect in the current profile**.
+Recorded 2026-09-27; clarification accepted by the user 2026-10-16.
 Affects C1/C2 (validation) and D4 (own inverse).
 
 ## Problem and evidence
@@ -29,3 +30,14 @@ ICC development may continue while the issue is open. Robustness against measure
 ## Decision 2026-09-27
 
 The user wants the issue to remain open until deviations can be linked more clearly to condition numbers and noise. C1 may continue and be completed within its numerical scope without a full noise study now. Floating-point comparison and local PCS perturbation tests do not in themselves give evidence of errors caused by measurement noise. No such cause has been verified in this step.
+
+## Clarification 2026-10-16
+
+ISSUE-001 concerns an uncompleted investigation of measurement-noise propagation,
+not a finding that the current Canon profile is faulty. Good repeatability was
+observed in the Canon paired measurements, and profile construction and numerical
+checks provide evidence within their own scope. The investigation has not yet
+rebuilt profiles using documented measurement variations and quantified the
+resulting inverse changes. Passing C1 checks is compatible with this research
+question remaining open. This clarification does not remove actual diagnostic
+alerts or establish print-quality validation. The closure criteria above remain.

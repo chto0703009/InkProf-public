@@ -29,7 +29,9 @@ switch id
   folder=w.newFolder('exports');mkdir(folder);
   [file,~]=inkprof.saveICC(w.output('profile','profile'),fullfile(folder,'profile.icc'));
   report=inkprof.internal.writeNumericalReport(w,file,folder,string(o.Notes));
+  if get(o,'IncludeMeasurement3D',false),inkprof.internal.certificateMeasurementView(w,folder,false,get(o,'MeasurementViewScope',"all"));end
   out=struct('profile',file,'finalReport',report.html,'reportJSON',report.json,'reportText',report.text,'reportPDF',report.pdf);
+  if get(o,'IncludeI1ProfilerCGATS',false),out.i1ProfilerCGATS=inkprof.internal.exportWorkflowCGATS(w,folder);end
   inkprof.internal.prepareICCVariants(w,folder);
   appendix=fullfile(folder,'measurement-appendix.pdf');
   if isfile(appendix),out.measurementAppendix=appendix;end
@@ -248,7 +250,9 @@ switch id
   copyfile(fullfile(w.Root,'workflow.json'),fullfile(folder,'workflow-snapshot.json'));
   copyfile(fullfile(w.Root,'inkprof-project.json'),fullfile(folder,'project-snapshot.json'));
   report=inkprof.internal.writeWorkflowFinalReport(w,file,folder,User=get(o,'ReportUser',get(project,'user',string(java.lang.System.getProperty('user.name')))));
+  if get(o,'IncludeMeasurement3D',false),inkprof.internal.certificateMeasurementView(w,folder,true,get(o,'MeasurementViewScope',"all"));end
   out.profile=file;out.finalReport=report.html;out.reportJSON=report.json;out.reportText=report.text;out.reportPDF=report.pdf;
+  if get(o,'IncludeI1ProfilerCGATS',false),out.i1ProfilerCGATS=inkprof.internal.exportWorkflowCGATS(w,folder);end
   inkprof.internal.prepareICCVariants(w,folder);
   appendix=fullfile(folder,'measurement-appendix.pdf');
   if isfile(appendix),out.measurementAppendix=appendix;end

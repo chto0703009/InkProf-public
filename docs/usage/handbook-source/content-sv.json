@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.1.1 | 2026-10-13",
+    "tag": "ANVÄNDARHANDBOK | v1.2.0 | 2026-10-16",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Öppen metod och tydliga förutsättningar",
-        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.1.0; appens knappar och fältnamn är engelska."
+        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.2.0; appens knappar och fältnamn är engelska."
       ]
     ],
     "callout": "InkProf samlar profilering, kontroll och dokumentation i ett projekt. Utskriften av färgmålen gör du i ett separat utskriftsprogram."
@@ -41,8 +41,8 @@
         "MATLAB kräver egen licens; InkProf har testats med R2025b utan obligatoriska tilläggsverktygslådor. Installera Python 3.11-3.13 (testat med 3.13) och ArgyllCMS (3.5.0 användes i utvecklingen). Git behövs om du använder kloningskommandot nedan. På macOS kan Python, Git och ArgyllCMS installeras med Homebrew; med Homebrew installerat: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Hämta InkProf v1.1.1",
-        "Hämta källkodens ZIP för v1.1.1, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.1.1 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
+        "2. Hämta InkProf v1.2.0",
+        "Hämta källkodens ZIP för v1.2.0, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.2.0 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
       ],
       [
         "3. Installera Python-paketen i InkProf-mappen",
@@ -162,7 +162,7 @@
       ],
       [
         "Läs vidare: sidorna 25-69",
-        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian. 70: senare OBA/FWA-val. 71-72: delmätning, återupptagning och RGB-kontroller (v1.1.1)."
+        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian. 70: senare OBA/FWA-val. 71-72: delmätning, återupptagning och RGB-kontroller (v1.2.0)."
       ]
     ]
   },
@@ -614,8 +614,8 @@
         "Mätcertifikatet beskriver projekt, material, utskriftsförhållanden, profil och kontrollresultat. Det ska framgå vilken iteration som avses, vilka mätningar som stöder den och hur FWA har hanterats. Instrumentidentitet redovisas när den kunnat hämtas. Färgprov i rapporten är skärmvisningar, inte en ersättning för originalutskriften. Vid v4.4-leverans skiljer rapporten den kontrollerade v2-profilen från den konverterade v4.4-kopian; den intygar inte separat kontrollutskrift för dess perceptuella återgivning. Certifikatet är på engelska. Dokumentens struktur beskrivs på sidan 63."
       ],
       [
-        "Var sparas rapporterna?",
-        "Projektet behåller sina resultat. Vid extern leverans väljer du namn och plats för certifikatet. En mapp med samma namn som PDF-filen utan .pdf samlar ICC, PDF, HTML och underlag. Vid Both ligger båda ICC-versionerna i mappen. Om mappen redan finns får den nya mappen och rapporterna ett löpnummer. Flytta hela mappen när du flyttar HTML-rapporten; PDF kan öppnas separat. Open report öppnar projektets rapport."
+        "Certifikat och separat supplement",
+        "Leveransmappen innehåller engelskt certifikat, svensk PDF med suffix -sv.pdf, engelsk HTML, measurement-appendix.pdf och valda ICC-filer. Högst 100 största avvikelser med ΔE00 > 1 visas i stigande ordning. Vänster färg är önskad, höger är uppmätt; talet under paret är ΔE00. Supplementet behåller alla patchar, Lab-värden och spårbarhet."
       ]
     ],
     "callout": "Se sidan 63 för huvudcertifikat, bilaga A/B och separat mätbilaga. Certifikatet anger omfattning och beslut; det är inte ackrediterad certifiering."
@@ -1002,7 +1002,7 @@
       ],
       [
         "Underlag för denna handbok",
-        "Båda handböckerna beskriver programversion 1.1.0 med skalförfining och aktuella arbetsflödesförbättringar, dokumentrevision 2026-10-13. Version 1.1.0 publicerades 12 oktober 2026; releasetaggen identifierar denna källversion. Dokumentation och numeriska tester är inte ny fysisk validering."
+        "Båda handböckerna beskriver programversion 1.2.0 med skalförfining och aktuella arbetsflödesförbättringar, dokumentrevision 2026-10-16. Version 1.2.0 ges ut 16 oktober 2026; releasetaggen identifierar källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
       ]
     ],
     "links": [
@@ -1025,7 +1025,7 @@
     ]
   },
   {
-    "tag": "v1.1.1 | MATERIAL OCH SKUGGOR",
+    "tag": "v1.2.0 | MATERIAL OCH SKUGGOR",
     "title": "Fler mätpunkter i mörka färger",
     "sections": [
       [
@@ -1051,7 +1051,7 @@
     ]
   },
   {
-    "tag": "v1.1.1 | LEVERANS OCH LICENS",
+    "tag": "v1.2.0 | LEVERANS OCH LICENS",
     "title": "Gamut, certifikat och källkod",
     "sections": [
       [
@@ -1072,7 +1072,7 @@
       ],
       [
         "Utgåvestatus",
-        "Handboken beskriver källversion 1.1.0, publicerad 12 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
+        "Handboken beskriver källversion 1.2.0, utgiven 16 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
       ]
     ],
     "links": [
@@ -1785,7 +1785,7 @@
         "En felaktig eller inkompatibel version av Python eller ett beroendepaket kan göra att analysen inte fungerar, även om paketet är installerat. InkProf kontrollerar Python-versionens grundkrav och provar att de nödvändiga paketen och deras kompilerade bibliotek kan laddas. Vid installation kontrolleras även att Argyll-verktygen kan startas och lämna versionsinformation. Använd paketversionerna i requirements-filerna som hör till din InkProf-utgåva. Kontrollen prövar funktion och grundkrav; den ersätter inte installationsfilernas angivna paketversioner."
       ]
     ],
-    "callout": "Anvisningen gäller 1.1.0 med aktuella källuppdateringar, dokumentrevision 2026-10-13. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
+    "callout": "Anvisningen gäller 1.2.0 med aktuella källuppdateringar, dokumentrevision 2026-10-16. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
     "links": [
       [
         "Detaljer och reparationskommandon",
@@ -1818,7 +1818,7 @@
     "callout": "Skalförtätning ändrar mätunderlaget. Gridprovet ändrar profilens beräknade tabeller. Prova dem separat för att förstå vad som påverkar resultatet."
   },
   {
-    "tag": "v1.1.1 | ARBETSGÅNG OCH CERTIFIKAT",
+    "tag": "v1.2.0 | ARBETSGÅNG OCH CERTIFIKAT",
     "title": "Nästa steg och tydlig leverans",
     "lead": "Här beskrivs rekommenderad nästa rad och hur leveransens dokument hänger ihop.",
     "sections": [
@@ -1831,8 +1831,8 @@
         "Vid numeriska fel: öppna rad 17:s resultat och granska senaste C1- och Grid-rapporterna. Mätningar och tidigare aktiv ICC bevaras. Kandidaten aktiveras inte automatiskt. Upprepa inte samma bygge utan att granska orsaken."
       ],
       [
-        "Certifikatets struktur",
-        "Certifikatet är på engelska. Huvud-PDF:en innehåller sammanfattning, omfattning, ColorChecker-färgprov när sådant mål mätts, beslut och signering. Bilaga B med juridiska villkor ligger i samma PDF. För utskriftsverifierad leverans ligger även bilaga A med förklaringar/referenser i huvud-PDF:en; för numerisk rad 19 ligger denna tekniska del i measurement-appendix.pdf. Den separata mätbilagan innehåller fullständiga mätlistor och tekniskt underlag, med samma certifikat-ID och ICC-hash. Tidigare mätningar märks som historik. Behåll hela leveransmappen, inklusive underlag, för fungerande HTML-länkar."
+        "Valfri 3D och mätgrupper",
+        "Vid certifikatexport väljer du All measurements, Latest measurements eller Certificate only. 3D-visningen skiljer profilunderlag från aktuell verifiering och kan filtreras på L*. Latest visar aktuell verifiering i rad 14 och profilunderlag i rad 19. PDF-figuren visar endast verifieringsfärger inom L* 40–60. Synliga tider är lokala med tidszon. Skapa en ny export för rapportändringar; skriv inte över registrerade exportfiler."
       ]
     ]
   },
@@ -2049,7 +2049,7 @@
   },
   {
     "title": "Spara och återuppta delmätning",
-    "tag": "MÄTNING / NYTT I v1.1.1",
+    "tag": "MÄTNING / NYTT I v1.2.0",
     "lead": "För stora mål kan färdiga hela rader sparas och mätningen fortsätta senare.",
     "sections": [
       [
@@ -2077,11 +2077,11 @@
         "Efter alla rader: Save and finish och granska mätningen som vanligt. En delmätning markerar inte arbetsflödessteget som färdigt. Vid ett oväntat avbrott kan skanningar sedan senaste sparpunkten gå förlorade. Ändrat mål, inställningar eller sparad fil avvisas."
       ]
     ],
-    "callout": "Ingår i v1.1.1: automatiskt testad; prov av återupptagning med verkligt instrument återstår."
+    "callout": "Ingår i v1.2.0: automatiskt testad; prov av återupptagning med verkligt instrument återstår."
   },
   {
     "title": "Ommätning och RGB-kontroller",
-    "tag": "MÄTNING / NYTT I v1.1.1",
+    "tag": "MÄTNING / NYTT I v1.2.0",
     "sections": [
       [
         "Fortsätt efter ommätt rad",
@@ -2104,6 +2104,34 @@
         "En avbruten eller underkänd kontroll låser inte starten permanent. Rätta till problemet och starta igen. Ingen mätning eller avvikelse blir automatiskt godkänd genom detta."
       ]
     ],
-    "callout": "Ingår i v1.1.1. Starta om InkProf för att läsa uppdaterad kod. Äldre sparade utskriftsfiler ändras inte."
+    "callout": "Ingår i v1.2.0. Starta om InkProf för att läsa uppdaterad kod. Äldre sparade utskriftsfiler ändras inte."
+  },
+  {
+    "title": "Överför mätningen till i1Profiler",
+    "tag": "DATAUTBYTE / VERIFIERAT TEST",
+    "lead": "En befintlig InkProf-mätning kan överföras som CGATS-text och användas för att skapa en profil i i1Profiler, utan ny utskrift eller mätning.",
+    "sections": [
+      [
+        "Spara CGATS från appen",
+        "När du sparar ICC och certifikat i steg 14 eller 19, markera kryssrutan Include CGATS for i1Profiler when saving ICC/certificate i huvudfönstret. Ingen extra CGATS-dialog visas. Filerna i1profiler-measurement.txt och motsvarande JSON med ursprung följer med i leveransmappen. Exporten gäller den valda ursprungliga profileringsmätningen, inte sammanslagna refinement-data eller C2-mätningen. Alternativet visas inte för importerade profiler utan profileringsmätning. Endast kompletta nativa M0-mätningar med XRGA och 36 spektralband stöds."
+      ],
+      [
+        "Läs in i rätt arbetsflöde",
+        "I i1Profiler: välj Printer, RGB Printer och Profiling. Gå till Measurement, Load och välj CGATS som filtyp. Läs in .txt-filen. Byt inte filändelsen till .mxf: det ändrar inte filformatet och ger fel vid CxF-läsning."
+      ],
+      [
+        "Vad testet verifierade",
+        "På macOS med i1Profiler 3.8.5 kunde användaren läsa in Canons 2 200 färgprov och skapa en ICC-profil. Den skapade profilens inbäddade CxF-data kontrollerades: samtliga 2 200 mål- och mätobjekt fanns med och alla 36 spektralvärden per prov matchade originalet inom numerisk precision. Filnamnet Chart 2033 Patches var ett kvarvarande namn, inte antalet överförda prov."
+      ],
+      [
+        "Precision och sidindelning",
+        "Exporten behåller RGB-precisionen, men i1Profiler avrundade RGB till heltal 0–255 i den granskade profilens inbäddade data. Största skillnaden var cirka ett RGB-steg. Importvyn visade en sida; inbäddade positionsdata angav fyra. Använd inte visningslayouten för ommätning av originalutskriften."
+      ],
+      [
+        "Omfattning och begränsningar",
+        "Rutinen stöder kompletta nativa M0-mätningar, XRGA och 36 band 380–730 nm. M0 var här tolkat från instrumentflödet, inte uttryckligen rapporterat i TI3. Ingen FWA-kompensation appliceras vid export. JSON-filen bredvid exporten dokumenterar kontrollsummor och ursprung. Import och profilskapande är testade för detta fall; utskriftskvalitet och andra versioner är inte verifierade."
+      ]
+    ],
+    "callout": "Originalmätningen och InkProf-profilen ändras inte. Bevara JSON/TI3 som fullprecisionskälla."
   }
 ]

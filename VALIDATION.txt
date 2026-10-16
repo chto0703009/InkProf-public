@@ -1,3 +1,70 @@
+INKPROF v1.2.0 RELEASE VALIDATION - 2026-10-16
+
+- Supersedes unpublished v1.1.2 preparation; no v1.1.2 release/tag published.
+- Private full Python discovery: 207 passed (inkprof-v120-python.log).
+- Sanitised public full Python discovery: 207 passed (inkprof-v120-public-python.log).
+- Private full MATLAB suite with INKPROF_TEST_PYTHON: 264 passed,
+  0 failed, 0 incomplete, including actual Argyll profile-build comparisons,
+  real Python integration, certificate delivery and the added CGATS-copy test.
+  Log: inkprof-v120-matlab.log. Test result saved locally in /tmp.
+- Sanitised public targeted MATLAB CGATS delivery test: 1 passed.
+  This is a targeted check, not a second full public MATLAB run.
+- Main-window CGATS checkbox startup smoke test passed; default unchecked.
+- Both JavaScript viewer tests passed (gamut and profile-comparison controls).
+- Version, source notices, schema/font hashes and licence inventory passed:
+  443 private / 442 public source files. This is not legal clearance.
+- Six documentation PDFs rebuilt, 181 physical pages. Version checked on every
+  page; changed content and representative pages rendered and inspected.
+  All six Downloads copies are byte-identical to repository artifacts.
+- CGATS import and profile creation user-tested with 2200 patches in i1Profiler
+  3.8.5 on macOS. Embedded ICC data verified: all 2200 patch identities and
+  36 spectra retained within floating-point precision. Recipient RGB rounding
+  and physical-layout limitations documented. No private ICC/data distributed.
+- Cross-engine agreement is documented for this dataset; it does not prove
+  measurement-noise robustness or independent physical print accuracy.
+- ISSUE-001 remains an open research question, not a confirmed current-profile
+  defect. Real-instrument resume, Windows/Linux and other instrument/mode
+  qualifications retain their existing limitations.
+- Public tree and source ZIP exclude private projects, measurements, profiles,
+  restricted fixtures, local configuration and runtimes. Synthetic RGB MXF and
+  the documented sRGB example profile remain deliberate public fixtures.
+- Assets: source ZIP, six documentation PDFs, release notes, validation and
+  SHA256SUMS. ZIP contents verified byte-for-byte against the public staging tree.
+
+HISTORICAL UNPUBLISHED v1.1.2 PREPARATION (superseded by v1.2.0 above)
+
+INKPROF v1.1.2 PREPARATION VALIDATION - 2026-10-16 (not yet published)
+
+- Private Python full discovery: 206 passed.
+- Sanitised public-source Python full discovery: 206 passed.
+- Private MATLAB: 263 unique tests passed after targeted reruns. The full run
+  exposed an obsolete gradient-report wording assertion (updated); reruns also
+  enabled the real Python bridge and spectral tests with INKPROF_TEST_PYTHON.
+  Latest results: no failed or incomplete tests. Logs retained in /tmp/inkprof-v112-*.
+- Sanitised public MATLAB: 6 certificate/delivery workflow tests passed, including
+  legacy-package Swedish PDF delivery, both ICC versions and external verification.
+  This is a targeted public MATLAB check, not a new full public MATLAB run.
+- Existing public fixture exclusions and hardware/platform limitations remain.
+- Viewer JavaScript controls/rotation passed. Version, notices, resource hashes
+  and licence inventory passed (440 private / 439 public source files).
+- Six documentation PDFs rebuilt: 179 physical pages total. Changed pages and
+  covers rendered and reviewed; every page version checked. Downloads copies
+  are byte-identical to repository artifacts.
+- Prepared public source boundary excludes private projects/measurements/ICC files,
+  restricted fixtures, local settings and runtimes. No new physical qualification.
+- Publication/tagging is not part of this preparation; v1.1.1 remains published.
+
+CERTIFICATE DEVELOPMENT VALIDATION - 2026-10-16 (unreleased)
+- Python full unittest discovery: 205 passed; certificate/appendix focused reruns passed,
+  including an additional top-100/strict-threshold regression (9 + 3 focused tests).
+- MATLAB: 6 selected workflow/certificate/delivery tests passed, with the numerical
+  export test rerun after aligning the revised legal heading. Covers existing-profile
+  verification, both ICC versions, and Swedish delivery from a legacy package.
+- Viewer JavaScript change-event and auto-rotation test passed.
+- Current source version/notices/resource hashes and licence inventory passed.
+- Bilingual certificate pages and coloured supplement tables rendered and reviewed.
+- Hardware measurement and print-quality qualification were not repeated.
+
 INKPROF v1.1.1 RELEASE VALIDATION - 2026-10-14
 
 ENVIRONMENT

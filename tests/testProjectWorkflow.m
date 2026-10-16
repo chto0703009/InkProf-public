@@ -159,10 +159,10 @@ verifyTrue(tc,isfile(w.output('export','measurementAppendix')));
 r=jsondecode(fileread(w.output('export','reportJSON')));
 verifyEqual(tc,string(r.profile.sha256),inkprof.internal.sha256(w.output('export','profile')));
 verifyEqual(tc,string(r.iterationId),string(w.State.iterationId));verifyEqual(tc,r.iteration,1);
-verifyEqual(tc,string(r.reportUser),"Christer Törnkvist");verifyEqual(tc,string(r.pageHeader),"InkProf Quality Profiling RGB printer");
+verifyEqual(tc,string(r.reportUser),"Christer Törnkvist");verifyEqual(tc,string(r.pageHeader),"InkProf – Quality profiling for RGB printers");
 verifyEqual(tc,r.results.c3_report.summary.mean,1.25);verifyFalse(tc,r.printing.verifiedByApp);
 verifyTrue(tc,isfield(r,'fwa'));verifyTrue(tc,contains(r.fwa.summaryText,'FWA effect'));
-verifyEqual(tc,string(r.documentTitle),"InkProf - Measurement certificate");verifyEqual(tc,string(r.language),"en");verifyNotEmpty(tc,r.certificateId);verifyTrue(tc,contains(r.resultInterpretation,"rather than the profile alone"));verifyTrue(tc,contains(r.resultInterpretation,"not proof of the physical gamut"));
+verifyEqual(tc,string(r.documentTitle),"InkProf – Measurement certificate");verifyEqual(tc,string(r.language),"en");verifyNotEmpty(tc,r.certificateId);verifyTrue(tc,contains(r.resultInterpretation,"rather than the profile alone"));verifyTrue(tc,contains(r.resultInterpretation,"not proof of the physical gamut"));
 verifyTrue(tc,contains(r.reproductionLiability,'caused solely'));verifyTrue(tc,contains(r.reproductionLiability,'mandatory law'));
 verifyTrue(tc,contains(r.licensingNotice,'do not replace permissions'));
 verifyTrue(tc,contains(r.clientPrintResponsibility,'If the client'));verifyTrue(tc,contains(r.clientPrintResponsibility,'mandatory law'));
@@ -172,12 +172,12 @@ verifyTrue(tc,contains(fileread(w.output('export','reportText')),'Place and date
 
 h=fileread(w.output('export','finalReport'));verifyTrue(tc,contains(h,"lang='en'"));verifyFalse(tc,contains(h,'Mätcertifikat'));verifyTrue(tc,contains(h,'Whole-target result overview'));verifyFalse(tc,contains(h,'<th>Grupp</th>'));verifyTrue(tc,contains(h,'1.250'));
 verifyTrue(tc,contains(h,'Measurement certificate signature'));
-verifyGreaterThan(tc,strfind(h,'Licences and third-party rights'),strfind(h,'Appendix B - Legal terms'));
+verifyGreaterThan(tc,strfind(h,'Licences and third-party rights'),strfind(h,'Appendix B – Responsibilities and licences'));
 verifyFalse(tc,r.standardsReference.isCertification);
 verifyTrue(tc,contains(h,'≤ 2.5'));verifyTrue(tc,contains(h,'≤ 5.0'));
 verifyGreaterThan(tc,strfind(h,'Appendix A - References and explanations'),strfind(h,'Measurement certificate signature'));
-verifyGreaterThan(tc,strfind(h,'Appendix B - Legal terms'),strfind(h,'Appendix A - References and explanations'));
-verifyGreaterThan(tc,strfind(h,'Appendix B - Legal terms'),strfind(h,'Measurement certificate signature'));
+verifyGreaterThan(tc,strfind(h,'Appendix B – Responsibilities and licences'),strfind(h,'Appendix A - References and explanations'));
+verifyGreaterThan(tc,strfind(h,'Appendix B – Responsibilities and licences'),strfind(h,'Measurement certificate signature'));
 verifyEqual(tc,numel(strfind(h,'Responsibility for equipment and material limitations')),1);
 txt=fileread(w.output('export','reportText'));verifyGreaterThan(tc,strfind(txt,'APPENDIX B - LEGAL TERMS'),strfind(txt,'SIGNATURE'));verifyTrue(tc,contains(h,'Certificate printer &lt;demo&gt;'));
 verifyTrue(tc,contains(h,'class="lab-mode"'));verifyTrue(tc,contains(h,'requestAnimationFrame'));
@@ -287,9 +287,21 @@ for k=1:numel(links)
  verifyTrue(tc,isfile(fullfile(fileparts(report),relative)),relative);
 end
 folder=fileparts(w.output('export','profile'));
-second=inkprof.internal.saveWorkflowDelivery(folder,icc,fullfile(external,'Rapporter','Min slutrapport.html'));
+% Older packages lack Swedish output until delivery_report renders it.
+legacy=fullfile(external,'legacy-package');copyfile(folder,legacy);
+swedish=fullfile(legacy,'final-report-sv.pdf');
+if isfile(swedish),delete(swedish);end
+second=inkprof.internal.saveWorkflowDelivery(legacy,icc,fullfile(external,'Rapporter','Min slutrapport.html'));
 verifyEqual(tc,string(second.reportFolder),inkprof.internal.absolutePath(fullfile(external,'Rapporter','Min slutrapport-2')));
 verifyTrue(tc,isfile(fullfile(second.reportFolder,'Min slutrapport-2.pdf')));
+swedishDelivery=fullfile(second.reportFolder,'Min slutrapport-2-sv.pdf');
+verifyTrue(tc,isfile(swedishDelivery));
+verifyTrue(tc,any(string(second.files)==swedishDelivery));
+verifyEqual(tc,inkprof.internal.sha256(swedishDelivery), ...
+ inkprof.internal.sha256(fullfile(second.reportAssets,'final-report-sv.pdf')));
+verifyTrue(tc,isfile(fullfile(second.reportFolder,'measurement-appendix.pdf')));
+verifyEqual(tc,inkprof.internal.sha256(fullfile(second.reportFolder,'measurement-appendix.pdf')), ...
+ inkprof.internal.sha256(fullfile(second.reportAssets,'measurement-appendix.pdf')));
 original=inkprof.internal.sha256(icc);
 verifyError(tc,@()inkprof.internal.saveWorkflowDelivery(folder,icc,fullfile(external,'missing','report.html'),Overwrite=true),'inkprof:Delivery');
 verifyEqual(tc,inkprof.internal.sha256(icc),original);
@@ -416,18 +428,18 @@ w.run('numericalExport',struct('Confirmed',true,'Notes',"Satisfied with iteratio
 verifyTrue(tc,w.valid('numericalExport'));verifyFalse(tc,w.valid('approve'));
 r=jsondecode(fileread(w.output('numericalExport','reportJSON')));
 verifyFalse(tc,r.verification.separatePrintVerified);verifyFalse(tc,r.verification.isoCertification);
-verifyEqual(tc,string(r.documentTitle),"InkProf - Measurement certificate");verifyEqual(tc,string(r.language),"en");verifyTrue(tc,isfield(r,'certificateId'));
+verifyEqual(tc,string(r.documentTitle),"InkProf – Measurement certificate");verifyEqual(tc,string(r.language),"en");verifyTrue(tc,isfield(r,'certificateId'));
 verifyEqual(tc,string(r.scopeStatement),"Numerically checked; this iteration has not been verified by a separate print and measurement.");
 verifyFalse(tc,isfield(r.sources,'c3'));verifyFalse(tc,isfield(r,'approval'));
 verifyTrue(tc,isfile(w.output('numericalExport','reportPDF')));
 verifyTrue(tc,contains(r.legalAppendix.licensingNotice,'do not replace permissions'));
 verifyTrue(tc,contains(fileread(w.output('numericalExport','finalReport')),'Licences and third-party rights'));
-h=fileread(w.output('numericalExport','finalReport'));verifyTrue(tc,contains(h,"lang='en'"));verifyFalse(tc,contains(h,'Mätcertifikat'));verifyGreaterThan(tc,strfind(h,'Appendix B - Legal terms'),strfind(h,'<h1>Signature</h1>'));
+h=fileread(w.output('numericalExport','finalReport'));verifyTrue(tc,contains(h,"lang='en'"));verifyFalse(tc,contains(h,'Mätcertifikat'));verifyGreaterThan(tc,strfind(h,'Appendix B – Responsibilities and licences'),strfind(h,'<h1>Signature</h1>'));
 verifyTrue(tc,isfield(r,'legalAppendix'));
 verifyFalse(tc,r.standardsReference.isCertification);
 verifyTrue(tc,contains(h,'≤ 2.5'));verifyTrue(tc,contains(h,'ISO 12647-7:2016'));
 verifyGreaterThan(tc,strfind(h,'Appendix A - References and explanations'),strfind(h,'<h1>Signature</h1>'));
-verifyGreaterThan(tc,strfind(h,'Appendix B - Legal terms'),strfind(h,'Appendix A - References and explanations'));
+verifyGreaterThan(tc,strfind(h,'Appendix B – Responsibilities and licences'),strfind(h,'Appendix A - References and explanations'));
 verifyTrue(tc,contains(fileread(w.output('numericalExport','finalReport')),'not been verified by a separate print'));
 f=inkprof.app(w.Root);verifyEqual(tc,string(findobj(f,'Tag','openFinalReport').Enable),"on");delete(f);
 file=w.output('checks','c1');fid=fopen(file,'a');fprintf(fid,' ');fclose(fid);
@@ -519,4 +531,18 @@ function testICCOutputChoicePreservesEvidence(tc)
 w=finalReportFixture(tc);record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
 w.editDetails(struct('Name',string(record.name),'User',"Tester",'Printing',struct('profileOutputVersions',"both")));
 verifyTrue(tc,w.valid('profile'));verifyTrue(tc,w.valid('approve'));verifyFalse(tc,w.valid('export'));
+end
+function testCGATSDeliveryCopiesAndRegistersFiles(tc)
+w=finalReportFixture(tc);w.run('export');
+source=fileparts(w.output('export','reportJSON'));
+folder=string(tempname);copyfile(source,folder);clean=onCleanup(@()rmdir(folder,'s'));
+fid=fopen(fullfile(folder,'i1profiler-measurement.txt'),'w');fprintf(fid,'CGATS.17\n');fclose(fid);
+inkprof.internal.writeJson(fullfile(folder,'i1profiler-measurement.json'),struct('patchCount',1));
+external=string(tempname);mkdir(external);cleanExternal=onCleanup(@()rmdir(external,'s'));
+d=inkprof.internal.saveWorkflowDelivery(folder,fullfile(external,'Output.icc'),fullfile(external,'Report.pdf'));
+for name=["i1profiler-measurement.txt","i1profiler-measurement.json"]
+ file=fullfile(d.reportFolder,name);
+ verifyTrue(tc,isfile(file));verifyTrue(tc,any(string(d.files)==file));
+ verifyEqual(tc,inkprof.internal.sha256(file),inkprof.internal.sha256(fullfile(folder,name)));
+end
 end

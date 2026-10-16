@@ -5,7 +5,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]/'analysis'))
-from certificate_reference import html_section, patches
+from certificate_reference import html_section, patches, compact_selection
 
 
 class ReferenceTests(unittest.TestCase):
@@ -13,19 +13,26 @@ class ReferenceTests(unittest.TestCase):
         report = {'referenceTarget': {'name': 'ColorChecker SG'}, 'patchOutliers': {'allPatches': [
             {'referenceName': 'A1', 'sampleId': '1', 'desiredHex': '#123456', 'hex': '#234567', 'deltaE00': 1.25}]}}
         html = html_section(report)
-        for text in ['ColorChecker SG', 'A1', '1.25', '#123456', '#234567']:
+        for text in ['ColorChecker SG', '1.25', '#123456', '#234567']:
             self.assertIn(text, html)
         self.assertEqual(patches(report)[0]['deltaE00'], 1.25)
+
+    def test_top_100_above_one_are_displayed_ascending(self):
+        values=compact_selection([dict(deltaE00=i/10) for i in range(250)])
+        self.assertEqual(len(values),100)
+        self.assertEqual(values[0]['deltaE00'],15)
+        self.assertEqual(values[-1]['deltaE00'],24.9)
+        self.assertEqual(compact_selection([dict(deltaE00=1)]),[])
 
     def test_generic_target_has_no_reference_claim(self):
         self.assertEqual(html_section({'patchOutliers': {'allPatches': [{}]}}), '')
 
     def test_single_patch_and_escaping(self):
         report = {'referenceTarget': {'name': '<reference>'}, 'patchOutliers': {'allPatches':
-            {'sampleId': '1', 'referenceName': '<A1>', 'hex': '#234567', 'deltaE00': 0}}}
+            {'sampleId': '1', 'referenceName': '<A1>', 'hex': '#234567', 'deltaE00': 2}}}
         html = html_section(report)
         self.assertIn('&lt;reference&gt;', html)
-        self.assertIn('&lt;A1&gt;', html)
+        self.assertNotIn('&lt;A1&gt;', html)
 
 
 if __name__ == '__main__':

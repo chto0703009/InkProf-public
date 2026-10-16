@@ -14,7 +14,20 @@ def reference(report):
 
 
 def content(report, language='sv'):
-    return reference(report)[language]
+    data = json.loads(json.dumps(reference(report)[language]))
+    def edit(value):
+        if isinstance(value,list):return [edit(v) for v in value]
+        if isinstance(value,dict):return {k:edit(v) for k,v in value.items()}
+        if not isinstance(value,str):return value
+        from certificate_editorial import english
+        if language=='en':
+            value=english(value).replace('summarizes','summarises').replace('job-related digital proof control','job-specific digital proof control')
+            value=value.replace('A list of ΔE00 values above 5 identifies patches for closer review.', 'The supplement flags ΔE00 values above 5 for closer review. The certificate summary shows up to 100 deviations above 1.')
+        else:
+            for a,b in [('Fogra MediaWedge','Fogra Media Wedge'),('InkProfs valfria','InkProfs egna'),('solider','heltoner'),('jobbrelaterad digital provtryckskontroll','jobbspecifik kontroll av digitala provtryck'),('Bilaga A -','Bilaga A –'),('Jämförelsereferens - bvdm /','Jämförelsereferens – bvdm/')]:value=value.replace(a,b)
+            value=value.replace('En lista med ΔE00 över 5 markerar prov för närmare granskning.', 'Supplementet markerar prov med ΔE00 över 5; certifikatets färgöversikt visar högst 100 avvikelser över 1.')
+        return value
+    return edit(data)
 
 
 def table_html(report, language='sv'):

@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.1.1 | 2026-10-14",
+    "tag": "InkProf | v1.2.0 | 2026-10-16",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -227,11 +227,11 @@
     ]
   },
   {
-    "tag": "v1.1.1 | NYA MÖJLIGHETER",
+    "tag": "v1.2.0 | NYA MÖJLIGHETER",
     "links": [
       [
         "Öppen källkod och nedladdning",
-        "https://github.com/chto0703009/InkProf-public/releases/tag/v1.1.1"
+        "https://github.com/chto0703009/InkProf-public/releases"
       ],
       [
         "X-Rite: i1Pro 2 EOL",
@@ -275,7 +275,7 @@
       ],
       [
         "Stabil funktionsrelease",
-        "Källkodsrelease 1.1.1, publicerad 14 oktober 2026. Sparade mål och mätningar följer med. Bedöm förbättringar genom utskrift och mätning."
+        "Källkodsrelease 1.2.0, utgiven 16 oktober 2026. Sparade mål och mätningar följer med. Bedöm förbättringar genom utskrift och mätning."
       ]
     ],
     "compact": true
