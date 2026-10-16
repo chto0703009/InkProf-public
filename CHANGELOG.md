@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.1 — 2026-10-16
+
+- Show computer-local time with date-specific UTC offset in the close confirmation, iteration history, readable workflow/progress/feedback logs and legacy certificate time fallbacks. Preserve UTC in machine evidence and existing registered files. Test daylight-saving offsets and date rollover.
+
 ## v1.2.0 — released 2026-10-16
 
 - Add optional native M0 CGATS measurement delivery for i1Profiler through a main-window checkbox in rows 14/19, with provenance JSON and verified delivery copies. Import/profile creation tested with 2,200 patches in i1Profiler 3.8.5; document RGB rounding and cross-engine comparison limits.

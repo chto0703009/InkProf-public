@@ -107,3 +107,16 @@ In workflow row 14 or 19, tick **Include CGATS for i1Profiler when saving ICC/ce
 This exports the selected original complete native M0 profiling measurement (XRGA, 36 spectral bands), without applying OBA compensation. It does not merge later refinements or export C2 verification data. External-ICC verification projects do not offer this option. In i1Profiler use RGB Printer → Profiling → Measurement → Load and select CGATS text; do not rename the file to MXF.
 
 See the [export instructions and verified test](i1profiler-cgats-test.md) for precision, scope and recipient limitations.
+
+## Local time in the app and readable logs
+
+The close confirmation and iteration history display the computer's local time,
+including the offset applicable on the recorded date (summer/winter time). New
+readable workflow, iteration-progress and feedback log entries also use local
+time. Certificate rendering converts UTC to local time when older source records
+lack a local display timestamp.
+
+Machine-readable UTC timestamps remain unchanged for traceability. Existing
+registered reports/logs are not rewritten, and older readable log entries may
+therefore retain their original UTC notation. Elapsed calculation times are
+durations and do not need a time-zone conversion.

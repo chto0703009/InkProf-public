@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.2.0 | 2026-10-16",
+    "tag": "InkProf | v1.2.1 | 2026-10-16",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -227,7 +227,7 @@
     ]
   },
   {
-    "tag": "v1.2.0 | NEW OPTIONS",
+    "tag": "v1.2.1 | NEW OPTIONS",
     "links": [
       [
         "Open source and downloads",
@@ -275,7 +275,7 @@
       ],
       [
         "Stable feature release",
-        "Source release 1.2.0, released 16 October 2026. Saved targets and measurements are preserved. Assess improvements by printing and measuring."
+        "Source release 1.2.1, released 16 October 2026. Saved targets and measurements are preserved. Assess improvements by printing and measuring."
       ]
     ],
     "compact": true

@@ -204,7 +204,7 @@ end
  function event(stage,state,message)
   e=struct('utc',utc(),'stage',stage,'state',state,'message',message);result.events{end+1}=e;
   f=fopen(fullfile(iterationFolder,'progress.jsonl'),'a','n','UTF-8');assert(f>=0);fprintf(f,'%s\n',jsonencode(e));fclose(f);
-  f=fopen(fullfile(iterationFolder,'progress.log'),'a','n','UTF-8');assert(f>=0);fprintf(f,'%s | %s | %s | %s\n',e.utc,stage,state,message);fclose(f);
+  f=fopen(fullfile(iterationFolder,'progress.log'),'a','n','UTF-8');assert(f>=0);fprintf(f,'%s | %s | %s | %s\n',inkprof.internal.localReportTime(e.utc),stage,state,message);fclose(f);
   stageFile=fullfile(iterationFolder,'iteration.pending.json');inkprof.internal.writeJson(stageFile,result);movefile(stageFile,fullfile(iterationFolder,'iteration.json'),'f');
   fprintf('InkProf iteration [%s]: %s\n',stage,message);drawnow;
  end

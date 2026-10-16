@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.2.0 | 2026-10-16",
+    "tag": "USER HANDBOOK | v1.2.1 | 2026-10-16",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Open methods and clear conditions",
-        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.2.0; app buttons and field names are English."
+        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.2.1; app buttons and field names are English."
       ]
     ],
     "callout": "InkProf brings profiling, checks and documentation together in one project. Print the colour targets using a separate printing application."
@@ -41,8 +41,8 @@
         "MATLAB requires its own licence; InkProf was tested with R2025b and no mandatory add-on toolboxes. Install Python 3.11-3.13 (tested with 3.13) and ArgyllCMS (3.5.0 was used in development). Git is needed for the clone command below. On macOS, Python, Git and ArgyllCMS can be installed using Homebrew; with Homebrew installed: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Download InkProf v1.2.0",
-        "Download the v1.2.0 source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.2.0 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
+        "2. Download InkProf v1.2.1",
+        "Download the v1.2.1 source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.2.1 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
       ],
       [
         "3. Install Python packages in the InkProf folder",
@@ -104,7 +104,7 @@
       ],
       [
         "Further reading: pages 25-69",
-        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian. 70: later OBA/FWA choice. 71-72: measurement checkpoints, resume and RGB controls (v1.2.0)."
+        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian. 70: later OBA/FWA choice. 71-72: measurement checkpoints, resume and RGB controls (v1.2.1)."
       ]
     ],
     "lead": "The row number on the left and the internal step identifier are different things. This handbook uses row numbers to help you find the step in the app.",
@@ -209,7 +209,7 @@
       ],
       [
         "Reports, views and closing",
-        "Open report opens an available report; the label may refer to the certificate. View 3D shows available colour points. View gamut shows a separate ICC-derived 3D surface. Close app provides an explicit way to exit. First finish any active dialog using its intended save or cancel button."
+        "Open report opens an available report; the label may refer to the certificate. View 3D shows available colour points. View gamut shows a separate ICC-derived 3D surface. Close app provides an explicit way to exit. First finish any active dialog using its intended save or cancel button. The close confirmation, iteration history and new readable log entries show local time with the correct daylight-saving offset. Technical provenance retains UTC; previously saved files are unchanged."
       ]
     ],
     "lead": "First select a row in the table. Read the description and saved results before choosing Run selected step.",
@@ -964,7 +964,7 @@
       ],
       [
         "Basis of this handbook",
-        "Both handbooks describe program version 1.2.0 with inner-shell refinement and current workflow updates, document revision 2026-10-16. Version 1.2.0 is released on 16 October 2026; the release tag identifies this source version. Documentation and numerical tests are not new physical validation."
+        "Both handbooks describe program version 1.2.1 with inner-shell refinement and current workflow updates, document revision 2026-10-16. Version 1.2.1 is released on 16 October 2026; the release tag identifies this source version. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -1026,7 +1026,7 @@
   },
   {
     "title": "More samples in dark colours",
-    "tag": "v1.2.0 | MATERIALS AND SHADOWS",
+    "tag": "v1.2.1 | MATERIALS AND SHADOWS",
     "sections": [
       [
         "Matte paper",
@@ -1052,7 +1052,7 @@
   },
   {
     "title": "Gamut, certificates and source code",
-    "tag": "v1.2.0 | DELIVERY AND LICENSING",
+    "tag": "v1.2.1 | DELIVERY AND LICENSING",
     "sections": [
       [
         "Surfaces and measurement points are different views",
@@ -1072,7 +1072,7 @@
       ],
       [
         "Release status",
-        "This handbook describes source version 1.2.0, released 16 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+        "This handbook describes source version 1.2.1, released 16 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
       ]
     ],
     "links": [
@@ -1789,7 +1789,7 @@
         "An incorrect or incompatible Python or dependency-package version can prevent analysis from working even when the package is installed. InkProf checks the Python version requirement and tests that required packages and their compiled libraries load. Setup also checks that Argyll tools start and report version information. Use the package versions in the requirements files supplied with your InkProf release. The checks test functionality and basic requirements; they do not replace the package versions specified in those files."
       ]
     ],
-    "callout": "This guidance applies to 1.2.0 with current source updates, document revision 2026-10-16. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
+    "callout": "This guidance applies to 1.2.1 with current source updates, document revision 2026-10-16. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
     "links": [
       [
         "Details and repair commands",
@@ -1822,7 +1822,7 @@
     "callout": "Shell refinement changes the measurement set. Grid trials change computed profile tables. Test separately to understand their effects."
   },
   {
-    "tag": "v1.2.0 | WORKFLOW AND CERTIFICATES",
+    "tag": "v1.2.1 | WORKFLOW AND CERTIFICATES",
     "title": "Next steps and clear delivery",
     "lead": "This page explains suggested next rows and how the delivery documents fit together.",
     "sections": [
@@ -2053,7 +2053,7 @@
   },
   {
     "title": "Save and resume a partial measurement",
-    "tag": "MEASUREMENT / NEW IN v1.2.0",
+    "tag": "MEASUREMENT / NEW IN v1.2.1",
     "lead": "For large targets, save completed physical rows and continue later.",
     "sections": [
       [
@@ -2081,11 +2081,11 @@
         "After all rows, select Save and finish and review the measurement as usual. A checkpoint does not complete the workflow step. An unexpected interruption may lose scans since the last checkpoint. Changed chart data, settings or saved readings are rejected."
       ]
     ],
-    "callout": "Included in v1.2.0: automatically tested; real-instrument resume validation remains necessary."
+    "callout": "Included in v1.2.1: automatically tested; real-instrument resume validation remains necessary."
   },
   {
     "title": "Remeasurement and RGB controls",
-    "tag": "MEASUREMENT / NEW IN v1.2.0",
+    "tag": "MEASUREMENT / NEW IN v1.2.1",
     "sections": [
       [
         "Continue after rereading",
@@ -2108,7 +2108,7 @@
         "A cancelled or failed RGB check no longer permanently disables startup. Correct the problem and start again. This does not automatically approve measurements or exceptions."
       ]
     ],
-    "callout": "Included in v1.2.0. Restart InkProf to load the updated code. Existing print files are unchanged."
+    "callout": "Included in v1.2.1. Restart InkProf to load the updated code. Existing print files are unchanged."
   },
   {
     "title": "Transfer measurements to i1Profiler",

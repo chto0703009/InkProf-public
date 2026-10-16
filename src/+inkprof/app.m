@@ -629,14 +629,17 @@ end
         w.reload();h=w.State.history;if isstruct(h),h=num2cell(h);end
         rows=cell(0,4);
         for k=1:numel(h)
-            e=h{k};rows(end+1,:)={e.cycle,char(e.utc),char(e.step),char(e.status)}; %#ok<AGROW>
+            e=h{k};rows(end+1,:)={e.cycle,char(inkprof.internal.localReportTime(e.utc)),char(e.step),char(e.status)}; %#ok<AGROW>
         end
         f=uifigure('Name','InkProf | Iteration history','Position',[120 100 1040 700]);
         grid=uigridlayout(f,[2 1]);grid.RowHeight={'1x','1x'};
-        t=uitable(grid,'Data',rows,'ColumnName',{'Iteration','Time UTC','Step','Result'},'ColumnWidth',{80,180,180,'auto'});
+        t=uitable(grid,'Data',rows,'ColumnName',{'Iteration','Local time','Step','Result'},'ColumnWidth',{80,270,180,'auto'});
         text=uitextarea(grid,'Editable','off');t.CellSelectionCallback=@showEvent;
         function showEvent(~,e)
-            if ~isempty(e.Indices),text.Value=splitlines(string(jsonencode(h{e.Indices(1)},PrettyPrint=true)));end
+            if ~isempty(e.Indices)
+                event=h{e.Indices(1)};event.localTime=inkprof.internal.localReportTime(event.utc);event=rmfield(event,'utc');
+                text.Value=splitlines(string(jsonencode(event,PrettyPrint=true)));
+            end
         end
     end
     function openResult(~,~)
@@ -686,7 +689,7 @@ end
                 record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
                 message="Project data and workflow are saved on disk."+newline+ ...
                     "Integrity verified: "+check.checkedFiles+" files."+newline+ ...
-                    "Last saved (UTC): "+string(record.updatedUTC)+newline+newline+ ...
+                    "Last saved (local time): "+inkprof.internal.localReportTime(record.updatedUTC)+newline+newline+ ...
                     "Project folder:"+newline+w.Root+newline+newline+ ...
                     "You can reopen this project and continue later. Close app does not quit MATLAB.";
                 title='Project saved — safe to close';icon='success';

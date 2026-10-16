@@ -9,6 +9,7 @@ from certificate_supplement import complete_table
 import json
 import sys
 from pathlib import Path
+from local_time import report_time
 from xml.sax.saxutils import escape
 from certificate_standards import content, appendix_lines, pdf_table
 from reportlab.pdfgen.canvas import Canvas
@@ -63,7 +64,7 @@ def create(folder):
         return Paragraph(escape(text).replace('\n', '<br/>'), styles[style])
 
     story += [p('InkProf – Measurement certificate', 'Title'), p(r['project']['name'], 'Heading2'),
-              p(f"Iteration {r['iteration']} | {r.get('createdLocal', r['createdUTC'])}"),
+              p(f"Iteration {r['iteration']} | {report_time(r)}"),
               p('Certificate ID: '+r.get('certificateId','Not specified')),
               p('Iteration UUID: '+r.get('iterationId','Not recorded')),
               p(r.get('certificateIntro', 'This certificate records the current ICC profile, verification measurements and the user assessment under the stated conditions. It is not an accredited certification or proof of ISO conformity. Requirements that are not met are reported as not met.')), p('Reading the results','Heading2'), p(r.get('resultInterpretationShort', 'ΔE00 describes colour difference; lower is better. Verification compares the measured print with the desired colour. Profile fit describes agreement with training data, not independent accuracy. Printer, ink and paper limit reproduction. Full methods, limitations and traceability are in the measurement supplement.')), p('Project and printing conditions','Heading2')]
@@ -195,7 +196,7 @@ def create(folder):
                 self.drawCentredString(105*mm, 281*mm, __import__('certificate_editorial').english(r.get('pageHeader', 'InkProf – Quality profiling for RGB printers')))
                 self.setFillColor(colors.HexColor('#52656e'))
                 self.setFont('Report', 8)
-                self.drawString(18*mm, 12*mm, r.get('reportDate', r['createdUTC'][:10]))
+                self.drawString(18*mm, 12*mm, r.get('reportDate') or report_time(r)[:10])
                 user = r.get('reportUser', 'Not specified')
                 # Wrap long user names inside the middle footer column.
                 label = Paragraph(escape(user), styles['FooterUser'])

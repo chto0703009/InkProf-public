@@ -497,7 +497,7 @@ classdef ProjectWorkflow < handle
                 fid=fopen(file,'a','n','UTF-8');assert(fid>=0,'inkprof:IO','Cannot open the results log.');
                 cleanup=onCleanup(@()fclose(fid));
                 if format=="jsonl",fprintf(fid,'%s\n',jsonencode(e));
-                else,fprintf(fid,'[%s] Iteration %d | %s | %s\n%s\n\n',e.utc,e.cycle,id,status,jsonencode(details,PrettyPrint=true));end
+                else,fprintf(fid,'[%s] Iteration %d | %s | %s\n%s\n\n',inkprof.internal.localReportTime(e.utc),e.cycle,id,status,jsonencode(details,PrettyPrint=true));end
                 clear cleanup
             end
         end

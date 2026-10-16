@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.2.0 | 2026-10-16",
+    "tag": "ANVÄNDARHANDBOK | v1.2.1 | 2026-10-16",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Öppen metod och tydliga förutsättningar",
-        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.2.0; appens knappar och fältnamn är engelska."
+        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.2.1; appens knappar och fältnamn är engelska."
       ]
     ],
     "callout": "InkProf samlar profilering, kontroll och dokumentation i ett projekt. Utskriften av färgmålen gör du i ett separat utskriftsprogram."
@@ -41,8 +41,8 @@
         "MATLAB kräver egen licens; InkProf har testats med R2025b utan obligatoriska tilläggsverktygslådor. Installera Python 3.11-3.13 (testat med 3.13) och ArgyllCMS (3.5.0 användes i utvecklingen). Git behövs om du använder kloningskommandot nedan. På macOS kan Python, Git och ArgyllCMS installeras med Homebrew; med Homebrew installerat: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Hämta InkProf v1.2.0",
-        "Hämta källkodens ZIP för v1.2.0, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.2.0 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
+        "2. Hämta InkProf v1.2.1",
+        "Hämta källkodens ZIP för v1.2.1, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.2.1 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
       ],
       [
         "3. Installera Python-paketen i InkProf-mappen",
@@ -162,7 +162,7 @@
       ],
       [
         "Läs vidare: sidorna 25-69",
-        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian. 70: senare OBA/FWA-val. 71-72: delmätning, återupptagning och RGB-kontroller (v1.2.0)."
+        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian. 70: senare OBA/FWA-val. 71-72: delmätning, återupptagning och RGB-kontroller (v1.2.1)."
       ]
     ]
   },
@@ -211,7 +211,7 @@
       ],
       [
         "Rapport, visning och avslut",
-        "Open report öppnar tillgänglig rapport; benämningen kan anpassas till certifikatet. View 3D visar tillgängliga färgpunkter. View gamut visar en separat ICC-beräknad 3D-yta. Close app är den tydliga vägen att avsluta appen. Avsluta först pågående dialog med dess avsedda spara- eller avbrytknapp."
+        "Open report öppnar tillgänglig rapport; benämningen kan anpassas till certifikatet. View 3D visar tillgängliga färgpunkter. View gamut visar en separat ICC-beräknad 3D-yta. Close app är den tydliga vägen att avsluta appen. Avsluta först pågående dialog med dess avsedda spara- eller avbrytknapp. Stängningsdialogen, iterationshistoriken och nya läsbara loggrader visar lokal tid med rätt sommar-/vintertid. UTC behålls i tekniska spårbarhetsdata; tidigare sparade filer ändras inte."
       ]
     ]
   },
@@ -1002,7 +1002,7 @@
       ],
       [
         "Underlag för denna handbok",
-        "Båda handböckerna beskriver programversion 1.2.0 med skalförfining och aktuella arbetsflödesförbättringar, dokumentrevision 2026-10-16. Version 1.2.0 ges ut 16 oktober 2026; releasetaggen identifierar källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
+        "Båda handböckerna beskriver programversion 1.2.1 med skalförfining och aktuella arbetsflödesförbättringar, dokumentrevision 2026-10-16. Version 1.2.1 ges ut 16 oktober 2026; releasetaggen identifierar källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
       ]
     ],
     "links": [
@@ -1025,7 +1025,7 @@
     ]
   },
   {
-    "tag": "v1.2.0 | MATERIAL OCH SKUGGOR",
+    "tag": "v1.2.1 | MATERIAL OCH SKUGGOR",
     "title": "Fler mätpunkter i mörka färger",
     "sections": [
       [
@@ -1051,7 +1051,7 @@
     ]
   },
   {
-    "tag": "v1.2.0 | LEVERANS OCH LICENS",
+    "tag": "v1.2.1 | LEVERANS OCH LICENS",
     "title": "Gamut, certifikat och källkod",
     "sections": [
       [
@@ -1072,7 +1072,7 @@
       ],
       [
         "Utgåvestatus",
-        "Handboken beskriver källversion 1.2.0, utgiven 16 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
+        "Handboken beskriver källversion 1.2.1, utgiven 16 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
       ]
     ],
     "links": [
@@ -1785,7 +1785,7 @@
         "En felaktig eller inkompatibel version av Python eller ett beroendepaket kan göra att analysen inte fungerar, även om paketet är installerat. InkProf kontrollerar Python-versionens grundkrav och provar att de nödvändiga paketen och deras kompilerade bibliotek kan laddas. Vid installation kontrolleras även att Argyll-verktygen kan startas och lämna versionsinformation. Använd paketversionerna i requirements-filerna som hör till din InkProf-utgåva. Kontrollen prövar funktion och grundkrav; den ersätter inte installationsfilernas angivna paketversioner."
       ]
     ],
-    "callout": "Anvisningen gäller 1.2.0 med aktuella källuppdateringar, dokumentrevision 2026-10-16. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
+    "callout": "Anvisningen gäller 1.2.1 med aktuella källuppdateringar, dokumentrevision 2026-10-16. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
     "links": [
       [
         "Detaljer och reparationskommandon",
@@ -1818,7 +1818,7 @@
     "callout": "Skalförtätning ändrar mätunderlaget. Gridprovet ändrar profilens beräknade tabeller. Prova dem separat för att förstå vad som påverkar resultatet."
   },
   {
-    "tag": "v1.2.0 | ARBETSGÅNG OCH CERTIFIKAT",
+    "tag": "v1.2.1 | ARBETSGÅNG OCH CERTIFIKAT",
     "title": "Nästa steg och tydlig leverans",
     "lead": "Här beskrivs rekommenderad nästa rad och hur leveransens dokument hänger ihop.",
     "sections": [
@@ -2049,7 +2049,7 @@
   },
   {
     "title": "Spara och återuppta delmätning",
-    "tag": "MÄTNING / NYTT I v1.2.0",
+    "tag": "MÄTNING / NYTT I v1.2.1",
     "lead": "För stora mål kan färdiga hela rader sparas och mätningen fortsätta senare.",
     "sections": [
       [
@@ -2077,11 +2077,11 @@
         "Efter alla rader: Save and finish och granska mätningen som vanligt. En delmätning markerar inte arbetsflödessteget som färdigt. Vid ett oväntat avbrott kan skanningar sedan senaste sparpunkten gå förlorade. Ändrat mål, inställningar eller sparad fil avvisas."
       ]
     ],
-    "callout": "Ingår i v1.2.0: automatiskt testad; prov av återupptagning med verkligt instrument återstår."
+    "callout": "Ingår i v1.2.1: automatiskt testad; prov av återupptagning med verkligt instrument återstår."
   },
   {
     "title": "Ommätning och RGB-kontroller",
-    "tag": "MÄTNING / NYTT I v1.2.0",
+    "tag": "MÄTNING / NYTT I v1.2.1",
     "sections": [
       [
         "Fortsätt efter ommätt rad",
@@ -2104,7 +2104,7 @@
         "En avbruten eller underkänd kontroll låser inte starten permanent. Rätta till problemet och starta igen. Ingen mätning eller avvikelse blir automatiskt godkänd genom detta."
       ]
     ],
-    "callout": "Ingår i v1.2.0. Starta om InkProf för att läsa uppdaterad kod. Äldre sparade utskriftsfiler ändras inte."
+    "callout": "Ingår i v1.2.1. Starta om InkProf för att läsa uppdaterad kod. Äldre sparade utskriftsfiler ändras inte."
   },
   {
     "title": "Överför mätningen till i1Profiler",

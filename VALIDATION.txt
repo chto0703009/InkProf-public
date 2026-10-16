@@ -1,3 +1,31 @@
+INKPROF v1.2.1 RELEASE VALIDATION - 2026-10-16
+
+- Patch scope: local time in close confirmation, history, readable logs and
+  legacy certificate display; UTC machine evidence and registered files preserved.
+- Private full Python discovery: 208 passed, 0 failures/errors.
+- Sanitised public full Python discovery: 208 passed, 0 failures/errors.
+- Focused MATLAB: 5 passed, 0 failed/incomplete. Covers winter/summer offsets,
+  date rollover and explicit source offsets, workflow persistence, print-reviewed
+  and numerical-only certificate delivery.
+- Initial full Python run exposed two legacy report timestamp cases: date-only
+  and absent UTC. Fixed with a shared report display fallback; the subsequent
+  full private/public runs passed. Date-only records remain dates.
+- Full MATLAB baseline: v1.2.0, 264 passed. No new full MATLAB run is claimed
+  for this focused patch. No new physical hardware/print qualification.
+- Both JavaScript viewer tests passed. Version, notices, resource hashes and
+  licence inventory passed: 446 private / 445 public source files.
+- Six documentation PDFs rebuilt; version checked on all 181 physical pages.
+  Changed handbook pages and representative presentation/guide pages rendered
+  and visually inspected. All Downloads copies match repository PDFs exactly.
+- Logs retained locally: /tmp/inkprof-v121-python.log,
+  /tmp/inkprof-v121-public-python.log and /tmp/inkprof-v121-matlab.log.
+- Public source boundary remains unchanged: no private projects, measurements,
+  ICCs, restricted fixtures, local configuration or runtime binaries.
+- ZIP contents and uploaded asset SHA256 are checked against the release files.
+- Previous platform/instrument limits and ISSUE-001 research scope remain.
+
+HISTORICAL VALIDATION RECORDS
+
 INKPROF v1.2.0 RELEASE VALIDATION - 2026-10-16
 
 - Supersedes unpublished v1.1.2 preparation; no v1.1.2 release/tag published.

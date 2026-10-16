@@ -5,6 +5,7 @@
 """Swedish PDF companion; never rewrites English HTML or measurement appendix."""
 import json
 from pathlib import Path
+from local_time import report_time
 from xml.sax.saxutils import escape
 
 LABELS = {'Project':'Projekt','Project ID':'Projekt-ID','Document date':'Dokumentdatum','Prepared by':'Upprättat av',
@@ -49,7 +50,7 @@ def create(folder):
     def number(v):return f'{v:.2f}'.replace('.',',')
     numerical=r.get('documentType')=='inkprof.numerical-report'
     story=[p('InkProf – Mätcertifikat','Title'),p(r['project']['name'],'Heading2'),
-      p(f"Iteration {r['iteration']} | {r.get('createdLocal',r.get('reportDate',''))}"),
+      p(f"Iteration {r['iteration']} | {report_time(r)}"),
       p('Certifikat-ID: '+r.get('certificateId','Ej angivet')),p('Iterationens UUID: '+r.get('iterationId','Ej angivet'))]
     scope=('Den aktuella profilen är numeriskt kontrollerad men har inte verifierats genom en separat utskrift och mätning.' if numerical else
       'Certifikatet redovisar den aktuella ICC-profilen, en separat verifieringsutskrift och användarens bedömning under de angivna förhållandena.')

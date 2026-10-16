@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+from local_time import local_time
 from datetime import datetime, timezone
 import numpy as np
 import colour
@@ -98,7 +99,7 @@ def run(source, output, parameters=None):
     for p in result['priorities']:
         lines.append(f"| {p['coordinate']} | {p['role']} | {p['predictedError']:.3f} | {p['measuredError']:.3f} | {p['modelMismatch']:.3f} | {p['priority']:.3f} |")
     (output/'iteration-feedback.md').write_text('\n'.join(lines)+'\n')
-    (output/'feedback.log').write_text(f"{result['createdUTC']} | C3 report verified | {len(result['patches'])} patches | {len(result['priorities'])} priorities | repeats {result['repeatability']['status']} | no ISO or profile approval\n")
+    (output/'feedback.log').write_text(f"{local_time(result['createdUTC'])} | C3 report verified | {len(result['patches'])} patches | {len(result['priorities'])} priorities | repeats {result['repeatability']['status']} | no ISO or profile approval\n")
     return result
 
 if __name__=='__main__':

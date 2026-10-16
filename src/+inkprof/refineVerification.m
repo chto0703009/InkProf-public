@@ -92,7 +92,7 @@ if ~isempty(proposal.candidates)
 end
 inkprof.internal.writeJson(fullfile(folder,'proposal.json'),proposal);
 f=fopen(fullfile(folder,'progress.log'),'w');assert(f>=0);cl=onCleanup(@()fclose(f));
-fprintf(f,'%s | source hashes and patch identities verified\n',proposal.createdUTC);
+fprintf(f,'%s | source hashes and patch identities verified\n',inkprof.internal.localReportTime(proposal.createdUTC));
 fprintf(f,'MATLAB Base | SVD and regularized sampling | radius %.3f RGB percentage points | max %d new patches\n',options.RadiusPercent,options.MaxNewPatches);
 fprintf(f,'Norm %.6g | target %.6g | excluded repeat groups %d | new candidates %d | %s\n',proposal.errorNorm.value,options.NormTarget,proposal.errorNorm.excludedCount,numel(proposal.candidates),proposal.stopReason);
 for k=1:numel(proposal.diagnostics)

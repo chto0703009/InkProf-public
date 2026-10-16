@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.2.0 | 2026-10-16",
+    "tag": "InkProf | v1.2.1 | 2026-10-16",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -227,7 +227,7 @@
     ]
   },
   {
-    "tag": "v1.2.0 | NYA MÖJLIGHETER",
+    "tag": "v1.2.1 | NYA MÖJLIGHETER",
     "links": [
       [
         "Öppen källkod och nedladdning",
@@ -275,7 +275,7 @@
       ],
       [
         "Stabil funktionsrelease",
-        "Källkodsrelease 1.2.0, utgiven 16 oktober 2026. Sparade mål och mätningar följer med. Bedöm förbättringar genom utskrift och mätning."
+        "Källkodsrelease 1.2.1, utgiven 16 oktober 2026. Sparade mål och mätningar följer med. Bedöm förbättringar genom utskrift och mätning."
       ]
     ],
     "compact": true
