@@ -31,3 +31,17 @@ f=inkprof.designTarget();cleanup=onCleanup(@()delete(f));
 verifyEmpty(tc,findobj(f,'Tag','dpi'));verifyEmpty(tc,findobj(f,'Tag','shuffle'));
 verifyEqual(tc,findobj(f,'Tag','saveDesign').Text,'Save definition: TI1 + JSON…');
 end
+function testRuntimeHandlesNeverReachJSON(tc)
+w=string(tempname);mkdir(w);cleanup=onCleanup(@()rmdir(w,'s'));
+f=uifigure('Visible','off');fc=onCleanup(@()delete(f));
+d=inkprof.designRGBTarget(Levels=2,GraySteps=0,MaxPoints=12,ControlCount=0,RepeatCount=0,Parent=f);
+verifyFalse(tc,isfield(d.options,'Parent'));
+% A design already held by an older running window must also remain saveable.
+d.options.Parent=f;d.options.Progress=@(~)true;
+d.targetInfo.generation.settings=d.options;
+s=inkprof.saveRGBDefinition(d,fullfile(w,'runtime.ti1'));
+r=jsondecode(fileread(s.json));
+verifyFalse(tc,isfield(r.options,'Parent'));verifyFalse(tc,isfield(r.options,'Progress'));
+verifyFalse(tc,isfield(r.targetInfo.generation.settings,'Parent'));
+verifyEqual(tc,r.rgb,d.rgb,'AbsTol',1e-14);
+end

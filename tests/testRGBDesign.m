@@ -131,3 +131,12 @@ catch err
     verifyTrue(tc,contains(err.message,'at least 43'));
 end
 end
+
+function testEditorStaysAboveAndFileDialogCanOpen(tc)
+f=inkprof.designTarget();cleanup=onCleanup(@()delete(f));
+verifyEqual(tc,string(f.WindowStyle),"alwaysontop");verifyEqual(tc,string(f.Visible),"on");
+guard=inkprof.internal.suspendForFileDialog(f);
+verifyEqual(tc,string(f.Visible),"off");
+clear guard
+verifyEqual(tc,string(f.Visible),"on");verifyEqual(tc,string(f.WindowStyle),"alwaysontop");
+end

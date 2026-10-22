@@ -1,6 +1,6 @@
-# InkProf v1.2.1 — Local-time display update
+# InkProf v1.2.2 — RGB target bug fixes
 
-> **New in v1.2.1:** local time in the close confirmation, iteration history and readable logs, with correct summer/winter offsets. Includes the bilingual certificates and CGATS delivery introduced in v1.2.0.
+> **New in v1.2.2:** automatic ICC v4 compatibility copies for target preconditioning, activity with elapsed time, and reliable TI1/JSON saving from the target designer.
 
 **Keep your i1Pro 2. Take control of your prints.**
 
@@ -27,9 +27,9 @@ Version **1.1.1** adds saved whole-row measurement checkpoints and guided resump
 
 InkProf is **free to download** under GPL version 3 or later. **MATLAB requires a licence**; base MATLAB is sufficient. Python, ArgyllCMS and a compatible spectrophotometer are installed separately. The complete workflow is tested on **macOS with the i1Pro 2**; Windows/Linux and all instrument modes are not qualified.
 
-[Download the stable v1.2.1 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.1) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
+[Download the stable v1.2.2 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.2) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
 
-The source release was published **2026-10-16**. Handbooks, presentations and the MATLAB guide are updated for this release. Real-instrument validation of the new resume flow remains necessary. See [release notes](docs/releases/v1.2.1.md) and [validation](VALIDATION.txt).
+The source release was published **2026-10-22**. Detailed target-design notes are updated for this patch. PDF handbooks, presentations and the MATLAB guide remain at v1.2.1; read the v1.2.2 release notes for these fixes. Real-instrument validation of the new resume flow remains necessary. See [release notes](docs/releases/v1.2.2.md) and [validation](VALIDATION.txt).
 
 Print accuracy depends on the printer, paper, ink and settings. Numerical checks and screen previews do not replace physical verification. Certificates document evidence and decisions; they are not accredited certification or a declaration of full ISO conformity.
 
@@ -46,7 +46,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 Clone the stable source release:
 
 ```sh
-git clone --branch v1.2.1 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.2.2 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
@@ -68,7 +68,7 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.2.1 release notes](docs/releases/v1.2.1.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.2.2 release notes](docs/releases/v1.2.2.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
@@ -76,7 +76,7 @@ The user handbook is maintained in matching Swedish and English editions. App la
 - [Swedish presentation (PDF)](docs/usage/InkProf-presentation-svenska.pdf)
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.2.1.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.2.2.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 

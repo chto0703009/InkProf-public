@@ -6,6 +6,8 @@ arguments
  source (1,1) string
  folder (1,1) string
  options.ArgyllBin (1,1) string = ""
+ options.Parent = []
+ options.RequireConfirmation (1,1) logical = true
 end
 % Consent precedes any reconstruction; the original remains unchanged.
 profile=string(source);conversion=struct('converted',false);
@@ -16,9 +18,10 @@ assert(h(9)==4,'inkprof:ICC','Only ICC v2/v4 are supported.');
 message=sprintf(['This is an ICC v4 profile. Argyll requires a v2 compatibility copy.\n\n' ...
  'InkProf will preserve the original and reconstruct a separate approximate v2 profile. Colours can change; inverse tables and perceptual mapping are rebuilt. Numerical comparison results will be saved.\n\n' ...
  'Choose Cancel to stop this operation, or Create v2 copy to continue.']);
-accepted=confirmConversion(message);
+accepted=~options.RequireConfirmation;
+if options.RequireConfirmation,accepted=confirmConversion(message);end
 if ~accepted,error('inkprof:Cancelled','ICC v4 operation cancelled; no v2 profile selected.');end
-progress=inkprof.internal.calculationProgress("Creating ICC v2 compatibility copy","Preserving ICC v4, reconstructing v2 and comparing colours. This may take several minutes."); %#ok<NASGU>
+progress=inkprof.internal.calculationProgress("Creating ICC v2 compatibility copy","Preserving ICC v4, reconstructing v2 and comparing colours. This may take several minutes.",Parent=options.Parent); %#ok<NASGU>
 paths=inkprof.paths();bin=inkprof.internal.argyllBin(options.ArgyllBin);suffix="";if ispc,suffix=".exe";end
 sourceHash=inkprof.internal.sha256(source);
 % Content-addressed common copy makes every caller use identical ICC bytes.

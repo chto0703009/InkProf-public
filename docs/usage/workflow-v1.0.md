@@ -120,3 +120,11 @@ Machine-readable UTC timestamps remain unchanged for traceability. Existing
 registered reports/logs are not rewritten, and older readable log entries may
 therefore retain their original UTC notation. Elapsed calculation times are
 durations and do not need a time-zone conversion.
+
+## Target editor window
+
+The step-1 RGB target editor opens in front and stays above the workflow while
+the step waits for Save or Cancel. Native file dialogs temporarily hide the
+editor and restore it afterward. A running step awaiting this editor is not a
+background profile calculation. The TIFF16 editor already uses this foreground
+window behaviour.

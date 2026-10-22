@@ -13,6 +13,7 @@ arguments
     options.Seed (1,1) double {mustBeInteger,mustBeNonnegative} = 42
     options.ArgyllBin (1,1) string = ""
 end
+design=inkprof.internal.serializableRGBDesign(design);
 assert(isfield(design,'documentType')&&string(design.documentType)=="inkprof.rgb-design",'inkprof:Design','Expected RGB target design.');
 inkprof.internal.requireRgb(design.rgb,1);
 n=size(design.rgb,1);

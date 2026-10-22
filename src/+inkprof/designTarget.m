@@ -8,7 +8,7 @@ arguments
 end
 %DESIGNTARGET Interactive RGB grid refinement / Argyll target generation.
 fig=uifigure('Name','InkProf – Design RGB target','Position',[80 60 1190 820], ...
-    'Tag','InkProfTargetDesigner');
+    'Tag','InkProfTargetDesigner','WindowStyle','alwaysontop','Visible','off');
 fig.UserData=struct('design',[],'saved',[],'busy',false,'cancelled',false,'closePending',false);
 fig.CloseRequestFcn=@closeWindow;
 root=uigridlayout(fig,[7 1]);root.RowHeight={32,136,36,'1x',85,68,35};root.Padding=[16 12 16 12];
@@ -57,6 +57,9 @@ save=uibutton(saving,'Text','Save definition: TI1 + JSON…','Tag','saveDesign',
 uibutton(saving,'Text','Cancel','Tag','designCancel','ButtonPushedFcn',@closeWindow);
 uilabel(root,'Text','Distances describe device RGB geometry, not measured colour error. Save the RGB definition here; use the TIFF16 window for page layout and printing.','WordWrap','on');
 updateEnabled();
+% Show the fully built editor above the workflow while its step waits for it.
+% Native file dialogs temporarily hide it through withFocus/suspendForFileDialog.
+fig.Visible='on';drawnow;figure(fig);
     function h=number(tag,value,minimum)
         h=uieditfield(settings,'numeric','Value',value,'Limits',[minimum Inf],'RoundFractionalValues','on','Tag',tag,'ValueChangedFcn',@invalidate);
     end
@@ -88,6 +91,8 @@ updateEnabled();
         % Freeze generation parameters while callbacks pump the UI.
         inputs={name,method,levels,limit,gray,controls,repeats,edgeLimit,gapRatio,placement,browse,clearPrecondition,optimized};
         for k=1:numel(inputs),set(inputs{k},'Enable','off');end
+        activity=inkprof.internal.calculationProgress("Preparing RGB target", ...
+            "Inspecting the preconditioning ICC and preparing target generation. ICC v4 is converted to a separate v2 copy when needed.",Parent=fig);
         try
             argyllOptions={};
             if string(method.Value)~="mesh"
@@ -96,7 +101,8 @@ updateEnabled();
             d=inkprof.designRGBTarget(argyllOptions{:},Name=string(name.Value),Method=string(method.Value),Levels=levels.Value, ...
                 MaxPoints=limit.Value,GraySteps=gray.Value,ControlCount=controls.Value,RepeatCount=repeats.Value, ...
                 MaxEdge=edgeLimit.Value,GapRatio=gapRatio.Value,InteriorPlacement=string(placement.Value),Refine=doRefine, ...
-                ShadowEmphasis=1+double(shadow.enabled)*(shadow.patchEmphasis-1),Progress=@progress);
+                ShadowEmphasis=1+double(shadow.enabled)*(shadow.patchEmphasis-1),Progress=@progress,Parent=fig);
+            clear activity
             fig.UserData.design=d;fig.UserData.saved=[];
             render(d);
             if ~isempty(d.warnings),status.Text=string(status.Text)+newline+"Note: "+strjoin(d.warnings," ");end
@@ -104,6 +110,7 @@ updateEnabled();
             saveHint.Text=sprintf('Not saved. Suggested file: %s.ti1. Click Save definition to save TI1 and JSON. Open the TI1 separately in the TIFF16 window.',suggest);
             save.Enable='on';
         catch err
+            clear activity
             status.Text=string(err.message);
             if ~strcmp(err.identifier,'inkprof:Cancelled'),uialert(fig,err.message,'Target generation');end
         end
@@ -112,7 +119,17 @@ updateEnabled();
         updateEnabled();
     end
     function yes=progress(s)
-        status.Text=sprintf('Generating: %d fitting points · refinement distance %.5f',s.count,s.maxEdge);
+        if isnan(s.maxEdge)
+            status.Text=sprintf('Preparing / generating target: %d fitting points. ICC v4 is converted to a separate v2 compatibility copy when needed.',s.count);
+        else
+            status.Text=sprintf('Generating: %d fitting points · refinement distance %.5f',s.count,s.maxEdge);
+        end
+        if isappdata(fig,'InkProfCalculationState')
+            state=getappdata(fig,'InkProfCalculationState');
+            state.title="Generating RGB target";state.message=string(status.Text);
+            setappdata(fig,'InkProfCalculationState',state);
+            inkprof.internal.updateCalculationProgress(fig);
+        end
         drawnow;yes=~fig.UserData.cancelled;
     end
     function render(d)

@@ -8,6 +8,7 @@ arguments
     design (1,1) struct
     ti1Path (1,1) string
 end
+design=inkprof.internal.serializableRGBDesign(design);
 assert(isfield(design,'documentType')&&string(design.documentType)=="inkprof.rgb-design",'inkprof:Design','Expected RGB target design.');
 inkprof.internal.requireRgb(design.rgb,1);
 n=size(design.rgb,1);

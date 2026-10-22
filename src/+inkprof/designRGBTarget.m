@@ -11,6 +11,7 @@ arguments
     options.Name (1,1) string = "RGB target"
     options.Method (1,1) string {mustBeMember(options.Method,["mesh","argyll","argyll-incremental","argyll-quasi","argyll-perceptual-quasi","argyll-bcc","argyll-perceptual-bcc","argyll-random","argyll-perceptual-random"])} = "mesh"
     options.PreconditionProfile (1,1) string = ""
+    options.Parent = []
     options.Optimized (1,1) logical = false
     options.Adaptation (1,1) double = NaN
     options.NeutralEmphasis (1,1) double = NaN
@@ -76,7 +77,8 @@ else
     if options.Optimized,args(end+1)="-G";end
     if spec.flag~="",args(end+1)=spec.flag;end
     if options.PreconditionProfile~=""
-        [compatible,conversion]=inkprof.internal.iccV2Compatibility(precondition.path,fullfile(w,'v2-conversion'),ArgyllBin=options.ArgyllBin);
+        [compatible,conversion]=inkprof.internal.iccV2Compatibility(precondition.path,fullfile(w,'v2-conversion'),ArgyllBin=options.ArgyllBin, ...
+            Parent=options.Parent,RequireConfirmation=false);
         copyfile(compatible,fullfile(w,'precondition.icc'));
         expected=precondition.sha256;
         if conversion.converted
@@ -165,7 +167,7 @@ end
 allRGB=[rgb;controls;rgb(refs,:)];n=size(allRGB,1);
 roles=[repmat("fit",fitCount,1);repmat("control",size(controls,1),1);repmat("repeat",numel(refs),1)];
 repeatOf=[zeros(fitCount+size(controls,1),1);refs(:)];
-settings=rmfield(options,'Progress');
+settings=rmfield(options,{'Progress','Parent'});
 design=struct('schemaVersion',1,'documentType',"inkprof.rgb-design", ...
     'name',options.Name,'createdUTC',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")), ...
     'algorithmVersion',"2.1",'matlabVersion',string(version),'options',settings, ...

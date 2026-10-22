@@ -1,3 +1,16 @@
+INKPROF v1.2.2 PATCH VALIDATION - 2026-10-22
+
+- Focused MATLAB: testICCV2Compatibility (2), testCalculationProgress (9),
+  testRGBDesign (9), testRGBDefinition (3): 23 passed, no failed/incomplete.
+- Automatic conversion route checked with a real cached v4 original: output
+  header is v2, original SHA-256 unchanged, no confirmation dialog, activity cleaned.
+- Regression saves a design containing a live UI parent and callback, verifies
+  both are excluded from JSON while RGB values are preserved.
+- No new full-suite or physical printer/instrument qualification claimed.
+- PDF documentation remains v1.2.1; patch notes and target-design Markdown updated.
+
+Previous release validation (historical):
+
 INKPROF v1.2.1 RELEASE VALIDATION - 2026-10-16
 
 - Patch scope: local time in close confirmation, history, readable logs and

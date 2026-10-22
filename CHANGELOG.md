@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.2.2 — 2026-10-22
+
+- Keep the RGB target designer above the workflow while step 1 waits for it. Show the completed editor in front; temporarily hide it for native file dialogs and restore its foreground window style afterward.
+
+- Automatically create a separate ICC v2 compatibility copy for ICC v4 target preconditioning; preserve the original and numerical conversion evidence.
+- Show scoped activity, current phase and elapsed time in the RGB designer during ICC inspection, conversion and generation.
+- Exclude runtime window references and callbacks from saved RGB design JSON, including designs already generated in a running editor.
+
 ## v1.2.1 — 2026-10-16
 
 - Show computer-local time with date-specific UTC offset in the close confirmation, iteration history, readable workflow/progress/feedback logs and legacy certificate time fallbacks. Preserve UTC in machine evidence and existing registered files. Test daylight-saving offsets and date rollover.

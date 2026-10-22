@@ -46,7 +46,7 @@ C3 integrates measured spectra with Argyll `spec2cie` (D50 / 2 degrees),
 then compares the resulting Lab with the original ICC predictions.
 The certificate and delivered profile refer to the original colour tables.
 
-Argyll target pre-conditioning still needs an explicitly accepted approximate
+Argyll target pre-conditioning automatically creates a separate approximate
 v2 compatibility copy. Its samples now come from relative A2B and are prepared
 with inverse Bradford adaptation for the media white before `colprof` rebuilds
 the profile. Numerical comparisons use LittleCMS on both profiles and include
