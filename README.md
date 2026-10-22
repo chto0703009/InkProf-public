@@ -147,3 +147,5 @@ The current app has 19 workflow rows. [Start with the complete workflow guide](d
 Post-release source update (2026-10-11): full Python setup checks now test actual package imports and compiled SciPy modules. A broken import stops analysis with repair instructions for the selected environment. New source installations use SciPy 1.16.3 after a reported M4/Python 3.13 import failure with SciPy 1.15.3. See [Python runtime troubleshooting](docs/usage/python-runtime.md#scipy-compiled-library-failure-on-apple-silicon). The original v1.0.0 release archive is unchanged.
 
 Optional CGATS delivery for i1Profiler is available through a checkbox in workflow rows 14/19. See [export instructions, supported measurements and verified import](docs/usage/i1profiler-cgats-test.md).
+
+Technical implementation: [English description](docs/TECHNICAL_DESCRIPTION_EN.md) · [English PDF](docs/usage/InkProf_Technical_Description_EN.pdf) · [Swedish PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf). Includes file/dependency appendices; updated for v1.2.2.

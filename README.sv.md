@@ -59,3 +59,5 @@ Färgnoggrannheten beror på skrivare, papper, bläck och inställningar. Numeri
 InkProf tillhandahålls utan garanti enligt GPL. Se [LICENSE](LICENSE), [licensomfattning](LICENSE_SCOPE.md) och [tredjepartsnotiser](THIRD_PARTY_NOTICES.md).
 
 Valfri CGATS-leverans till i1Profiler väljs med en kryssruta vid steg 14/19. Se [exportinstruktioner, mätkrav och verifierat importtest](docs/usage/i1profiler-cgats-test.md).
+
+Teknisk implementation: [Svensk beskrivning](docs/TECHNICAL_DESCRIPTION_SV.md) · [Svensk PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf) · [Engelsk PDF](docs/usage/InkProf_Technical_Description_EN.pdf). Med appendix om filer och beroenden, uppdaterad för v1.2.2.
