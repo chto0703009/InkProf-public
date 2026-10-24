@@ -1,11 +1,11 @@
 [
   {
-    "tag": "MATLAB WORKFLOW | v1.2.1",
+    "tag": "MATLAB WORKFLOW | v1.2.3",
     "title": "From colour target to ICC",
     "sections": [
       [
         "Requirements and startup",
-        "Source version 1.2.1, released 2026-10-16; guide updated 2026-10-16. Tested with base MATLAB R2025b (no additional MATLAB toolboxes), Python 3.13 and ArgyllCMS on macOS. Python performs colour analysis and report generation; MATLAB provides the application and workflow. Install these runtimes separately. Windows and Linux are untested; use of a POSIX measurement bridge does not establish Linux compatibility. Run the commands below from the InkProf source folder."
+        "Source version 1.2.3 with target/print-delivery updates in commit 5724d31; documentation updated 2026-10-24. Tested with base MATLAB R2025b (no additional MATLAB toolboxes), Python 3.13 and ArgyllCMS on macOS. Python performs colour analysis and report generation; MATLAB provides the application and workflow. Install these runtimes separately. Windows and Linux are untested; use of a POSIX measurement bridge does not establish Linux compatibility. Run the commands below from the InkProf source folder."
       ],
       [
         "How to use this guide",
@@ -19,7 +19,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.1",
+    "tag": "MATLAB WORKFLOW | v1.2.3",
     "title": "One project, one source of settings",
     "sections": [
       [
@@ -38,7 +38,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.1",
+    "tag": "MATLAB WORKFLOW | v1.2.3",
     "title": "The 19 steps",
     "rows": [
       [
@@ -106,7 +106,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.1",
+    "tag": "MATLAB WORKFLOW | v1.2.3",
     "title": "The 19 steps - continued",
     "rows": [
       [
@@ -169,7 +169,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.1",
+    "tag": "MATLAB WORKFLOW | v1.2.3",
     "title": "Targets, paper and measurement",
     "sections": [
       [
@@ -196,7 +196,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.1",
+    "tag": "MATLAB WORKFLOW | v1.2.3",
     "title": "Refinement and shadows",
     "sections": [
       [
@@ -216,7 +216,7 @@
     "lead": "Open step 15, \"Refinement tools\", to choose the source of additional patches."
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.1",
+    "tag": "MATLAB WORKFLOW | v1.2.3",
     "title": "Shell refinement and continuation",
     "lead": "Use Refinement tools to strengthen coverage near the gamut surface.",
     "sections": [
@@ -237,7 +237,7 @@
     "callout": "Iteration: 16 -> 17 (includes Fit, Grid and C1) -> 18\nIf checks are missing/stale: step 8.\nPrint-verified delivery: 9 -> 10 -> 11 -> 12 -> 13 -> 14\nNumerical-only delivery: 18 -> 19"
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.1",
+    "tag": "MATLAB WORKFLOW | v1.2.3",
     "title": "Interpret and deliver",
     "sections": [
       [
@@ -260,12 +260,12 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.1",
+    "tag": "MATLAB WORKFLOW | v1.2.3",
     "title": "Code, licensing and runtime checks",
     "sections": [
       [
         "",
-        "InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only release: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.2.1.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits. The v1.0.0 licence review is a historical review, not a new legal clearance for every v1.2.1 change."
+        "InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only release: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.2.2.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits. The v1.0.0 licence review is a historical review, not a new legal clearance for every v1.2.2 change."
       ],
       [
         "Version checks and reporting problems",
@@ -273,5 +273,51 @@
       ]
     ],
     "printedURL": true
+  },
+  {
+    "tag": "MEASUREMENT | TARGET IDENTITY | 2026-10-24",
+    "title": "Identify the printed target before measuring",
+    "lead": "A saved date alone is not enough. Match the target type, page count and original package path to the physical sheet.",
+    "sections": [
+      [
+        "Base target or C2 verification?",
+        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2. Measure / select verification revision. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
+      ],
+      [
+        "Target locked is intentional",
+        "A prepared measurement is bound to its TI2. The disabled Choose chart button now says Target locked. To change the target, close the measurement window and select the matching target in the workflow. Do not substitute a similar-looking chart while a session is prepared or partially measured."
+      ],
+      [
+        "What the window shows",
+        "The summary shows patch count, target type when recorded, page count, saved local time and UTC. Target details shows the full path and offers a page preview. Missing historical metadata is not guessed. Compare these facts with the printed footer. Package creation time does not prove the physical print date or drying time."
+      ]
+    ]
+  },
+  {
+    "tag": "PRINT DELIVERY | PROJECT IDENTITY | 2026-10-24",
+    "title": "Readable print folders and traceability",
+    "lead": "Copy TIFF16 for printing creates a separate delivery with the project name instead of a UUID-only folder.",
+    "sections": [
+      [
+        "Folder naming",
+        "Example: My printer paper_iter-1_c2_20261024-123456. The prefix is the saved project name, followed by the workflow cycle at copy, step and local copy timestamp. A collision creates another numbered folder rather than overwriting a previous delivery. This is the project name, not an independently entered ICC/profile description."
+      ],
+      [
+        "PROJECT_INFO.txt",
+        "The UTF-8 text file retains the exact project name and ID, original project path, workflow step, current cycle/iteration ID, target-origin cycle/iteration ID when found in history, UTC and local copy/creation times, target description when present, source TI2 and its SHA-256, project printing settings and copied filenames with SHA-256. Unknown origin metadata stays unknown."
+      ],
+      [
+        "Copies versus originals",
+        "PRINTING.txt retains printing instructions. print-delivery.json carries the structured receipt; the workflow also records the copy in project reports/history. TIFF data is copied and checked byte for byte. The physical sheet is not identified merely by a hash: match its footer and documented settings. The TIFF-only delivery does not replace the original TI2/layout for measurement."
+      ],
+      [
+        "A target can outlive an iteration",
+        "A base or C2 target may have been created in an earlier cycle. The folder names the workflow cycle at copy; PROJECT_INFO.txt separately records the target-origin cycle recovered from matching history. Package creation date and copy date are different events and neither proves when the sheet was physically printed."
+      ],
+      [
+        "Complete target-package copy",
+        "The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented."
+      ]
+    ]
   }
 ]

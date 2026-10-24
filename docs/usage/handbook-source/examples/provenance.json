@@ -17,5 +17,13 @@
   "measurement": "Before start; no spectrometer connection or physical measurement.",
   "recipe": "Example 575-patch input; compact layout for documentation export; cancelled without building a profile.",
   "iccVersionChoice": "Project details and Profiling screenshots recaptured from the actual updated dialog on 2026-10-09. Delivered ICC versions = Both; fictional settings; dialog cancelled without saving.",
-  "captureHelpers": "Capture helpers resolve the repository from their own location. Intermediate example projects/images use tempdir/InkProf-handbook-examples; capture_examples initializes this folder. Copy selected captures into this examples directory after inspection. No private reference measurements are required."
+  "captureHelpers": "Capture helpers resolve the repository from their own location. Intermediate example projects/images use tempdir/InkProf-handbook-examples; capture_examples initializes this folder. Copy selected captures into this examples directory after inspection. No private reference measurements are required.",
+  "measurementTargetIdentity": {
+    "date": "2026-10-24",
+    "sourceCommit": "5724d31",
+    "appVersion": "1.2.2",
+    "figure": "measurement-target-identity.png",
+    "context": "Synthetic prepared C2 target with 141 IDs, one page and a sample timestamp; no instrument process or physical measurement",
+    "capture": "MATLAB exportapp; crop shows target identity and measurement settings"
+  }
 }

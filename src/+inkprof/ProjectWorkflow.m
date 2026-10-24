@@ -269,7 +269,8 @@ classdef ProjectWorkflow < handle
             assert(parent~=obj.Root&&~startsWith(parent,obj.Root+filesep),'inkprof:PrintCopy','Select a folder outside the project.');
             outputs=obj.State.steps.(id).outputs;keys=string(fieldnames(outputs));keys=keys(startsWith(keys,"TIFF16_"));
             assert(~isempty(keys),'inkprof:PrintCopy','This step has no saved TIFF16 pages.');
-            token=string(java.util.UUID.randomUUID());destination=fullfile(parent,"InkProf-"+id+"-"+token);mkdir(destination);
+            project=jsondecode(fileread(fullfile(obj.Root,'inkprof-project.json')));
+            destination=inkprof.internal.printDeliveryFolder(parent,string(project.name),obj.State.cycle,string(id));
             files=struct('name',{},'sha256',{});
             for key=keys'
                 source=obj.resolve(outputs.(key));[~,name,ext]=fileparts(source);name=name+ext;
@@ -283,12 +284,12 @@ classdef ProjectWorkflow < handle
             else
                 instructions="Profiling target. Print at 100% as device RGB with ALL colour conversion OFF. No ICC profile has been applied.";
             end
-            project=jsondecode(fileread(fullfile(obj.Root,'inkprof-project.json')));
             drying="unknown";if isfield(project.printing,'dryingHours'),drying=string(project.printing.dryingHours);end
             instructions=instructions+newline+"Drying time (hours): "+drying+newline+ ...
                 "Use the project's printer, paper, ink and print settings. Allow the documented drying time. Return to the same project to measure.";
             f=fopen(fullfile(destination,'PRINTING.txt'),'w','n','UTF-8');assert(f>=0);fprintf(f,'%s',instructions);fclose(f);
-            record=struct('documentType',"inkprof.print-delivery",'step',string(id),'iteration',obj.State.cycle,'destination',destination,'files',files,'instructions',instructions);
+            target=obj.resolve(outputs.target);
+            record=inkprof.internal.writePrintDeliveryInfo(destination,project,obj.Root,obj.State,id,target,files,instructions);
             folder=obj.newFolder('reports');mkdir(folder);inkprof.internal.writeJson(fullfile(folder,'print-delivery.json'),record);
             obj.event(id,"print-copy-saved",record);obj.save();
             inkprof.updateProject(obj.Root,Step="print-copy-saved");clear lock

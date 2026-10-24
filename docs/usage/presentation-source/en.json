@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.2.1 | 2026-10-16",
+    "tag": "InkProf | v1.2.3 | 2026-10-24",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -227,7 +227,7 @@
     ]
   },
   {
-    "tag": "v1.2.1 | NEW OPTIONS",
+    "tag": "v1.2.3 | NEW OPTIONS",
     "links": [
       [
         "Open source and downloads",
@@ -279,5 +279,19 @@
       ]
     ],
     "compact": true
+  },
+  {
+    "tag": "2026-10-24 | v1.2.3",
+    "title": "Identify every printed target",
+    "sections": [
+      [
+        "Base target or C2 verification?",
+        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2. Measure / select verification revision. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
+      ],
+      [
+        "PROJECT_INFO.txt",
+        "The UTF-8 text file retains the exact project name and ID, original project path, workflow step, current cycle/iteration ID, target-origin cycle/iteration ID when found in history, UTC and local copy/creation times, target description when present, source TI2 and its SHA-256, project printing settings and copied filenames with SHA-256. Unknown origin metadata stays unknown."
+      ]
+    ]
   }
 ]

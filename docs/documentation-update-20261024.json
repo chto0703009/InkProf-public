@@ -1,0 +1,66 @@
+{
+  "DocumentDate": "2026-10-24",
+  "SourceVersion": "1.2.3",
+  "FeatureCommit": "5724d315a6773226e7a7d7b566dfa455a54ad425",
+  "Status": "PASS",
+  "NewApplicationRelease": true,
+  "Checks": [
+    "All eight PDFs rebuilt from editable sources",
+    "All pages rendered; contact sheets and updated pages visually checked",
+    "Existing handbook title/page positions preserved",
+    "Current version/date and target/print provenance text checked",
+    "Synthetic screenshot only; no physical instrument process",
+    "Per-file SHA-256 recorded"
+  ],
+  "Documents": [
+    {
+      "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
+      "Pages": 76,
+      "SHA256": "ddb7adfe3f162f683fc4afc50cb6a9632a979c82ebeef894ba1f673f95cd0695",
+      "Issues": []
+    },
+    {
+      "Path": "docs/usage/InkProf-user-handbook-English.pdf",
+      "Pages": 76,
+      "SHA256": "c293c4350b90a1047bc417dee58b14c3e74db70f3c66c71d73811d0975558c61",
+      "Issues": []
+    },
+    {
+      "Path": "docs/usage/InkProf_Teknisk_beskrivning_SV.pdf",
+      "Pages": 13,
+      "SHA256": "92875acf9fac5061dae83c96b5e0f4e993f8b6cd9bd4493960d81b93dc00d2c3",
+      "Issues": []
+    },
+    {
+      "Path": "docs/usage/InkProf_Technical_Description_EN.pdf",
+      "Pages": 13,
+      "SHA256": "f4826a34ed1e817dfa7a472f50e3f9e4aa5b8acd1104d4579c9c48cce5294582",
+      "Issues": []
+    },
+    {
+      "Path": "docs/usage/InkProf-presentation-English.pdf",
+      "Pages": 9,
+      "SHA256": "9cd90a821801dc85f6d312b1bab31a62dc2c49e102c68f4a950cb66708bf74de",
+      "Issues": []
+    },
+    {
+      "Path": "docs/usage/InkProf-presentation-svenska.pdf",
+      "Pages": 9,
+      "SHA256": "7ef685bfdcfae06b0669461d03ebc6f20d33b08fd470ae54a82f0abad61c6229",
+      "Issues": []
+    },
+    {
+      "Path": "docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf",
+      "Pages": 11,
+      "SHA256": "49e959c32fba0e6167ee9762dee79cc0b93c5ca003cdbfd80e9286ac1baeb727",
+      "Issues": []
+    },
+    {
+      "Path": "docs/usage/InkProf-framtida-mojligheter.pdf",
+      "Pages": 8,
+      "SHA256": "be313513d98bd63cccff36ac8c869fe61b34cad9c3e5fd32b3ba9e1013c58d6f",
+      "Issues": []
+    }
+  ],
+  "ReleaseTag": "v1.2.3"
+}

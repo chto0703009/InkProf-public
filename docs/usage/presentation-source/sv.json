@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.2.1 | 2026-10-16",
+    "tag": "InkProf | v1.2.3 | 2026-10-24",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -227,7 +227,7 @@
     ]
   },
   {
-    "tag": "v1.2.1 | NYA MÖJLIGHETER",
+    "tag": "v1.2.3 | NYA MÖJLIGHETER",
     "links": [
       [
         "Öppen källkod och nedladdning",
@@ -279,5 +279,19 @@
       ]
     ],
     "compact": true
+  },
+  {
+    "tag": "2026-10-24 | v1.2.3",
+    "title": "Identifiera varje utskrift",
+    "sections": [
+      [
+        "Grundtarget eller C2-verifiering?",
+        "Steg 3. Measure / select measurement revision läser grundtargeten från steg 2. En C2-utskrift hör till C2. Measure / select verification revision. Är rätt paket redan valt går du direkt till den mätningen utan att skapa en ny target. När alla rader lästs: Save and finish, sedan C3. Compare model and print och Review feedback."
+      ],
+      [
+        "PROJECT_INFO.txt",
+        "UTF-8-filen innehåller exakt projektnamn och ID, projektets ursprungliga sökväg, arbetssteg, aktuell iteration/iterations-ID, targetens ursprungsiteration/ID när historiken kan styrka den, lokala tider och UTC, registrerad targetbeskrivning, ursprunglig TI2 och SHA-256, projektets utskriftsinställningar samt kopierade filnamn med SHA-256. Okänt ursprung förblir okänt."
+      ]
+    ]
   }
 ]

@@ -362,7 +362,7 @@ end
             copyActivity=inkprof.internal.calculationProgress("Copying print files", ...
                 "Copying TIFF16 pages and checking file checksums. Please wait.",Parent=fig);
             destination=w.savePrintCopy(id,string(parent));clear copyActivity;refresh();
-            uialert(fig,"TIFF16 print copies and PRINTING.txt saved in:"+newline+destination,'Print files saved','Icon','success');
+            uialert(fig,"TIFF16 print copies, PRINTING.txt and PROJECT_INFO.txt saved in:"+newline+destination,'Print files saved','Icon','success');
         catch err,clear copyActivity;uialert(fig,err.message,'Print copy');end
     end
     function o=optionsFor(id,saveElsewhere)

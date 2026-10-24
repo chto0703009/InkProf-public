@@ -5,6 +5,10 @@
     "lead": "Färgmätning, adaptiv refinement och svåra färgövergångar",
     "sections": [
       [
+        "Dokumentstatus 2026-10-24",
+        "Detta är utvecklingsförslag, inte en instruktion för implementerade funktioner. Aktuell targetidentifiering och spårbara utskriftskopior beskrivs i handboken och den tekniska beskrivningen."
+      ],
+      [
         "Syfte",
         "Sammanställning av diskussionen om utveckling efter v1.1.0. Underlaget förenar användarens erfarenheter, befintliga funktioner i InkProf och källor om färgprofilering och gamut mapping. Det är ett beslutsunderlag; inga nya funktioner eller förbättringar är verifierade genom denna rapport."
       ],

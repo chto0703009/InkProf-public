@@ -6,7 +6,7 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.2.2 | 2026-10-22 | GPL-3.0-or-later
+Version 1.2.3 | 2026-10-24 | GPL-3.0-or-later
 
 Implementation, beräkningskedja och datakontrakt
 
@@ -28,6 +28,7 @@ Teknisk bas är källkodsversion 1.2.2. Äldre gränssnittsbilder anges uttryckl
 | 10 | Appendix A. Installation, beroenden och licens |
 | 11 | Appendix B. Filer: vad behövs och var finns det? |
 | 12 | Appendix C. Avstämning och kodreferenser |
+| 13 | Appendix D. Mättargetens identitet och spårbara utskriftskopior |
 
 ---PAGE---
 ## 1. Arkitektur och avgränsning
@@ -222,3 +223,42 @@ Fördjupning i repot: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-
 För v1.2.2 omfattar riktade MATLAB-releasekontroller 23 godkända tester för ICC-kompatibilitet, aktivitet, RGB-generering och definitionssparning. Den automatiska kompatibilitetsvägen kontrollerades också med ett befintligt cachat v4-original: v2-header skapades, originalets SHA-256 förblev oförändrad och aktiviteten avslutades. Det är inte en ny fullständig testsvit eller fysisk validering av skrivare/instrument.
 
 Begränsningar kvarstår: samplad diagnostik täcker inte alla transformindata; profiljämförelse är inte mätning; okända förhållanden kan inte återskapas från filnamn; FWA-simulering är inte uppmätt M1; verifieringsfärger som senare används för träning ändrar roll. Bevara underlaget som behövs för tolkning i stället för att enbart lita på ICC-filen.
+
+### Implementation för target och utskriftskopia
+
+Implementation: MeasurementDialog och measurementTargetInfo behåller bindningen till förberedd session och visar metadata/förhandsvisning. ProjectWorkflow.savePrintCopy använder printDeliveryFolder och writePrintDeliveryInfo. Kopierade TIFF verifieras med SHA, kvittot binder originalets TI2/manifest och arbetsflödesidentitet och historiken får print-copy-saved. Mappnamnet använder project.name och inte printing.profileName.
+
+---PAGE---
+## Appendix D. Mättargetens identitet och spårbara utskriftskopior
+
+### Grundtarget eller C2-verifiering?
+
+Steg 3. Measure / select measurement revision läser grundtargeten från steg 2. En C2-utskrift hör till C2. Measure / select verification revision. Är rätt paket redan valt går du direkt till den mätningen utan att skapa en ny target. När alla rader lästs: Save and finish, sedan C3. Compare model and print och Review feedback.
+
+### Target locked är avsiktligt
+
+En förberedd mätning är bunden till sin TI2. Den grå Choose chart-knappen heter nu Target locked. För att byta: stäng mätfönstret och välj motsvarande target i arbetsflödet. Byt inte till ett liknande kort mitt i en förberedd eller delvis inläst session.
+
+### Detta visas i fönstret
+
+Sammanfattningen visar patchantal, registrerad targettyp, sidantal, sparad lokal tid och UTC. Target details visar hela sökvägen och erbjuder sidförhandsvisning. Saknade historiska uppgifter gissas inte. Jämför med utskriftens sidfot. Paketets skapelsetid bevisar inte utskriftsdatum eller torktid.
+
+### Mappnamn
+
+Exempel: My printer paper_iter-1_c2_20261024-123456. Prefixet är sparat projektnamn följt av arbetsflödets iteration vid kopiering, steg och lokal kopieringstid. Namnkrock ger en ny numrerad mapp och skriver inte över tidigare leverans. Projektnamnet används, inte en separat ICC-/profilbeskrivning.
+
+### PROJECT_INFO.txt
+
+UTF-8-filen innehåller exakt projektnamn och ID, projektets ursprungliga sökväg, arbetssteg, aktuell iteration/iterations-ID, targetens ursprungsiteration/ID när historiken kan styrka den, lokala tider och UTC, registrerad targetbeskrivning, ursprunglig TI2 och SHA-256, projektets utskriftsinställningar samt kopierade filnamn med SHA-256. Okänt ursprung förblir okänt.
+
+### Kopior och original
+
+PRINTING.txt innehåller utskriftsinstruktioner. print-delivery.json innehåller strukturerat kvitto; kopieringen registreras även i projektets rapporter/historik. TIFF kopieras och kontrolleras byte för byte. En hash identifierar inte det fysiska arket: matcha sidfoten och dokumenterade inställningar. TIFF-leveransen ersätter inte originalets TI2/layout vid mätning.
+
+### Targetens iteration kan vara äldre
+
+En grund- eller C2-target kan ha skapats i en tidigare iteration. Mappnamnet anger iterationen vid kopiering. PROJECT_INFO.txt anger separat targetens ursprung när matchande historik finns. Skapelsedatum och kopieringsdatum är skilda händelser och bevisar inte fysisk utskriftstid.
+
+### Kopia av hela targetpaketet
+
+Den alternativa kopieringen av komplett targetpaket från förfiningsverktyg använder också projektbaserat namn och projektinformation när ursprunget finns i ett identifierat projekt. Utan projektkontext används ett generellt läsbart namn; projekt och iteration hittas inte på.

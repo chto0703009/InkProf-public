@@ -6,7 +6,7 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.2.2 | 2026-10-22 | GPL-3.0-or-later
+Version 1.2.3 | 2026-10-24 | GPL-3.0-or-later
 
 Implementation, calculation chain and data contracts
 
@@ -28,6 +28,7 @@ The technical baseline is source version 1.2.2. Older interface illustrations ar
 | 10 | Appendix A. Installation, dependencies and licence |
 | 11 | Appendix B. Files: what is needed and where |
 | 12 | Appendix C. Audit checklist and source references |
+| 13 | Appendix D. Measurement-target identity and external print provenance |
 
 ---PAGE---
 ## 1. Architecture and scope
@@ -222,3 +223,42 @@ Detailed companion documents in the repository: `docs/usage/rgb-target-designer.
 For v1.2.2 the focused MATLAB release checks comprise 23 passing tests covering ICC compatibility, activity, RGB generation and definition saving. The automatic compatibility route was also checked with an existing cached v4 original: a v2 header was produced, source SHA-256 remained unchanged and activity was cleaned up. These checks do not represent a new full-suite qualification or physical print/instrument accuracy validation.
 
 Known limits remain: sampled diagnostics do not cover every transform input; profile comparison is not measurement; unknown conditions cannot be recovered from a file name; FWA simulation is not measured M1; later use of verification colours as training changes their independence. Preserve the evidence needed to interpret a result rather than relying on the ICC file alone.
+
+### Target and delivery implementation
+
+Implementation: MeasurementDialog and measurementTargetInfo keep selection locked to the prepared session while exposing metadata and preview. ProjectWorkflow.savePrintCopy uses printDeliveryFolder and writePrintDeliveryInfo. Source TIFF hashes are checked after copying, receipt fields bind the original TI2/manifest and workflow identity, and the project history receives print-copy-saved. Folder naming uses project.name rather than printing.profileName.
+
+---PAGE---
+## Appendix D. Measurement-target identity and external print provenance
+
+### Base target or C2 verification?
+
+Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2. Measure / select verification revision. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback.
+
+### Target locked is intentional
+
+A prepared measurement is bound to its TI2. The disabled Choose chart button now says Target locked. To change the target, close the measurement window and select the matching target in the workflow. Do not substitute a similar-looking chart while a session is prepared or partially measured.
+
+### What the window shows
+
+The summary shows patch count, target type when recorded, page count, saved local time and UTC. Target details shows the full path and offers a page preview. Missing historical metadata is not guessed. Compare these facts with the printed footer. Package creation time does not prove the physical print date or drying time.
+
+### Folder naming
+
+Example: My printer paper_iter-1_c2_20261024-123456. The prefix is the saved project name, followed by the workflow cycle at copy, step and local copy timestamp. A collision creates another numbered folder rather than overwriting a previous delivery. This is the project name, not an independently entered ICC/profile description.
+
+### PROJECT_INFO.txt
+
+The UTF-8 text file retains the exact project name and ID, original project path, workflow step, current cycle/iteration ID, target-origin cycle/iteration ID when found in history, UTC and local copy/creation times, target description when present, source TI2 and its SHA-256, project printing settings and copied filenames with SHA-256. Unknown origin metadata stays unknown.
+
+### Copies versus originals
+
+PRINTING.txt retains printing instructions. print-delivery.json carries the structured receipt; the workflow also records the copy in project reports/history. TIFF data is copied and checked byte for byte. The physical sheet is not identified merely by a hash: match its footer and documented settings. The TIFF-only delivery does not replace the original TI2/layout for measurement.
+
+### A target can outlive an iteration
+
+A base or C2 target may have been created in an earlier cycle. The folder names the workflow cycle at copy; PROJECT_INFO.txt separately records the target-origin cycle recovered from matching history. Package creation date and copy date are different events and neither proves when the sheet was physically printed.
+
+### Complete target-package copy
+
+The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented.

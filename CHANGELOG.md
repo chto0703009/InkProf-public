@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.3 - 2026-10-24
+
+- Clarify prepared measurement target identity and preserve locked base/C2 binding.
+- Use readable project-based print-copy folders and text/JSON provenance with separate copy/origin iteration identities.
+- Refresh all eight maintained PDFs and editable documentation sources.
+
 ## v1.2.2 — 2026-10-22
 
 - Keep the RGB target designer above the workflow while step 1 waits for it. Show the completed editor in front; temporarily hide it for native file dialogs and restore its foreground window style afterward.

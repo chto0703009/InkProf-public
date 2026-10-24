@@ -87,7 +87,14 @@ classdef MeasurementDialog < handle
                     data=jsondecode(fileread(fullfile(obj.Folder,'chart.json')));
                     target.Value=string(data.sourcePath);target.Editable='off';
                     set(findobj(obj.Figure,'Tag','browse'),'Enable','off');
+                    set(findobj(obj.Figure,'Tag','browse'),'Text','Target locked','Tooltip', ...
+                        'This measurement uses its prepared target. Close and choose the matching print in the workflow to change it.');
+                    if ~obj.Resume
+                        obj.Status.Text='Review the selected print before measuring';
+                        obj.Hint.Text='Check the target type, saved time and page count above. Use Target details for the full path and page preview. For another print, close and select its matching target in the workflow first.';
+                    end
                 end
+                obj.updateTargetInfo();
                 set(findobj(obj.Figure,'Tag','direction'),'Value',options.ScanMode);
                 set(findobj(obj.Figure,'Tag','tolerance'),'Value',options.ScanTolerance);
                 set(findobj(obj.Figure,'Tag','port'),'Value',options.Port);
@@ -115,15 +122,19 @@ classdef MeasurementDialog < handle
     end
     methods (Access=private)
         function build(obj)
-            obj.Figure=uifigure('Name','InkProf – Measure chart','Position',[160 80 930 790], ...
+            obj.Figure=uifigure('Name','InkProf – Measure chart','Position',[160 40 930 880], ...
                 'WindowStyle','modal','Color',[.96 .97 .98],'CloseRequestFcn',@(~,~)obj.close());
-            grid=uigridlayout(obj.Figure,[11 1]);
-            grid.RowHeight={35,32,62,48,34,36,58,85,22,'1x',24};grid.Padding=[22 18 22 18];grid.RowSpacing=10;
+            grid=uigridlayout(obj.Figure,[12 1]);
+            grid.RowHeight={35,32,85,62,48,34,36,58,85,22,'1x',24};grid.Padding=[22 18 22 18];grid.RowSpacing=10;
             uilabel(grid,'Text','InkProf  |  Strip measurement','FontSize',23,'FontWeight','bold','FontColor',[.1 .22 .3]);
             files=uigridlayout(grid,[1 3]);files.ColumnWidth={70,'1x',125};files.Padding=[0 0 0 0];
             uilabel(files,'Text','Chart (TI2)');
-            uieditfield(files,'text','Tag','targetFile','Placeholder','Select the TI2 file for the printed chart');
+            uieditfield(files,'text','Tag','targetFile','Placeholder','Select the TI2 file for the printed chart', ...
+                'ValueChangedFcn',@(~,~)obj.updateTargetInfo());
             uibutton(files,'Text','Choose chart…','Tag','browse','ButtonPushedFcn',@(~,~)obj.browse());
+            identity=uigridlayout(grid,[1 2]);identity.ColumnWidth={'1x',125};identity.Padding=[0 0 0 0];
+            uitextarea(identity,'Editable','off','Tag','targetSummary','Value',{'No target selected.'});
+            uibutton(identity,'Text','Target details…','Tag','targetDetails','ButtonPushedFcn',@(~,~)obj.targetDetails());
             settings=uigridlayout(grid,[2 3]);settings.RowHeight={22,30};settings.ColumnWidth={'2x','1x','1x'};settings.Padding=[0 0 0 0];
             uilabel(settings,'Text','Scan mode');uilabel(settings,'Text','Scan tolerance');uilabel(settings,'Text','Instrument port (0 = default)');
             uidropdown(settings,'Tag','direction','Items',{'1. Single direction','2. Alternate rows','3. Forward + reverse average'}, ...
@@ -155,7 +166,7 @@ classdef MeasurementDialog < handle
             end
             obj.Buttons.pageLoaded.Visible='off';
             uilabel(grid,'Text','Instrument messages – updated automatically','FontWeight','bold');
-            obj.Log=uitextarea(grid,'Editable','off','FontName','Monospaced','FontSize',11,'Value',{'The instrument starts only when you select Start measurement.'});
+            obj.Log=uitextarea(grid,'Editable','off','Tag','measurementLog','FontName','Monospaced','FontSize',11,'Value',{'The instrument starts only when you select Start measurement.'});
             uilabel(grid,'Text','A new measurement folder is created when you start.','Tag','folderLabel','FontSize',10,'FontColor',[.4 .4 .4]);
         end
         function browse(obj)
@@ -163,6 +174,32 @@ classdef MeasurementDialog < handle
             [name,folder]=inkprof.internal.withFocus(obj.Figure,@uigetfile,{'*.ti2','Argyll chart definition (*.ti2)'},'Choose chart file',char(paths.Projects));
             if isequal(name,0),return;end
             set(findobj(obj.Figure,'Tag','targetFile'),'Value',fullfile(folder,name));
+            obj.updateTargetInfo();
+        end
+        function updateTargetInfo(obj)
+            target=findobj(obj.Figure,'Tag','targetFile');target.Tooltip=target.Value;
+            locked=string(target.Editable)=="off";
+            try,lines=inkprof.internal.measurementTargetInfo(string(target.Value),locked);
+            catch err,lines=["TI2: "+string(target.Value);"Target details could not be read: "+string(err.message)];end
+            % Put identifying facts before the long path in the compact view.
+            lines=lines(:);if numel(lines)>1,lines=[lines(2:end);lines(1)];end
+            set(findobj(obj.Figure,'Tag','targetSummary'),'Value',cellstr(lines));
+        end
+        function targetDetails(obj)
+            obj.updateTargetInfo();source=string(findobj(obj.Figure,'Tag','targetFile').Value);
+            f=uifigure('Name','InkProf - Selected measurement target','Position',[200 120 800 520], ...
+                'WindowStyle','modal','Tag','InkProfMeasurementTargetDetails');
+            g=uigridlayout(f,[3 1]);g.RowHeight={30,'1x',35};
+            uilabel(g,'Text','Match this target to the footer on your printed sheet','FontWeight','bold');
+            uitextarea(g,'Editable','off','Value',findobj(obj.Figure,'Tag','targetSummary').Value);
+            buttons=uigridlayout(g,[1 2]);buttons.Padding=[0 0 0 0];
+            uibutton(buttons,'Text','Preview printed pages…','ButtonPushedFcn',@(~,~)preview());
+            uibutton(buttons,'Text','Close','ButtonPushedFcn',@(~,~)delete(f));
+            function preview()
+                try
+                    p=inkprof.showPrintResult(fileparts(source));p.WindowStyle='modal';
+                catch err,uialert(f,err.message,'Target preview');end
+            end
         end
         function openCheckpoint(obj)
             if obj.Starting||~isempty(obj.Session)||obj.Closing,return;end

@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.2.1 | 2026-10-16",
+    "tag": "USER HANDBOOK | v1.2.3 | 2026-10-24",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Open methods and clear conditions",
-        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.2.1; app buttons and field names are English."
+        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.2.3; app buttons and field names are English."
       ]
     ],
     "callout": "InkProf brings profiling, checks and documentation together in one project. Print the colour targets using a separate printing application."
@@ -41,8 +41,8 @@
         "MATLAB requires its own licence; InkProf was tested with R2025b and no mandatory add-on toolboxes. Install Python 3.11-3.13 (tested with 3.13) and ArgyllCMS (3.5.0 was used in development). Git is needed for the clone command below. On macOS, Python, Git and ArgyllCMS can be installed using Homebrew; with Homebrew installed: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Download InkProf v1.2.1",
-        "Download the v1.2.1 source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.2.1 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
+        "2. Download InkProf v1.2.2",
+        "Download the v1.2.2 source ZIP, extract it and open the folder in Terminal. Alternatively run: git clone --branch v1.2.2 https://github.com/chto0703009/InkProf-public.git\nThen enter the folder: cd InkProf-public"
       ],
       [
         "3. Install Python packages in the InkProf folder",
@@ -104,7 +104,7 @@
       ],
       [
         "Further reading: pages 25-69",
-        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian. 70: later OBA/FWA choice. 71-72: measurement checkpoints, resume and RGB controls (v1.2.1)."
+        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian. 70: later OBA/FWA choice. 71-72: measurement checkpoints, resume and RGB controls (v1.2.2)."
       ]
     ],
     "lead": "The row number on the left and the internal step identifier are different things. This handbook uses row numbers to help you find the step in the app.",
@@ -964,7 +964,7 @@
       ],
       [
         "Basis of this handbook",
-        "Both handbooks describe program version 1.2.1 with inner-shell refinement and current workflow updates, document revision 2026-10-16. Version 1.2.1 is released on 16 October 2026; the release tag identifies this source version. Documentation and numerical tests are not new physical validation."
+        "Both handbooks describe program version 1.2.1 with inner-shell refinement and current workflow updates, document revision 2026-10-24. Version 1.2.1 is released on 16 October 2026; the release tag identifies this source version. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -1026,7 +1026,7 @@
   },
   {
     "title": "More samples in dark colours",
-    "tag": "v1.2.1 | MATERIALS AND SHADOWS",
+    "tag": "v1.2.3 | MATERIALS AND SHADOWS",
     "sections": [
       [
         "Matte paper",
@@ -1052,7 +1052,7 @@
   },
   {
     "title": "Gamut, certificates and source code",
-    "tag": "v1.2.1 | DELIVERY AND LICENSING",
+    "tag": "v1.2.3 | DELIVERY AND LICENSING",
     "sections": [
       [
         "Surfaces and measurement points are different views",
@@ -1789,7 +1789,7 @@
         "An incorrect or incompatible Python or dependency-package version can prevent analysis from working even when the package is installed. InkProf checks the Python version requirement and tests that required packages and their compiled libraries load. Setup also checks that Argyll tools start and report version information. Use the package versions in the requirements files supplied with your InkProf release. The checks test functionality and basic requirements; they do not replace the package versions specified in those files."
       ]
     ],
-    "callout": "This guidance applies to 1.2.1 with current source updates, document revision 2026-10-16. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
+    "callout": "This guidance applies to 1.2.1 with current source updates, document revision 2026-10-24. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
     "links": [
       [
         "Details and repair commands",
@@ -1822,7 +1822,7 @@
     "callout": "Shell refinement changes the measurement set. Grid trials change computed profile tables. Test separately to understand their effects."
   },
   {
-    "tag": "v1.2.1 | WORKFLOW AND CERTIFICATES",
+    "tag": "v1.2.3 | WORKFLOW AND CERTIFICATES",
     "title": "Next steps and clear delivery",
     "lead": "This page explains suggested next rows and how the delivery documents fit together.",
     "sections": [
@@ -2053,7 +2053,7 @@
   },
   {
     "title": "Save and resume a partial measurement",
-    "tag": "MEASUREMENT / NEW IN v1.2.1",
+    "tag": "MEASUREMENT / NEW IN v1.2.3",
     "lead": "For large targets, save completed physical rows and continue later.",
     "sections": [
       [
@@ -2081,11 +2081,11 @@
         "After all rows, select Save and finish and review the measurement as usual. A checkpoint does not complete the workflow step. An unexpected interruption may lose scans since the last checkpoint. Changed chart data, settings or saved readings are rejected."
       ]
     ],
-    "callout": "Included in v1.2.1: automatically tested; real-instrument resume validation remains necessary."
+    "callout": "Included in v1.2.2: automatically tested; real-instrument resume validation remains necessary."
   },
   {
     "title": "Remeasurement and RGB controls",
-    "tag": "MEASUREMENT / NEW IN v1.2.1",
+    "tag": "MEASUREMENT / NEW IN v1.2.3",
     "sections": [
       [
         "Continue after rereading",
@@ -2108,7 +2108,7 @@
         "A cancelled or failed RGB check no longer permanently disables startup. Correct the problem and start again. This does not automatically approve measurements or exceptions."
       ]
     ],
-    "callout": "Included in v1.2.1. Restart InkProf to load the updated code. Existing print files are unchanged."
+    "callout": "Included in v1.2.2. Restart InkProf to load the updated code. Existing print files are unchanged."
   },
   {
     "title": "Transfer measurements to i1Profiler",
@@ -2137,5 +2137,59 @@
       ]
     ],
     "callout": "The original measurement and InkProf profile are unchanged. Preserve JSON/TI3 as the full-precision source."
+  },
+  {
+    "tag": "MEASUREMENT | TARGET IDENTITY | 2026-10-24",
+    "title": "Identify the printed target before measuring",
+    "lead": "A saved date alone is not enough. Match the target type, page count and original package path to the physical sheet.",
+    "images": [
+      [
+        "examples/measurement-target-identity.png",
+        174,
+        82,
+        "Synthetic interface example: no real measurement or instrument session was started."
+      ]
+    ],
+    "sections": [
+      [
+        "Base target or C2 verification?",
+        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2. Measure / select verification revision. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
+      ],
+      [
+        "Target locked is intentional",
+        "A prepared measurement is bound to its TI2. The disabled Choose chart button now says Target locked. To change the target, close the measurement window and select the matching target in the workflow. Do not substitute a similar-looking chart while a session is prepared or partially measured."
+      ],
+      [
+        "What the window shows",
+        "The summary shows patch count, target type when recorded, page count, saved local time and UTC. Target details shows the full path and offers a page preview. Missing historical metadata is not guessed. Compare these facts with the printed footer. Package creation time does not prove the physical print date or drying time."
+      ]
+    ]
+  },
+  {
+    "tag": "PRINT DELIVERY | PROJECT IDENTITY | 2026-10-24",
+    "title": "Readable print folders and traceability",
+    "lead": "Copy TIFF16 for printing creates a separate delivery with the project name instead of a UUID-only folder.",
+    "sections": [
+      [
+        "Folder naming",
+        "Example: My printer paper_iter-1_c2_20261024-123456. The prefix is the saved project name, followed by the workflow cycle at copy, step and local copy timestamp. A collision creates another numbered folder rather than overwriting a previous delivery. This is the project name, not an independently entered ICC/profile description."
+      ],
+      [
+        "PROJECT_INFO.txt",
+        "The UTF-8 text file retains the exact project name and ID, original project path, workflow step, current cycle/iteration ID, target-origin cycle/iteration ID when found in history, UTC and local copy/creation times, target description when present, source TI2 and its SHA-256, project printing settings and copied filenames with SHA-256. Unknown origin metadata stays unknown."
+      ],
+      [
+        "Copies versus originals",
+        "PRINTING.txt retains printing instructions. print-delivery.json carries the structured receipt; the workflow also records the copy in project reports/history. TIFF data is copied and checked byte for byte. The physical sheet is not identified merely by a hash: match its footer and documented settings. The TIFF-only delivery does not replace the original TI2/layout for measurement."
+      ],
+      [
+        "A target can outlive an iteration",
+        "A base or C2 target may have been created in an earlier cycle. The folder names the workflow cycle at copy; PROJECT_INFO.txt separately records the target-origin cycle recovered from matching history. Package creation date and copy date are different events and neither proves when the sheet was physically printed."
+      ],
+      [
+        "Complete target-package copy",
+        "The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented."
+      ]
+    ]
   }
 ]

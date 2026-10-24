@@ -26,7 +26,7 @@ function testStartupErrorVisible(tc)
 dialog=inkprof.MeasurementDialog("",Source=fullfile(tempdir,'missing-inkprof-chart.ti2'));
 cleanup=onCleanup(@()delete(dialog));
 press(dialog,'begin');
-logs=findall(dialog.Figure,'Type','uitextarea');
+logs=findobj(dialog.Figure,'Tag','measurementLog');
 verifyTrue(tc,any(contains(string(logs.Value),'Measurement could not start:')));
 verifyEqual(tc,string(findobj(dialog.Figure,'Tag','begin').Enable),"on");
 end

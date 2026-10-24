@@ -1,3 +1,14 @@
+INKPROF v1.2.3 PATCH VALIDATION - 2026-10-24
+
+- Eight focused MATLAB tests: target identity, locked UI, prompt/startup errors,
+  readable/collision-safe print copies, origin/copy iterations and workflow hashes.
+- Eight maintained PDFs rebuilt; existing handbook pages preserved, new material
+  added on numbered pages 74-75. PDF versions, content, layout and hashes checked.
+- Public export excludes private projects, fixtures and local runtimes.
+- No new full-suite or physical printer/instrument qualification claimed.
+
+Previous release validation (historical):
+
 INKPROF v1.2.2 PATCH VALIDATION - 2026-10-22
 
 - Focused MATLAB: testICCV2Compatibility (2), testCalculationProgress (9),

@@ -1,16 +1,13 @@
-# InkProf documentation — v1.2.1
+# InkProf documentation - v1.2.3, source update 2026-10-24
 
-Source version **1.2.1**, released 2026-10-16. Documentation updated for this release on 2026-10-16. Start with the [complete app workflow](usage/workflow-v1.0.md) and [release notes](releases/v1.2.1.md).
 
-The Swedish and English user handbooks contain 72 numbered pages plus a cover. Covers identify the handbook, program, language, author, date and version. Six maintained PDFs are rebuilt for v1.2.1: both handbooks, both presentations, the English MATLAB workflow guide and the clearly labelled future-development overview. Their links point to the public repository for source and release information.
 
 Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.
 
-Last published candidate: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md).
+Historical release candidate: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md).
 
 ## PDF guides
 
-PDF layout updated 2026-10-16: handbooks have an illustrated cover with the author, language, date and version. Handbooks and presentations display version 1.2.1 and link to the public repository, https://github.com/chto0703009/InkProf-public. The current stable release is [v1.2.1](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.1).
 
 - [Swedish user handbook](usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook](usage/InkProf-user-handbook-English.pdf)
@@ -105,7 +102,6 @@ Photographic assessment resource: [Keith Cooper — Printer Test Images, Northli
 
 Presentation editions: [Swedish](usage/InkProf-presentation-svenska.pdf) and [English](usage/InkProf-presentation-English.pdf), updated 2026-10-16 for v1.2.1. Both explain the physical print-system limits, gradient considerations, optional optical-brightener correction and handbook support. Pages 1 and 8 describe continued use of older i1Pro instruments through ArgyllCMS after X-Rite support ends, and the goal of operating beyond Rosetta removal with compatible native runtimes; future macOS compatibility still requires verification.
 
-Current handbooks: 73 physical pages in each language, including the cover and 72 numbered pages, updated 2026-10-16 for v1.2.1 with shell refinement, workflow guidance and certificate appendix instructions. Covers inner-shell refinement, registration of printed targets, higher ICC-grid trials, visual diagnostics and one RGB-control reading per patch on every page. They explain installation, project steps, measurement checks, manual refinement, verification and certificate delivery.
 
 Six original example figures illustrate the actual app: main window (page 7), Project details (9), Profiling settings and ICC delivery choice (11), measurement (14), profiling recipe (17), and gamut (34). Values are fictional; the gamut uses an sRGB ICC example, not a measured printer. The gamut export includes top margin to prevent title clipping. Blue callouts have 4 mm of additional space before following text or links.
 
@@ -142,3 +138,11 @@ The English MATLAB workflow guide was rebuilt on 2026-10-16 with the shared curr
 - [Save and resume chart measurement](usage/measurement-resume.md) - whole-row checkpoints, same-print confirmation and resumed page/row instructions.
 
 The [i1Profiler CGATS transfer test](usage/i1profiler-cgats-test.md) documents successful import and profile creation, embedded-data verification, and the qualified cross-engine comparison with InkProf/Argyll.
+
+## Documentation update 2026-10-24
+
+Current source version 1.2.3, including commit 5724d31. Handbooks, technical descriptions, presentations and the MATLAB guide cover locked measurement-target identity, base versus C2 selection, project-named print-copy folders, PROJECT_INFO.txt and JSON traceability. Included in patch release v1.2.3. Historical screenshots are identified; the new measurement screenshot is synthetic. The future-development PDF remains explicitly proposals, not current behaviour.
+
+[English technical description](usage/InkProf_Technical_Description_EN.pdf) | [Svensk teknisk beskrivning](usage/InkProf_Teknisk_beskrivning_SV.pdf).
+
+Both handbooks now have 76 physical pages (cover plus 75 numbered pages). The new target/print-copy guidance occupies numbered pages 74-75; previous references retain their positions. Both technical descriptions have 13 pages, with the new Appendix D on page 13. [Build and verification record](documentation-update-20261024.json).

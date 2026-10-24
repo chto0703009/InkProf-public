@@ -43,6 +43,13 @@ verifyTrue(tc,contains(summary(1),"patches in"));verifyTrue(tc,contains(summary(
 printParent=string(tempname);mkdir(printParent);printCleanup=onCleanup(@()rmdir(printParent,'s'));
 destination=w.savePrintCopy("render",printParent);
 verifyTrue(tc,isfile(fullfile(destination,'PRINTING.txt')));
+verifyTrue(tc,isfile(fullfile(destination,'PROJECT_INFO.txt')));
+project=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+[~,deliveryName]=fileparts(destination);verifyTrue(tc,startsWith(string(deliveryName),string(project.name)+"_iter-1_render_"));
+info=fileread(fullfile(destination,'PROJECT_INFO.txt'));verifyTrue(tc,contains(info,"Project name (exact): "+string(project.name)));
+verifyTrue(tc,contains(info,'Target origin iteration: 1'));
+receipt=jsondecode(fileread(fullfile(destination,'print-delivery.json')));verifyEqual(tc,string(receipt.projectName),string(project.name));
+verifyEqual(tc,string(receipt.sourceTargetSHA256),inkprof.internal.sha256(w.output('render','target')));
 tiffs=dir(fullfile(destination,'*.tif'));verifyNotEmpty(tc,tiffs);
 verifyEqual(tc,inkprof.internal.sha256(fullfile(tiffs(1).folder,tiffs(1).name)),inkprof.internal.sha256(w.output('render','TIFF16_sida_1')));
 verifyTrue(tc,inkprof.verifyProject(w.Root).passed);verifyTrue(tc,w.valid('render'));

@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.2.1 | 2026-10-16",
+    "tag": "ANVÄNDARHANDBOK | v1.2.3 | 2026-10-24",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -41,8 +41,8 @@
         "MATLAB kräver egen licens; InkProf har testats med R2025b utan obligatoriska tilläggsverktygslådor. Installera Python 3.11-3.13 (testat med 3.13) och ArgyllCMS (3.5.0 användes i utvecklingen). Git behövs om du använder kloningskommandot nedan. På macOS kan Python, Git och ArgyllCMS installeras med Homebrew; med Homebrew installerat: brew install python@3.13 git argyll-cms."
       ],
       [
-        "2. Hämta InkProf v1.2.1",
-        "Hämta källkodens ZIP för v1.2.1, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.2.1 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
+        "2. Hämta InkProf v1.2.2",
+        "Hämta källkodens ZIP för v1.2.2, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.2.2 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
       ],
       [
         "3. Installera Python-paketen i InkProf-mappen",
@@ -162,7 +162,7 @@
       ],
       [
         "Läs vidare: sidorna 25-69",
-        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian. 70: senare OBA/FWA-val. 71-72: delmätning, återupptagning och RGB-kontroller (v1.2.1)."
+        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian. 70: senare OBA/FWA-val. 71-72: delmätning, återupptagning och RGB-kontroller (v1.2.2)."
       ]
     ]
   },
@@ -1002,7 +1002,7 @@
       ],
       [
         "Underlag för denna handbok",
-        "Båda handböckerna beskriver programversion 1.2.1 med skalförfining och aktuella arbetsflödesförbättringar, dokumentrevision 2026-10-16. Version 1.2.1 ges ut 16 oktober 2026; releasetaggen identifierar källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
+        "Båda handböckerna beskriver programversion 1.2.1 med skalförfining och aktuella arbetsflödesförbättringar, dokumentrevision 2026-10-24. Version 1.2.1 ges ut 16 oktober 2026; releasetaggen identifierar källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
       ]
     ],
     "links": [
@@ -1025,7 +1025,7 @@
     ]
   },
   {
-    "tag": "v1.2.1 | MATERIAL OCH SKUGGOR",
+    "tag": "v1.2.3 | MATERIAL OCH SKUGGOR",
     "title": "Fler mätpunkter i mörka färger",
     "sections": [
       [
@@ -1051,7 +1051,7 @@
     ]
   },
   {
-    "tag": "v1.2.1 | LEVERANS OCH LICENS",
+    "tag": "v1.2.3 | LEVERANS OCH LICENS",
     "title": "Gamut, certifikat och källkod",
     "sections": [
       [
@@ -1785,7 +1785,7 @@
         "En felaktig eller inkompatibel version av Python eller ett beroendepaket kan göra att analysen inte fungerar, även om paketet är installerat. InkProf kontrollerar Python-versionens grundkrav och provar att de nödvändiga paketen och deras kompilerade bibliotek kan laddas. Vid installation kontrolleras även att Argyll-verktygen kan startas och lämna versionsinformation. Använd paketversionerna i requirements-filerna som hör till din InkProf-utgåva. Kontrollen prövar funktion och grundkrav; den ersätter inte installationsfilernas angivna paketversioner."
       ]
     ],
-    "callout": "Anvisningen gäller 1.2.1 med aktuella källuppdateringar, dokumentrevision 2026-10-16. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
+    "callout": "Anvisningen gäller 1.2.1 med aktuella källuppdateringar, dokumentrevision 2026-10-24. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
     "links": [
       [
         "Detaljer och reparationskommandon",
@@ -1818,7 +1818,7 @@
     "callout": "Skalförtätning ändrar mätunderlaget. Gridprovet ändrar profilens beräknade tabeller. Prova dem separat för att förstå vad som påverkar resultatet."
   },
   {
-    "tag": "v1.2.1 | ARBETSGÅNG OCH CERTIFIKAT",
+    "tag": "v1.2.3 | ARBETSGÅNG OCH CERTIFIKAT",
     "title": "Nästa steg och tydlig leverans",
     "lead": "Här beskrivs rekommenderad nästa rad och hur leveransens dokument hänger ihop.",
     "sections": [
@@ -2049,7 +2049,7 @@
   },
   {
     "title": "Spara och återuppta delmätning",
-    "tag": "MÄTNING / NYTT I v1.2.1",
+    "tag": "MÄTNING / NYTT I v1.2.3",
     "lead": "För stora mål kan färdiga hela rader sparas och mätningen fortsätta senare.",
     "sections": [
       [
@@ -2077,11 +2077,11 @@
         "Efter alla rader: Save and finish och granska mätningen som vanligt. En delmätning markerar inte arbetsflödessteget som färdigt. Vid ett oväntat avbrott kan skanningar sedan senaste sparpunkten gå förlorade. Ändrat mål, inställningar eller sparad fil avvisas."
       ]
     ],
-    "callout": "Ingår i v1.2.1: automatiskt testad; prov av återupptagning med verkligt instrument återstår."
+    "callout": "Ingår i v1.2.2: automatiskt testad; prov av återupptagning med verkligt instrument återstår."
   },
   {
     "title": "Ommätning och RGB-kontroller",
-    "tag": "MÄTNING / NYTT I v1.2.1",
+    "tag": "MÄTNING / NYTT I v1.2.3",
     "sections": [
       [
         "Fortsätt efter ommätt rad",
@@ -2104,7 +2104,7 @@
         "En avbruten eller underkänd kontroll låser inte starten permanent. Rätta till problemet och starta igen. Ingen mätning eller avvikelse blir automatiskt godkänd genom detta."
       ]
     ],
-    "callout": "Ingår i v1.2.1. Starta om InkProf för att läsa uppdaterad kod. Äldre sparade utskriftsfiler ändras inte."
+    "callout": "Ingår i v1.2.2. Starta om InkProf för att läsa uppdaterad kod. Äldre sparade utskriftsfiler ändras inte."
   },
   {
     "title": "Överför mätningen till i1Profiler",
@@ -2133,5 +2133,59 @@
       ]
     ],
     "callout": "Originalmätningen och InkProf-profilen ändras inte. Bevara JSON/TI3 som fullprecisionskälla."
+  },
+  {
+    "tag": "MÄTNING | TARGETIDENTITET | 2026-10-24",
+    "title": "Identifiera utskriften före mätning",
+    "lead": "Datum räcker inte ensamt. Matcha targettyp, sidantal och paketets sökväg mot det fysiska arket.",
+    "images": [
+      [
+        "examples/measurement-target-identity.png",
+        174,
+        82,
+        "Syntetiskt gränssnittsexempel: ingen verklig mätning eller instrumentsession startades."
+      ]
+    ],
+    "sections": [
+      [
+        "Grundtarget eller C2-verifiering?",
+        "Steg 3. Measure / select measurement revision läser grundtargeten från steg 2. En C2-utskrift hör till C2. Measure / select verification revision. Är rätt paket redan valt går du direkt till den mätningen utan att skapa en ny target. När alla rader lästs: Save and finish, sedan C3. Compare model and print och Review feedback."
+      ],
+      [
+        "Target locked är avsiktligt",
+        "En förberedd mätning är bunden till sin TI2. Den grå Choose chart-knappen heter nu Target locked. För att byta: stäng mätfönstret och välj motsvarande target i arbetsflödet. Byt inte till ett liknande kort mitt i en förberedd eller delvis inläst session."
+      ],
+      [
+        "Detta visas i fönstret",
+        "Sammanfattningen visar patchantal, registrerad targettyp, sidantal, sparad lokal tid och UTC. Target details visar hela sökvägen och erbjuder sidförhandsvisning. Saknade historiska uppgifter gissas inte. Jämför med utskriftens sidfot. Paketets skapelsetid bevisar inte utskriftsdatum eller torktid."
+      ]
+    ]
+  },
+  {
+    "tag": "UTSKRIFTSKOPIA | PROJEKTIDENTITET | 2026-10-24",
+    "title": "Läsbara utskriftsmappar och spårbarhet",
+    "lead": "Copy TIFF16 for printing skapar en separat leverans vars mapp börjar med projektnamnet.",
+    "sections": [
+      [
+        "Mappnamn",
+        "Exempel: My printer paper_iter-1_c2_20261024-123456. Prefixet är sparat projektnamn följt av arbetsflödets iteration vid kopiering, steg och lokal kopieringstid. Namnkrock ger en ny numrerad mapp och skriver inte över tidigare leverans. Projektnamnet används, inte en separat ICC-/profilbeskrivning."
+      ],
+      [
+        "PROJECT_INFO.txt",
+        "UTF-8-filen innehåller exakt projektnamn och ID, projektets ursprungliga sökväg, arbetssteg, aktuell iteration/iterations-ID, targetens ursprungsiteration/ID när historiken kan styrka den, lokala tider och UTC, registrerad targetbeskrivning, ursprunglig TI2 och SHA-256, projektets utskriftsinställningar samt kopierade filnamn med SHA-256. Okänt ursprung förblir okänt."
+      ],
+      [
+        "Kopior och original",
+        "PRINTING.txt innehåller utskriftsinstruktioner. print-delivery.json innehåller strukturerat kvitto; kopieringen registreras även i projektets rapporter/historik. TIFF kopieras och kontrolleras byte för byte. En hash identifierar inte det fysiska arket: matcha sidfoten och dokumenterade inställningar. TIFF-leveransen ersätter inte originalets TI2/layout vid mätning."
+      ],
+      [
+        "Targetens iteration kan vara äldre",
+        "En grund- eller C2-target kan ha skapats i en tidigare iteration. Mappnamnet anger iterationen vid kopiering. PROJECT_INFO.txt anger separat targetens ursprung när matchande historik finns. Skapelsedatum och kopieringsdatum är skilda händelser och bevisar inte fysisk utskriftstid."
+      ],
+      [
+        "Kopia av hela targetpaketet",
+        "Den alternativa kopieringen av komplett targetpaket från förfiningsverktyg använder också projektbaserat namn och projektinformation när ursprunget finns i ett identifierat projekt. Utan projektkontext används ett generellt läsbart namn; projekt och iteration hittas inte på."
+      ]
+    ]
   }
 ]
