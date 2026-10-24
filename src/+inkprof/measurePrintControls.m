@@ -82,7 +82,12 @@ uiwait(fig);
    if isempty(session)
     session=inkprof.SpotReadSession(sessionBase,ArgyllBin=options.ArgyllBin,PythonExecutable=options.PythonExecutable,PrintControls=true);
     start(poller);
-   else,session.sendKey(' ');end
+   else
+    if startsWith(string(action.Text),"Measure page ")
+     inkprof.internal.measurementStartTone();
+    end
+    session.sendKey(' ');
+   end
    status.Text='Instrument working. Wait for the next instruction.';
   catch err,status.Text=string(err.message);restart.Enable='on';end
   busy=false;
@@ -203,7 +208,7 @@ uiwait(fig);
   end
  end
  function publish()
-  check.definitionSHA256=chart.printControls.sha256;check.spotFolder=extractAfter(base,strlength(string(folder))+1);
+  check.definitionSHA256=chart.printControls.sha256;check.spotFolder=inkprof.internal.relativePath(folder,base);
   if referenceUsed~="",check.referenceSHA256=inkprof.internal.sha256(referenceUsed);end
   reportFile=fullfile(folder,'print-control-check.json');inkprof.internal.writeJson(reportFile,check);
  end

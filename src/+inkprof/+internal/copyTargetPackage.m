@@ -30,7 +30,7 @@ options.Activity("Copying print package");drawnow;
 files=dir(fullfile(source,'**','*'));files=files(~[files.isdir]);
 for k=1:numel(files)
  original=fullfile(files(k).folder,files(k).name);
- relative=extractAfter(string(original),strlength(source)+1);
+ relative=inkprof.internal.relativePath(source,original);
  target=fullfile(destination,relative);if ~isfolder(fileparts(target)),mkdir(fileparts(target));end
  [ok,msg]=copyfile(original,target);assert(ok,'inkprof:PrintCopy','%s',msg);drawnow;
 end
@@ -38,7 +38,7 @@ options.Activity("Checking copied files");drawnow;
 copiedFiles=struct('name',{},'sha256',{});
 for k=1:numel(files)
  original=fullfile(files(k).folder,files(k).name);
- relative=extractAfter(string(original),strlength(source)+1);
+ relative=inkprof.internal.relativePath(source,original);
  hash=inkprof.internal.sha256(original);
  assert(hash==inkprof.internal.sha256(fullfile(destination,relative)), ...
   'inkprof:PrintCopy','Print copy differs: %s',relative);drawnow;

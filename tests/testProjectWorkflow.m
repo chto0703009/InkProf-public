@@ -262,6 +262,20 @@ s.steps.approve.outputs.approval=w.relative(file);s.steps.export.status="pending
 inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
 end
 
+function testC2PrintCopyIncludesExactICC(tc)
+w=finalReportFixture(tc);s=w.State;folder=fileparts(w.output('c2','reference'));
+target=fullfile(folder,'target.ti2');writelines('Synthetic C2 print binding',target);
+tiff=fullfile(folder,'target.tif');writelines('Synthetic TIFF copy fixture',tiff);
+s.steps.c2.outputs.target=w.relative(target);s.steps.c2.outputs.TIFF16_sida_1=w.relative(tiff);
+inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();
+parent=string(tempname);mkdir(parent);cleanup=onCleanup(@()rmdir(parent,'s'));
+destination=w.savePrintCopy('c2',parent);
+verifyEqual(tc,inkprof.internal.sha256(fullfile(destination,'C2-verified-profile.icc')), ...
+ inkprof.internal.sha256(w.output('profile','profile')));
+r=jsondecode(fileread(fullfile(destination,'print-delivery.json')));
+names=string({r.files.name});verifyTrue(tc,any(names=="C2-verified-profile.icc"));
+verifyEqual(tc,inkprof.internal.sha256(fullfile(destination,'target.tif')),inkprof.internal.sha256(tiff));
+end
 function testSeparateDeliveryDestinations(tc)
 w=finalReportFixture(tc);external=string(tempname);mkdir(external);cleanup=onCleanup(@()rmdir(external,'s'));
 mkdir(fullfile(external,'ICC'));mkdir(fullfile(external,'Rapporter'));
@@ -280,6 +294,7 @@ verifyTrue(tc,isfile(fullfile(r.reportFolder,'Min slutrapport.pdf')));
 for previewFile=["gradients.html","gradients-original.jpg","gradients.json"]
  verifyTrue(tc,isfile(fullfile(r.reportFolder,previewFile)));
 end
+
 preview=jsondecode(fileread(fullfile(r.reportFolder,'gradients.json')));
 verifyEqual(tc,string(preview.profileSHA256),inkprof.internal.sha256(icc));
 verifyFalse(tc,preview.physicalMeasurement);

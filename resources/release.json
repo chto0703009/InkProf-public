@@ -1,8 +1,8 @@
 {
-  "version": "1.2.4",
-  "targetVersion": "1.2.4",
+  "version": "1.2.5",
+  "targetVersion": "1.2.5",
   "status": "stable",
   "date": "2026-10-24",
   "license": "GPL-3.0-or-later",
-  "tag": "v1.2.4"
+  "tag": "v1.2.5"
 }

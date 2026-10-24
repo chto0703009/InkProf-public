@@ -26,6 +26,27 @@ w=string(tempname);cleanup=onCleanup(@()remove(w));inkprof.createProject(w);
 f=fopen(fullfile(w,'.manifest.lock'),'w');fclose(f);
 verifyError(tc,@()inkprof.updateProject(w),'inkprof:ProjectBusy');
 end
+function testCombiningUnicodeProjectPath(tc)
+w=string(tempname)+"_Hahnemu"+string(char(776))+"hle";
+cleanup=onCleanup(@()remove(w));inkprof.createProject(w);
+workflow=inkprof.ProjectWorkflow(w);
+file=fullfile(w,'sources','example.json');inkprof.internal.writeJson(file,struct('value',42));
+verifyEqual(tc,workflow.relative(file),"sources/example.json");
+r=inkprof.updateProject(w,Step="unicode-source-added");
+paths=string({r.files.path});
+verifyTrue(tc,any(paths=="sources/example.json"));
+verifyFalse(tc,any(startsWith(paths,"/")));
+verifyFalse(tc,any(contains(paths,".manifest.lock")|paths=="inkprof-project.json"));
+v=inkprof.verifyProject(w);verifyTrue(tc,v.passed);
+d=inkprof.designRGBTarget(Levels=2,GraySteps=3,MaxPoints=24,ControlCount=3,RepeatCount=2);
+s=inkprof.saveRGBDefinition(d,fullfile(w,'targets','mesh.ti1'));
+target=fullfile(w,'targets','unicode-print');
+inkprof.createTarget(target,Source=s.ti1,Paper="A4-landscape",DPI=100);
+manifest=jsondecode(fileread(fullfile(target,'manifest.json')));
+verifyFalse(tc,any(startsWith(string({manifest.files.name}),"/")));
+inkprof.verifyPackage(target);
+v=inkprof.verifyProject(w);verifyTrue(tc,v.passed);
+end
 function remove(w)
 if isfolder(w),rmdir(w,'s');end
 end

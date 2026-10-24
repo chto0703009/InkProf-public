@@ -356,7 +356,9 @@ end
         copyPrintStep(selected);
     end
     function copyPrintStep(id)
-        parent=inkprof.internal.withFocus(fig,@uigetdir,char(fileparts(w.Root)),'Choose destination for TIFF16 print copies');
+        defaultFolder=fullfile(string(java.lang.System.getProperty('user.home')),'Downloads');
+        if ~isfolder(defaultFolder),defaultFolder=fileparts(w.Root);end
+        parent=inkprof.internal.withFocus(fig,@uigetdir,char(defaultFolder),'Choose destination for TIFF16 print copies');
         if isequal(parent,0),return;end
         try
             copyActivity=inkprof.internal.calculationProgress("Copying print files", ...

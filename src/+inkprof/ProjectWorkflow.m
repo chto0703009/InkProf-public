@@ -279,6 +279,14 @@ classdef ProjectWorkflow < handle
                 files(end+1)=struct('name',name,'sha256',hash);drawnow;
             end
             if string(id)=="c2"
+                reference=jsondecode(fileread(obj.resolve(outputs.reference)));
+                profile=obj.output('profile','profile');
+                expected=string(reference.printerProfile.sha256);
+                assert(inkprof.internal.sha256(profile)==expected,'inkprof:Integrity','Current ICC differs from the profile used for this C2 target.');
+                profileName="C2-verified-profile.icc";
+                copyfile(profile,fullfile(destination,profileName));
+                assert(inkprof.internal.sha256(fullfile(destination,profileName))==expected,'inkprof:Integrity','C2 ICC copy checksum mismatch.');
+                files(end+1)=struct('name',profileName,'sha256',expected);
                 instructions="C2 verification target. The ICC profile has already been applied once. Print at 100% with ALL further colour conversion OFF."+newline+ ...
                     "Black point compensation (BPC): OFF, deliberately for this verification target. BPC adapts dark tones to the printer and paper black level; it is not used for this measurement.";
             else
@@ -427,7 +435,7 @@ classdef ProjectWorkflow < handle
         function rel=relative(obj,file)
             file=inkprof.internal.absolutePath(file);
             assert(startsWith(file,obj.Root+filesep),'inkprof:WorkflowPath','The file must be inside the selected project: %s',file);
-            rel=replace(extractAfter(file,strlength(obj.Root)+1),"\","/");
+            rel=inkprof.internal.relativePath(obj.Root,file);
         end
         function folder=newFolder(obj,parent)
             folder=fullfile(obj.Root,parent,string(java.util.UUID.randomUUID()));

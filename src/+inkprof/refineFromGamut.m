@@ -58,7 +58,7 @@ proposal.selection=struct('proposedCount',numel(proposal.candidates),'selectedPa
  'reviewed',options.ShowDialog,'selectedCount',numel(selected));
 inkprof.internal.writeJson(fullfile(stage,'proposed-candidates.json'),proposal.candidates);
 proposal.candidates=proposal.candidates(selected);proposal.status="selected-for-print";
-context=struct('profileJob',replace(extractAfter(job,strlength(project)+1),filesep,'/'),'trainingTI3SHA256',trainingHash);
+context=struct('profileJob',inkprof.internal.relativePath(project,job),'trainingTI3SHA256',trainingHash);
 mkdir(fullfile(stage,'sources'));inkprof.internal.writeJson(fullfile(stage,'sources','context.json'),context);
 copyfile(profile,fullfile(stage,'sources','profile.icc'));copyfile(training,fullfile(stage,'sources','training.ti3'));
 assert(inkprof.internal.sha256(fullfile(stage,'sources','profile.icc'))==string(proposal.sourceProfileSHA256) ...

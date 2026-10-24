@@ -1,3 +1,20 @@
+INKPROF v1.2.5 PATCH VALIDATION - 2026-10-24
+
+- Public source: 17 MATLAB tests passed across Unicode paths, project
+  manifests, target generation/verification, folder names and print-copy identity.
+- One additional C2 print-copy regression test passed: the exact target ICC
+  and TIFF are delivered with matching SHA-256 and the ICC receipt entry.
+- Three Python ICC-name tests passed, including v2 Unicode description,
+  Unicode paths, source preservation and unchanged colour-tag payloads.
+- Source/version/notices/schema/resource checks passed: 456 source files.
+- The user confirmed the direct RGB start cue was audible; a new physical
+  acquisition or full test-suite qualification was not performed.
+- Markdown guides updated. Eight PDFs retain reviewed v1.2.4 baseline;
+  existing PDF hashes in docs/documentation-update-20261024.json remain valid.
+- Private project repairs and measurement data are excluded from release.
+
+Previous release validation (historical):
+
 INKPROF v1.2.4 PATCH VALIDATION - 2026-10-24
 
 - Exact public release source: nine workflow recommendation regression tests

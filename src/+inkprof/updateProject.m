@@ -36,7 +36,11 @@ if options.WorkflowMetadataOnly
 end
 for k=1:numel(listing)
  f=fullfile(listing(k).folder,listing(k).name);
- rel=replace(extractAfter(string(f),strlength(root)+1),"\","/");
+ % Use UTF-16 indices consistently; strlength counts combining characters
+ % differently from positional extraction on some MATLAB releases.
+ f=inkprof.internal.absolutePath(f);
+ assert(startsWith(f,root+filesep),'inkprof:WorkflowPath','Inventory file is outside the project.');
+ rel=inkprof.internal.relativePath(root,f);
  if inkprof.internal.isFinderMetadata(rel),continue;end
  if any(rel==["inkprof-project.json",".manifest.lock",".workflow.lock"])||startsWith(rel,".manifest-")||startsWith(rel,".workflow-"),continue;end
  if options.WorkflowMetadataOnly&&~any(rel==["workflow.json","result-log.jsonl","result-log.txt"]),continue;end

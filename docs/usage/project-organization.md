@@ -78,3 +78,14 @@ A base or C2 target may have been created in an earlier cycle. The folder names 
 ### Complete target-package copy
 
 The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented.
+
+
+## Unicode paths in v1.2.5
+
+Version 1.2.5 supports `åäö ÅÄÖ ü Ü` in project and folder names, including decomposed characters such as `u` followed by a combining diaeresis. These letters need no replacement or warning. Normal portable filename restrictions still apply.
+
+The common relative-path helper uses canonical paths and consistent character indexing for project inventories, workflow outputs, target manifests, imports, refinement references, print-control results and complete-package copies. Path confinement and SHA-256 verification remain active. Transient lock files and the manifest itself must not enter the artifact inventory.
+
+For an affected older manifest, do not bypass checks or refresh all hashes. Audit mismatches, preserve the old manifest, verify every retained artifact hash and repair only demonstrated path/control-entry errors. Measurements, profiles and registered certificates must remain unchanged.
+
+Targeted validation: 17 MATLAB tests cover Unicode paths/JSON, project names, manifests, package copying, generated TIFF pixel/hash checks and print-copy identity. Three Python ICC-name tests cover exact Unicode naming and unchanged colour tags. This is not full-suite or physical-instrument qualification. These fixes are included in v1.2.5.

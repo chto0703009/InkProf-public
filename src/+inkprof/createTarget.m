@@ -243,7 +243,7 @@ listing=dir(fullfile(stage,'**','*'));listing=listing(~[listing.isdir]);
 files=struct('name',{},'sha256',{},'bytes',{});
 for k=1:numel(listing)
     file=fullfile(listing(k).folder,listing(k).name);
-    relative=replace(extractAfter(string(file),strlength(stage)+1),"\","/");
+    relative=inkprof.internal.relativePath(stage,file);
     files(end+1)=struct('name',relative,'sha256',inkprof.internal.sha256(file),'bytes',listing(k).bytes); %#ok<AGROW>
 end
 manifest.files=files;inkprof.internal.writeJson(fullfile(stage,'manifest.json'),manifest);

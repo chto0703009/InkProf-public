@@ -9,6 +9,7 @@ import hashlib
 import json
 import struct
 import sys
+import unicodedata
 from pathlib import Path
 
 
@@ -36,8 +37,14 @@ def rename(source, destination, name):
         encoded = name.encode('utf-16-be')
         description = b'mluc'+bytes(4)+struct.pack('>II2s2sII', 1, 12, b'en', b'US', len(encoded), 28)+encoded
     else:
-        ascii_name = name.encode('ascii') + b'\0'
-        description = b'desc'+bytes(4)+struct.pack('>I',len(ascii_name))+ascii_name+bytes(8+2+1+67)
+        # ICC v2 desc has both a legacy ASCII field and a Unicode field.
+        # Preserve the exact name in Unicode; old readers get a readable fallback.
+        fallback = unicodedata.normalize('NFKD', name).encode('ascii', errors='ignore')
+        ascii_name = (fallback or b'ICC profile') + b'\0'
+        unicode_name = (name + '\0').encode('utf-16-be')
+        description = (b'desc'+bytes(4)+struct.pack('>I',len(ascii_name))+ascii_name
+                       +struct.pack('>II',0,len(unicode_name)//2)+unicode_name
+                       +bytes(2+1+67))
     updated = dict(before);updated[b'desc'] = description
     result = bytearray(original[:128]) + struct.pack('>I',len(updated)) + bytes(12*len(updated))
     stored = {}

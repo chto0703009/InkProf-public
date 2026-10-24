@@ -97,7 +97,7 @@ proposal.selection=struct('proposedCount',numel(proposal.candidates),'selectedPa
  'reviewed',options.ShowDialog,'selectedCount',numel(selected),'filter',reviewFilter);
 inkprof.internal.writeJson(fullfile(stage,'proposed-candidates.json'),proposal.candidates);
 proposal.candidates=proposal.candidates(selected);proposal.status="selected-for-print";
-context=struct('profileJob',replace(extractAfter(job,strlength(project)+1),filesep,'/'),'trainingTI3SHA256',inkprof.internal.sha256(training));
+context=struct('profileJob',inkprof.internal.relativePath(project,job),'trainingTI3SHA256',inkprof.internal.sha256(training));
 inkprof.internal.writeJson(fullfile(stage,'sources','context.json'),context);
 copyfile(image,fullfile(stage,proposal.image.file));copyfile(profile,fullfile(stage,'sources','profile.icc'));copyfile(training,fullfile(stage,'sources','training.ti3'));
 assert(inkprof.internal.sha256(fullfile(stage,proposal.image.file))==string(proposal.image.sha256),'inkprof:Integrity','Source image changed.');

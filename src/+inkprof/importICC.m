@@ -38,7 +38,7 @@ parent=fullfile(project,'profiles','imported');if ~isfolder(parent),mkdir(parent
 folder=fullfile(parent,string(java.util.UUID.randomUUID()));profileFile=fullfile(folder,name);
 record.source.path=name; % Relative to inspection.json for portable projects.
 record.source.originalPath=source;record.conversion=conversion;record.originalFile=originalName;
-record.source.projectRelativePath=replace(extractAfter(profileFile,strlength(project)+1),"\","/");
+record.source.projectRelativePath=inkprof.internal.relativePath(project,profileFile);
 record.importedUTC=string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'"));
 delete(inspection);inkprof.internal.writeJson(fullfile(stage,'inspection.json'),record);
 [ok,msg]=movefile(stage,folder);assert(ok,'inkprof:IO','%s',msg);

@@ -532,3 +532,28 @@ The optional complete-package copy from refinement tools uses the same project-b
 C2a. Prepare verification print (TIFF16) saves or selects the print package. C2b. Measure verification print / select saved measurement reads that sheet. Choose Measure for a new print, not Resume saved session. Save and finish, then run C3. This verifies the existing ICC; it does not build a new profile.
 
 Print the same target again with the intended settings and document the actual CO/coating choice, media, quality and drying time for each sheet. Start a new C2b measurement; previous measurements remain. Compare the matching C3 reports. A saved Automatic setting alone does not establish which physical CO setting was used.
+
+
+## Updates in v1.2.5
+
+These changes are included in v1.2.5; the earlier v1.2.4 package does not include them.
+
+### RGB measurement start cue
+
+Clicking **Measure page ...** in the separate RGB print-control window plays one short tone immediately before the measurement command. It also plays for a repeated measurement. The cue matches SpectraLab's start tone: 1200 Hz for 120 ms with short fades. It does not indicate successful acquisition and is not played for connection or calibration. Audio-device failure does not prevent measurement.
+
+To test the cue without connecting the instrument, run in MATLAB:
+
+```matlab
+inkprof.internal.measurementStartTone();
+```
+
+### C2 TIFF and profile in one folder
+
+**Copy TIFF16 for printing...** starts in Downloads when available, otherwise the project's parent folder. Select a destination parent; InkProf creates a new project-named subfolder with iteration, step and timestamp. Existing copies are not overwritten.
+
+C2 copies include the TIFF pages and `C2-verified-profile.icc`: a byte-identical copy of the current ICC whose SHA-256 must match the C2 reference. The ICC filename and hash are included in `PROJECT_INFO.txt` and `print-delivery.json`. This is not a newly calculated profile or a converted version. Base profiling targets do not receive this C2 companion.
+
+The ICC is already applied to the C2 TIFF pixels. **Do not apply the companion ICC again when printing.** Print at 100% with all further colour conversion disabled.
+
+Older print-copy folders are not modified automatically. A manually added ICC can have a separate `C2-profile-info.json` recording its identity and hash; the original receipt is preserved.

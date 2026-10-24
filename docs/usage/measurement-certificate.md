@@ -274,3 +274,10 @@ In workflow row 14 or 19, tick **Include CGATS for i1Profiler when saving ICC/ce
 This exports the selected original complete native M0 profiling measurement (XRGA, 36 spectral bands), without applying OBA compensation. It does not merge later refinements or export C2 verification data. External-ICC verification projects do not offer this option. In i1Profiler use RGB Printer → Profiling → Measurement → Load and select CGATS text; do not rename the file to MXF.
 
 See the [export instructions and verified test](i1profiler-cgats-test.md) for precision, scope and recipient limitations.
+
+
+## Unicode ICC names in v1.2.5
+
+The v1.2.5 ICC naming fix preserves `åäö ÅÄÖ ü Ü`, including decomposed characters. ICC v4 stores the exact name in its UTF-16 description. ICC v2 now also retains the exact name in the Unicode field of its `desc` tag, alongside a simplified ASCII fallback for older readers. Applications using the legacy field may display the simplified name. All other tag payloads, including colour tables, are preserved; the checked original ICC is not renamed in place.
+
+A C2 print folder's `C2-verified-profile.icc` is distinct from the certificate bundle's `-verified-original.icc`. Both identify checked originals in their respective contexts. The C2 file accompanies an already transformed TIFF and must not be applied again. See [C2 copy and RGB measurement instructions](chart-measurement.md#updates-in-v125).

@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.5 - 2026-10-24
+
+- Fix composed/decomposed Unicode in relative project, target, import and print-copy paths while retaining confinement and SHA verification.
+- Preserve exact Unicode ICC v2 names with a legacy ASCII fallback and unchanged colour-tag payloads.
+- Add a short start cue to manually triggered RGB print-control measurements, including repeats.
+- Start external TIFF-copy selection in Downloads and include the exact C2 ICC with verified hash in print-copy provenance.
+
 ## v1.2.4 - 2026-10-24
 
 - Clarify C2a/C2b and display C3 feedback for review.

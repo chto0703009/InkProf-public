@@ -1,8 +1,8 @@
-# Public release scope — v1.2.4
+# Public release scope — v1.2.5
 
-This is a source-only maintenance release (tag v1.2.4, version 1.2.4, 2026-10-24) in the separate public repository. Private development history is neither merged into it nor rewritten.
+This is a source-only maintenance release (tag v1.2.5, version 1.2.5, 2026-10-24) in the separate public repository. Private development history is neither merged into it nor rewritten.
 
-Current published release: [v1.2.4 stable release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.4).
+Current published release: [v1.2.5 stable release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.5).
 
 Excluded: local projects/measurements/ICC profiles, imported i1Profiler reference packages and real MXF fixtures, vendor screenshots, private historical datasets, machine settings, virtual environments, caches and external runtime binaries. Synthetic fixtures and original explanatory documentation figures are included. Some historical research notes refer to excluded data; they are not reproducible release tests. This private development repository still contains some of the excluded material (for example the real MXF fixtures in `tests/fixtures/i1profiler/` and the Chart 575 `reference.tif`); it is not copied to the public repository.
 
@@ -11,3 +11,5 @@ Separately licensed resources: complete unmodified CxF3 schema with its licence 
 Eight current documentation PDFs have reproducible sources: Swedish/English presentations, Swedish/English user handbooks, both technical descriptions, the English MATLAB workflow guide and the explicitly labelled future-development overview. Existing private measurement certificates are not regenerated or included as release assets.
 
 Only reviewed current source patches are copied between repositories. Do not merge private Git history into the public tree. Consult LICENSE_SCOPE.md, THIRD_PARTY_NOTICES.md and licenses/review-v1.0.0.md before adding source or assets.
+
+The v1.2.5 patch updates source and Markdown. The eight PDF guides remain the reviewed v1.2.4 documentation baseline; current fixes are described in the v1.2.5 release notes and Markdown guides.

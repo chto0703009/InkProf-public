@@ -1,5 +1,4 @@
-# InkProf documentation - v1.2.4, source update 2026-10-24
-
+# InkProf documentation - v1.2.5, source update 2026-10-24
 
 
 Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.
@@ -141,8 +140,12 @@ The [i1Profiler CGATS transfer test](usage/i1profiler-cgats-test.md) documents s
 
 ## Documentation update 2026-10-24
 
-Current source version 1.2.4, including commit 5724d31. Handbooks, technical descriptions, presentations and the MATLAB guide cover locked measurement-target identity, base versus C2 selection, project-named print-copy folders, PROJECT_INFO.txt and JSON traceability. Included in patch release v1.2.4. Historical screenshots are identified; the new measurement screenshot is synthetic. The future-development PDF remains explicitly proposals, not current behaviour.
+Current source version 1.2.4, including commit 5724d31. Handbooks, technical descriptions, presentations and the MATLAB guide cover locked measurement-target identity, base versus C2 selection, project-named print-copy folders, PROJECT_INFO.txt and JSON traceability. Included in patch release v1.2.5. Historical screenshots are identified; the new measurement screenshot is synthetic. The future-development PDF remains explicitly proposals, not current behaviour.
 
 [English technical description](usage/InkProf_Technical_Description_EN.pdf) | [Svensk teknisk beskrivning](usage/InkProf_Teknisk_beskrivning_SV.pdf).
 
 Both handbooks now have 76 physical pages (cover plus 75 numbered pages). The new target/print-copy guidance occupies numbered pages 74-75; previous references retain their positions. Both technical descriptions have 13 pages, with the new Appendix D on page 13. [Build and verification record](documentation-update-20261024.json).
+
+## v1.2.5 patch additions
+
+Unicode paths and ICC names, RGB start audio and C2 TIFF/ICC copying are documented in [measurement instructions](usage/chart-measurement.md#updates-in-v125), [project organization](usage/project-organization.md#unicode-paths-in-v125) and [ICC naming](usage/measurement-certificate.md#unicode-icc-names-in-v125). The PDF guides remain the reviewed v1.2.4 edition.

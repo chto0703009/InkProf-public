@@ -1,6 +1,6 @@
-# InkProf v1.2.4 - Verification feedback and certificate fixes
+# InkProf v1.2.5 - Unicode and RGB measurement fixes
 
-> **New in v1.2.4:** clearer C2a/C2b, readable C3 feedback, certificate navigation and the exact verified ICC in every delivery.
+> **New in v1.2.5:** Unicode-safe paths and ICC names, RGB start sound, Downloads as print-copy default and the exact C2 ICC beside the TIFF.
 
 **Keep your i1Pro 2. Take control of your prints.**
 
@@ -27,9 +27,9 @@ Version **1.1.1** adds saved whole-row measurement checkpoints and guided resump
 
 InkProf is **free to download** under GPL version 3 or later. **MATLAB requires a licence**; base MATLAB is sufficient. Python, ArgyllCMS and a compatible spectrophotometer are installed separately. The complete workflow is tested on **macOS with the i1Pro 2**; Windows/Linux and all instrument modes are not qualified.
 
-[Download the stable v1.2.4 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.4) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
+[Download the stable v1.2.5 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.5) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
 
-Source and all eight maintained PDF guides are updated for this patch. See [release notes](docs/releases/v1.2.4.md) and [validation](VALIDATION.txt).
+Source and Markdown are updated for this patch. The eight PDF guides retain the reviewed v1.2.4 edition. See [release notes](docs/releases/v1.2.5.md) and [validation](VALIDATION.txt).
 
 Print accuracy depends on the printer, paper, ink and settings. Numerical checks and screen previews do not replace physical verification. Certificates document evidence and decisions; they are not accredited certification or a declaration of full ISO conformity.
 
@@ -46,7 +46,7 @@ This is a **source release**, not a standalone executable. Install MATLAB, Pytho
 Clone the stable source release:
 
 ```sh
-git clone --branch v1.2.4 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.2.5 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements-report.txt
@@ -68,7 +68,7 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.2.4 release notes](docs/releases/v1.2.4.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.2.5 release notes](docs/releases/v1.2.5.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
@@ -76,7 +76,7 @@ The user handbook is maintained in matching Swedish and English editions. App la
 - [Swedish presentation (PDF)](docs/usage/InkProf-presentation-svenska.pdf)
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.2.4.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.2.5.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 
@@ -148,4 +148,4 @@ Post-release source update (2026-10-11): full Python setup checks now test actua
 
 Optional CGATS delivery for i1Profiler is available through a checkbox in workflow rows 14/19. See [export instructions, supported measurements and verified import](docs/usage/i1profiler-cgats-test.md).
 
-Technical implementation: [English description](docs/TECHNICAL_DESCRIPTION_EN.md) · [English PDF](docs/usage/InkProf_Technical_Description_EN.pdf) · [Swedish PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf). Includes file/dependency appendices; updated for v1.2.4.
+Technical implementation: [English description](docs/TECHNICAL_DESCRIPTION_EN.md) · [English PDF](docs/usage/InkProf_Technical_Description_EN.pdf) · [Swedish PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf). Includes file/dependency appendices; updated for v1.2.5.
