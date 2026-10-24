@@ -270,6 +270,14 @@ classdef ProjectWorkflow < handle
             outputs=obj.State.steps.(id).outputs;keys=string(fieldnames(outputs));keys=keys(startsWith(keys,"TIFF16_"));
             assert(~isempty(keys),'inkprof:PrintCopy','This step has no saved TIFF16 pages.');
             project=jsondecode(fileread(fullfile(obj.Root,'inkprof-project.json')));
+            originalRoot=obj.Root;
+            originalManifestHash=inkprof.internal.sha256(fullfile(originalRoot,'inkprof-project.json'));
+            if string(id)=="c2"
+                reference=jsondecode(fileread(obj.resolve(outputs.reference)));
+                profile=obj.output('profile','profile');
+                expected=string(reference.printerProfile.sha256);
+                assert(inkprof.internal.sha256(profile)==expected,'inkprof:Integrity','Current ICC differs from the profile used for this C2 target.');
+            end
             destination=inkprof.internal.printDeliveryFolder(parent,string(project.name),obj.State.cycle,string(id));
             files=struct('name',{},'sha256',{});
             for key=keys'
@@ -279,10 +287,6 @@ classdef ProjectWorkflow < handle
                 files(end+1)=struct('name',name,'sha256',hash);drawnow;
             end
             if string(id)=="c2"
-                reference=jsondecode(fileread(obj.resolve(outputs.reference)));
-                profile=obj.output('profile','profile');
-                expected=string(reference.printerProfile.sha256);
-                assert(inkprof.internal.sha256(profile)==expected,'inkprof:Integrity','Current ICC differs from the profile used for this C2 target.');
                 profileName="C2-verified-profile.icc";
                 copyfile(profile,fullfile(destination,profileName));
                 assert(inkprof.internal.sha256(fullfile(destination,profileName))==expected,'inkprof:Integrity','C2 ICC copy checksum mismatch.');
@@ -297,6 +301,14 @@ classdef ProjectWorkflow < handle
                 "Use the project's printer, paper, ink and print settings. Allow the documented drying time. Return to the same project to measure.";
             f=fopen(fullfile(destination,'PRINTING.txt'),'w','n','UTF-8');assert(f>=0);fprintf(f,'%s',instructions);fclose(f);
             target=obj.resolve(outputs.target);
+            assert(obj.Root==originalRoot&&isfile(fullfile(originalRoot,'inkprof-project.json'))&& ...
+                inkprof.internal.sha256(fullfile(originalRoot,'inkprof-project.json'))==originalManifestHash, ...
+                'inkprof:Integrity','Original project changed during copying. The print copy is not confirmed.');
+            for key=keys'
+                source=obj.resolve(outputs.(key));[~,name,ext]=fileparts(source);
+                assert(inkprof.internal.sha256(source)==inkprof.internal.sha256(fullfile(destination,name+ext)), ...
+                    'inkprof:Integrity','Original TIFF changed during copying.');
+            end
             record=inkprof.internal.writePrintDeliveryInfo(destination,project,obj.Root,obj.State,id,target,files,instructions);
             folder=obj.newFolder('reports');mkdir(folder);inkprof.internal.writeJson(fullfile(folder,'print-delivery.json'),record);
             obj.event(id,"print-copy-saved",record);obj.save();
@@ -365,9 +377,7 @@ classdef ProjectWorkflow < handle
                 manifestLock=fullfile(obj.Root,'.manifest.lock');
                 assert(java.io.File(char(manifestLock)).createNewFile(),'inkprof:ProjectBusy','Project metadata is being updated. Retry when it finishes.');
                 renameCleanup=onCleanup(@()delete(fullfile(obj.Root,'.manifest.lock')));
-                src=java.io.File(char(oldRoot)).toPath();dst=java.io.File(char(newRoot)).toPath();
-                java.nio.file.Files.move(src,dst,javaArray('java.nio.file.CopyOption',0));
-                obj.Root=newRoot;clear renameCleanup
+                obj.Root=inkprof.internal.moveProjectFolder(oldRoot,newRoot);clear renameCleanup
                 relocation=struct('from',oldRoot,'to',newRoot,'utc',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")));
                 if isempty(relocations),relocations=relocation;else,relocations(end+1)=relocation;end
             end
@@ -409,8 +419,7 @@ classdef ProjectWorkflow < handle
                     manifestLock=fullfile(obj.Root,'.manifest.lock');
                     assert(java.io.File(char(manifestLock)).createNewFile(),'inkprof:ProjectBusy','Project metadata is being updated. Retry when it finishes.');
                     renameCleanup=onCleanup(@()delete(fullfile(obj.Root,'.manifest.lock')));
-                    java.nio.file.Files.move(java.io.File(char(obj.Root)).toPath(),java.io.File(char(newRoot)).toPath(),javaArray('java.nio.file.CopyOption',0));
-                    obj.Root=newRoot;clear renameCleanup
+                    obj.Root=inkprof.internal.moveProjectFolder(obj.Root,newRoot);clear renameCleanup
                     relocations=before.relocations;
                     relocation=struct('from',previousRoot,'to',newRoot,'utc',decision.utc);
                     if isempty(relocations),relocations=relocation;else,relocations(end+1)=relocation;end

@@ -46,3 +46,21 @@ project=jsondecode(fileread(fullfile(root,'inkprof-project.json')));
 verifyEqual(tc,inkprof.internal.sha256(fullfile(destination,'target.ti2')),before);
 verifyEqual(tc,inkprof.internal.sha256(target),before);
 end
+function testCopyFailurePreservesOriginalProject(tc)
+parent=string(tempname);mkdir(parent);clean=onCleanup(@()rmdir(parent,'s'));
+root=fullfile(parent,'Original ü');inkprof.createProject(root);
+source=fullfile(root,'targets','package');mkdir(source);
+target=fullfile(source,'target.ti2');writelines('Original immutable content',target);
+measurement=fullfile(root,'measurements','raw.ti3');writelines('Original measurement bytes',measurement);
+inkprof.updateProject(root,Step="test-data");
+before=inkprof.internal.sha256(measurement);manifestHash=inkprof.internal.sha256(fullfile(root,'inkprof-project.json'));
+verifyError(tc,@()inkprof.internal.copyTargetPackage(source,parent,Activity=@failCopy),'inkprof:TestCopyFailure');
+verifyEqual(tc,inkprof.internal.sha256(measurement),before);
+verifyEqual(tc,inkprof.internal.sha256(fullfile(root,'inkprof-project.json')),manifestHash);
+verifyTrue(tc,isfile(target));verifyTrue(tc,inkprof.verifyProject(root).passed);
+verifyError(tc,@()inkprof.internal.copyTargetPackage(root,parent),'inkprof:PrintCopy');
+verifyError(tc,@()inkprof.internal.copyTargetPackage(source,root),'inkprof:PrintCopy');
+end
+function failCopy(~)
+error('inkprof:TestCopyFailure','Simulated failure: preserve original.');
+end

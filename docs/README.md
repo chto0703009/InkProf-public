@@ -1,4 +1,4 @@
-# InkProf documentation - v1.2.5, source update 2026-10-24
+# InkProf documentation - v1.2.6, source update 2026-10-24
 
 
 Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.
@@ -149,3 +149,7 @@ Both handbooks now have 76 physical pages (cover plus 75 numbered pages). The ne
 ## v1.2.5 patch additions
 
 Unicode paths and ICC names, RGB start audio and C2 TIFF/ICC copying are documented in [measurement instructions](usage/chart-measurement.md#updates-in-v125), [project organization](usage/project-organization.md#unicode-paths-in-v125) and [ICC naming](usage/measurement-certificate.md#unicode-icc-names-in-v125). The PDF guides remain the reviewed v1.2.4 edition.
+
+## v1.2.6 preservation safeguards
+
+See [original project preservation](usage/project-organization.md#original-project-preservation-safeguards) and [release notes](releases/v1.2.6.md). Print-copy folders are separate from the editable project. Original measurements must not be overwritten, deleted or sent to Trash. PDFs retain the v1.2.4 baseline.

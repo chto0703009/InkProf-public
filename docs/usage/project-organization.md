@@ -89,3 +89,14 @@ The common relative-path helper uses canonical paths and consistent character in
 For an affected older manifest, do not bypass checks or refresh all hashes. Audit mismatches, preserve the old manifest, verify every retained artifact hash and repair only demonstrated path/control-entry errors. Measurements, profiles and registered certificates must remain unchanged.
 
 Targeted validation: 17 MATLAB tests cover Unicode paths/JSON, project names, manifests, package copying, generated TIFF pixel/hash checks and print-copy identity. Three Python ICC-name tests cover exact Unicode naming and unchanged colour tags. This is not full-suite or physical-instrument qualification. These fixes are included in v1.2.5.
+
+
+## Original project preservation safeguards
+
+The original project and measurement data must remain intact. Print copying uses new destination folders, never a project rename or move. A print-copy destination is reserved exclusively; an existing folder is never reused. Complete target-package copying rejects the entire project as its source and destinations inside that project. The workflow verifies that the original manifest and TIFF files are still present and unchanged before registering a successful copy.
+
+Print folders carry `PRINT_COPY_ONLY.txt`, even during copying. The app explains that a selected print-copy folder is not the project and displays the recorded original path. The success message lists both copy and original locations. A print copy does not replace or back up the full editable project.
+
+An explicitly requested project rename stays within the same parent, rejects occupied and Trash paths, verifies identity metadata, and attempts rollback by rename if verification fails. It never deletes either project location. Measurement originals are not changed; corrections and remeasurements use separate revisions.
+
+These additional safeguards are included in v1.2.6. Tests include simulated copy failure, destination collisions, source hash preservation and explicit rename checks. They do not establish what operation moved a historical project to Trash. Operating-system or Finder actions outside InkProf cannot be prevented by these application guards.

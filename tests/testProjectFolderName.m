@@ -55,6 +55,21 @@ w=tc.TestData.w;destination=fullfile(tc.TestData.parent,'Another computer');mkdi
 movefile(w.Root,fullfile(destination,'Original'));
 s=inkprof.internal.projectFolderStatus(fullfile(destination,'Original'));verifyFalse(tc,s.changed);
 end
+function testSafeRenamePreservesMeasurementAndRejectsMove(tc)
+w=tc.TestData.w;file=fullfile(w.Root,'measurements','raw.ti3');writelines('Immutable measurement',file);
+inkprof.updateProject(w.Root,Step="test-raw-measurement");before=inkprof.internal.sha256(file);
+parent=fullfile(tc.TestData.parent,'Other parent');mkdir(parent);
+verifyError(tc,@()inkprof.internal.moveProjectFolder(w.Root,fullfile(parent,'Moved')),'inkprof:ProjectMove');
+verifyEqual(tc,inkprof.internal.sha256(file),before);
+destination=fullfile(tc.TestData.parent,'Renamed ü');
+new=inkprof.internal.moveProjectFolder(w.Root,destination);
+verifyEqual(tc,inkprof.internal.sha256(fullfile(new,'measurements','raw.ti3')),before);
+verifyTrue(tc,inkprof.verifyProject(new).passed);
+occupied=fullfile(tc.TestData.parent,'Occupied');mkdir(occupied);writelines('Keep',fullfile(occupied,'keep.txt'));
+verifyError(tc,@()inkprof.internal.moveProjectFolder(new,occupied),'inkprof:Exists');
+verifyEqual(tc,inkprof.internal.sha256(fullfile(new,'measurements','raw.ti3')),before);
+verifyTrue(tc,isfile(fullfile(occupied,'keep.txt')));
+end
 function testLegacyFallback(tc)
 w=tc.TestData.w;r=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));r=rmfield(r,'folderName');
 inkprof.internal.writeJson(fullfile(w.Root,'inkprof-project.json'),r);

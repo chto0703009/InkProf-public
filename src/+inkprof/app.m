@@ -78,6 +78,14 @@ end
         busy=false;refresh();status.Text=message;
     end
     function loadProject(folder)
+        if ~isfile(fullfile(folder,'inkprof-project.json'))&&isfile(fullfile(folder,'print-delivery.json'))
+            receipt=jsondecode(fileread(fullfile(folder,'print-delivery.json')));
+            original="See PROJECT_INFO.txt for the original project path.";
+            if isfield(receipt,'projectRoot'),original="Original project folder:"+newline+string(receipt.projectRoot);end
+            uialert(fig,"This is a print copy containing TIFF/ICC files, not the editable project."+newline+newline+ ...
+                original+newline+newline+"Use Open project to select the original folder containing inkprof-project.json. Keep both folders.", ...
+                'Print copy selected','Icon','info');return;
+        end
         check=inkprof.verifyProject(folder);
         if ~check.passed
             % Only the workflow records differ: typical after MATLAB was closed or
@@ -364,7 +372,10 @@ end
             copyActivity=inkprof.internal.calculationProgress("Copying print files", ...
                 "Copying TIFF16 pages and checking file checksums. Please wait.",Parent=fig);
             destination=w.savePrintCopy(id,string(parent));clear copyActivity;refresh();
-            uialert(fig,"TIFF16 print copies, PRINTING.txt and PROJECT_INFO.txt saved in:"+newline+destination,'Print files saved','Icon','success');
+            uialert(fig,"Print copies saved in:"+newline+destination+newline+newline+ ...
+                "Keep the original project folder:"+newline+w.Root+newline+newline+ ...
+                "The copy contains printing files only. Return to the original project for measurement.", ...
+                'Print files saved','Icon','success');
         catch err,clear copyActivity;uialert(fig,err.message,'Print copy');end
     end
     function o=optionsFor(id,saveElsewhere)

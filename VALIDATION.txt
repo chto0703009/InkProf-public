@@ -1,3 +1,20 @@
+INKPROF v1.2.6 PATCH VALIDATION - 2026-10-24
+
+- Public release source: 17 focused MATLAB tests passed (13 copy/name/Unicode
+  tests, one C2 ICC-copy test and three metadata/rename/lock tests).
+- Injected copy failure preserves source project/measurement hashes.
+- Existing copy destinations and occupied rename destinations remain intact.
+- Whole-project print copying and in-project destinations are rejected.
+- Explicit same-parent rename preserves measurements; cross-parent moves are
+  rejected; project identity files are verified after rename.
+- Source/version/notices/schema/resource checks passed: 457 source files.
+- Documentation updated in Markdown. Eight PDF guides retain v1.2.4 baseline.
+- No historical cause of a Trash move is claimed. No new full-suite or
+  physical printing/instrument qualification is claimed.
+- No private incident audit, project or measurement data in release assets.
+
+Previous release validation (historical):
+
 INKPROF v1.2.5 PATCH VALIDATION - 2026-10-24
 
 - Public source: 17 MATLAB tests passed across Unicode paths, project

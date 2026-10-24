@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.6 - 2026-10-24
+
+- Preserve original projects during copying with atomic new destinations, source checks and no whole-project print copying.
+- Distinguish print-copy folders from editable projects in files and UI.
+- Guard explicit folder renames against replacement, cross-parent and Trash paths; verify identity and retain originals on failures.
+- Document immutable measurement originals and targeted preservation tests.
+
 ## v1.2.5 - 2026-10-24
 
 - Fix composed/decomposed Unicode in relative project, target, import and print-copy paths while retaining confinement and SHA verification.

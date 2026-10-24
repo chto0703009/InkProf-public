@@ -13,6 +13,8 @@ assert(isfolder(source)&&isfolder(parent),'inkprof:PrintCopy','Source and destin
 assert(parent~=source&&~startsWith(parent,source+filesep),'inkprof:PrintCopy','Choose a destination outside the source print package.');
 root=inkprof.internal.findProject(source);project=[];state=struct('cycle',"unknown",'iterationId',"unknown");id="print";
 if root~=""
+ assert(source~=root,'inkprof:PrintCopy','Select a print package, not the original project folder.');
+ assert(parent~=root&&~startsWith(parent,root+filesep),'inkprof:PrintCopy','Choose a destination outside the original project.');
  project=jsondecode(fileread(fullfile(root,'inkprof-project.json')));
  if isfile(fullfile(root,'workflow.json'))
   state=jsondecode(fileread(fullfile(root,'workflow.json')));
@@ -49,4 +51,6 @@ if ~isempty(project)&&isfile(fullfile(source,'target.ti2'))
  if isfile(fullfile(source,'PRINTING.txt')),instructions=string(fileread(fullfile(source,'PRINTING.txt')));end
  inkprof.internal.writePrintDeliveryInfo(destination,project,root,state,id,fullfile(source,'target.ti2'),copiedFiles,instructions);
 end
+assert(isfolder(source),'inkprof:Integrity','The original print package is no longer available.');
+if root~="",assert(isfile(fullfile(root,'inkprof-project.json')),'inkprof:Integrity','The original project is no longer available.');end
 end
