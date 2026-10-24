@@ -53,6 +53,12 @@ secondaryIndex=0;
 if string(variant.secondaryFile)~=""
  secondaryIndex=numel(destinations)+1;destinations(secondaryIndex)=fullfile(iccParent,iccName+"-v4.4"+iccExt);
 end
+% Always include the exact ICC checked by C3, without renaming its metadata
+% or replacing it with a converted delivery variant.
+checkedSource=fullfile(folder,'profile.icc');
+checkedHash=inkprof.internal.sha256(checkedSource);
+checkedIndex=numel(destinations)+1;
+destinations(checkedIndex)=fullfile(iccParent,iccName+"-verified-original"+iccExt);
 for file=destinations
  assert(~isfolder(file),'inkprof:Delivery','The destination is a folder.');
  assert(~isfile(file)||options.Overwrite,'inkprof:Exists','File already exists: %s',file);
@@ -86,6 +92,11 @@ try
   [stages(1),reportBundle],RequiredModules="PIL",WorkingDirectory=config.Root);
  for k=2:numel(destinations)
   if k==secondaryIndex,continue;end
+  if k==checkedIndex
+   copyfile(checkedSource,stages(k));
+   assert(inkprof.internal.sha256(stages(k))==checkedHash,'inkprof:Integrity','Verified original ICC copy changed.');
+   continue
+  end
   if any(k==cgatsIndices)
    index=find(cgatsIndices==k,1);cgatsSource=fullfile(assets,cgatsNames(index));
    copyfile(cgatsSource,stages(k));
@@ -134,6 +145,7 @@ try
  previewFiles=fullfile(reportBundle,["gradients.html","gradients-original.jpg","gradients-soft-proof.jpg","gradients.json"]);
  previewFiles=previewFiles(isfile(previewFiles));
  receipt=struct('documentType',"inkprof.delivery",'iccFile',iccDestination,'iccSHA256',string(naming.sha256),'sourceICCSHA256',hash,'internalName',iccName,'colourTagPayloadsUnchanged',true, ...
+  'verifiedOriginalICCFile',destinations(checkedIndex),'verifiedOriginalICCSHA256',checkedHash, ...
   'reportFolder',reportBundle,'reportFile',reportDestination,'reportSHA256',inkprof.internal.sha256(reportDestination),'reportAssets',assets, ...
   'files',[destinations,previewFiles], ...
   'savedUTC',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")));

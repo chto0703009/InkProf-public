@@ -6,7 +6,12 @@ function next=recommendWorkflowStep(state,assessment,mode)
 if nargin<3,mode="profiling";end
 defs=inkprof.internal.workflowSteps(mode);
 next=struct('id',"",'label',"",'reason',"All required work is complete. Choose verification or refinement if needed.",'ready',false);
-if valid('export')||valid('numericalExport'),return;end
+if valid('export'),return;end
+% An older numerical-only delivery must not hide a newly approved print.
+if valid('approve')&&ready('export')
+ choose('export',"Your print assessment is saved. Save the ICC and measurement certificate, then choose where to save delivery copies.");return;
+end
+if valid('numericalExport'),return;end
 % Failed numerical builds need review, not an identical automatic retry.
 if isfield(state,'steps')&&isfield(state.steps,'continue')&& ...
  string(state.steps.continue.status)=="failed"&&contains(lower(string(state.steps.continue.message)),"numerical")

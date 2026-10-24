@@ -146,11 +146,7 @@ end
     function select(~,e)
         if isempty(e.Indices)||busy,return;end
         selected=string(defs(e.Indices(1),1).id);refresh();
-        % Approval is an interactive review: open it on selection rather than
-        % leaving the user with an instruction and no assessment field.
-        if selected=="approve"&&~isempty(w)&&strcmp(runButton.Enable,'on')
-            run([],[]);
-        end
+        % Selecting a row only navigates. Run explicitly from the action button.
     end
     function refresh()
         if isempty(w)||busy,return;end
@@ -173,6 +169,7 @@ end
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
             runButton.Text='Run selected step';
             if selected=="approve",runButton.Text='Open review and approval';end
+            if selected=="export",runButton.Text='Save ICC and certificate...';end
             guide=instruction(selected);
             if w.mode()=="verification"
                 guide="Verify the imported ICC using the documented printer, paper, ink and settings. The original profile is preserved.";
@@ -312,6 +309,9 @@ end
             end
         end
         refresh();status.Text=message;
+        if finished&&active=="feedback"
+            showFeedback();
+        end
         if finished&&any(active==["render","c2","refine"])
             outputs=w.State.steps.(active).outputs;keys=string(fieldnames(outputs));keys=keys(startsWith(keys,"TIFF16_"));
             paths=strings(0,1);for key=keys',paths(end+1)=w.resolve(outputs.(key));end
@@ -645,6 +645,9 @@ end
     function openResult(~,~)
         if isempty(w)||busy,return;end
         w.reload();s=w.State.steps.(selected);
+        if selected=="feedback"&&isfield(s.outputs,'feedback')
+            showFeedback();return;
+        end
         if selected=="continue"&&string(s.status)=="failed"
             reports=inkprof.internal.failedIterationReports(w.Root);
             if ~isempty(reports)
@@ -677,6 +680,22 @@ end
         else
             open(w.output(selected,names{ix}));
         end
+    end
+    function showFeedback()
+        file=w.output('feedback','feedback');
+        report=fullfile(fileparts(file),'iteration-feedback.md');
+        if isfile(report)
+            content=string(fileread(report));
+        else
+            content=string(jsonencode(jsondecode(fileread(file)),PrettyPrint=true));
+        end
+        f=uifigure('Name','InkProf | Review C3 feedback','Position',[140 100 960 720]);
+        grid=uigridlayout(f,[3 1]);grid.RowHeight={44,'1x',36};
+        uilabel(grid,'Text','C3 feedback: diagnostic results and priorities. Review these before recording your assessment.', ...
+            'WordWrap','on');
+        uitextarea(grid,'Editable','off','Value',cellstr(splitlines(content)));
+        uibutton(grid,'Text','Close','ButtonPushedFcn',@(~,~)delete(f));
+        figure(f);
     end
     function closeApp(~,~)
         if busy
@@ -716,6 +735,7 @@ switch id
  case "numericalExport",s="Optional after step 8: save the current ICC and a measurement certificate without a new verification print. Your decision and the absence of separate print verification are recorded. This does not mark steps 9–14 complete.";
  case "export",s="This step requires print verification and approval for the current iteration. To finish without a separate verification print, use step 19. The ICC profile already exists in the project. This step saves the approved profile and creates its measurement certificate in the project. Optionally save additional copies elsewhere. The exported certificate and all supporting files are saved together in one report folder.";
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
+ case "feedback",s="Run this step to analyse the current C3 results and open the feedback window. To read saved feedback again, use Open selected step results. Review the findings before recording your assessment in the next step.";
  case "compare",s="Compare this ICC with the previous iteration on common RGB and Lab samples. Profile differences do not prove improved print accuracy; fresh independent print verification is still required.";
  case "approve",s="Record the intended use, quality requirements and accepted limitations. This is the user's decision after physical C2/C3 verification, not ISO certification.";
  case "refine",s="Add patches from an image, a saved gamut-area selection, or current verification errors. Use Manual gamut points / inner shell here to create a proposal, then From saved gamut selection to make the step-15 print package. Try higher ICC grid builds a separate candidate from the same measurements. Image and gamut refinement use the current checked ICC; error-driven refinement requires C3 feedback. Print the TIFF16 package saved by this step. Record why you are adding patches.";

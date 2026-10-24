@@ -38,6 +38,10 @@ end
 function testVerificationModeLabels(tc)
 [s,a]=fixture();a.profile.ready=true;n=inkprof.internal.recommendWorkflowStep(s,a,"verification");verifyEqual(tc,n.id,"profile");verifyTrue(tc,startsWith(n.label,'1. Import'));
 end
+function testApprovedPrintOffersCertificateDespiteNumericalDelivery(tc)
+[s,a]=fixture();a.numericalExport.valid=true;a.approve.valid=true;a.export.ready=true;
+n=inkprof.internal.recommendWorkflowStep(s,a);verifyEqual(tc,n.id,"export");verifyTrue(tc,n.ready);
+end
 
 function testNumericalFailureSuggestsReview(tc)
 [s,a]=fixture();s.steps=struct('continue',struct('status',"failed",'message',"Numerical checks require review"));a.continue.ready=true;
