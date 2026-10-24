@@ -710,8 +710,9 @@ function s=instruction(id)
 s="This step runs in the selected project. Results and dependencies are saved in workflow.json.";
 switch id
  case "render",s="Save TIFF16 in the project. Print the files separately, then return to the app for measurement.";
- case "c2",s="Save C2 as TIFF16. The ICC profile has already been applied once. Print separately without further colour conversion, then measure in the app.";
- case {"measurement","c2measurement","refinemeasurement"},s="When your separately printed sheet is ready, start instrument measurement here. The app uses the saved target TI2 and saves measurement results in the project.";
+ case "c2",s="C2a prepares the verification TIFF16 for printing. The ICC profile has already been applied once. Print separately without further colour conversion, then use C2b to measure the printed sheet.";
+ case "c2measurement",s="C2b measures the verification sheet prepared in C2a. Choose Measure to start a new measurement of a new print, or Saved revisions to select an existing measurement. After saving the measurement, continue to C3 to compare the print with the profile.";
+ case {"measurement","refinemeasurement"},s="When your separately printed sheet is ready, start instrument measurement here. The app uses the saved target TI2 and saves measurement results in the project.";
  case "numericalExport",s="Optional after step 8: save the current ICC and a measurement certificate without a new verification print. Your decision and the absence of separate print verification are recorded. This does not mark steps 9–14 complete.";
  case "export",s="This step requires print verification and approval for the current iteration. To finish without a separate verification print, use step 19. The ICC profile already exists in the project. This step saves the approved profile and creates its measurement certificate in the project. Optionally save additional copies elsewhere. The exported certificate and all supporting files are saved together in one report folder.";
  case "review",s="Review measurements, unusual rows and repeats. Record your assessment and any accepted remeasurements.";
