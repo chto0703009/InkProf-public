@@ -33,7 +33,7 @@ A practical stopping decision is that comparable measures and visual checks show
 After building the selected current profile in row 17:
 
 1. Run row 8, **Fit, Grid and C1**.
-2. Run row 9, **C2. Save verification target as TIFF16**, for this exact profile and iteration.
+2. Run row 9, **C2a. Prepare verification print (TIFF16)**, for this exact profile and iteration.
 3. Print according to the accompanying instructions, without further colour conversion.
 4. Run row 10 to measure the control print and retain its revision.
 5. Run row 11, **C3**, and row 12 to review the results and feedback.

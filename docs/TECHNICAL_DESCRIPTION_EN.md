@@ -6,13 +6,13 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.2.3 | 2026-10-24 | GPL-3.0-or-later
+Version 1.2.4 | 2026-10-24 | GPL-3.0-or-later
 
 Implementation, calculation chain and data contracts
 
 This description covers the released RGB printer profiling application. It follows the data from target definition through measurement, ICC construction, numerical diagnostics, physical verification and delivery. The handbook describes the operator's click sequence; this document explains what those steps mean and which files they depend on.
 
-The technical baseline is source version 1.2.2. Older interface illustrations are explicitly identified as documentation examples. They show fictional projects, not measurements proving printer quality. File paths in the appendices are relative to the installation or project root; generated UUIDs and directory names vary.
+The technical baseline is source version 1.2.4. Older interface illustrations are explicitly identified as documentation examples. They show fictional projects, not measurements proving printer quality. File paths in the appendices are relative to the installation or project root; generated UUIDs and directory names vary.
 
 
 | Reading order / page | Contents |
@@ -29,6 +29,7 @@ The technical baseline is source version 1.2.2. Older interface illustrations ar
 | 11 | Appendix B. Files: what is needed and where |
 | 12 | Appendix C. Audit checklist and source references |
 | 13 | Appendix D. Measurement-target identity and external print provenance |
+| 14 | Appendix E. Feedback and verified ICC delivery |
 
 ---PAGE---
 ## 1. Architecture and scope
@@ -216,9 +217,9 @@ For a new measurement workflow, the user supplies physical printer/paper/ink/set
 | What was physically verified? | C2 package, matching print measurement and C3 report |
 | What was approved? | Explicit intended-use decision and delivery scope, not just a completed row |
 
-Primary implementation references are the source files named in each chapter. Paths without a prefix in those source maps are under `src/+inkprof/`. Public source and release: https://github.com/chto0703009/InkProf-public and https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.2.
+Primary implementation references are the source files named in each chapter. Paths without a prefix in those source maps are under `src/+inkprof/`. Public source and release: https://github.com/chto0703009/InkProf-public and https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.4.
 
-Detailed companion documents in the repository: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.2.2.md`, `VALIDATION.txt` and the licence files. Some older guide headings retain historical version numbers; this document uses the v1.2.2 implementation baseline.
+Detailed companion documents in the repository: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.2.4.md`, `VALIDATION.txt` and the licence files. Some older guide headings retain historical version numbers; this document uses the v1.2.4 implementation baseline.
 
 For v1.2.2 the focused MATLAB release checks comprise 23 passing tests covering ICC compatibility, activity, RGB generation and definition saving. The automatic compatibility route was also checked with an existing cached v4 original: a v2 header was produced, source SHA-256 remained unchanged and activity was cleaned up. These checks do not represent a new full-suite qualification or physical print/instrument accuracy validation.
 
@@ -233,7 +234,7 @@ Implementation: MeasurementDialog and measurementTargetInfo keep selection locke
 
 ### Base target or C2 verification?
 
-Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2. Measure / select verification revision. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback.
+Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback.
 
 ### Target locked is intentional
 
@@ -262,3 +263,20 @@ A base or C2 target may have been created in an earlier cycle. The folder names 
 ### Complete target-package copy
 
 The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented.
+
+
+---PAGE---
+
+## Appendix E Verification feedback and checked ICC delivery
+
+### Read C3 feedback
+
+Run Review feedback to open a readable feedback window. Reopen it with Open selected step results while feedback is selected. C3 files are verification-check.md and verification-check.json under targets/<target>/checks/<check>. Each check has its own folder. Compare reports with the same ICC and target; distinguish error against desired Lab from error against the ICC prediction.
+
+### Approval and certificate are separate actions
+
+Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous step-19 numerical-only export no longer hides this next step after print approval.
+
+### The exact verified ICC is included
+
+The external delivery folder contains <profile>-verified-original.icc, a byte-identical copy of the checked ICC. The normally named ICC has updated name metadata; an optional -v4.4.icc is a converted variant and is not the original verified file. delivery.json records verifiedOriginalICCFile and verifiedOriginalICCSHA256. Keep the whole bundle, including underlag.

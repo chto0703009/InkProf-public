@@ -1,8 +1,8 @@
-# Public release scope — v1.2.3
+# Public release scope — v1.2.4
 
-This is a source-only maintenance release (tag v1.2.3, version 1.2.3, 2026-10-24) in the separate public repository. Private development history is neither merged into it nor rewritten.
+This is a source-only maintenance release (tag v1.2.4, version 1.2.4, 2026-10-24) in the separate public repository. Private development history is neither merged into it nor rewritten.
 
-Current published release: [v1.2.3 stable release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.3).
+Current published release: [v1.2.4 stable release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.4).
 
 Excluded: local projects/measurements/ICC profiles, imported i1Profiler reference packages and real MXF fixtures, vendor screenshots, private historical datasets, machine settings, virtual environments, caches and external runtime binaries. Synthetic fixtures and original explanatory documentation figures are included. Some historical research notes refer to excluded data; they are not reproducible release tests. This private development repository still contains some of the excluded material (for example the real MXF fixtures in `tests/fixtures/i1profiler/` and the Chart 575 `reference.tif`); it is not copied to the public repository.
 

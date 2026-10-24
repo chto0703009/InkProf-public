@@ -1,66 +1,69 @@
 {
   "DocumentDate": "2026-10-24",
-  "SourceVersion": "1.2.3",
-  "FeatureCommit": "5724d315a6773226e7a7d7b566dfa455a54ad425",
+  "SourceVersion": "1.2.4",
+  "FeatureCommit": "b813525",
   "Status": "PASS",
   "NewApplicationRelease": true,
   "Checks": [
-    "All eight PDFs rebuilt from editable sources",
-    "All pages rendered; contact sheets and updated pages visually checked",
-    "Existing handbook title/page positions preserved",
-    "Current version/date and target/print provenance text checked",
-    "Synthetic screenshot only; no physical instrument process",
-    "Per-file SHA-256 recorded"
+    "Seven affected PDFs rebuilt from editable sources; future-opportunities PDF unchanged",
+    "All rebuilt pages rendered; changed content pages visually reviewed",
+    "Existing content page positions preserved; one new page per updated document",
+    "C2a/C2b, C3 feedback, certificate navigation and exact verified ICC documented",
+    "Downloads copies verified byte for byte",
+    "No private project certificates or measurements modified",
+    "Release 1.2.4: all eight PDFs rebuilt; every page text matches reviewed edition except version; all pages rendered; covers and last pages reviewed",
+    "Release 1.2.4: all eight PDFs rebuilt and rendered; page counts preserved; version labels refreshed; technical baseline, contents and workflow release references corrected; covers, last pages and changed reference pages reviewed"
   ],
   "Documents": [
     {
       "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
-      "Pages": 76,
-      "SHA256": "ddb7adfe3f162f683fc4afc50cb6a9632a979c82ebeef894ba1f673f95cd0695",
+      "Pages": 77,
+      "SHA256": "dd28f7d213693331f46aab67b91e428accbb6da2014244f11906e87e8428ae05",
       "Issues": []
     },
     {
       "Path": "docs/usage/InkProf-user-handbook-English.pdf",
-      "Pages": 76,
-      "SHA256": "c293c4350b90a1047bc417dee58b14c3e74db70f3c66c71d73811d0975558c61",
+      "Pages": 77,
+      "SHA256": "cbcce90b6dcc72501fcd276ca7e119ebf281b5ca9cd9b8e10ec2ab9b06de03c7",
       "Issues": []
     },
     {
       "Path": "docs/usage/InkProf_Teknisk_beskrivning_SV.pdf",
-      "Pages": 13,
-      "SHA256": "92875acf9fac5061dae83c96b5e0f4e993f8b6cd9bd4493960d81b93dc00d2c3",
+      "Pages": 14,
+      "SHA256": "a719d1d01bd586ff7e05392ed38c8d5627c0458c0f6276a56c5c4b9549bb04ea",
       "Issues": []
     },
     {
       "Path": "docs/usage/InkProf_Technical_Description_EN.pdf",
-      "Pages": 13,
-      "SHA256": "f4826a34ed1e817dfa7a472f50e3f9e4aa5b8acd1104d4579c9c48cce5294582",
+      "Pages": 14,
+      "SHA256": "6b3cb1c992f316cfced4384119cba8de306aced20a3e73f91cedc2e6105061b7",
       "Issues": []
     },
     {
       "Path": "docs/usage/InkProf-presentation-English.pdf",
-      "Pages": 9,
-      "SHA256": "9cd90a821801dc85f6d312b1bab31a62dc2c49e102c68f4a950cb66708bf74de",
+      "Pages": 10,
+      "SHA256": "c163654360f430f2f014ddb9112f9fe27c9ac1fb099ab53e829b718926c0c95e",
       "Issues": []
     },
     {
       "Path": "docs/usage/InkProf-presentation-svenska.pdf",
-      "Pages": 9,
-      "SHA256": "7ef685bfdcfae06b0669461d03ebc6f20d33b08fd470ae54a82f0abad61c6229",
+      "Pages": 10,
+      "SHA256": "016601ba83c7a9115ffd57483eb50e448173c8fec178e925f3baf0fcd5cf5b5d",
       "Issues": []
     },
     {
       "Path": "docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf",
-      "Pages": 11,
-      "SHA256": "49e959c32fba0e6167ee9762dee79cc0b93c5ca003cdbfd80e9286ac1baeb727",
+      "Pages": 12,
+      "SHA256": "7c521df7e2ae5e8f1f2cd71d5abd9d0c6f72589beadc6faa2c06aef811946e1c",
       "Issues": []
     },
     {
       "Path": "docs/usage/InkProf-framtida-mojligheter.pdf",
       "Pages": 8,
-      "SHA256": "be313513d98bd63cccff36ac8c869fe61b34cad9c3e5fd32b3ba9e1013c58d6f",
+      "SHA256": "1d4357516a0c47658727cb75052742b681f5865452b4f3778c9d690c45929264",
       "Issues": []
     }
   ],
-  "ReleaseTag": "v1.2.3"
+  "ReleaseTag": "v1.2.4",
+  "PublicFeatureCommit": "9db6ef5"
 }

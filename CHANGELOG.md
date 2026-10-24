@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.2.4 - 2026-10-24
+
+- Clarify C2a/C2b and display C3 feedback for review.
+- Restore certificate navigation after print approval despite an earlier numerical-only delivery.
+- Include the exact verified ICC with SHA-256 in certificate bundles.
+- Update current documentation and all PDF version labels.
+
 ## v1.2.3 - 2026-10-24
 
 - Clarify prepared measurement target identity and preserve locked base/C2 binding.

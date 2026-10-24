@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.2.3 | 2026-10-24",
+    "tag": "ANVÄNDARHANDBOK | v1.2.4 | 2026-10-24",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -1025,7 +1025,7 @@
     ]
   },
   {
-    "tag": "v1.2.3 | MATERIAL OCH SKUGGOR",
+    "tag": "v1.2.4 | MATERIAL OCH SKUGGOR",
     "title": "Fler mätpunkter i mörka färger",
     "sections": [
       [
@@ -1051,7 +1051,7 @@
     ]
   },
   {
-    "tag": "v1.2.3 | LEVERANS OCH LICENS",
+    "tag": "v1.2.4 | LEVERANS OCH LICENS",
     "title": "Gamut, certifikat och källkod",
     "sections": [
       [
@@ -1710,7 +1710,7 @@
     "sections": [
       [
         "1. Välj målet i rad 9",
-        "Markera C2. Save verification target as TIFF16 och klicka Run selected step. Välj Select existing target. Listan visar sparade mål i projektet som hör till aktuell ICC, med namn, antal rutor och mapp-ID."
+        "Markera C2a. Prepare verification print (TIFF16) och klicka Run selected step. Välj Select existing target. Listan visar sparade mål i projektet som hör till aktuell ICC, med namn, antal rutor och mapp-ID."
       ],
       [
         "2. Matcha mot den verkliga utskriften",
@@ -1722,7 +1722,7 @@
       ],
       [
         "4. Börja mäta i rad 10",
-        "Kör C2. Measure / select verification revision och välj Measure. Confirm measurement target visar målnamn och antal rutor. När de stämmer med ditt ark, välj Measure this target och sedan Start measurement. Saved revisions är till för mätningar som redan är sparade."
+        "Kör C2b. Measure verification print / select saved measurement och välj Measure. Confirm measurement target visar målnamn och antal rutor. När de stämmer med ditt ark, välj Measure this target och sedan Start measurement. Saved revisions är till för mätningar som redan är sparade."
       ],
       [
         "5. Spara och godkänn resultatet",
@@ -1818,7 +1818,7 @@
     "callout": "Skalförtätning ändrar mätunderlaget. Gridprovet ändrar profilens beräknade tabeller. Prova dem separat för att förstå vad som påverkar resultatet."
   },
   {
-    "tag": "v1.2.3 | ARBETSGÅNG OCH CERTIFIKAT",
+    "tag": "v1.2.4 | ARBETSGÅNG OCH CERTIFIKAT",
     "title": "Nästa steg och tydlig leverans",
     "lead": "Här beskrivs rekommenderad nästa rad och hur leveransens dokument hänger ihop.",
     "sections": [
@@ -2049,7 +2049,7 @@
   },
   {
     "title": "Spara och återuppta delmätning",
-    "tag": "MÄTNING / NYTT I v1.2.3",
+    "tag": "MÄTNING / NYTT I v1.2.4",
     "lead": "För stora mål kan färdiga hela rader sparas och mätningen fortsätta senare.",
     "sections": [
       [
@@ -2081,7 +2081,7 @@
   },
   {
     "title": "Ommätning och RGB-kontroller",
-    "tag": "MÄTNING / NYTT I v1.2.3",
+    "tag": "MÄTNING / NYTT I v1.2.4",
     "sections": [
       [
         "Fortsätt efter ommätt rad",
@@ -2149,7 +2149,7 @@
     "sections": [
       [
         "Grundtarget eller C2-verifiering?",
-        "Steg 3. Measure / select measurement revision läser grundtargeten från steg 2. En C2-utskrift hör till C2. Measure / select verification revision. Är rätt paket redan valt går du direkt till den mätningen utan att skapa en ny target. När alla rader lästs: Save and finish, sedan C3. Compare model and print och Review feedback."
+        "Steg 3. Measure / select measurement revision läser grundtargeten från steg 2. En C2-utskrift hör till C2b. Measure verification print / select saved measurement. Är rätt paket redan valt går du direkt till den mätningen utan att skapa en ny target. När alla rader lästs: Save and finish, sedan C3. Compare model and print och Review feedback."
       ],
       [
         "Target locked är avsiktligt",
@@ -2185,6 +2185,32 @@
       [
         "Kopia av hela targetpaketet",
         "Den alternativa kopieringen av komplett targetpaket från förfiningsverktyg använder också projektbaserat namn och projektinformation när ursprunget finns i ett identifierat projekt. Utan projektkontext används ett generellt läsbart namn; projekt och iteration hittas inte på."
+      ]
+    ]
+  },
+  {
+    "tag": "2026-10-24 | v1.2.4 | b813525",
+    "title": "Verifiering och komplett leverans",
+    "sections": [
+      [
+        "C2a förbereder utskriften och C2b mäter den",
+        "C2a. Prepare verification print (TIFF16) sparar eller väljer utskriftspaketet. C2b. Measure verification print / select saved measurement läser det arket. Välj Measure för en ny utskrift, inte Resume saved session. Avsluta med Save and finish och kör sedan C3. Detta verifierar befintlig ICC och bygger ingen ny profil."
+      ],
+      [
+        "Läs C3-återkopplingen",
+        "Kör Review feedback för att öppna ett läsbart återkopplingsfönster. Öppna det igen med Open selected step results när återkopplingsraden är vald. C3-filerna heter verification-check.md och verification-check.json under targets/<target>/checks/<check>. Varje kontroll får en egen mapp. Jämför samma ICC och target; skilj felet mot önskat Lab från felet mot profilens förutsägelse."
+      ],
+      [
+        "Godkännande och certifikat är skilda åtgärder",
+        "Ett radval navigerar bara. Kör Open review and approval, granska resultatet, kryssa i bekräftelsen och spara bedömningen. Välj sedan rad 14, Save ICC and measurement certificate, och klicka Save ICC and certificate... Välj Also save copies elsewhere för paketets namn och plats. Save in project only behåller leveransen i projektet. En tidigare numerisk export från steg 19 döljer inte längre nästa steg efter godkänd utskriftskontroll."
+      ],
+      [
+        "Exakt verifierad ICC följer med",
+        "Den externa leveransmappen innehåller <profil>-verified-original.icc, en byteidentisk kopia av kontrollerad ICC. ICC-filen med vanligt namn har uppdaterad namnmetadata; eventuell -v4.4.icc är en konverterad variant och är inte den verifierade originalfilen. delivery.json registrerar verifiedOriginalICCFile och verifiedOriginalICCSHA256. Behåll hela paketet, inklusive underlag."
+      ],
+      [
+        "Ny verifiering efter ändrade skrivarinställningar",
+        "Skriv ut samma target igen med avsedda inställningar och dokumentera faktisk CO/coating, mediatyp, kvalitet och torktid för varje ark. Starta en ny C2b-mätning; tidigare mätningar bevaras. Jämför motsvarande C3-rapporter. Enbart sparad Automatic-inställning bevisar inte vilken fysisk CO-inställning som användes."
       ]
     ]
   }

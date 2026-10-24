@@ -1,6 +1,6 @@
-# InkProf v1.2.3 - Rättat targetval och spårbara utskriftskopior
+# InkProf v1.2.4 - Rättad verifiering och komplett certifikatleverans
 
-> **Nytt i v1.2.3:** tydlig targetidentitet, utskriftsmappar med projektnamn, PROJECT_INFO.txt och uppdaterade svenska/engelska PDF-guider.
+> **Nytt i v1.2.4:** tydligare C2a/C2b, läsbar C3-återkoppling, certifikatnavigering och exakt verifierad ICC i leveransen.
 
 **Behåll din i1Pro 2. Ta kontroll över utskriften.**
 
@@ -23,7 +23,7 @@ Projektet håller ihop underlag, profiler, kontroller och historik. Du kan stän
 
 ## Nytt i 1.2.2
 
-Tvåspråkiga PDF-certifikat, ett fullständigt engelskt mätsupplement, valfri lokal 3D-visning och tydligare färgjämförelse. Båda PDF-certifikaten och supplementet ligger direkt i leveransmappen. Se [releaseinformation](docs/releases/v1.2.3.md).
+Tvåspråkiga PDF-certifikat, ett fullständigt engelskt mätsupplement, valfri lokal 3D-visning och tydligare färgjämförelse. Båda PDF-certifikaten och supplementet ligger direkt i leveransmappen. Se [releaseinformation](docs/releases/v1.2.4.md).
 
 ## Nytt i 1.1.1
 
@@ -40,7 +40,7 @@ Tvåspråkiga PDF-certifikat, ett fullständigt engelskt mätsupplement, valfri 
 
 InkProf är **kostnadsfritt att ladda ner**, enligt GPL version 3 eller senare. **MATLAB kräver licens**; grundversionen räcker. Python, ArgyllCMS och en kompatibel spektrofotometer installeras separat. Det fullständiga arbetsflödet är testat på **macOS med i1Pro 2**; Windows/Linux och alla instrumentlägen är inte kvalificerade.
 
-[Hämta stabil källkod v1.2.3](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.3) · [English overview](README.md) · [Svensk nyttopresentation](docs/usage/InkProf-presentation-svenska.pdf) · [Svensk användarhandbok](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
+[Hämta stabil källkod v1.2.4](https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.4) · [English overview](README.md) · [Svensk nyttopresentation](docs/usage/InkProf-presentation-svenska.pdf) · [Svensk användarhandbok](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 
 Källkodsreleasen publicerades **2026-10-24**. Handböcker, presentationer och MATLAB-guide är uppdaterade för denna release.
 
@@ -49,7 +49,7 @@ Källkodsreleasen publicerades **2026-10-24**. Handböcker, presentationer och M
 - [Installationsanvisning](README.md#install-and-start)
 - [Engelsk handbok](docs/usage/InkProf-user-handbook-English.pdf)
 - [Engelsk presentation](docs/usage/InkProf-presentation-English.pdf)
-- [Releaseinformation](docs/releases/v1.2.3.md)
+- [Releaseinformation](docs/releases/v1.2.4.md)
 - [Validering](VALIDATION.txt)
 
 Färgnoggrannheten beror på skrivare, papper, bläck och inställningar. Numeriska kontroller och skärmförhandsvisningar ersätter inte fysisk verifiering. Certifikatet dokumenterar underlag och beslut; det är inte ackrediterad certifiering eller intyg om full ISO-överensstämmelse.
@@ -60,4 +60,4 @@ InkProf tillhandahålls utan garanti enligt GPL. Se [LICENSE](LICENSE), [licenso
 
 Valfri CGATS-leverans till i1Profiler väljs med en kryssruta vid steg 14/19. Se [exportinstruktioner, mätkrav och verifierat importtest](docs/usage/i1profiler-cgats-test.md).
 
-Teknisk implementation: [Svensk beskrivning](docs/TECHNICAL_DESCRIPTION_SV.md) · [Svensk PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf) · [Engelsk PDF](docs/usage/InkProf_Technical_Description_EN.pdf). Med appendix om filer och beroenden, uppdaterad för v1.2.3.
+Teknisk implementation: [Svensk beskrivning](docs/TECHNICAL_DESCRIPTION_SV.md) · [Svensk PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf) · [Engelsk PDF](docs/usage/InkProf_Technical_Description_EN.pdf). Med appendix om filer och beroenden, uppdaterad för v1.2.4.

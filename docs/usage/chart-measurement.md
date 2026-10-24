@@ -496,7 +496,7 @@ behålls i rapporten och rapportdata för spårbarhet.
 
 ### Base target or C2 verification?
 
-Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2. Measure / select verification revision. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback.
+Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback.
 
 ### Target locked is intentional
 
@@ -525,3 +525,10 @@ A base or C2 target may have been created in an earlier cycle. The folder names 
 ### Complete target-package copy
 
 The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented.
+
+
+## Repeat C2 verification with the existing ICC
+
+C2a. Prepare verification print (TIFF16) saves or selects the print package. C2b. Measure verification print / select saved measurement reads that sheet. Choose Measure for a new print, not Resume saved session. Save and finish, then run C3. This verifies the existing ICC; it does not build a new profile.
+
+Print the same target again with the intended settings and document the actual CO/coating choice, media, quality and drying time for each sheet. Start a new C2b measurement; previous measurements remain. Compare the matching C3 reports. A saved Automatic setting alone does not establish which physical CO setting was used.

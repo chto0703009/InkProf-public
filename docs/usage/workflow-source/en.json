@@ -1,11 +1,11 @@
 [
   {
-    "tag": "MATLAB WORKFLOW | v1.2.3",
+    "tag": "MATLAB WORKFLOW | v1.2.4",
     "title": "From colour target to ICC",
     "sections": [
       [
         "Requirements and startup",
-        "Source version 1.2.3 with target/print-delivery updates in commit 5724d31; documentation updated 2026-10-24. Tested with base MATLAB R2025b (no additional MATLAB toolboxes), Python 3.13 and ArgyllCMS on macOS. Python performs colour analysis and report generation; MATLAB provides the application and workflow. Install these runtimes separately. Windows and Linux are untested; use of a POSIX measurement bridge does not establish Linux compatibility. Run the commands below from the InkProf source folder."
+        "Source version 1.2.4 with verification/certificate fixes and updated documentation; documentation updated 2026-10-24. Tested with base MATLAB R2025b (no additional MATLAB toolboxes), Python 3.13 and ArgyllCMS on macOS. Python performs colour analysis and report generation; MATLAB provides the application and workflow. Install these runtimes separately. Windows and Linux are untested; use of a POSIX measurement bridge does not establish Linux compatibility. Run the commands below from the InkProf source folder."
       ],
       [
         "How to use this guide",
@@ -19,7 +19,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.3",
+    "tag": "MATLAB WORKFLOW | v1.2.4",
     "title": "One project, one source of settings",
     "sections": [
       [
@@ -38,7 +38,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.3",
+    "tag": "MATLAB WORKFLOW | v1.2.4",
     "title": "The 19 steps",
     "rows": [
       [
@@ -106,7 +106,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.3",
+    "tag": "MATLAB WORKFLOW | v1.2.4",
     "title": "The 19 steps - continued",
     "rows": [
       [
@@ -169,7 +169,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.3",
+    "tag": "MATLAB WORKFLOW | v1.2.4",
     "title": "Targets, paper and measurement",
     "sections": [
       [
@@ -196,7 +196,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.3",
+    "tag": "MATLAB WORKFLOW | v1.2.4",
     "title": "Refinement and shadows",
     "sections": [
       [
@@ -216,7 +216,7 @@
     "lead": "Open step 15, \"Refinement tools\", to choose the source of additional patches."
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.3",
+    "tag": "MATLAB WORKFLOW | v1.2.4",
     "title": "Shell refinement and continuation",
     "lead": "Use Refinement tools to strengthen coverage near the gamut surface.",
     "sections": [
@@ -237,7 +237,7 @@
     "callout": "Iteration: 16 -> 17 (includes Fit, Grid and C1) -> 18\nIf checks are missing/stale: step 8.\nPrint-verified delivery: 9 -> 10 -> 11 -> 12 -> 13 -> 14\nNumerical-only delivery: 18 -> 19"
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.3",
+    "tag": "MATLAB WORKFLOW | v1.2.4",
     "title": "Interpret and deliver",
     "sections": [
       [
@@ -260,12 +260,12 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.3",
+    "tag": "MATLAB WORKFLOW | v1.2.4",
     "title": "Code, licensing and runtime checks",
     "sections": [
       [
         "",
-        "InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only release: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.2.2.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits. The v1.0.0 licence review is a historical review, not a new legal clearance for every v1.2.2 change."
+        "InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only release: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.2.4.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits. The v1.0.0 licence review is a historical review, not a new legal clearance for every v1.2.2 change."
       ],
       [
         "Version checks and reporting problems",
@@ -281,7 +281,7 @@
     "sections": [
       [
         "Base target or C2 verification?",
-        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2. Measure / select verification revision. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
+        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
       ],
       [
         "Target locked is intentional",
@@ -317,6 +317,32 @@
       [
         "Complete target-package copy",
         "The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented."
+      ]
+    ]
+  },
+  {
+    "tag": "2026-10-24 | v1.2.4 | b813525",
+    "title": "Verification and complete delivery",
+    "sections": [
+      [
+        "C2a prepares the print and C2b measures it",
+        "C2a. Prepare verification print (TIFF16) saves or selects the print package. C2b. Measure verification print / select saved measurement reads that sheet. Choose Measure for a new print, not Resume saved session. Save and finish, then run C3. This verifies the existing ICC; it does not build a new profile."
+      ],
+      [
+        "Read C3 feedback",
+        "Run Review feedback to open a readable feedback window. Reopen it with Open selected step results while feedback is selected. C3 files are verification-check.md and verification-check.json under targets/<target>/checks/<check>. Each check has its own folder. Compare reports with the same ICC and target; distinguish error against desired Lab from error against the ICC prediction."
+      ],
+      [
+        "Approval and certificate are separate actions",
+        "Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous step-19 numerical-only export no longer hides this next step after print approval."
+      ],
+      [
+        "The exact verified ICC is included",
+        "The external delivery folder contains <profile>-verified-original.icc, a byte-identical copy of the checked ICC. The normally named ICC has updated name metadata; an optional -v4.4.icc is a converted variant and is not the original verified file. delivery.json records verifiedOriginalICCFile and verifiedOriginalICCSHA256. Keep the whole bundle, including underlag."
+      ],
+      [
+        "Repeat verification after changing printer settings",
+        "Print the same target again with the intended settings and document the actual CO/coating choice, media, quality and drying time for each sheet. Start a new C2b measurement; previous measurements remain. Compare the matching C3 reports. A saved Automatic setting alone does not establish which physical CO setting was used."
       ]
     ]
   }

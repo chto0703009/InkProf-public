@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.2.3 | 2026-10-24",
+    "tag": "InkProf | v1.2.4 | 2026-10-24",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -227,7 +227,7 @@
     ]
   },
   {
-    "tag": "v1.2.3 | NEW OPTIONS",
+    "tag": "v1.2.4 | NEW OPTIONS",
     "links": [
       [
         "Open source and downloads",
@@ -281,17 +281,36 @@
     "compact": true
   },
   {
-    "tag": "2026-10-24 | v1.2.3",
+    "tag": "2026-10-24 | v1.2.4",
     "title": "Identify every printed target",
     "sections": [
       [
         "Base target or C2 verification?",
-        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2. Measure / select verification revision. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
+        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
       ],
       [
         "PROJECT_INFO.txt",
         "The UTF-8 text file retains the exact project name and ID, original project path, workflow step, current cycle/iteration ID, target-origin cycle/iteration ID when found in history, UTC and local copy/creation times, target description when present, source TI2 and its SHA-256, project printing settings and copied filenames with SHA-256. Unknown origin metadata stays unknown."
       ]
     ]
+  },
+  {
+    "tag": "2026-10-24 | v1.2.4 | b813525",
+    "title": "From verification to certificate",
+    "sections": [
+      [
+        "C2a prepares the print and C2b measures it",
+        "C2a. Prepare verification print (TIFF16) saves or selects the print package. C2b. Measure verification print / select saved measurement reads that sheet. Choose Measure for a new print, not Resume saved session. Save and finish, then run C3. This verifies the existing ICC; it does not build a new profile."
+      ],
+      [
+        "Approval and certificate are separate actions",
+        "Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous step-19 numerical-only export no longer hides this next step after print approval."
+      ],
+      [
+        "The exact verified ICC is included",
+        "The external delivery folder contains <profile>-verified-original.icc, a byte-identical copy of the checked ICC. The normally named ICC has updated name metadata; an optional -v4.4.icc is a converted variant and is not the original verified file. delivery.json records verifiedOriginalICCFile and verifiedOriginalICCSHA256. Keep the whole bundle, including underlag."
+      ]
+    ],
+    "compact": true
   }
 ]

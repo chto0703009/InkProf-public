@@ -1,4 +1,4 @@
-# InkProf documentation - v1.2.3, source update 2026-10-24
+# InkProf documentation - v1.2.4, source update 2026-10-24
 
 
 
@@ -141,7 +141,7 @@ The [i1Profiler CGATS transfer test](usage/i1profiler-cgats-test.md) documents s
 
 ## Documentation update 2026-10-24
 
-Current source version 1.2.3, including commit 5724d31. Handbooks, technical descriptions, presentations and the MATLAB guide cover locked measurement-target identity, base versus C2 selection, project-named print-copy folders, PROJECT_INFO.txt and JSON traceability. Included in patch release v1.2.3. Historical screenshots are identified; the new measurement screenshot is synthetic. The future-development PDF remains explicitly proposals, not current behaviour.
+Current source version 1.2.4, including commit 5724d31. Handbooks, technical descriptions, presentations and the MATLAB guide cover locked measurement-target identity, base versus C2 selection, project-named print-copy folders, PROJECT_INFO.txt and JSON traceability. Included in patch release v1.2.4. Historical screenshots are identified; the new measurement screenshot is synthetic. The future-development PDF remains explicitly proposals, not current behaviour.
 
 [English technical description](usage/InkProf_Technical_Description_EN.pdf) | [Svensk teknisk beskrivning](usage/InkProf_Teknisk_beskrivning_SV.pdf).
 

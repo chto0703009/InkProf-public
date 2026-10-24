@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.2.3 | 2026-10-24",
+    "tag": "USER HANDBOOK | v1.2.4 | 2026-10-24",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -1026,7 +1026,7 @@
   },
   {
     "title": "More samples in dark colours",
-    "tag": "v1.2.3 | MATERIALS AND SHADOWS",
+    "tag": "v1.2.4 | MATERIALS AND SHADOWS",
     "sections": [
       [
         "Matte paper",
@@ -1052,7 +1052,7 @@
   },
   {
     "title": "Gamut, certificates and source code",
-    "tag": "v1.2.3 | DELIVERY AND LICENSING",
+    "tag": "v1.2.4 | DELIVERY AND LICENSING",
     "sections": [
       [
         "Surfaces and measurement points are different views",
@@ -1714,7 +1714,7 @@
     "sections": [
       [
         "1. Select the target in step 9",
-        "Select C2. Save verification target as TIFF16 and click Run selected step. Choose Select existing target. The list shows saved targets in this project for the current ICC, with names, patch counts and folder IDs."
+        "Select C2a. Prepare verification print (TIFF16) and click Run selected step. Choose Select existing target. The list shows saved targets in this project for the current ICC, with names, patch counts and folder IDs."
       ],
       [
         "2. Match the physical print",
@@ -1726,7 +1726,7 @@
       ],
       [
         "4. Begin measurement in step 10",
-        "Run C2. Measure / select verification revision and choose Measure. Confirm measurement target shows the target name and patch count. If they match your sheet, choose Measure this target, then Start measurement. Saved revisions is for measurements that are already saved."
+        "Run C2b. Measure verification print / select saved measurement and choose Measure. Confirm measurement target shows the target name and patch count. If they match your sheet, choose Measure this target, then Start measurement. Saved revisions is for measurements that are already saved."
       ],
       [
         "5. Save and approve the result",
@@ -1822,7 +1822,7 @@
     "callout": "Shell refinement changes the measurement set. Grid trials change computed profile tables. Test separately to understand their effects."
   },
   {
-    "tag": "v1.2.3 | WORKFLOW AND CERTIFICATES",
+    "tag": "v1.2.4 | WORKFLOW AND CERTIFICATES",
     "title": "Next steps and clear delivery",
     "lead": "This page explains suggested next rows and how the delivery documents fit together.",
     "sections": [
@@ -2053,7 +2053,7 @@
   },
   {
     "title": "Save and resume a partial measurement",
-    "tag": "MEASUREMENT / NEW IN v1.2.3",
+    "tag": "MEASUREMENT / NEW IN v1.2.4",
     "lead": "For large targets, save completed physical rows and continue later.",
     "sections": [
       [
@@ -2085,7 +2085,7 @@
   },
   {
     "title": "Remeasurement and RGB controls",
-    "tag": "MEASUREMENT / NEW IN v1.2.3",
+    "tag": "MEASUREMENT / NEW IN v1.2.4",
     "sections": [
       [
         "Continue after rereading",
@@ -2153,7 +2153,7 @@
     "sections": [
       [
         "Base target or C2 verification?",
-        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2. Measure / select verification revision. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
+        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
       ],
       [
         "Target locked is intentional",
@@ -2189,6 +2189,32 @@
       [
         "Complete target-package copy",
         "The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented."
+      ]
+    ]
+  },
+  {
+    "tag": "2026-10-24 | v1.2.4 | b813525",
+    "title": "Verification feedback and complete delivery",
+    "sections": [
+      [
+        "C2a prepares the print and C2b measures it",
+        "C2a. Prepare verification print (TIFF16) saves or selects the print package. C2b. Measure verification print / select saved measurement reads that sheet. Choose Measure for a new print, not Resume saved session. Save and finish, then run C3. This verifies the existing ICC; it does not build a new profile."
+      ],
+      [
+        "Read C3 feedback",
+        "Run Review feedback to open a readable feedback window. Reopen it with Open selected step results while feedback is selected. C3 files are verification-check.md and verification-check.json under targets/<target>/checks/<check>. Each check has its own folder. Compare reports with the same ICC and target; distinguish error against desired Lab from error against the ICC prediction."
+      ],
+      [
+        "Approval and certificate are separate actions",
+        "Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous step-19 numerical-only export no longer hides this next step after print approval."
+      ],
+      [
+        "The exact verified ICC is included",
+        "The external delivery folder contains <profile>-verified-original.icc, a byte-identical copy of the checked ICC. The normally named ICC has updated name metadata; an optional -v4.4.icc is a converted variant and is not the original verified file. delivery.json records verifiedOriginalICCFile and verifiedOriginalICCSHA256. Keep the whole bundle, including underlag."
+      ],
+      [
+        "Repeat verification after changing printer settings",
+        "Print the same target again with the intended settings and document the actual CO/coating choice, media, quality and drying time for each sheet. Start a new C2b measurement; previous measurements remain. Compare the matching C3 reports. A saved Automatic setting alone does not establish which physical CO setting was used."
       ]
     ]
   }

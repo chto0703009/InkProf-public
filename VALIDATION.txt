@@ -1,3 +1,19 @@
+INKPROF v1.2.4 PATCH VALIDATION - 2026-10-24
+
+- Exact public release source: nine workflow recommendation regression tests
+  and one separate certificate delivery integration test passed (10 total).
+- Integration assertions verify the delivered original ICC equals the checked
+  profile SHA-256, alongside the separately named delivery ICC.
+- MATLAB syntax checks passed for app and delivery changes.
+- Source/version/notices/schema/resource check passed: 453 source files.
+- Eight maintained PDFs rebuilt for 1.2.4. Page counts/layout preserved; version labels,
+  technical baseline/contents and workflow release references checked.
+- PDF rendering and hash record: docs/documentation-update-20261024.json.
+- Public assets exclude private projects, ICCs, measurement/reference fixtures
+  and local runtime binaries. No new physical test or full-suite pass claimed.
+
+Previous release validation (historical):
+
 INKPROF v1.2.3 PATCH VALIDATION - 2026-10-24
 
 - Eight focused MATLAB tests: target identity, locked UI, prompt/startup errors,

@@ -87,3 +87,26 @@ No profile is changed and no measurements are merged automatically. Compare the 
 `inkprof.showRefinementProposal(folder)` shows the table from `proposal.json` without generating new patches or TIFF files. Without an argument, the folder is chosen in a dialog. Text cells are converted to `char` for compatibility with MATLAB's `uitable`.
 
 After the supplementary target has been measured, the whole link to a new profile and a new C2 can be carried out with [`continueRefinement`](refinement-continuation.md).
+
+
+## Review feedback and certificate delivery
+
+### C2a prepares the print and C2b measures it
+
+C2a. Prepare verification print (TIFF16) saves or selects the print package. C2b. Measure verification print / select saved measurement reads that sheet. Choose Measure for a new print, not Resume saved session. Save and finish, then run C3. This verifies the existing ICC; it does not build a new profile.
+
+### Read C3 feedback
+
+Run Review feedback to open a readable feedback window. Reopen it with Open selected step results while feedback is selected. C3 files are verification-check.md and verification-check.json under targets/<target>/checks/<check>. Each check has its own folder. Compare reports with the same ICC and target; distinguish error against desired Lab from error against the ICC prediction.
+
+### Approval and certificate are separate actions
+
+Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous step-19 numerical-only export no longer hides this next step after print approval.
+
+### The exact verified ICC is included
+
+The external delivery folder contains <profile>-verified-original.icc, a byte-identical copy of the checked ICC. The normally named ICC has updated name metadata; an optional -v4.4.icc is a converted variant and is not the original verified file. delivery.json records verifiedOriginalICCFile and verifiedOriginalICCSHA256. Keep the whole bundle, including underlag.
+
+### Repeat verification after changing printer settings
+
+Print the same target again with the intended settings and document the actual CO/coating choice, media, quality and drying time for each sheet. Start a new C2b measurement; previous measurements remain. Compare the matching C3 reports. A saved Automatic setting alone does not establish which physical CO setting was used.

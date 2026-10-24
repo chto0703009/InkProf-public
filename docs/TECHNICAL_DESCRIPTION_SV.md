@@ -6,13 +6,13 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.2.3 | 2026-10-24 | GPL-3.0-or-later
+Version 1.2.4 | 2026-10-24 | GPL-3.0-or-later
 
 Implementation, beräkningskedja och datakontrakt
 
 Beskrivningen gäller den släppta appen för profilering av RGB-skrivare. Den följer data från definition av färgmål via mätning, ICC-bygge och numeriska kontroller till uppmätt verifieringsutskrift och leverans. Handboken beskriver användarens knapptryckningar; detta dokument förklarar vad stegen innebär och vilka filer de behöver.
 
-Teknisk bas är källkodsversion 1.2.2. Äldre gränssnittsbilder anges uttryckligen som dokumentationsexempel. De visar fiktiva projekt och är inte mätresultat som bevisar utskriftskvalitet. Sökvägar i appendix är relativa till installationens eller projektets rot. Genererade UUID och mappnamn varierar.
+Teknisk bas är källkodsversion 1.2.4. Äldre gränssnittsbilder anges uttryckligen som dokumentationsexempel. De visar fiktiva projekt och är inte mätresultat som bevisar utskriftskvalitet. Sökvägar i appendix är relativa till installationens eller projektets rot. Genererade UUID och mappnamn varierar.
 
 
 | Läsordning / sida | Innehåll |
@@ -29,6 +29,7 @@ Teknisk bas är källkodsversion 1.2.2. Äldre gränssnittsbilder anges uttryckl
 | 11 | Appendix B. Filer: vad behövs och var finns det? |
 | 12 | Appendix C. Avstämning och kodreferenser |
 | 13 | Appendix D. Mättargetens identitet och spårbara utskriftskopior |
+| 14 | Bilaga E. Återkoppling och verifierad ICC i leveransen |
 
 ---PAGE---
 ## 1. Arkitektur och avgränsning
@@ -216,9 +217,9 @@ För ett nytt mätflöde tillför användaren fysisk skrivare/papper/bläck, ins
 | Vad verifierades fysiskt? | C2-paket, motsvarande utskriftsmätning och C3-rapport |
 | Vad godkändes? | Uttryckligt beslut om avsedd användning och leveransomfattning, inte bara klar rad |
 
-Primära implementationsreferenser är kodfilerna i respektive kapitel. Referenser utan katalogprefix avser `src/+inkprof/`. Publik källkod och release: https://github.com/chto0703009/InkProf-public samt https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.2.
+Primära implementationsreferenser är kodfilerna i respektive kapitel. Referenser utan katalogprefix avser `src/+inkprof/`. Publik källkod och release: https://github.com/chto0703009/InkProf-public samt https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.4.
 
-Fördjupning i repot: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.2.2.md`, `VALIDATION.txt` och licensfilerna. Äldre guider kan behålla historiska versionsrubriker; här används implementationen i v1.2.2.
+Fördjupning i repot: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.2.4.md`, `VALIDATION.txt` och licensfilerna. Äldre guider kan behålla historiska versionsrubriker; här används implementationen i v1.2.4.
 
 För v1.2.2 omfattar riktade MATLAB-releasekontroller 23 godkända tester för ICC-kompatibilitet, aktivitet, RGB-generering och definitionssparning. Den automatiska kompatibilitetsvägen kontrollerades också med ett befintligt cachat v4-original: v2-header skapades, originalets SHA-256 förblev oförändrad och aktiviteten avslutades. Det är inte en ny fullständig testsvit eller fysisk validering av skrivare/instrument.
 
@@ -233,7 +234,7 @@ Implementation: MeasurementDialog och measurementTargetInfo behåller bindningen
 
 ### Grundtarget eller C2-verifiering?
 
-Steg 3. Measure / select measurement revision läser grundtargeten från steg 2. En C2-utskrift hör till C2. Measure / select verification revision. Är rätt paket redan valt går du direkt till den mätningen utan att skapa en ny target. När alla rader lästs: Save and finish, sedan C3. Compare model and print och Review feedback.
+Steg 3. Measure / select measurement revision läser grundtargeten från steg 2. En C2-utskrift hör till C2b. Measure verification print / select saved measurement. Är rätt paket redan valt går du direkt till den mätningen utan att skapa en ny target. När alla rader lästs: Save and finish, sedan C3. Compare model and print och Review feedback.
 
 ### Target locked är avsiktligt
 
@@ -262,3 +263,20 @@ En grund- eller C2-target kan ha skapats i en tidigare iteration. Mappnamnet ang
 ### Kopia av hela targetpaketet
 
 Den alternativa kopieringen av komplett targetpaket från förfiningsverktyg använder också projektbaserat namn och projektinformation när ursprunget finns i ett identifierat projekt. Utan projektkontext används ett generellt läsbart namn; projekt och iteration hittas inte på.
+
+
+---PAGE---
+
+## Bilaga E Återkoppling och verifierad ICC i leveransen
+
+### Läs C3-återkopplingen
+
+Kör Review feedback för att öppna ett läsbart återkopplingsfönster. Öppna det igen med Open selected step results när återkopplingsraden är vald. C3-filerna heter verification-check.md och verification-check.json under targets/<target>/checks/<check>. Varje kontroll får en egen mapp. Jämför samma ICC och target; skilj felet mot önskat Lab från felet mot profilens förutsägelse.
+
+### Godkännande och certifikat är skilda åtgärder
+
+Ett radval navigerar bara. Kör Open review and approval, granska resultatet, kryssa i bekräftelsen och spara bedömningen. Välj sedan rad 14, Save ICC and measurement certificate, och klicka Save ICC and certificate... Välj Also save copies elsewhere för paketets namn och plats. Save in project only behåller leveransen i projektet. En tidigare numerisk export från steg 19 döljer inte längre nästa steg efter godkänd utskriftskontroll.
+
+### Exakt verifierad ICC följer med
+
+Den externa leveransmappen innehåller <profil>-verified-original.icc, en byteidentisk kopia av kontrollerad ICC. ICC-filen med vanligt namn har uppdaterad namnmetadata; eventuell -v4.4.icc är en konverterad variant och är inte den verifierade originalfilen. delivery.json registrerar verifiedOriginalICCFile och verifiedOriginalICCSHA256. Behåll hela paketet, inklusive underlag.
