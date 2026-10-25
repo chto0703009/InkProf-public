@@ -13,6 +13,7 @@ Historical release candidate: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md).
 
 - [Swedish presentation](usage/InkProf-presentation-svenska.pdf)
 - [English presentation](usage/InkProf-presentation-English.pdf)
+- [InkProf-profileringsarbetsflode-MATLAB-guide-svenska](usage/InkProf-profileringsarbetsflode-MATLAB-guide-svenska.pdf)
 - [InkProf-profiling-workflow-MATLAB-guide-English](usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
 
 Earlier release candidate notes: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). The current Markdown guides supplement the PDF handbooks, including the recently added external-profile verification workflow.

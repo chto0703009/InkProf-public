@@ -1,0 +1,451 @@
+[
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Från färgmål till ICC",
+    "sections": [
+      [
+        "Krav och uppstart",
+        "Källkodsversion 1.4.1, utgiven 2026-10-25. Testad med grundversionen av MATLAB R2025b (inga extra MATLAB-verktygslådor) och Python 3.13.6 på macOS. Programmappen för macOS innehåller separat licensierade ArgyllCMS 3.5.0-verktyg för Apple Silicon och Intel. MATLAB installeras separat; setup_python_environment förbereder programmets egen låsta Python-miljö och kräver en lämplig Python 3.13.6-tolk. Python sköter analys och rapportering; MATLAB tillhandahåller appen och arbetsflödet. Windows och Linux är otestade och kräver kompatibla verktyg; en POSIX-brygga innebär inte att Linux är kvalificerat."
+      ],
+      [
+        "Så använder du guiden",
+        "I guiden betyder rad en numrerad post i appens arbetsflödestabell till vänster. Run selected step är knappens etikett i appen. Följ sparad status och föreslagen navigering; en slutförd beräkning är underlag, inte ett automatiskt godkännande av utskriftskvaliteten. Knappar, flikar, dialogrutor och radnamn anges med sina engelska namn så som de visas i appen."
+      ]
+    ],
+    "lead": "InkProf - Kvalitetsprofilering för RGB-skrivare"
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Ett projekt, en källa till inställningar",
+    "sections": [
+      [
+        "",
+        "Använd New project en gång och sedan Open project för att fortsätta. Project details innehåller flikarna Project and materials, Printing settings, Profiling och Target paper. Registrera skrivare, papper, bläck/beläggning, program- och drivrutinsinställningar, torktid, profilnamn, val av färgdata samt gränser för papper/släde. Okända värden förblir okända. Gemensamma projektstyrda receptfält är skrivskyddade i receptdialogen. Den separata FWA-kryssrutan Compensate to D50 (also updates Project details) förblir redigerbar när spektraldata finns; när receptet sparas uppdateras även projektets FWA-inställning. Relevanta ändringar ogiltigförklarar beroende resultat men bevarar tidigare underlag. Byt namn via Project details så att även projektmappen byter namn. Om mappen byter namn utanför appen upptäcks det och du får bekräfta. Flytta hela projektmappen mellan datorer; lokalt hittade sökvägar till Python och Argyll hör till datorn, inte till det portabla projektet. Verify project kontrollerar registrerade filhashar. Använd Close app efter att den aktiva åtgärden sparats/slutförts; öppna samma projekt igen efter torkning."
+      ],
+      [
+        "FWA och mätförhållanden",
+        "FWA-kompensation modellerar D50-effekter utifrån lämpliga M0-spektra. Den omvandlar inte en M0-mätning till en äkta M1-mätning. Registrera de faktiska instrumentförhållandena och den kompensation som används. Du kan aktivera kompensation i efterhand utan kodändringar: behåll de ursprungliga spektra, spara ett nytt B2-recept, bygg om B3 och upprepa kontrollerna. Ny fysisk verifiering krävs för den ändrade profilen."
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Arbetsflödesrader 1-10",
+    "sections": [
+      [
+        "Etiketter för bygge och kontroll",
+        "B1 fryser validerade indata; B2 registrerar byggreceptet; B3 bygger ICC-profilen. C1 kontrollerar numeriska transformationer, inverst beteende och CMM-konsistens. C2 tar fram ett utskriftsmål med profilen tillämpad; C3 jämför dess uppmätta färger med önskade färger och profilens förutsägelser. Grid-kontrollen samplar ett RGB-rutnät och kontrollerar tur-och-retur-omvandlingar och ramper. Automatisk iteration bygger och utvärderar kandidater enligt sina registrerade urvalsregler; den godkänner inte en profil."
+      ]
+    ],
+    "rows": [
+      [
+        "Rad",
+        "Åtgärd",
+        "Vad den skapar eller avgör"
+      ],
+      [
+        "1",
+        "Create/import RGB target",
+        "RGB-definition och genereringsmetadata"
+      ],
+      [
+        "2",
+        "Save TIFF16",
+        "Matchande TIFF16, TI2, layout och manifest; skrivs ut separat"
+      ],
+      [
+        "3",
+        "Measure/select revision",
+        "Instrumentavläsningar och sparad JSON/TI3-revision"
+      ],
+      [
+        "4",
+        "Review and accept",
+        "Uttryckligt godkännande av vald revision"
+      ],
+      [
+        "5",
+        "B1: lock inputs",
+        "Oföränderlig, kontrollerad ögonblicksbild av profileringsindata"
+      ],
+      [
+        "6",
+        "B2: recipe",
+        "Manuellt byggrecept; projektinställningarna återanvänds"
+      ],
+      [
+        "7",
+        "B3: build ICC / automatic iteration",
+        "ICC-kandidat, byggargument och jobblogg"
+      ],
+      [
+        "8",
+        "Fit, Grid and C1",
+        "Modellanpassning, transformationer och numeriska kontroller"
+      ],
+      [
+        "9",
+        "C2a. Prepare verification print (TIFF16)",
+        "Verifieringsmål med profilen tillämpad"
+      ],
+      [
+        "10",
+        "C2b. Measure verification print / select saved measurement",
+        "Sparad verifieringsrevision"
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Arbetsflödesrader 11-19",
+    "sections": [
+      [
+        "",
+        "Ready: Nödvändiga indata finns. Välj steget och klicka på Run selected step för att starta."
+      ],
+      [
+        "",
+        "Complete: Stegets resultat eller beslut är sparat och appens krav för steget är uppfyllda. Det innebär inte i sig godkänd utskriftskvalitet."
+      ],
+      [
+        "",
+        "Locked: Steget kan inte starta än. Läs dess beskrivning och slutför först de steg som krävs."
+      ],
+      [
+        "",
+        "Stale: Ett tidigare resultat behöver uppdateras eftersom dess indata eller inställningar har ändrats. Upprepa de berörda stegen."
+      ],
+      [
+        "",
+        "Använd dialogens avsedda knapp för att spara eller godkänna. Att bara öppna och stänga dialogen slutför inte steget."
+      ],
+      [
+        "",
+        "Refresh läser in sparad status på nytt; ändringar i en fortfarande öppen dialog sparas inte. Slutför eller avbryt den aktiva dialogen innan du startar en annan åtgärd."
+      ]
+    ],
+    "rows": [
+      [
+        "Rad",
+        "Åtgärd",
+        "Vad den skapar eller avgör"
+      ],
+      [
+        "11",
+        "C3: compare model and print",
+        "Fel mellan önskat och uppmätt samt mellan förutsagt och uppmätt"
+      ],
+      [
+        "12",
+        "Review feedback",
+        "Registrerad återkoppling/beslut - inte bara att ett fönster öppnats"
+      ],
+      [
+        "13",
+        "Approve for intended use",
+        "Open review and approval öppnar dialogen; Approve for stated use sparar det granskade beslutet"
+      ],
+      [
+        "14",
+        "Save ICC and measurement certificate",
+        "Leveranskopior samt mätcertifikat i PDF/HTML"
+      ],
+      [
+        "15",
+        "Refinement tools",
+        "Bild-, manuella gamut-/skal-, fel- eller ICC-rutnätsförsök; sparat förfiningsmål"
+      ],
+      [
+        "16",
+        "Measure refinement",
+        "Granskningsbara tilläggsmätningar"
+      ],
+      [
+        "17",
+        "Build next iteration",
+        "Kombinerad träningsmängd och en ny ICC-kandidat"
+      ],
+      [
+        "18",
+        "Compare previous/current ICC",
+        "Båda ICC-profilerna utvärderas i gemensamma RGB-punkter; oberoende av deras mätrutnät"
+      ],
+      [
+        "19",
+        "Save without print verification",
+        "Numeriskt kontrollerad senare iteration och ett uttryckligen begränsat certifikat"
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Mål, papper och mätning",
+    "sections": [
+      [
+        "Skriv ut det matchande målet",
+        "TIFF16-filen sparas, den skickas inte till skrivaren. Använd Copy TIFF16 for printing och läs medföljande PRINTING.txt. Skriv ut i 100 % under de registrerade förhållandena och låt torka. Bas- och förfiningsmål innehåller enhets-RGB: stäng av all ytterligare ICC-konvertering i program och drivrutin. C2-färgerna har redan konverterats en gång genom vald ICC-profil; konvertera dem inte igen. Referensfält i enhets-RGB i C2 behåller sina angivna värden. Behåll matchande TI2- och layoutdata i projektet. Radetiketter för fälten finns på båda sidor; kompakta layouter reserverar ett fotband."
+      ],
+      [
+        "Välj pappersformat",
+        "Target paper föreslår arkformat från A5 till A3+ eller rull-/egna format utifrån antal fält och utrustningens gränser. Standardvärdena 320 mm skanningsbredd och 370 mm längd beskriver en viss släde, inte allmänna instrumentgränser. Ändra gränserna i Project details och granska den föreslagna layouten."
+      ],
+      [
+        "Mät och granska",
+        "Följ anvisningarna för kalibrering och mätning. Instrumentets identitet registreras när den finns tillgänglig. Ett ommätt fält förblir en kandidat tills det godkänts och sparats som en ny revision. Välj den revisionen och upprepa beroende granskningar/kontroller. Ett Lab-värde beskriver en uppmätt färg; en Lab-skillnad jämför två avläsningar av samma fält. Valfria ColorChecker-referensmål kan stödja jämförelse med välkända referensfärger; om de finns beror på valt mål och registrerat underlag."
+      ],
+      [
+        "Instrumentinstruktioner",
+        "Se docs/usage/instrument-startup.md och docs/usage/chart-measurement.md för instruktioner om kalibrering, återanslutning och nya försök."
+      ],
+      [
+        "Spara och återuppta slutförda rader",
+        "Välj Save completed rows / pause och vänta på bekräftelse innan du stänger. En sparbegäran under skanning väntar på en radprompt och utesluter den ofullständiga raden; parvisa mätningar kräver båda skanningarna. Välj senare Resume saved session och dess mapp, sedan Resume measurement. Dialogen anger sida, rad och riktning. Bekräfta att det är samma utskrivna ark; omtryckta eller utbytta sidor kräver en ny session och nya RGB-kontroller. En kontrollpunkt är inte en slutförd arbetsflödesmätning. Validering av återupptagning med verkligt instrument återstår."
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Förfining och skuggor",
+    "sections": [
+      [
+        "",
+        "Använd bildfärger eller C3-återkoppling för att föreslå fler fält. En bilds inbäddade ICC-profil används; saknas den visas en varning före reservlösningen sRGB, så att du kan välja en annan bild. Filtrering på uppskattat fel har standardvärdet ΔE00 > 5. Detta är förutsägelser, inte uppmätta fel."
+      ],
+      [
+        "",
+        "Ej uppmätta C2-färger kan tas med i det nya målet. C2:s färg-, grå- och utmaningsfält tränar nästa iteration; upprepade fält och pappersvitt behåller kontrollroller. När de väl använts för anpassning är de inte oberoende validering av nästa ICC-profil. Utmaningsfält undersöker avsiktligt svåra färger eller övergångar; de är inget automatiskt bevis på utskriftsnoggrannhet."
+      ],
+      [
+        "",
+        "Project details > Project and materials: Paper finish = Matte. Profiling: Matte shadows = Extra shadow detail for Matte; Dark patch emphasis = 2; Shadow grid emphasis = 1,3; Extra iteration patches = 48. Nya förfiningsmål reserverar ungefär en tredjedel av skuggbudgeten för neutrala fält och en tredjedel för svagt färgade skuggor (förutsagt C*ab upp till 10); återstående platser täcker andra mörka färger. Med 48 tillgängliga fält blir det normalt 16 per grupp. Tätt placerade grå RGB-prover och små kanalförskjutningar kompletterar Argylls sampling. Oanvänd kvot används för andra mörka kandidater. Befintliga RGB16-färger utesluts. Kvittot registrerar policy och käll-ICC:ns hash. Skriv ut i enhets-RGB utan färgkonvertering, mät det nya utskrivna målet med dess matchande TI2-fil och bygg nästa iteration. Den aktuella ICC-profilen förutsäger bara urvalet; den tillämpas inte på denna utskrift. Ursprungliga mål och profiler förblir oförändrade. Verifiera kandidaten med en ny utskrift; fler fält kan inte garantera ett mörkare fysiskt svart."
+      ]
+    ],
+    "lead": "Öppna rad 15, Refinement tools, för att välja källa för ytterligare fält."
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Skalförfining och fortsättning",
+    "sections": [
+      [
+        "Granska före utskrift",
+        "Välj hela det inre skalet eller valda områden, ange geometrisk tjocklek i ΔE76 och granska de plottade kandidaterna. Spara TIFF16-paketet och använd dess matchande mål vid mätningen. Sparade paket registreras i rad 15 utan att fältordningen genereras om."
+      ],
+      [
+        "Fortsätt från mätningar",
+        "Mät i rad 16 och bygg i rad 17. Bygget kör interna Fit-, Grid- och C1-diagnostiker. När den nya iterationen registreras markeras arbetsflödets kontroller som inaktuella och rad 8 väljs; kör rad 8 för att registrera kontrollerna för den nya aktiva iterationen före verifiering eller leverans. Rad 18 jämför profiler. Ett bygge som stoppas av numeriska varningar behåller mätningarna och den tidigare aktiva ICC-profilen; resultaten i rad 17 länkar till dess senaste C1/Grid-rapporter."
+      ],
+      [
+        "Välj leveransväg",
+        "Med aktuella numeriska kontroller väljer du antingen rad 9-11 för en ny verifieringsutskrift och mätning, rad 12 för att granska återkoppling, rad 13 för att godkänna avsedd användning och rad 14 för att leverera; eller rad 18 för jämförelse och rad 19 för uttryckligen enbart numerisk leverans. Tidigare mätningar är historiskt underlag, inte verifiering av den nya ICC-profilen."
+      ]
+    ],
+    "lead": "Använd Refinement tools för att förstärka täckningen nära gamutytan.",
+    "callout": "Iteration: 16 -> 17 (interna byggdiagnostiker) -> 8 (aktuella arbetsflödeskontroller) -> 18 (jämförelse)\nUtskriftsverifierad leverans: 9 -> 10 -> 11 -> 12 -> 13 -> 14\nEnbart numerisk leverans: 18 -> 19"
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Tolka och leverera",
+    "sections": [
+      [
+        "",
+        "Anpassningsfel mot träningsdata, numerisk konsistens och fysisk utskriftsverifiering besvarar olika frågor. Stora fel mot önskad färg samtidigt som felen mellan modell och utskrift är små kan bero på gamutgränser; det bevisar inte ensamt orsaken. Profiljämförelser i gemensamma punkter visar förändring, inte vilken profil som är noggrannast. Jämför i 2D med start vid L* = 50, eller växla till 3D. View gamut visar en separat ICC-härledd yta; i HTML kan den roteras, i PDF visas en stillbild. BPC (svartpunktskompensation) tillämpas inte på den diagnostiska jämförelsen i absoluta färgvärden."
+      ],
+      [
+        "Stabila leveransnamn och HTML-stöd",
+        "Projektet behåller den kontrollerade ICC-kandidaten. Det föreslagna externa filnamnet kombinerar profilnamnet, iter-N och de sista åtta tecknen i iterationens UUID; spara-dialogen låter dig välja målplats. Samma stam identifierar ICC-profilen och certifikatet. Leverans-ICC:ns beskrivning uppdateras, så dess filhash skiljer sig från den kontrollerade kandidatens även om färgtaggarnas innehåll bevaras. Behåll hela leveransmappen och dess mapp med stödjande underlag (underlag/) för portabel HTML, länkade rapporter och resurser."
+      ],
+      [
+        "Certifikat och separat mätbilaga",
+        "Huvudcertifikatet innehåller omfattning, projekt-/utskriftsförhållanden, ICC-identitet, sammanfattning, tillgängliga ColorChecker-par (referens/uppmätt), beslut och plats för underskrift. Historiska ColorChecker-resultat märks som sådana. Fullständiga godkända mätningar och tekniska detaljer finns i den separata measurement-appendix.pdf. Bilaga A och Bilaga B i certifikatet förklarar metoder/standarder respektive juridiska villkor; de är skilda från den separata PDF-filen. Mätbilagan kopplas via certifikat-ID och den kontrollerade kandidatens SHA-256. Certifikatet registrerar separat den namngivna leverans-ICC:n och dess SHA-256."
+      ],
+      [
+        "Tolka standarder med försiktighet",
+        "Utvalda jämförelsegränser enligt ISO 12647-7:2016 refereras via MediaStandard Print 2018, utgiven av Bundesverband Druck und Medien (bvdm). Detta anpassade arbetsflöde är ingen ISO-certifiering. Enbart numerisk leverans registrerar uttryckligen att separat utskriftsverifiering saknas."
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Kod, licenser och körtidskontroller",
+    "sections": [
+      [
+        "",
+        "InkProfs kod och egenförfattad dokumentation omfattas av GNU GPL v3 eller senare, utan garanti; se LICENSE och THIRD_PARTY_NOTICES.md. macOS-distributionen innehåller separat licensierade ArgyllCMS 3.5.0-verktyg för ARM och Intel, med ursprungliga licensnotiser och ursprungsuppgifter. MATLAB och en portabel Python-körmiljö medföljer inte; den isolerade Python-miljön förbereds lokalt. Beroenden, scheman och typsnitt har sina egna villkor. Se docs/releases/v1.4.1.md och LICENSE_SCOPE.md för aktuell omfattning. Granskningen i licenses/review-v1.0.0.md är historiskt underlag, inte en juridisk granskning av hela den aktuella utgåvan."
+      ],
+      [
+        "Versionskontroller och felrapportering",
+        "InkProf kontrollerar nödvändiga verktygsversioner och Python-importer under installationen. Inkompatibla versioner eller importer som inte är tillgängliga kan förhindra åtgärder. Använd installationsdiagnostiken och sparade jobbloggar när du rapporterar ett problem via det publika repots Issues-sida. Guiden utlovar ingen supporttjänst."
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Identifiera det utskrivna målet före mätning",
+    "sections": [
+      [
+        "Basmål eller C2-verifiering?",
+        "Rad 3, Measure / select measurement revision, läser basmålet som sparats i rad 2. En C2-utskrift hör till C2b. Measure verification print / select saved measurement. Om dess paket redan är valt går du direkt till det mätsteget; generera inte målet igen. När alla rader är lästa väljer du Save and finish, därefter C3. Compare model and print och Review feedback."
+      ],
+      [
+        "Target locked är avsiktligt",
+        "En förberedd mätning är bunden till sin TI2-fil. Den inaktiverade knappen Target locked visar att målvalet är låst. Om du vill byta mål stänger du mätfönstret och väljer det matchande målet i arbetsflödet. Byt inte till ett liknande mål medan en session är förberedd eller delvis uppmätt."
+      ],
+      [
+        "Vad fönstret visar",
+        "Sammanfattningen visar antal fält, måltyp när den är registrerad, antal sidor samt sparad lokal tid och UTC. Target details visar hela sökvägen och erbjuder förhandsvisning av sidor. Saknade historiska metadata gissas inte. Jämför dessa uppgifter med den utskrivna sidfoten. Paketets skapandetid bevisar inte det fysiska utskriftsdatumet eller torktiden."
+      ]
+    ],
+    "lead": "Ett sparat datum räcker inte. Matcha måltyp, antal sidor och det ursprungliga paketets sökväg mot det fysiska arket."
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Läsbara utskriftsmappar och spårbarhet",
+    "sections": [
+      [
+        "Mappnamn",
+        "Exempel: My printer paper_iter-1_c2_20261024-123456. Prefixet är det sparade projektnamnet, följt av arbetsflödets iteration vid kopieringen, steg och lokal tidsstämpel för kopieringen. Vid namnkollision skapas ytterligare en numrerad mapp i stället för att en tidigare leverans skrivs över. Det är projektnamnet, inte en separat angiven ICC-/profilbeskrivning."
+      ],
+      [
+        "PROJECT_INFO.txt",
+        "UTF-8-textfilen bevarar exakt projektnamn och ID, ursprunglig projektsökväg, arbetsflödessteg, aktuell iteration och iterations-ID, målets ursprungsiteration och ID när de hittas i historiken, UTC- och lokala tider för kopiering/skapande, målbeskrivning när den finns, käll-TI2 och dess SHA-256, projektets utskriftsinställningar samt kopierade filnamn med SHA-256. Okända ursprungsmetadata förblir okända."
+      ],
+      [
+        "Kopior kontra original",
+        "PRINTING.txt innehåller utskriftsinstruktionerna. print-delivery.json innehåller det strukturerade kvittot; arbetsflödet registrerar även kopian i projektets rapporter/historik. TIFF-data kopieras och kontrolleras byte för byte. Det fysiska arket identifieras inte enbart genom en hash: matcha dess sidfot och dokumenterade inställningar. Leveransen med enbart TIFF ersätter inte den ursprungliga TI2-filen/layouten vid mätning."
+      ],
+      [
+        "Målets ursprungsiteration kan vara äldre",
+        "Ett bas- eller C2-mål kan ha skapats i en tidigare iteration. Mappnamnet anger arbetsflödets iteration vid kopieringen; PROJECT_INFO.txt registrerar separat målets ursprungsiteration, hämtad ur matchande historik. Paketets skapandedatum och kopieringsdatum är olika händelser och inget av dem bevisar när arket faktiskt skrevs ut."
+      ],
+      [
+        "Kopia av hela målpaketet",
+        "Den valfria kopian av hela paketet från Refinement tools använder samma projektbaserade namngivning och projektidentifiering när källan ligger i ett igenkänt projekt. Utan projektsammanhang används ett generiskt läsbart kopienamn; saknade projekt-/iterationsuppgifter hittas inte på."
+      ]
+    ],
+    "lead": "Copy TIFF16 for printing skapar en separat leverans med projektnamnet i stället för en mapp med enbart UUID."
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Verifiering och fullständig leverans",
+    "sections": [
+      [
+        "C2a förbereder utskriften och C2b mäter den",
+        "C2a. Prepare verification print (TIFF16) sparar eller väljer utskriftspaketet. C2b. Measure verification print / select saved measurement läser arket. Välj Measure för en ny utskrift, inte Resume saved session. Välj Save and finish och kör sedan C3. Detta verifierar den befintliga ICC-profilen; det bygger ingen ny profil."
+      ],
+      [
+        "Läs C3-återkopplingen",
+        "Kör Review feedback för att öppna ett läsbart återkopplingsfönster. Öppna det igen med Open selected step results medan återkopplingen är vald. C3-filerna är verification-check.md och verification-check.json under targets/<target>/checks/<check>. Varje kontroll har en egen mapp. Jämför rapporter med samma ICC-profil och mål; skilj mellan fel mot önskat Lab och fel mot ICC-profilens förutsägelse."
+      ],
+      [
+        "Godkännande och certifikat är separata åtgärder",
+        "Att välja en rad navigerar bara. Kör Open review and approval, granska resultaten, kryssa i bekräftelsen och spara din bedömning. Välj sedan rad 14, Save ICC and measurement certificate, och klicka på Save ICC and certificate... Välj Also save copies elsewhere för att ange paketets namn och plats. Save in project only behåller leveransen enbart i projektet. En tidigare enbart numerisk export från rad 19 hindrar inte leverans efter utskriftsgodkännande."
+      ],
+      [
+        "Den exakt verifierade ICC-profilen medföljer",
+        "Den externa leveransmappen innehåller <profile>-verified-original.icc, en byte-identisk kopia av den kontrollerade ICC-profilen. Den normalt namngivna ICC-filen har uppdaterade namnmetadata; en valfri -v4.4.icc är en konverterad variant och inte den ursprungliga verifierade filen. delivery.json registrerar verifiedOriginalICCFile och verifiedOriginalICCSHA256. Behåll hela paketet, inklusive mappen med stödjande underlag (underlag/)."
+      ],
+      [
+        "Upprepa verifieringen efter ändrade skrivarinställningar",
+        "Skriv ut samma mål igen med de avsedda inställningarna och dokumentera faktiskt val av Chroma Optimizer (CO) eller annan beläggning, media, kvalitet och torktid för varje ark. Starta en ny C2b-mätning; tidigare mätningar finns kvar. Jämför matchande C3-rapporter. En sparad inställning Automatic visar inte ensam vilken fysisk beläggning som användes."
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Aktuellt arbetsflöde: beslut och navigering",
+    "sections": [
+      [
+        "Granska och lås en gång",
+        "Rad 4 håller förhandsvisningen av mätningen öppen tills Continue to assessment väljs. B1 validerar vald revision, öppnar en modal bekräftelse Lock profile input och sparar sedan en kontrollerad ögonblicksbild. Aktivitet och förfluten tid visas under validering och sparande. Föreslagen navigering är B1, B2, B3; B2 visas för granskning av receptet, medan automatisk B3 fortfarande skapar sina egna recept."
+      ],
+      [
+        "Antal fält och resultatfönster",
+        "Parametrar för extra förfiningsfält gäller när fält läggs till eller en iteration fortsätter, inte vid det första B3-bygget. C1 sparar sina numeriska rapporter utan att automatiskt öppna resultatfönster efter varandra; använd Open selected step results. C2a sköter förberedelsen av verifieringsmålet; välj befintliga filer när du återanvänder ett utskrivet ark."
+      ],
+      [
+        "Rätta registrerade uppgifter",
+        "När Project details ändras, skilj mellan Correct recorded details och Changed actual setup. En dokumentationsrättelse kräver en motivering och oförändrade fysiska förhållanden. Ursprungliga filhashar kontrolleras och en ny granskningspost sparar värdena före/efter. Ändringar i numerisk bearbetning kan inte använda detta undantag. Befintliga inaktuella steg återställs inte automatiskt."
+      ],
+      [
+        "Mätosäkerhet och verifiering",
+        "Upprepade mätningar visar mätspridning. Granska numeriska varningar och bedöm resultaten med en oberoende utskrift. Att inga problem observerats innebär inte att brusets fortplantning genom ny profilanpassning har studerats fullt ut."
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Aktuellt arbetsflöde: mätning och leverans",
+    "sections": [
+      [
+        "RGB- och andra punktmätningar",
+        "RGB-kontroller, byte av enskilda fält och punktmätningar av pappersvitt använder ett kort startljud för mätningar som startas från skärmen och med i1Pro 2-instrumentets knapp. Kalibrering använder inte startljudet för punktmätning. RGB-färgrader visar bara sida, färg och förlopp. Den tillfälliga knappen för ljudtest har tagits bort. Sidbyten visas direkt i fönstret utan separat bekräftelsefönster."
+      ],
+      [
+        "Avbryt och återuppta säkert",
+        "Skip / close och fönstrets stängningsknapp kan avbryta RGB-kontrolldialogen medan kalibreringen väntar. Sparade begäranden, transkript och avläsningar finns kvar. Ofullständiga utdatarader blockerar inte GUI-pollningen, och Argylls felsökningstext efter en prompt hanteras. Huvudarbetsflödets aktivitet rensas vid avbrott. Starta om InkProf efter ändringar i källkoden; återuppta sparade mätrader bara för samma fysiska utskrift."
+      ],
+      [
+        "Utskriftskopior av förfiningsmål",
+        "När gamutfält har sparats och registrerats från Refinement tools stängs arbetsflödets gamutfönster. Den fristående visaren stängs också när TIFF16 skapats. För att kopiera ett befintligt förfiningsmål väljer du rad 15 i huvudtabellen och använder Copy TIFF16 for printing... och väljer sedan Hämtade filer (Downloads). Den nya mappen identifierar projekt och iteration och innehåller utskriftsfiler och spårbarhetsinformation. Källprojektet bevaras."
+      ],
+      [
+        "Tidsangiven certifikatleverans",
+        "Rad 14 visar aktivitet och förfluten tid medan underlag samlas in, figurer och PDF-filer renderas, ICC-varianter förbereds och leveransfiler kopieras och verifieras. Det externa paketet innehåller den exakt kontrollerade ICC-profilen som <name>-verified-original.icc samt namngivna leveransvarianter. Ett lagrat certifikat genereras inte om på plats; skapa en ny exportrevision när ändringar behövs."
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Gamutgränser och utökade mål",
+    "sections": [
+      [
+        "Utforska den aktuella modellgränsen",
+        "View gamut erbjuder Gamut boundary exploration (both sides) vid sidan av de befintliga metoderna för inre skal och valda områden. Ange Boundary distance i ΔE76, minsta RGB-avstånd och högsta antal nya fält. Kandidaterna är utskrivbar enhets-RGB, inte påhittade färger utanför intervallet. Ett negativt teckenbestämt avstånd betyder förutsagt utanför det aktuella nätet; det bevisar inte att gamut fysiskt utökats."
+      ],
+      [
+        "Utöka senaste målet",
+        "Kryssa i Extend latest target för att kombinera den senaste slutförda gamututskriften för exakt aktuell ICC-profil med nya punkter. Ej utskrivna förslag hoppas över. Tidigare anpassnings-/utvecklingspunkter och kompletterande skuggpunkter behålls; exakta dubbletter och befintlig tränings-RGB utesluts. Kontrollfält genereras om. Sparade mätrader eller avläsningar förhindrar att samma mål utökas. Att enbart öppna mätfönstret blockerar inte utökningen. Tidigare TIFF, TI2 och avläsningar förblir oförändrade."
+      ],
+      [
+        "Skriv ut och mät den nya versionen",
+        "Det kompletta målet sparas som vanligt i projektet. Den valfria dialogen för extern kopia föreslår Hämtade filer (Downloads); Cancel hoppar bara över den externa kopian. Skriv ut varje sida utan färgkonvertering. I rad 16 mäter du det nya utskrivna målet med dess matchande TI2-fil och rad 17 bygger nästa profil tillsammans med tidigare träningsdata. Mät inte en tidigare layout med den nya TI2-filen. View gamut stängs efter lyckat skapande och kopieringsdialogen; vid avbrott/fel förblir det öppet."
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Granska uppmätt Lab-täthet",
+    "sections": [
+      [
+        "Läs mätningarna",
+        "Refinement tools > Review measured Lab density / balanced trial listar närliggande grupper av uppmätta Lab-värden och deras RGB-spann. Readings är ett heltalsantal upprepade RGB16-observationer; största ΔE00 beskriver deras repeterbarhet. Liknande Lab vid olika RGB kan bero på mättnad. Ingen ursprunglig mätning raderas, skrivs över eller medelvärdesbildas."
+      ],
+      [
+        "Ställ in, beräkna om, välj",
+        "Justera Lab distance (ΔE76), Target per group och Repeat review (ΔE00) och klicka sedan på Recalculate. Standardvärdena 1 / 4 / 1 är preliminära. Use balancing tillämpar automatiska representanter på markerade grupper; omarkerade grupper behåller alla rader. Select all markerar/framhäver alla grupper; Clear all återställer alla rader till föreslagna indata. Neutraler, extremvärden i ljushet/RGB och inkonsekventa upprepningar förblir skyddade. Målantalet kan därför överskridas."
+      ],
+      [
+        "Bygg en separat kandidat",
+        "Close stänger bara granskningen. Build separate balanced candidate använder den granskade delmängden och är inaktiverad när inga punkter skulle utelämnas. Prova andra inställningar och Recalculate i stället för att tvinga fram borttagning. Båda profilerna jämförs med alla ursprungliga anpassningsobservationer, inklusive utelämnade rader, med tillgängliga reserverade utvecklingsfält och med matchande fotografiska gradienter. Detta är diagnostik, inte slutlig oberoende utskriftsverifiering. Ingen kandidat ersätter automatiskt den aktiva profilen."
+      ]
+    ]
+  },
+  {
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "title": "Aktivitet, ursprung och datorbyten",
+    "sections": [
+      [
+        "Synliga arbetsmoment",
+        "Täthetsgranskning, Recalculate och det balanserade försöket visar förfluten tid och aktuell fas: kontroll av indata, ursprungliga ögonblicksbilder, ICC-bygge, jämförelse av alla fält, ursprungliga/kandidatens gradienter, tillgängliga utvecklingskontroller och sparande av resultat. Ändrade inställningar kräver Recalculate före bygget. Försöksparametrar, markerade grupper, källrader och SHA-256-hashar finns kvar i separata gransknings-/försöksposter."
+      ],
+      [
+        "En miljö per program",
+        "Varje program har sin egen .venv med Python 3.13.6 och samma låsta krav. Från kodmappen använder du setup_python_environment(\"check\"), \"sync\" eller \"rebuild\". En ombyggnad sparar den tidigare miljön som säkerhetskopia och återställer den om något går fel. Checka inte in eller flytta en .venv som portabel ersättning för en ombyggnad. Projekt och uppmätta original är åtskilda från körmiljön."
+      ],
+      [
+        "Medföljande Argyll och dokumentationens omfattning",
+        "Programmappen innehåller separat licensierad ArgyllCMS 3.5.0 för ARM- och Intel-macOS, med ursprungliga licensnotiser och ursprungsuppgifter. Verktyg för datorns egen processorarkitektur prioriteras och kontrolleras genom faktisk start. Detta dokument beskriver utgåva 1.4.1. Starta om appen efter uppdateringar av källkoden."
+      ]
+    ]
+  }
+]

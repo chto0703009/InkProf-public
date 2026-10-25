@@ -1,0 +1,14 @@
+{
+  "SourceVersion": "1.4.1",
+  "SourceInputSHA256": "0692805b97b6e27f21ec9c626da33a6a03af5b61fff57270a37012397f2cddb1",
+  "OutputFile": "docs/usage/InkProf-profileringsarbetsflode-MATLAB-guide-svenska.pdf",
+  "OutputSHA256": "e5b50185b80749cb335a821ab2027dce03823d99e5594b61249f42731a99d72c",
+  "Pages": 17,
+  "Checks": [
+    "All 17 rendered pages visually reviewed",
+    "All section bodies and page titles verified against editable Swedish source",
+    "Versions and extension guard aligned with current English guide",
+    "Downloads and PDF collection copies SHA-256 verified"
+  ],
+  "EditableSource": "docs/usage/workflow-source/sv.json"
+}

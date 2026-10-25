@@ -17,7 +17,7 @@ ROOT=Path(__file__).resolve().parent
 VERSION=(ROOT.parents[2]/'VERSION').read_text().strip()
 LANG=sys.argv[1] if len(sys.argv)>1 else 'en'
 if LANG not in ('en','sv'):raise ValueError('Supported languages: en, sv.')
-OUT=Path(sys.argv[2]) if len(sys.argv)>2 else ROOT.parent/'InkProf-profiling-workflow-MATLAB-guide-English.pdf'
+OUT=Path(sys.argv[2]) if len(sys.argv)>2 else ROOT.parent/('InkProf-profileringsarbetsflode-MATLAB-guide-svenska.pdf' if LANG=='sv' else 'InkProf-profiling-workflow-MATLAB-guide-English.pdf')
 OUT.parent.mkdir(parents=True,exist_ok=True)
 fontdir=Path(reportlab.__file__).parent/'fonts'
 for name,file in [('Vera','Vera.ttf'),('VeraBold','VeraBd.ttf')]: pdfmetrics.registerFont(TTFont(name,str(fontdir/file)))
@@ -33,7 +33,7 @@ class Pages(canvas.Canvas):
   n=len(self.states);ann=self._annotationCount
   for st in self.states:
    self.__dict__.update(st);self._annotationCount=ann
-   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,'InkProf - Quality profiling for RGB printers | '+VERSION)
+   self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,('InkProf - Kvalitetsprofilering för RGB-skrivare | ' if LANG=='sv' else 'InkProf - Quality profiling for RGB printers | ')+VERSION)
    self.setFillColor(MUTED)
    self.setStrokeColor(LINE);self.setLineWidth(.6)
    self.line(18*mm,273.5*mm,192*mm,273.5*mm);self.line(18*mm,22*mm,192*mm,22*mm)
@@ -58,9 +58,9 @@ for i,page in enumerate(json.loads((Path(sys.argv[3]) if len(sys.argv)>3 else RO
   story.extend([Image(str(ROOT/filename),width=w*mm,height=h*mm,kind='proportional'),p(escape(caption),'small'),Spacer(1,2*mm)])
  for title,body in page.get('sections',[]):story.extend([p(escape(title),'h'),p(escape(body).replace('\n','<br/>'))])
  if page.get('callout'):
-  t=Table([[p(escape(page['callout']))]],colWidths=[174*mm]);t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),PALE),('BOX',(0,0),(-1,-1),.5,LINE),('LEFTPADDING',(0,0),(-1,-1),11),('RIGHTPADDING',(0,0),(-1,-1),11),('TOPPADDING',(0,0),(-1,-1),9),('BOTTOMPADDING',(0,0),(-1,-1),6)]));story.extend([Spacer(1,4*mm),t])
+  t=Table([[p(escape(page['callout']).replace('\n','<br/>'))]],colWidths=[174*mm]);t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),PALE),('BOX',(0,0),(-1,-1),.5,LINE),('LEFTPADDING',(0,0),(-1,-1),11),('RIGHTPADDING',(0,0),(-1,-1),11),('TOPPADDING',(0,0),(-1,-1),9),('BOTTOMPADDING',(0,0),(-1,-1),6)]));story.extend([Spacer(1,4*mm),t])
  if page.get('small'):story.append(p(escape(page['small']),'small'))
  for label,url in page.get('links',[]):story.append(p(f'<link href="{url}" color="#007F83">{escape(label)}</link>','small'))
-doc=SimpleDocTemplate(str(OUT),pagesize=(210*mm,297*mm),leftMargin=18*mm,rightMargin=18*mm,topMargin=32*mm,bottomMargin=29*mm,title='InkProf - Profiling workflow and MATLAB guide',author='Christer Törnkvist',subject='Project workflow, installation and MATLAB operations')
+doc=SimpleDocTemplate(str(OUT),pagesize=(210*mm,297*mm),leftMargin=18*mm,rightMargin=18*mm,topMargin=32*mm,bottomMargin=29*mm,title=('InkProf - Profileringsarbetsflöde och MATLAB-guide' if LANG=='sv' else 'InkProf - Profiling workflow and MATLAB guide'),author='Christer Törnkvist',subject='Project workflow, installation and MATLAB operations')
 doc.build(story,canvasmaker=Pages)
 print(OUT)
