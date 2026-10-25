@@ -1,11 +1,11 @@
 [
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "From colour target to ICC",
     "sections": [
       [
         "Requirements and startup",
-        "Source version 1.4.0, released 2026-10-25. Tested with base MATLAB R2025b (no additional MATLAB toolboxes) and Python 3.13.6 on macOS. The macOS program folder includes separately licensed ArgyllCMS 3.5.0 tools for Apple Silicon and Intel. MATLAB is installed separately; setup_python_environment prepares the program’s own pinned Python environment and needs a suitable Python 3.13.6 interpreter. Python performs analysis and reporting; MATLAB provides the app and workflow. Windows and Linux are untested and require compatible tools; a POSIX bridge does not establish Linux qualification."
+        "Source version 1.4.1, released 2026-10-25. Tested with base MATLAB R2025b (no additional MATLAB toolboxes) and Python 3.13.6 on macOS. The macOS program folder includes separately licensed ArgyllCMS 3.5.0 tools for Apple Silicon and Intel. MATLAB is installed separately; setup_python_environment prepares the program’s own pinned Python environment and needs a suitable Python 3.13.6 interpreter. Python performs analysis and reporting; MATLAB provides the app and workflow. Windows and Linux are untested and require compatible tools; a POSIX bridge does not establish Linux qualification."
       ],
       [
         "How to use this guide",
@@ -19,7 +19,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "One project, one source of settings",
     "sections": [
       [
@@ -38,7 +38,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Workflow rows 1-10",
     "rows": [
       [
@@ -106,7 +106,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Workflow rows 11-19",
     "rows": [
       [
@@ -169,7 +169,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Targets, paper and measurement",
     "sections": [
       [
@@ -196,7 +196,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Refinement and shadows",
     "sections": [
       [
@@ -216,7 +216,7 @@
     "lead": "Open row 15, \"Refinement tools\", to choose the source of additional patches."
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Shell refinement and continuation",
     "lead": "Use Refinement tools to strengthen coverage near the gamut surface.",
     "sections": [
@@ -237,7 +237,7 @@
     "callout": "Iteration: 16 -> 17 (internal build diagnostics) -> 8 (current workflow checks) -> 18 (comparison)\nPrint-verified delivery: 9 -> 10 -> 11 -> 12 -> 13 -> 14\nNumerical-only delivery: 18 -> 19"
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Interpret and deliver",
     "sections": [
       [
@@ -260,12 +260,12 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Code, licensing and runtime checks",
     "sections": [
       [
         "",
-        "InkProf code and authored documentation use GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. The macOS distribution includes separately licensed ArgyllCMS 3.5.0 tools for ARM and Intel, with upstream notices and provenance. MATLAB and a portable Python runtime are not bundled; the isolated Python environment is prepared locally. Dependencies, schemas and fonts retain their own terms. See docs/releases/v1.4.0.md and LICENSE_SCOPE.md for current scope. The review in licenses/review-v1.0.0.md is historical evidence, not a legal review of the complete current release."
+        "InkProf code and authored documentation use GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. The macOS distribution includes separately licensed ArgyllCMS 3.5.0 tools for ARM and Intel, with upstream notices and provenance. MATLAB and a portable Python runtime are not bundled; the isolated Python environment is prepared locally. Dependencies, schemas and fonts retain their own terms. See docs/releases/v1.4.1.md and LICENSE_SCOPE.md for current scope. The review in licenses/review-v1.0.0.md is historical evidence, not a legal review of the complete current release."
       ],
       [
         "Version checks and reporting problems",
@@ -275,7 +275,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Identify the printed target before measuring",
     "lead": "A saved date alone is not enough. Match the target type, page count and original package path to the physical sheet.",
     "sections": [
@@ -294,7 +294,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Readable print folders and traceability",
     "lead": "Copy TIFF16 for printing creates a separate delivery with the project name instead of a UUID-only folder.",
     "sections": [
@@ -321,7 +321,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Verification and complete delivery",
     "sections": [
       [
@@ -347,7 +347,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Current workflow: decisions and navigation",
     "sections": [
       [
@@ -369,7 +369,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Current workflow: measurement and delivery",
     "sections": [
       [
@@ -391,7 +391,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Gamut boundaries and extended targets",
     "sections": [
       [
@@ -400,7 +400,7 @@
       ],
       [
         "Extend latest target",
-        "Tick Extend latest target to combine the latest completed gamut print for the exact current ICC with new points. Unprinted proposals are skipped. Previous fitting/development points and supplementary shadow points are retained; exact duplicates and existing training RGB are excluded. Controls are regenerated. Started or paused measurements prevent extending that same target. The earlier TIFF, TI2 and readings remain unchanged."
+        "Tick Extend latest target to combine the latest completed gamut print for the exact current ICC with new points. Unprinted proposals are skipped. Previous fitting/development points and supplementary shadow points are retained; exact duplicates and existing training RGB are excluded. Controls are regenerated. Saved measurement rows or readings block extension of that target. Opening the measurement window alone does not block it. The earlier TIFF, TI2 and readings remain unchanged."
       ],
       [
         "Print and measure the new version",
@@ -409,7 +409,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Review measured Lab density",
     "sections": [
       [
@@ -427,7 +427,7 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "tag": "MATLAB WORKFLOW | v1.4.1",
     "title": "Activity, provenance and computer changes",
     "sections": [
       [
@@ -440,7 +440,7 @@
       ],
       [
         "Native Argyll and documentation scope",
-        "The program folder includes separately licensed ArgyllCMS 3.5.0 for ARM and Intel macOS, with upstream notices and provenance. Native tools are preferred and checked for actual startup. This document describes release 1.4.0. Restart the app after source updates."
+        "The program folder includes separately licensed ArgyllCMS 3.5.0 for ARM and Intel macOS, with upstream notices and provenance. Native tools are preferred and checked for actual startup. This document describes release 1.4.1. Restart the app after source updates."
       ]
     ]
   }

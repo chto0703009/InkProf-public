@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.1 - 2026-10-25
+
+- Include the post-1.4.0 dark neutral and weak-chroma refinement sampler in the published release.
+- Align Swedish/English handbooks, technical descriptions and workflow guide with current code, runtime scope and UI labels.
+- Specify that target extension is blocked by saved measurement passes/readings, not by merely opening the measurement window.
+- Clarify internal iteration diagnostics versus the current workflow check row.
+
+
 ## v1.4.0 - 2026-10-25
 
 - Add gamut-boundary exploration and immutable extension of the latest completed, unmeasured target with full parent provenance.

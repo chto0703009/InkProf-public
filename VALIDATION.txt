@@ -1,3 +1,10 @@
+InkProf v1.4.1 validation - 2026-10-25
+=====================================
+PASS: current executable code audited against documentation: 59 targeted MATLAB tests, all passed; 29 Python tests, all passed with bundled native Argyll on PATH. No incomplete MATLAB tests.
+PASS: seven maintained PDF guides rebuilt for 1.4.1. Page counts and headings checked; rendered pages visually reviewed before delivery.
+Release packaging verifies source manifest, privacy exclusions, documentation hashes and asset SHA-256 before publication.
+No new physical instrument or printer qualification is claimed. Original user projects and measurements were not modified. Earlier release validation history follows unchanged.
+
 InkProf v1.4.0 validation - 2026-10-25
 =====================================
 PASS: 32 targeted MATLAB tests in the separate public checkout: gamut picker (2), target extension (5), density trial (3), density selection UI (1), calculation progress (9), Argyll discovery (4), executable validation (3), refinement continuation (5). No failures or incomplete tests.

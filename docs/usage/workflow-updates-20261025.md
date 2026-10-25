@@ -42,7 +42,7 @@ View gamut offers Gamut boundary exploration (both sides), alongside the existin
 
 ### Extend latest target
 
-Tick Extend latest target to combine the latest completed gamut print for the exact current ICC with new points. Unprinted proposals are skipped. Previous fitting/development points and supplementary shadow points are retained; exact duplicates and existing training RGB are excluded. Controls are regenerated. Started or paused measurements prevent extending that same target. The earlier TIFF, TI2 and readings remain unchanged.
+Tick Extend latest target to combine the latest completed gamut print for the exact current ICC with new points. Unprinted proposals are skipped. Previous fitting/development points and supplementary shadow points are retained; exact duplicates and existing training RGB are excluded. Controls are regenerated. Saved measurement rows or readings block extension of that target; opening the window alone does not. The earlier TIFF, TI2 and readings remain unchanged.
 
 ### Print and measure the NEW version
 

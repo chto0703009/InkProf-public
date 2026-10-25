@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.4.0 | 2026-10-25",
+    "tag": "ANVÄNDARHANDBOK | v1.4.1 | 2026-10-25",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Öppen metod och tydliga förutsättningar",
-        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.4.0, dokumenterad 2026-10-25; appens knappar och fältnamn är engelska."
+        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.4.1, dokumenterad 2026-10-25; appens knappar och fältnamn är engelska."
       ]
     ],
     "callout": "InkProf samlar profilering, kontroll och dokumentation i ett projekt. Utskriften av färgmålen gör du i ett separat utskriftsprogram."
@@ -38,7 +38,7 @@
       ],
       [
         "1. Använd uppdaterad kodmapp",
-        "Hämta källkods-ZIP för v1.4.0 från den publika releasesidan, packa upp och öppna hela InkProf-mappen. Alternativt: git clone --branch v1.4.0 https://github.com/chto0703009/InkProf-public.git . Blanda inte filer från olika installationer."
+        "Hämta källkods-ZIP för v1.4.1 från den publika releasesidan, packa upp och öppna hela InkProf-mappen. Alternativt: git clone --branch v1.4.1 https://github.com/chto0703009/InkProf-public.git . Blanda inte filer från olika installationer."
       ],
       [
         "2. Förbered programmets miljö",
@@ -1002,7 +1002,7 @@
       ],
       [
         "Underlag för denna handbok",
-        "Handboken beskriver InkProf 1.4.0, utgiven 25 oktober 2026, med dokumentrevision 2026-10-25. Releasetaggen identifierar den publicerade källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
+        "Handboken beskriver InkProf 1.4.1, utgiven 25 oktober 2026, med dokumentrevision 2026-10-25. Releasetaggen identifierar den publicerade källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
       ]
     ],
     "links": [
@@ -1025,7 +1025,7 @@
     ]
   },
   {
-    "tag": "v1.4.0 | MATERIAL OCH SKUGGOR",
+    "tag": "v1.4.1 | MATERIAL OCH SKUGGOR",
     "title": "Fler mätpunkter i mörka färger",
     "sections": [
       [
@@ -1051,7 +1051,7 @@
     ]
   },
   {
-    "tag": "v1.4.0 | LEVERANS OCH LICENS",
+    "tag": "v1.4.1 | LEVERANS OCH LICENS",
     "title": "Gamut, certifikat och källkod",
     "sections": [
       [
@@ -1072,7 +1072,7 @@
       ],
       [
         "Utgåvestatus",
-        "Handboken beskriver InkProf 1.4.0, utgiven 25 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. macOS-programmappen innehåller Argyll för ARM och Intel. MATLAB och den separata Pythonmiljön behöver förberedas enligt installationsanvisningen."
+        "Handboken beskriver InkProf 1.4.1, utgiven 25 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. macOS-programmappen innehåller Argyll för ARM och Intel. MATLAB och den separata Pythonmiljön behöver förberedas enligt installationsanvisningen."
       ]
     ],
     "links": [
@@ -1785,7 +1785,7 @@
         "En felaktig eller inkompatibel version av Python eller ett beroendepaket kan göra att analysen inte fungerar, även om paketet är installerat. InkProf kontrollerar Python-versionens grundkrav och provar att de nödvändiga paketen och deras kompilerade bibliotek kan laddas. Vid installation kontrolleras även att Argyll-verktygen kan startas och lämna versionsinformation. Använd paketversionerna i requirements-filerna som hör till din InkProf-utgåva. Kontrollen prövar funktion och grundkrav; den ersätter inte installationsfilernas angivna paketversioner."
       ]
     ],
-    "callout": "Anvisningen gäller InkProf 1.4.0, dokumentrevision 2026-10-25. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
+    "callout": "Anvisningen gäller InkProf 1.4.1, dokumentrevision 2026-10-25. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
     "links": [
       [
         "Detaljer och reparationskommandon",
@@ -1818,7 +1818,7 @@
     "callout": "Skalförtätning ändrar mätunderlaget. Gridprovet ändrar profilens beräknade tabeller. Prova dem separat för att förstå vad som påverkar resultatet."
   },
   {
-    "tag": "v1.4.0 | ARBETSGÅNG OCH CERTIFIKAT",
+    "tag": "v1.4.1 | ARBETSGÅNG OCH CERTIFIKAT",
     "title": "Nästa steg och tydlig leverans",
     "lead": "Här beskrivs rekommenderad nästa rad och hur leveransens dokument hänger ihop.",
     "sections": [
@@ -2077,7 +2077,7 @@
         "Efter alla rader: Save and finish och granska mätningen som vanligt. En delmätning markerar inte arbetsflödessteget som färdigt. Vid ett oväntat avbrott kan skanningar sedan senaste sparpunkten gå förlorade. Ändrat mål, inställningar eller sparad fil avvisas."
       ]
     ],
-    "callout": "Funktionen ingår i InkProf 1.4.0. Sparade original och utskriftsfiler bevaras. Automatiska tester ersätter inte kontroll med det avsedda instrumentet."
+    "callout": "Funktionen ingår i InkProf 1.4.1. Sparade original och utskriftsfiler bevaras. Automatiska tester ersätter inte kontroll med det avsedda instrumentet."
   },
   {
     "title": "Ommätning och RGB-kontroller",
@@ -2104,7 +2104,7 @@
         "En avbruten eller underkänd kontroll låser inte starten permanent. Rätta till problemet och starta igen. Ingen mätning eller avvikelse blir automatiskt godkänd genom detta."
       ]
     ],
-    "callout": "Funktionen ingår i InkProf 1.4.0. Sparade original och utskriftsfiler bevaras. Automatiska tester ersätter inte kontroll med det avsedda instrumentet."
+    "callout": "Funktionen ingår i InkProf 1.4.1. Sparade original och utskriftsfiler bevaras. Automatiska tester ersätter inte kontroll med det avsedda instrumentet."
   },
   {
     "title": "Överför mätningen till i1Profiler",
@@ -2261,7 +2261,7 @@
     ]
   },
   {
-    "tag": "1.4.0 | 2026-10-25",
+    "tag": "1.4.1 | 2026-10-25",
     "title": "Gamutgräns och utökat utskriftsmål",
     "sections": [
       [
@@ -2270,7 +2270,7 @@
       ],
       [
         "Extend latest target",
-        "Kryssa i Extend latest target för att kombinera senaste färdiga gamututskriften för exakt samma ICC med nya punkter. Förslag utan färdig TIFF hoppas över. Tidigare anpassnings-/utvecklingspunkter och extra mörka punkter behålls; exakta dubbletter och RGB som redan ingår i träningen utesluts. Kontroller skapas på nytt. Påbörjade eller pausade mätningar hindrar att samma mål utökas. Äldre TIFF, TI2 och avläsningar bevaras."
+        "Kryssa i Extend latest target för att kombinera senaste färdiga gamututskriften för exakt samma ICC med nya punkter. Förslag utan färdig TIFF hoppas över. Tidigare anpassnings-/utvecklingspunkter och extra mörka punkter behålls; exakta dubbletter och RGB som redan ingår i träningen utesluts. Kontroller skapas på nytt. Sparade mätrader eller avläsningar spärrar utökning av samma mål. Enbart ett öppnat mätfönster spärrar inte. Äldre TIFF, TI2 och avläsningar bevaras."
       ],
       [
         "Skriv ut och mät den nya versionen",
@@ -2279,7 +2279,7 @@
     ]
   },
   {
-    "tag": "1.4.0 | 2026-10-25",
+    "tag": "1.4.1 | 2026-10-25",
     "title": "Granska uppmätt Lab-täthet",
     "sections": [
       [
@@ -2297,7 +2297,7 @@
     ]
   },
   {
-    "tag": "1.4.0 | 2026-10-25",
+    "tag": "1.4.1 | 2026-10-25",
     "title": "Aktivitet, spårbarhet och datorbyte",
     "sections": [
       [
@@ -2310,7 +2310,7 @@
       ],
       [
         "Nativ Argyll och dokumentets omfattning",
-        "Programmappen innehåller separat licensierad ArgyllCMS 3.5.0 för ARM och Intel macOS, med originalnotiser och ursprungsuppgifter. Nativa verktyg prioriteras och provstartas. Uppdateringen beskriver release 1.4.0. Starta om appen efter källkodsändring."
+        "Programmappen innehåller separat licensierad ArgyllCMS 3.5.0 för ARM och Intel macOS, med originalnotiser och ursprungsuppgifter. Nativa verktyg prioriteras och provstartas. Uppdateringen beskriver release 1.4.1. Starta om appen efter källkodsändring."
       ]
     ]
   }

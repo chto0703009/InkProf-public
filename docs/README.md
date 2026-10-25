@@ -1,4 +1,4 @@
-# InkProf documentation - v1.4.0, documentation update 2026-10-25
+# InkProf documentation - v1.4.1, documentation update 2026-10-25
 
 
 Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.
@@ -140,7 +140,7 @@ The [i1Profiler CGATS transfer test](usage/i1profiler-cgats-test.md) documents s
 
 ## Documentation update 2026-10-24
 
-Current source version 1.2.4, including commit 5724d31. Handbooks, technical descriptions, presentations and the MATLAB guide cover locked measurement-target identity, base versus C2 selection, project-named print-copy folders, PROJECT_INFO.txt and JSON traceability. Included in patch release v1.2.5. Historical screenshots are identified; the new measurement screenshot is synthetic. The future-development PDF remains explicitly proposals, not current behaviour.
+Historical documentation revision for source version 1.2.4, including commit 5724d31. Handbooks, technical descriptions, presentations and the MATLAB guide cover locked measurement-target identity, base versus C2 selection, project-named print-copy folders, PROJECT_INFO.txt and JSON traceability. Included in patch release v1.2.5. Historical screenshots are identified; the new measurement screenshot is synthetic. The future-development PDF remains explicitly proposals, not current behaviour.
 
 [English technical description](usage/InkProf_Technical_Description_EN.pdf) | [Svensk teknisk beskrivning](usage/InkProf_Teknisk_beskrivning_SV.pdf).
 
@@ -154,4 +154,4 @@ Unicode paths and ICC names, RGB start audio and C2 TIFF/ICC copying are documen
 
 See [original project preservation](usage/project-organization.md#original-project-preservation-safeguards) and [release notes](releases/v1.2.6.md). Print-copy folders are separate from the editable project. Original measurements must not be overwritten, deleted or sent to Trash. At that release PDFs retained the v1.2.4 baseline; see the current 2026-10-25 revision below.
 
-Current documentation revision: **2026-10-25**, for **1.3.0**. See [workflow update notes](usage/workflow-updates-20261025.md). Handbooks, technical descriptions, presentations and the MATLAB workflow guide have been rebuilt. Older screenshots illustrate their dated interface; updated text describes the current behaviour. Planning/research PDFs and the future-opportunities document retain their historical scope.
+Current documentation revision: **2026-10-25**, for **1.4.1**. See [workflow update notes](usage/workflow-updates-20261025.md). Handbooks, technical descriptions, presentations and the MATLAB workflow guide have been rebuilt. Older screenshots illustrate their dated interface; updated text describes the current behaviour. Planning/research PDFs and the future-opportunities document retain their historical scope.

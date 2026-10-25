@@ -1,6 +1,6 @@
-# Public release scope - v1.4.0
+# Public release scope - v1.4.1
 
-Release 1.4.0 (2026-10-25) is published from the separate public repository. Private development history is not merged into it or rewritten.
+Release 1.4.1 (2026-10-25) is published from the separate public repository. Private development history is not merged into it or rewritten.
 
 Included: current MATLAB/Python source, synthetic tests, editable documentation and seven rebuilt current PDF guides. The future-opportunities PDF remains a proposal. Unmodified ArgyllCMS 3.5.0 macOS ARM/Intel distributions are included under third_party/argyll with full upstream licences, reference files and archive provenance. Corresponding source is available from the upstream locations recorded in THIRD_PARTY_NOTICES.md. These are separate programs under upstream terms, including AGPL-3.0.
 

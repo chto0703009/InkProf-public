@@ -1,6 +1,6 @@
-# InkProf v1.4.0 - Workflow clarity and measurement reliability
+# InkProf v1.4.1 - Workflow clarity and measurement reliability
 
-> **New in v1.4.0:** audited metadata corrections, clearer B1-B3 navigation, responsive RGB/spot measurement, timed certificate delivery and updated PDF guides. Original measurements and profiles are preserved.
+> **New in v1.4.1:** audited metadata corrections, clearer B1-B3 navigation, responsive RGB/spot measurement, timed certificate delivery and updated PDF guides. Original measurements and profiles are preserved.
 
 **Keep your i1Pro 2. Take control of your prints.**
 
@@ -27,9 +27,9 @@ Version **1.1.1** adds saved whole-row measurement checkpoints and guided resump
 
 InkProf is **free to download** under GPL version 3 or later. **MATLAB requires a licence**; base MATLAB is sufficient. Python, ArgyllCMS and a compatible spectrophotometer are installed separately. The complete workflow is tested on **macOS with the i1Pro 2**; Windows/Linux and all instrument modes are not qualified.
 
-[Download the stable v1.4.0 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.0) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
+[Download the stable v1.4.1 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.1) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
 
-Source and Markdown include current local workflow fixes. Seven PDF guides were rebuilt on 2026-10-25 for v1.4.0 plus local updates; the future-opportunities PDF retains its proposal scope. These updates are included in release 1.4.0. See [release notes](docs/releases/v1.4.0.md) and [validation](VALIDATION.txt).
+Source and Markdown include current local workflow fixes. Seven PDF guides were rebuilt on 2026-10-25 for v1.4.1 plus local updates; the future-opportunities PDF retains its proposal scope. These updates are included in release 1.4.1. See [release notes](docs/releases/v1.4.1.md) and [validation](VALIDATION.txt).
 
 Print accuracy depends on the printer, paper, ink and settings. Numerical checks and screen previews do not replace physical verification. Certificates document evidence and decisions; they are not accredited certification or a declaration of full ISO conformity.
 
@@ -46,7 +46,7 @@ This is a **MATLAB source release**. Install MATLAB and Python 3.13.6 separately
 Clone the stable source release:
 
 ```sh
-git clone --branch v1.4.0 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.4.1 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 ```
 
@@ -66,7 +66,7 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.4.0 release notes](docs/releases/v1.4.0.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.4.1 release notes](docs/releases/v1.4.1.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
@@ -74,7 +74,7 @@ The user handbook is maintained in matching Swedish and English editions. App la
 - [Swedish presentation (PDF)](docs/usage/InkProf-presentation-svenska.pdf)
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.4.0.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.4.1.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 
@@ -146,7 +146,7 @@ Post-release source update (2026-10-11): full Python setup checks now test actua
 
 Optional CGATS delivery for i1Profiler is available through a checkbox in workflow rows 14/19. See [export instructions, supported measurements and verified import](docs/usage/i1profiler-cgats-test.md).
 
-Technical implementation: [English description](docs/TECHNICAL_DESCRIPTION_EN.md) · [English PDF](docs/usage/InkProf_Technical_Description_EN.pdf) · [Swedish PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf). Includes file/dependency appendices; updated for v1.4.0.
+Technical implementation: [English description](docs/TECHNICAL_DESCRIPTION_EN.md) · [English PDF](docs/usage/InkProf_Technical_Description_EN.pdf) · [Swedish PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf). Includes file/dependency appendices; updated for v1.4.1.
 
 ## Pythonmiljö och datorbyte
 
@@ -158,7 +158,7 @@ ArgyllCMS 3.5.0 följer med i `third_party/argyll`, separat för Apple Silicon o
 
 ## Refinement source update - 2026-10-25
 
-Release 1.4.0 adds printable gamut-boundary exploration, immutable
+Release 1.4.1 adds printable gamut-boundary exploration, immutable
 extension of the latest completed target, and measured Lab-density review
 with separate balanced ICC trials. Select all/Clear all control group use;
 Recalculate applies adjustable provisional thresholds. A trial is not selected
@@ -166,6 +166,6 @@ automatically. Activity timers show analysis/build phases. The optional print
 copy defaults to Downloads after the project target has been saved.
 
 The handbooks, presentations, technical descriptions and MATLAB workflow guide
-were updated from editable sources for these changes. These changes are included in release v1.4.0. See
+were updated from editable sources for these changes. These changes are included in release v1.4.1. See
 [workflow updates](docs/usage/workflow-updates-20261025.md) and
 [gamut and measured-density instructions](docs/usage/gamut-surface.md).

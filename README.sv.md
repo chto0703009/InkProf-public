@@ -1,6 +1,6 @@
-# InkProf v1.4.0 - Skydd för originalprojekt
+# InkProf v1.4.1 - Skydd för originalprojekt
 
-> **Nytt i v1.4.0:** skyddade utskriftskopior, tydlig projektidentifiering och säkrare namnbyten. Ursprungliga mätdata bevaras.
+> **Nytt i v1.4.1:** skyddade utskriftskopior, tydlig projektidentifiering och säkrare namnbyten. Ursprungliga mätdata bevaras.
 
 **Behåll din i1Pro 2. Ta kontroll över utskriften.**
 
@@ -21,13 +21,13 @@ InkProf är en MATLAB-app med öppen källkod för profilering och verifiering a
 
 Projektet håller ihop underlag, profiler, kontroller och historik. Du kan stänga det medan utskriften torkar och fortsätta senare. RGB-skrivare tar emot RGB-data via drivrutinen; de flesta fotoskrivare med bläckstråle använder detta flöde. InkProf sparar TIFF16 för separat utskrift och sköter mätningen i appen.
 
-## Nytt i 1.4.0
+## Nytt i 1.4.1
 
 Spårbara rättelser av projektuppgifter, tydligare B1-B3-flöde, ljud även från instrumentknappen, säkrare avbrott vid RGB-kalibrering och aktivitetsvisning i certifikatleveransen. Sju PDF-guider är uppdaterade.
 
 ## Nytt i 1.2.2
 
-Tvåspråkiga PDF-certifikat, ett fullständigt engelskt mätsupplement, valfri lokal 3D-visning och tydligare färgjämförelse. Båda PDF-certifikaten och supplementet ligger direkt i leveransmappen. Se [releaseinformation](docs/releases/v1.4.0.md).
+Tvåspråkiga PDF-certifikat, ett fullständigt engelskt mätsupplement, valfri lokal 3D-visning och tydligare färgjämförelse. Båda PDF-certifikaten och supplementet ligger direkt i leveransmappen. Se [releaseinformation](docs/releases/v1.4.1.md).
 
 ## Nytt i 1.1.1
 
@@ -44,7 +44,7 @@ Tvåspråkiga PDF-certifikat, ett fullständigt engelskt mätsupplement, valfri 
 
 InkProf är **kostnadsfritt att ladda ner**, enligt GPL version 3 eller senare. **MATLAB kräver licens**; grundversionen räcker. Python, ArgyllCMS och en kompatibel spektrofotometer installeras separat. Det fullständiga arbetsflödet är testat på **macOS med i1Pro 2**; Windows/Linux och alla instrumentlägen är inte kvalificerade.
 
-[Hämta stabil källkod v1.4.0](https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.0) · [English overview](README.md) · [Svensk nyttopresentation](docs/usage/InkProf-presentation-svenska.pdf) · [Svensk användarhandbok](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
+[Hämta stabil källkod v1.4.1](https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.1) · [English overview](README.md) · [Svensk nyttopresentation](docs/usage/InkProf-presentation-svenska.pdf) · [Svensk användarhandbok](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 
 Källkodsreleasen publicerades **2026-10-24**. Handböcker, presentationer och MATLAB-guide är uppdaterade för denna release.
 
@@ -53,7 +53,7 @@ Källkodsreleasen publicerades **2026-10-24**. Handböcker, presentationer och M
 - [Installationsanvisning](README.md#install-and-start)
 - [Engelsk handbok](docs/usage/InkProf-user-handbook-English.pdf)
 - [Engelsk presentation](docs/usage/InkProf-presentation-English.pdf)
-- [Releaseinformation](docs/releases/v1.4.0.md)
+- [Releaseinformation](docs/releases/v1.4.1.md)
 - [Validering](VALIDATION.txt)
 
 Färgnoggrannheten beror på skrivare, papper, bläck och inställningar. Numeriska kontroller och skärmförhandsvisningar ersätter inte fysisk verifiering. Certifikatet dokumenterar underlag och beslut; det är inte ackrediterad certifiering eller intyg om full ISO-överensstämmelse.
@@ -64,15 +64,15 @@ InkProf tillhandahålls utan garanti enligt GPL. Se [LICENSE](LICENSE), [licenso
 
 Valfri CGATS-leverans till i1Profiler väljs med en kryssruta vid steg 14/19. Se [exportinstruktioner, mätkrav och verifierat importtest](docs/usage/i1profiler-cgats-test.md).
 
-Teknisk implementation: [Svensk beskrivning](docs/TECHNICAL_DESCRIPTION_SV.md) · [Svensk PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf) · [Engelsk PDF](docs/usage/InkProf_Technical_Description_EN.pdf). Med appendix om filer och beroenden, uppdaterad för v1.4.0.
+Teknisk implementation: [Svensk beskrivning](docs/TECHNICAL_DESCRIPTION_SV.md) · [Svensk PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf) · [Engelsk PDF](docs/usage/InkProf_Technical_Description_EN.pdf). Med appendix om filer och beroenden, uppdaterad för v1.4.1.
 
 ## Källkods- och dokumentuppdatering 2026-10-25
 
-Release 1.4.0 ger provtagning kring gamutgränsen, utökning av senaste färdiga
+Release 1.4.1 ger provtagning kring gamutgränsen, utökning av senaste färdiga
 mål i en ny utskriftsversion och uppmätt Lab-täthetsgranskning med separat
 balanserad ICC-kandidat. Select all/Clear all väljer grupper och Recalculate
 använder ändrade provisoriska gränser. Original och aktiv profil bevaras.
 Aktivitetstimer visar arbetets fas. Extern utskriftskopia har Downloads förvalt.
 Handböcker, presentationer, tekniska beskrivningar och MATLAB-guiden är
-uppdaterade. Ändringarna ingår i release 1.4.0.
+uppdaterade. Ändringarna ingår i release 1.4.1.
 Se [aktuella flödesändringar](docs/usage/workflow-updates-20261025.md).
