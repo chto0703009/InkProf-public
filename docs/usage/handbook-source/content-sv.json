@@ -2252,7 +2252,7 @@
       ],
       [
         "Utskriftskopia av komplettering",
-        "När gamutpatchar har sparats och registrerats från Refinement tools stängs arbetsflödets gamutfönster. Den fristående gamutvisaren kan vara kvar. För att kopiera en befintlig komplettering: markera rad 15 i huvudlistan, välj Copy TIFF16 for printing... och välj Downloads. En ny mapp identifierar projekt och iteration och innehåller utskriftsfiler och spårbarhet. Originalprojektet bevaras."
+        "När gamutpatchar har sparats och registrerats från Refinement tools stängs arbetsflödets gamutfönster. Även den fristående gamutvisaren stängs efter lyckad TIFF16-skapning. För att kopiera en befintlig komplettering: markera rad 15 i huvudlistan, välj Copy TIFF16 for printing... och välj Downloads. En ny mapp identifierar projekt och iteration och innehåller utskriftsfiler och spårbarhet. Originalprojektet bevaras."
       ],
       [
         "Aktivitet vid certifikatleverans",

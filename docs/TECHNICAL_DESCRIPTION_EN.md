@@ -12,7 +12,7 @@ Implementation, calculation chain and data contracts
 
 This description covers version 1.4.0, released 2026-10-25. It follows the data from target definition through measurement, ICC construction, numerical diagnostics, physical verification and delivery. The handbook describes the operator's click sequence; this document explains what those steps mean and which files they depend on.
 
-The technical baseline is release 1.4.0, documented 2026-10-25. Older interface illustrations are explicitly identified as documentation examples. They show fictional projects, not measurements proving printer quality. File paths in the appendices are relative to the installation or project root; generated UUIDs and directory names vary.
+Older interface illustrations are explicitly identified as documentation examples. They show fictional projects, not measurements proving printer quality. File paths in the appendices are relative to the installation or project root; generated UUIDs and directory names vary.
 
 
 | Reading order / page | Contents |
@@ -28,18 +28,17 @@ The technical baseline is release 1.4.0, documented 2026-10-25. Older interface 
 | 10 | Appendix A. Installation, dependencies and licence |
 | 11 | Appendix B. Files: what is needed and where |
 | 12 | Appendix C. Audit checklist and source references |
-| 13 | Appendix D. Measurement-target identity and external print provenance |
-| 14 | Appendix E. Feedback and verified ICC delivery |
-| 15 | Local workflow updates - review, locking, correction and issue status |
-| 16 | Acquisition, cancellation and delivery |
-| 17 | Gamut boundaries and extended targets |
-| 18 | Review measured Lab density |
-| 19 | Activity, provenance and computer changes |
-
+| 13 | Appendix D. Target identity and print-copy provenance |
+| 14 | Appendix E. Feedback and checked ICC delivery |
+| 15 | Appendix F. Review, locking and corrections |
+| 16 | Appendix G. Acquisition, cancellation and delivery |
+| 17 | Appendix H. Gamut boundaries and extended targets |
+| 18 | Appendix I. Measured Lab density and separate candidate |
+| 19 | Appendix J. Activity, provenance and runtime |
 ---PAGE---
 ## 1. Architecture and scope
 
-InkProf coordinates RGB output profiling for a specified printer, paper, ink and printing configuration. It does not control an analogue camera or profile a digital camera. Its printed RGB targets are distinct from a photographed ColorChecker. The Camera-41 SG140 restriction does not restrict InkProf's configurable printer patch sets.
+InkProf coordinates RGB output profiling for a specified printer, paper, ink and printing configuration. It does not control an analogue camera or profile a digital camera. Its printed RGB targets are distinct from a photographed ColorChecker. InkProf supports configurable printer patch sets without restriction to a particular photographed ColorChecker model.
 
 MATLAB provides the app, project state, geometry, dialogs and orchestration. External Python workers perform measurement bridging, spectral/numerical analysis, ICC inspection and report generation. ArgyllCMS supplies target/layout tools, instrument communication, profile construction and colour lookups. LittleCMS is used through supported Python/Pillow routes for additional ICC processing and checks. InkProf is not an independent replacement ICC fitting engine.
 
@@ -50,7 +49,6 @@ Project settings record the physical printing conditions. A target definition re
 The main workflow has 19 rows. Rows 1-4 prepare and accept measurements; B1-B3 lock inputs, record a recipe and build; row 8 checks the result; C2/C3 produce and measure a verification print. Feedback, intended-use approval and delivery follow. Rows 15-19 provide refinement, subsequent iterations, profile comparison and a separately labelled numerical-only delivery route.
 
 Source map: `src/+inkprof/app.m`, `ProjectWorkflow.m`, `+internal/executeWorkflowStep.m`, `bridge/`, `profiles/`, `analysis/`.
-
 ---PAGE---
 ## 2. RGB target definition and rendering
 
@@ -60,10 +58,13 @@ For a candidate p, the score is its Euclidean distance to the nearest existing f
 
 The total patch budget includes fitting samples, separate control samples and repetitions. Controls use a deterministic radical-inverse sequence; repeats reference existing fitting samples. Saved roles are `fit`, `control` and `repeat`. Grey-axis RGB is not proof that the printer produces a neutral grey. Coverage diagnostics sample a fixed 33 x 33 x 33 grid and distinguish boundary and interior; they do not prove a continuous maximum gap.
 
-Argyll alternatives use targen and may use an existing RGB printer ICC for perceptual point placement. In v1.2.2 an ICC v4 input automatically receives a separate approximate v2 compatibility copy. The original and conversion evidence are preserved. A cached copy is addressed by the original hash. The reconstruction uses a 17-cubed relative forward grid and inverse Bradford media-white adaptation; inverse tables and perceptual mapping are rebuilt. It is an approximation, not a version-byte edit.
+Argyll alternatives use targen and may use an existing RGB printer ICC for perceptual point placement. An ICC v4 input automatically receives a separate approximate v2 compatibility copy. The original and conversion evidence are preserved. A cached copy is addressed by the original hash. The reconstruction uses a 17-cubed relative forward grid and inverse Bradford media-white adaptation; inverse tables and perceptual mapping are rebuilt. It is an approximation, not a version-byte edit.
 
 Saving the definition creates TI1 plus JSON, without printing layout. Rendering subsequently creates TIFF16, TI2 and matching layout metadata. Ideal floating-point RGB and RGB16 quantisation are different records. Runtime figure references and callbacks are excluded from JSON.
 
+
+
+Source map: `designRGBTarget.m`, `createTarget.m`, `+internal/drawPrintControls.m`, `analysis/gamut_refinement.py`.
 ---PAGE---
 ## 3. Measurement and colour-data conditions
 
@@ -71,7 +72,7 @@ The matching TI2/layout is essential: a measurement is not merely a list of Lab 
 
 ![Measurement interface](docs/usage/handbook-source/examples/measurement-window.png)
 
-Figure 1. Documentation interface example captured 2026-10-09 before instrument start. It does not demonstrate an actual measurement. Labels may differ from v1.2.2.
+Figure 1. Documentation interface example captured 2026-10-09 before instrument start. It does not demonstrate an actual measurement. Interface labels may differ from version 1.4.0.
 
 A remeasurement creates a candidate and then an accepted revision; it must not silently replace registered readings. Paired scans, repeats and spot corrections answer different questions. Repeatability estimates only describe the repetitions actually acquired; they do not quantify every source of printer, instrument or environmental uncertainty.
 
@@ -80,7 +81,6 @@ Measurement condition must be recorded rather than inferred from a file extensio
 FWA/OBA compensation requires native M0 colour spectra, known compatible non-UV-filtered instrument evidence, wavelength coverage at or below 400 nm through at least 700 nm, and a suitable measured paper-white reference. White-reference instrument and wavelengths must match. M1, M2, unknown or already compensated data cannot simply be treated as native M0. A blank-paper reading cannot replace missing colour spectra. Simulated D50 FWA compensation is not a physical M1 measurement.
 
 Source map: `startMeasurement.m`, `MeasurementDialog.m`, `importMeasurement.m`, `prepareProfileInput.m`, `createProfileRecipe.m`.
-
 ---PAGE---
 ## 4. B1-B3: from accepted data to ICC
 
@@ -97,7 +97,6 @@ B3 validates the recipe/input hashes, copies the required input into a work area
 The job stores status, command arguments, worker logs and result identity. Successful, failed and cancelled are separate outcomes; a worker exiting without a valid final record is treated as failure. A previous successful ICC is not overwritten by calling it the result of a failed new job. Timeouts and cancellation are operational safeguards, not colour-quality criteria.
 
 Source map: `prepareProfileInput.m`, `createProfileRecipe.m`, `runProfileJob.m`, `profiles/profile_job.py`.
-
 ---PAGE---
 ## 5. What the numerical checks establish
 
@@ -113,12 +112,11 @@ Training fit, numerical transform consistency and independent print accuracy are
 
 Fit reports retain patch identities, predicted/measured Lab, absolute-colourimetric context and summary statistics. Filters such as grey RGB, dark, high chroma or RGB boundary aid inspection; they do not change the measurements.
 
-C1 also checks deliberately damaged profiles as negative controls. Detecting those controls supports the diagnostic mechanism, not a blanket validation of all possible ICC defects. ISSUE-001 was closed by user decision on 2026-10-25 after several measurements without observed problems; remaining uncertainty was accepted for current use. Measurement-noise propagation through refitting is not yet fully quantified.
+C1 also checks deliberately damaged profiles as negative controls. Detecting those controls supports the diagnostic mechanism, not a blanket validation of all possible ICC defects. Measurement-noise propagation through refitting is not yet fully quantified.
 
 Reports are stored in new diagnostic subfolders and registered with the project. Rebuilding a check creates evidence for the selected ICC and inputs; it must not silently rewrite a previously delivered certificate. Interpretation remains an operator/reviewer decision within the intended printing conditions.
 
 Source map: `checkProfileFit.m`, `checkProfileGrid.m`, `checkProfileC1.m`, `analysis/profile_fit.py`, `analysis/profile_c1.py`.
-
 ---PAGE---
 ## 6. C2/C3: physical verification
 
@@ -133,7 +131,6 @@ Two useful error vectors are distinguished: measured Lab minus desired Lab, and 
 Large desired-colour error with small model-to-print residual can be consistent with limited gamut, but does not by itself prove the cause. Repeatability and documented print-chain conditions must also be examined. C3 feedback ranks residuals for further work; thresholds in `analyseVerification` are configurable diagnostic policies, not ISO certification or automatic profile approval.
 
 Source map: `createVerificationTarget.m`, `checkVerificationTarget.m`, `analyseVerification.m`, `analysis/verification_check.py`, `analysis/verification_feedback.py`.
-
 ---PAGE---
 ## 7. Refinement and successive iterations
 
@@ -141,14 +138,15 @@ Refinement proposes additional RGB samples from image colours, previous verifica
 
 Each iteration keeps roles and source identities. Samples that become training data for the next ICC are no longer independent tests of that ICC. Repeats and controls retain their explicit role; matching layout/definition data is needed because a generic TI3 alone does not carry the full workflow policy.
 
-The configurable matte-paper shadow strategy can emphasise dark sampling and the Argyll grid. Current project defaults include patch emphasis 2, grid emphasis 1.3 and up to 48 additional dark fitting patches per iteration. These are InkProf settings, not an official Argyll matte preset or evidence that every matte paper benefits. Generated targets and actual counts are recorded; old targets are not silently changed when defaults change. New refinement targets reserve about one third of the shadow budget for neutral patches and one third for weakly coloured shadows (predicted C*ab up to 10); remaining slots cover other dark colours. With 48 available patches this normally gives 16 per group. Dense device-gray probes and small channel offsets supplement Argyll sampling. Unavailable quota slots return to the dark pool. Existing RGB16 colours are excluded. The receipt records policy and source ICC hash. Print device RGB without colour conversion, measure the new TI2 and build the next iteration. The current ICC only predicts selection; it is not applied to this print. Original targets and profiles remain unchanged. Verify the candidate with a fresh print; more patches cannot guarantee a darker physical black.
+The configurable matte-paper shadow strategy can emphasise dark sampling and the Argyll grid. Current project defaults include patch emphasis 2, grid emphasis 1.3 and up to 48 additional dark fitting patches per iteration. These are InkProf settings, not an official Argyll matte preset or evidence that every matte paper benefits. Generated targets and actual counts are recorded; old targets are not silently changed when defaults change.
+
+New refinement targets reserve about one third of the shadow budget for neutral patches and one third for weakly coloured shadows (predicted C*ab up to 10); remaining slots cover other dark colours. With 48 available patches this normally gives 16 per group. Dense device-gray probes and small channel offsets supplement Argyll sampling. Unavailable quota slots return to the dark pool. Existing RGB16 colours are excluded. The receipt records policy and source ICC hash. The new target package contains device RGB without ICC conversion; its TI2 binds subsequent measurement to the next iteration. The current ICC only predicts selection; it is not applied to this print. Original targets and profiles remain unchanged. A fresh physical verification print is required to assess the candidate; more patches cannot guarantee a darker physical black.
 
 The next profile build combines the approved training evidence and produces a new candidate. Shared-sample comparison of previous/current ICCs reveals numerical changes. Repeat the current profile's checks and preferably a new physical verification print to determine whether performance improved. Comparing two model surfaces cannot establish new measured print accuracy.
 
 The numerical-only delivery route for a later iteration is explicitly different from print-verified delivery. It documents the available numerical evidence and limited scope. It does not invent missing verification or imply that an earlier print validates a changed ICC.
 
-Source map: `proposeRefinement.m`, `continueRefinement.m`, `iterateProfile.m`, `refineVerification.m` and the workflow's row 15-19 handlers. Exact target-generation routes are recorded in each project's evidence.
-
+Source map: `proposeRefinement.m`, `continueRefinement.m`, `iterateProfile.m`, `refineVerification.m`, `analysis/shadow_patches.py`, `+internal/createRefinementPrint.m`. Exact routes are recorded in project evidence.
 ---PAGE---
 ## 8. Project state, integrity and delivery
 
@@ -162,8 +160,11 @@ Delivery makes an explicit ICC copy and records source/delivery hashes. Interact
 
 Certificates and supplements identify measured conditions, selected profile and approval scope. HTML deliveries can depend on supporting files; move the complete bundle. Previously registered reports must not be regenerated in place: create a new workflow export. A digital certificate documents InkProf's saved evidence and operator decisions; it is not an accreditation or automatic standards-compliance claim.
 
-Long calculations use elapsed-time activity and phase messages. Native file dialogs and user decisions are distinct from computation. Target design in v1.2.2 uses a separate v2 compatibility copy automatically when needed; other import routes can still require confirmation.
+Long calculations use elapsed-time activity and phase messages. Native file dialogs and user decisions are distinct from computation. Target design uses a separate v2 compatibility copy automatically when needed; other import routes can still require confirmation.
 
+
+
+Source map: `ProjectWorkflow.m`, `updateProject.m`, `verifyProject.m`, `+internal/writeWorkflowFinalReport.m`.
 ---PAGE---
 ## Appendix A. Installation, dependencies and licence
 
@@ -172,17 +173,16 @@ Long calculations use elapsed-time activity and phase messages. Native file dial
 | MATLAB | App, geometry and orchestration. Base MATLAB R2025b tested on macOS; do not infer Windows/Linux qualification. |
 | Python | External worker process. Release 1.4.0 uses Python 3.13.6 in its own isolated .venv with the full pinned requirements; check/sync/rebuild use setup_python_environment. |
 | ArgyllCMS | Updated macOS folder includes separately licensed ArgyllCMS 3.5.0 for ARM/Intel, with native startup checks. Other platforms need a compatible installation. Tools include targen, printtarg, chartread/spotread, colprof, xicclu and profcheck. |
-| NumPy, SciPy, colour-science | Numerical and spectral analysis. Exact pins are in requirements-analysis.txt. |
+| NumPy, SciPy, colour-science | Numerical and spectral analysis. Exact pins are in requirements.txt; `requirements-analysis.txt` references the same list. |
 | Pillow / LittleCMS | ICC processing and comparison routes; original ICC and transform conditions matter. |
 | tifffile, imagecodecs | RGB16 TIFF diagnostics and compressed TIFF support where required. |
-| ReportLab | Report PDF generation, included through requirements-report.txt. |
+| ReportLab | Report PDF generation, pinned in requirements.txt; `requirements-report.txt` references the same list. |
 
 The program uses its own isolated `.venv` with Python 3.13.6 and pinned `requirements.txt`; analysis/report requirement files reference the same list. `setup_python_environment` checks, synchronises or rebuilds it. `setupInkProf(CheckPython=true)` checks setup and `startInkProfApp` opens the app. Native Python is preferred on Apple Silicon.
 
 The measurement bridge contains POSIX-dependent routes. Tested instrument operation includes i1Pro 2 on macOS; other OS/instrument combinations require their own validation. Communication success does not prove correct instrument calibration or measurement conditions.
 
 InkProf-authored code, tests and documentation are GPL-3.0-or-later, without warranty. MATLAB, Python, ArgyllCMS and third-party libraries retain their own terms. Bundled exceptions include the CxF3 schema, fonts and materials listed in `LICENSE_SCOPE.md`, `THIRD_PARTY_NOTICES.md` and `licenses/inventory.json`. User measurements and supplied profiles are not relicensed by exporting a project.
-
 ---PAGE---
 ## Appendix B. Files: what is needed and where
 
@@ -201,14 +201,15 @@ These paths describe a typical project. Keep complete generated packages. UUID/n
 | <job>/status.json; worker.log | Job outcome and operational evidence |
 | <job>/result/profile.icc | Successful ICC candidate |
 | <job>/checks/<id>/ | Fit/grid/C1 diagnostic reports |
-| verification/<name-id>/ | C2 reference, rendered target and matched verification evidence |
+| targets/<ID>/ | Main-workflow C2 package: verification.json, definition/ and print/ |
+| verification/<name-ID>/ | C2 package when the API has no explicit OutputFolder |
+| <C2-package>/checks/<ID>/ | C3: verification-check.json and verification-check.md |
 | analyses/; reports/ | Analyses, decisions and delivery/report artifacts |
 | profiles/exports/ | ICC export receipts and source/delivery identities |
 
 The installation contains `src/`, `bridge/`, `profiles/`, `analysis/`, `schemas/`, `resources/`, `config/` and requirements files. These are program resources, not substitutes for project files. The common `.icc-v2-cache` under the installation projects/ location is a conversion cache, not a complete project backup.
 
 For a new measurement workflow, the user supplies physical printer/paper/ink/settings, an actual printed target and instrument readings. An optional preconditioning ICC steers sample placement; it is not measured training data. Matching TI1/JSON/TI2/layout and measurement revisions are produced or imported through the app. Do not import only TIFF or only Lab and assume the identity chain survives.
-
 ---PAGE---
 ## Appendix C. Audit checklist and source references
 
@@ -222,165 +223,132 @@ For a new measurement workflow, the user supplies physical printer/paper/ink/set
 | What was physically verified? | C2 package, matching print measurement and C3 report |
 | What was approved? | Explicit intended-use decision and delivery scope, not just a completed row |
 
-Primary implementation references are the source files named in each chapter. Paths without a prefix in those source maps are under `src/+inkprof/`. Public source and release: https://github.com/chto0703009/InkProf-public and https://github.com/chto0703009/InkProf-public/releases/tag/v1.2.4.
+Primary implementation references are the source files named in each chapter. Paths without a prefix in those source maps are under `src/+inkprof/`. Public source and release: https://github.com/chto0703009/InkProf-public and https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.0.
 
-Detailed companion documents in the repository: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.2.4.md`, `VALIDATION.txt` and the licence files. Some older guide headings retain historical version numbers; this document uses the v1.2.4 implementation baseline.
+Detailed companion documents in the repository: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.4.0.md`, `VALIDATION.txt` and the licence files. Some older guide headings retain historical version numbers; this document uses the v1.4.0 implementation baseline.
 
-For v1.2.2 the focused MATLAB release checks comprise 23 passing tests covering ICC compatibility, activity, RGB generation and definition saving. The automatic compatibility route was also checked with an existing cached v4 original: a v2 header was produced, source SHA-256 remained unchanged and activity was cleaned up. These checks do not represent a new full-suite qualification or physical print/instrument accuracy validation.
+Release 1.4.0 was checked in the separate public source checkout with 32 passing targeted MATLAB tests and 39 passing Python tests; no MATLAB failures or incomplete tests were reported. Environment and PDF/package checks are documented in VALIDATION.txt and docs/releases/v1.4.0.md. Synthetic fixtures and isolated projects do not constitute new physical instrument or printer qualification.
+
+Historical evidence: release 1.2.2 had 23 targeted MATLAB checks. This older record does not describe the 1.4.0 test scope.
 
 Known limits remain: sampled diagnostics do not cover every transform input; profile comparison is not measurement; unknown conditions cannot be recovered from a file name; FWA simulation is not measured M1; later use of verification colours as training changes their independence. Preserve the evidence needed to interpret a result rather than relying on the ICC file alone.
 
 ### Target and delivery implementation
 
 Implementation: MeasurementDialog and measurementTargetInfo keep selection locked to the prepared session while exposing metadata and preview. ProjectWorkflow.savePrintCopy uses printDeliveryFolder and writePrintDeliveryInfo. Source TIFF hashes are checked after copying, receipt fields bind the original TI2/manifest and workflow identity, and the project history receives print-copy-saved. Folder naming uses project.name rather than printing.profileName.
-
 ---PAGE---
-## Appendix D. Measurement-target identity and external print provenance
+## Appendix D. Target identity and print-copy provenance
 
-### Base target or C2 verification?
+### Measurement-to-target binding
 
-Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback.
+Workflow row 3 uses the base target TI2; row 10 (C2b) uses the selected C2 package TI2 and verification reference. A prepared session locks target selection. `measurementTargetInfo` derives patch count, target type, page count, timestamps and preview from that package. Missing historical metadata remain unknown. A recorded timestamp does not establish when the physical sheet was printed.
 
-### Target locked is intentional
+### Identity in copied packages
 
-A prepared measurement is bound to its TI2. The disabled Choose chart button now says Target locked. To change the target, close the measurement window and select the matching target in the workflow. Do not substitute a similar-looking chart while a session is prepared or partially measured.
+`ProjectWorkflow.savePrintCopy` creates a separate destination through `printDeliveryFolder`. Its name uses project name, current iteration, internal workflow row ID and local copy time; collisions produce a numbered folder. Project `name` and profile `printing.profileName` are distinct identities.
 
-### What the window shows
+`writePrintDeliveryInfo` writes UTF-8 `PROJECT_INFO.txt` and structured `print-delivery.json`. They bind the copy to project ID, source package, TI2/SHA-256, printing settings, current iteration and historically recoverable target origin. Copied TIFF files are checked byte for byte. History records the copy without moving the original project.
 
-The summary shows patch count, target type when recorded, page count, saved local time and UTC. Target details shows the full path and offers a page preview. Missing historical metadata is not guessed. Compare these facts with the printed footer. Package creation time does not prove the physical print date or drying time.
+### Iteration origin and physical traceability
 
-### Folder naming
+A target may predate the iteration active at copy time. The receipt distinguishes target origin from copying when supported by history. Unknown facts remain unknown. Hashes identify files, not physical sheets or actual driver settings. An external TIFF copy does not replace original TI2/layout and measurement revisions.
 
-Example: My printer paper_iter-1_c2_20261024-123456. The prefix is the saved project name, followed by the workflow cycle at copy, step and local copy timestamp. A collision creates another numbered folder rather than overwriting a previous delivery. This is the project name, not an independently entered ICC/profile description.
-
-### PROJECT_INFO.txt
-
-The UTF-8 text file retains the exact project name and ID, original project path, workflow step, current cycle/iteration ID, target-origin cycle/iteration ID when found in history, UTC and local copy/creation times, target description when present, source TI2 and its SHA-256, project printing settings and copied filenames with SHA-256. Unknown origin metadata stays unknown.
-
-### Copies versus originals
-
-PRINTING.txt retains printing instructions. print-delivery.json carries the structured receipt; the workflow also records the copy in project reports/history. TIFF data is copied and checked byte for byte. The physical sheet is not identified merely by a hash: match its footer and documented settings. The TIFF-only delivery does not replace the original TI2/layout for measurement.
-
-### A target can outlive an iteration
-
-A base or C2 target may have been created in an earlier cycle. The folder names the workflow cycle at copy; PROJECT_INFO.txt separately records the target-origin cycle recovered from matching history. Package creation date and copy date are different events and neither proves when the sheet was physically printed.
-
-### Complete target-package copy
-
-The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented.
-
-
+Source map: `MeasurementDialog.m`, `+internal/measurementTargetInfo.m`, `ProjectWorkflow.m`, `+internal/printDeliveryFolder.m`, `+internal/writePrintDeliveryInfo.m`.
 ---PAGE---
+## Appendix E. Feedback and checked ICC delivery
 
-## Appendix E Verification feedback and checked ICC delivery
+### C3 result location
 
-### Read C3 feedback
+`checkVerificationTarget` creates each check under `<C2-package>/checks/<check-ID>/`; the package is the directory containing `verification.json`. Reports are `verification-check.json` and `verification-check.md`. Main-workflow C2 packages normally reside under `targets/<ID>/`; the API default is `verification/<name-ID>/`. The same relative rule applies to both and to combined refinement packages.
 
-Run Review feedback to open a readable feedback window. Reopen it with Open selected step results while feedback is selected. C3 files are verification-check.md and verification-check.json under targets/<target>/checks/<check>. Each check has its own folder. Compare reports with the same ICC and target; distinguish error against desired Lab from error against the ICC prediction.
+C3 separates measured print versus desired Lab from measured print versus ICC prediction. `analyseVerification` produces feedback evidence accessible from the current workflow row or its saved results. Every new check gets a new ID rather than overwriting earlier checks.
 
-### Approval and certificate are separate actions
+### Decision and delivery identity
 
-Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous step-19 numerical-only export no longer hides this next step after print approval.
+Selecting a row is navigation. `approvalDialog` stores an explicit intended-use decision after review. Row 14 collects evidence and approval into a new delivery revision. External copying does not change the identity of the checked ICC; row 19 has a separate numerical scope.
 
-### The exact verified ICC is included
+Delivery includes `<name>-verified-original.icc`, byte-identical to the checked ICC. A named delivery variant may have revised name metadata; a v4.4 variant is a documented conversion. `delivery.json` stores `verifiedOriginalICCFile` and `verifiedOriginalICCSHA256`. Registered certificates are not regenerated in place.
 
-The external delivery folder contains <profile>-verified-original.icc, a byte-identical copy of the checked ICC. The normally named ICC has updated name metadata; an optional -v4.4.icc is a converted variant and is not the original verified file. delivery.json records verifiedOriginalICCFile and verifiedOriginalICCSHA256. Keep the whole bundle, including underlag.
-
-
+Source map: `checkVerificationTarget.m`, `analyseVerification.m`, `+internal/approvalDialog.m`, `ProjectWorkflow.m`, `+internal/writeWorkflowFinalReport.m`.
 ---PAGE---
+## Appendix F. Review, locking and corrections
 
-## Local workflow updates - 2026-10-25
+### State transitions and review boundaries
 
-### Review and lock once
+Row 4 retains the measurement preview until assessment continues. B1 validates the selected revision and saves a verified input snapshot only after modal confirmation. The workflow distinguishes opening a dialog from accepting and registering a result. Suggested navigation is B1, B2, B3; automatic B3 generates its own recipes.
 
-Step 4 keeps the measurement preview open until Continue to assessment. B1 validates the selected revision, opens a modal Lock profile input confirmation, then saves a checked snapshot. Activity and elapsed time are shown during validation and saving. Suggested navigation is B1, B2, B3; B2 is shown for recipe review, while Automatic B3 still creates its own recipes.
+Extra-patch parameters belong to refinement and subsequent iterations. The initial B3 build uses locked base inputs. C1 stores reports without opening successive result windows automatically. Saved result viewing is separate from the calculation that produced them.
 
-### Patch counts and result windows
+### Documentation correction versus physical setup change
 
-Initial B3 no longer asks for extra refinement patch parameters. Those apply when adding patches or continuing an iteration. C1 saves its numerical reports without opening successive result windows automatically; use Open selected step results. C2a handles verification-target preparation; choose existing files when reusing a printed sheet.
+`Project details` distinguishes `Correct recorded details` from `Changed actual setup`. A documentation correction requires a reason and unchanged physical conditions. Original files are verified and audit history retains before/after values. This exception does not apply to numerical processing changes or automatically restore already stale results.
 
-### Correct recorded details
+A physical setup change invalidates affected dependencies. A recorded correction cannot prove the conditions of a physical print; it documents the operator's statement and decision.
 
-When Project details changes, distinguish Correct recorded details from Changed actual setup. A documentation correction requires a reason and unchanged physical conditions. Original file hashes are checked and a new audit record stores before/after values. Numerical processing changes cannot use this exception. Existing stale steps are not automatically restored.
-
-### ISSUE-001 closed
-
-ISSUE-001 was closed by user decision on 2026-10-25 after several measurements without observed problems. Remaining uncertainty was accepted for current use. This is not a claim that a full noise-propagation/refitting study was performed; real numerical alerts and independent print verification still apply.
-
+Source map: `ProjectWorkflow.m`, `projectDetailsDialog.m`, `+internal/executeWorkflowStep.m`, `+internal/workflowSteps.m`.
 ---PAGE---
+## Appendix G. Acquisition, cancellation and delivery
 
-## Acquisition, cancellation and delivery
+### Instrument process and feedback
 
-### RGB and other spot measurements
+RGB controls, spot replacements and paper-white measurements share the start-sound principle for screen and i1Pro 2 instrument triggers. Calibration is a separate process state. RGB rows show page, colour and progress; page changes appear inline without another modal confirmation.
 
-RGB controls, single-patch replacements and paper-white spots use a short start sound for screen-triggered and i1 Pro 2 instrument-button measurements. Calibration does not use the spot start sound. RGB colour rows show page, colour and progress only. The temporary sound-test button has been removed. Page changes are shown inline without a separate confirmation window.
+`SpotReadSession` and `readSpotLines` distinguish partial process output from complete prompts and readings. GUI polling must not block on an incomplete text line. Cancellation restores activity state while retaining saved requests, transcripts and measurements. Resuming a partial measurement requires the same physical print.
 
-### Cancel and resume safely
+### Window lifecycle and copies
 
-Skip / close and the window close button can cancel the RGB control dialog while calibration is waiting. Saved requests, transcripts and readings remain. Partial output lines no longer block GUI polling, and Argyll debug text after a prompt is handled. Main workflow activity is cleared on interruption. Restart InkProf after source changes; resume saved chart rows only for the same physical print.
+After `gamutPicker` receives a completed, registered target from `refineFromGamut`, it closes the gamut figure, including standalone entry paths. Cancellation or failure before completion leaves the figure available. External copying is separate from the project's target package and uses project/iteration identity; the source project is not moved.
 
-### Refinement print copies
+### Delivery activity
 
-After successfully saving and registering gamut patches from Refinement tools, the workflow gamut window closes. The standalone gamut viewer also closes after successful TIFF16 creation. To copy an existing refinement target, select row 15 in the main table and use Copy TIFF16 for printing..., then choose Downloads. The new folder identifies the project and iteration and contains printing files and traceability information. The source project is preserved.
+Row 14 reports phase and elapsed time for evidence collection, figures/PDFs, ICC variants and verified copying. A completed certificate is a registered artifact; revisions use a new export. Activity describes operational progress, not colour accuracy.
 
-### Timed certificate delivery
-
-Step 14 shows activity and elapsed time while collecting evidence, rendering figures and PDFs, preparing ICC variants, and copying and verifying delivery files. The external bundle includes the exact checked ICC as <name>-verified-original.icc as well as named delivery variants. A stored certificate is not regenerated in place; create a new export revision when changes are needed.
-
+Source map: `SpotReadSession.m`, `+internal/readSpotLines.m`, `+internal/gamutPicker.m`, `refineFromGamut.m`, `ProjectWorkflow.m`.
 ---PAGE---
-## Gamut boundaries and extended targets
+## Appendix H. Gamut boundaries and extended targets
 
-1.4.0 | 2026-10-25
+### Candidates around a modelled surface
 
-### Explore the current model boundary
+`gamut_refinement.py` selects valid device RGB near the current ICC model's gamut mesh. Sampling can cover an inner shell, a selected region or both sides of the surface. Signed Delta E76 distance distinguishes inside from modelled outside. A negative distance does not establish a larger physical printer gamut. Minimum RGB spacing and the maximum new-point count constrain the candidate pool.
 
-View gamut offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in Delta E76, minimum RGB spacing and maximum NEW patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion.
+### Extension with preserved provenance
 
-### Extend latest target
+`gamutTargetExtension` identifies the latest completed compatible print package for the same ICC hash. Proposals without completed TIFF output are skipped. Existing fitting/development and supplementary shadow patches are retained; controls are regenerated. Exact duplicates and RGB already in training are excluded. A started or paused measurement blocks extension of that package.
 
-Tick Extend latest target to combine the latest completed gamut print for the exact current ICC with new points. Unprinted proposals are skipped. Previous fitting/development points and supplementary shadow points are retained; exact duplicates and existing training RGB are excluded. Controls are regenerated. Started or paused measurements prevent extending that same target. The earlier TIFF, TI2 and readings remain unchanged.
+### New complete target-package revision
 
-### Print and measure the NEW version
+Extension creates a new complete TIFF16/TI2 package with frozen roles and source references. Earlier files and measurements remain unchanged. Row 16 binds new readings to the new layout; row 17 builds a new profile from previous approved training plus the supplement. External copying defaults to Downloads. Cancelling the copy selection leaves the saved project package intact.
 
-The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Step 16 measures the new TI2, and step 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. View gamut closes after successful creation and the copy dialog; cancellation/error leaves it open.
-
-
+Source map: `refineFromGamut.m`, `+internal/gamutTargetExtension.m`, `+internal/gamutPicker.m`, `analysis/gamut_refinement.py`, `+internal/createRefinementPrint.m`.
 ---PAGE---
-## Review measured Lab density
+## Appendix I. Measured Lab density and separate candidate
 
-1.4.0 | 2026-10-25
+### Grouping original observations
 
-### Read the measurements
+`measurement_density.py` groups nearby measured Lab with a complete-link rule limiting the extent of the entire group. RGB16 repeats and their Delta E00 spread remain distinct from different RGB producing similar Lab. Similarity may be consistent with saturation but does not alone determine its cause. Original observations are not deleted, modified or averaged.
 
-Refinement tools > Review measured Lab density / balanced trial lists close measured Lab groups and their RGB span. Readings is an integer count of repeated RGB16 observations; maximum Delta E00 describes their repeatability. Similar Lab at different RGB may describe saturation. No original measurement is deleted, overwritten or averaged.
+### Selection and protected observations
 
-### Set, recalculate, select
+Review parameters are Lab distance (Delta E76), target count per group and repeatability threshold (Delta E00). Defaults 1 / 4 / 1 are provisional. Checked groups use automatic representatives; unchecked groups retain every row. Neutral RGB, lightness/RGB extrema and inconsistent repeats remain protected. The target count is therefore not an unconditional removal requirement. Parameter changes require recalculation before building.
 
-Adjust Lab distance (Delta E76), Target per group and Repeat review (Delta E00), then Recalculate. Defaults 1 / 4 / 1 are provisional. Use balancing applies automatic representatives to checked groups; unchecked groups keep all rows. Select all checks/highlights all groups; Clear all restores every row to the proposed input. Neutrals, lightness/RGB extrema and inconsistent repeats stay protected. The target count may therefore be exceeded.
+### Comparison on common evidence
 
-### Build a separate candidate
+`buildDensityTrial` creates a separate candidate from a documented subset. Building is blocked when no observations would be omitted. Original and candidate are compared against all original fitting observations, including omitted rows, available reserved development patches and matching photographic gradients. The candidate never automatically replaces the active profile. These diagnostics are not new independent print verification.
 
-Close only closes the review. Build separate balanced candidate uses the reviewed subset and is disabled when zero points would be omitted. Try different settings and Recalculate rather than forcing removal. Both profiles are compared to ALL original fitting observations, including omitted rows, to available reserved development patches and to matching photographic gradients. These are diagnostics, not final independent print verification. No candidate automatically replaces the active profile.
-
-
+Source map: `reviewMeasuredDensity.m`, `buildDensityTrial.m`, `+internal/showMeasuredDensity.m`, `+internal/densityGroupSelection.m`, `analysis/measurement_density.py`, `analysis/density_comparison.py`.
 ---PAGE---
-## Activity, provenance and computer changes
+## Appendix J. Activity, provenance and runtime
 
-1.4.0 | 2026-10-25
+### Activity and audit contracts
 
-### Visible work stages
+Density review and candidate builds report input verification, original snapshots, ICC construction, all-patch comparison, gradients, available development checks and saving. Parameters, checked groups, source rows and SHA-256 remain in separate review/trial records. Phases describe actual processing and remain distinct from waiting for user decisions.
 
-Density review, Recalculate and the balanced trial show elapsed time and current phase: input verification, original snapshots, ICC build, all-patch comparison, original/candidate gradients, available development checks and result saving. Changing settings requires Recalculate before building. Trial parameters, checked groups, source rows and SHA-256 hashes remain in separate review/trial records.
+### Isolated environment per program
 
-### One environment per program
+Each program has its own `.venv` with Python 3.13.6 and the common pinned `requirements.txt`. `setup_python_environment` invokes the manager for `check`, `sync` or `rebuild`. Rebuilding preserves the previous environment as a backup and restores it on failure. A copied environment is not treated as a portable replacement for rebuilding on another computer. Projects and measured originals are separate from runtime state.
 
-Each program has its own .venv with Python 3.13.6 and the same pinned requirements. From the code folder use setup_python_environment("check"), "sync" or "rebuild". A rebuild preserves the previous environment as a backup and restores it on failure. Do not commit or move a .venv as a portable replacement for rebuilding it. Projects and measured originals are separate from the runtime.
+### Architecture and third-party tools
 
-### Native Argyll and documentation scope
+The program folder includes separately licensed ArgyllCMS 3.5.0 for ARM and Intel macOS. Architecture and actual executability are checked; native tools are preferred. `provenance.json` and original licences/notices identify bundled distributions. Source code, environment settings and measured data have distinct lifecycles.
 
-The program folder includes separately licensed ArgyllCMS 3.5.0 for ARM and Intel macOS, with upstream notices and provenance. Native tools are preferred and checked for actual startup. This document describes release 1.4.0. Restart the app after source updates.
-
-
-### Source files
-
-Gamut extension: src/+inkprof/refineFromGamut.m, src/+inkprof/+internal/gamutTargetExtension.m and analysis/gamut_refinement.py. Density review/trial: src/+inkprof/reviewMeasuredDensity.m, src/+inkprof/buildDensityTrial.m, src/+inkprof/+internal/showMeasuredDensity.m, densityGroupSelection.m, showDensityTrial.m, analysis/measurement_density.py and density_comparison.py. Environment: setup_python_environment.m, tools/manage_python_environment.py, requirements.txt and third_party/argyll/provenance.json.
+Source map: `+internal/calculationProgress.m`, `setup_python_environment.m`, `tools/manage_python_environment.py`, `requirements.txt`, `+internal/argyllUsable.m`, `third_party/argyll/provenance.json`.

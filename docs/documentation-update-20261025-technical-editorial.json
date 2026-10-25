@@ -1,0 +1,40 @@
+{
+  "DocumentDate": "2026-10-25",
+  "SourceVersion": "1.4.0",
+  "Scope": "Post-release technical editorial review and Swedish handbook consistency correction",
+  "Status": "PASS",
+  "Checks": [
+    "Both technical documents retain 19 pages",
+    "All 38 technical PDF pages rendered and visually reviewed",
+    "TOC entries and heading page locations verified",
+    "Swedish handbook corrected page visually reviewed; page count unchanged",
+    "C3 roots and gamut window lifecycle checked against source",
+    "Unified dependency alias files checked",
+    "Downloads and collection copies SHA-256 verified"
+  ],
+  "Documents": [
+    {
+      "Path": "docs/usage/InkProf_Teknisk_beskrivning_SV.pdf",
+      "Pages": 19,
+      "RenderedPages": 19,
+      "SHA256": "c14c74b3260a0feb33a286c09c2a39fc253a4d5a45558316aa9e74cadcc2610b",
+      "DownloadsCopySHA256": "c14c74b3260a0feb33a286c09c2a39fc253a4d5a45558316aa9e74cadcc2610b"
+    },
+    {
+      "Path": "docs/usage/InkProf_Technical_Description_EN.pdf",
+      "Pages": 19,
+      "RenderedPages": 19,
+      "SHA256": "92bab1af6c4508da38f1f163ebd75e56a597854e07f687cea9cbd6a570af0579",
+      "DownloadsCopySHA256": "92bab1af6c4508da38f1f163ebd75e56a597854e07f687cea9cbd6a570af0579"
+    },
+    {
+      "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
+      "Pages": 82,
+      "VisuallyReviewedPDFPages": [
+        79
+      ],
+      "SHA256": "f32d9cef1f6083d53fe5e1388b0701b46ff539a9df7596a79f2a653e56b96df2",
+      "DownloadsCopySHA256": "f32d9cef1f6083d53fe5e1388b0701b46ff539a9df7596a79f2a653e56b96df2"
+    }
+  ]
+}
