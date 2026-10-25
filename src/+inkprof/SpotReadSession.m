@@ -11,6 +11,8 @@ classdef SpotReadSession < handle
         Process
         Reader
         Writer
+        PromptKind = "busy"
+        StartTone
     end
     methods
         function obj=SpotReadSession(folder,options)
@@ -18,9 +20,11 @@ classdef SpotReadSession < handle
                 folder (1,1) string
                 options.ArgyllBin (1,1) string = ""
                 options.PythonExecutable (1,1) string = ""
+                options.StartTone (1,1) function_handle = @inkprof.internal.measurementStartTone
                 options.PrintControls (1,1) logical = false
             end
             assert(isunix,'inkprof:Platform','Spot measurement requires macOS/Linux.');
+            obj.StartTone=options.StartTone;
             obj.Folder=inkprof.internal.absolutePath(folder);
             bin=inkprof.internal.argyllBin(options.ArgyllBin);exe=fullfile(bin,'spotread');
             assert(isfile(exe),'inkprof:Input','spotread is missing.');
@@ -50,6 +54,12 @@ classdef SpotReadSession < handle
             while obj.Reader.ready()
                 line=obj.Reader.readLine();if isempty(line),break;end
                 try,event=jsondecode(char(line));catch,event=struct('event','diagnostic','text',char(line));end
+                if isfield(event,'event')
+                    if string(event.event)=="state",obj.PromptKind=string(event.kind);end
+                    if string(event.event)=="measurement-started"
+                        obj.StartTone();obj.PromptKind="busy";
+                    end
+                end
                 events{end+1}=event; %#ok<AGROW>
                 if echo && isfield(event,'text'),fprintf('%s',event.text);end
                 if echo && isfield(event,'message'),fprintf('%s\n',event.message);end
@@ -65,6 +75,8 @@ classdef SpotReadSession < handle
         function sendKey(obj,key)
             key=char(key);assert(numel(key)==1,'inkprof:Input','Send exactly one key; char(13) for Return.');
             assert(obj.isRunning(),'inkprof:Session','Measurement process is not running.');
+            if key==' '&&any(obj.PromptKind==["ready","retry"]),obj.StartTone();end
+            obj.PromptKind="busy";
             obj.Writer.write([jsonencode(struct('command','key','text',key)),newline]);obj.Writer.flush();
         end
         function stop(obj)

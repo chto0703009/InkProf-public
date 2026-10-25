@@ -2,6 +2,7 @@
 % Copyright (c) 2026 Christer Törnkvist.
 % SPDX-License-Identifier: GPL-3.0-or-later
 function prepareICCVariants(w,folder)
+activity=inkprof.internal.calculationProgress("Preparing ICC delivery variants","Checking and copying the selected ICC versions."); %#ok<NASGU>
 % Keep the checked profile and record selected delivery variants separately.
 source=fullfile(folder,'profile.icc');
 record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));

@@ -81,7 +81,7 @@ Earlier release candidate notes: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). The cur
 
 ## Historical records
 
-The planning, decisions and research folders retain dated development evidence, not a claim of current feature status or repeated validation. Some private reference datasets are deliberately excluded from the public distribution. [ISSUE-001](issues/001-inverse-measurement-noise.md), inverse sensitivity to measurement noise, remains an open research question; it is not a confirmed defect in the current profile.
+The planning, decisions and research folders retain dated development evidence, not a claim of current feature status or repeated validation. Some private reference datasets are deliberately excluded from the public distribution. [ISSUE-001](issues/001-inverse-measurement-noise.md), inverse sensitivity to measurement noise, was closed by user decision on 2026-10-25 after several measurements without observed problems. The remaining uncertainty was accepted for current use; no full noise-propagation study is claimed.
 
 Existing ICC profiles can be tested in the separate **Verify existing ICC** project mode. See [Verify an existing printer ICC](usage/verify-existing-icc.md).
 

@@ -16,6 +16,7 @@ try
     % Finish the brief cue before spotread can take over audio output.
     playblocking(player);
 catch
-    % Missing audio device or muted output must not interrupt acquisition.
+    % Fall back to the system cue if MATLAB cannot open an audio player.
+    try,beep;catch,end
 end
 end

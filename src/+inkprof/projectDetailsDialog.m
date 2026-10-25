@@ -71,7 +71,7 @@ uilabel(g,'Text','Dark patch emphasis');shadowPatch=uieditfield(g,'numeric','Val
 uilabel(g,'Text','Shadow grid emphasis');shadowGrid=uieditfield(g,'numeric','Value',shadow.gridEmphasis,'Limits',[1 3],'Tag','projectShadowGrid');
 uilabel(g,'Text','Extra iteration patches');shadowCount=uieditfield(g,'numeric','Value',shadow.extraPatches,'Limits',[0 256],'RoundFractionalValues','on','Tag','projectShadowCount');
 profileHelp=uilabel(g,'Text','Matte shadows uses Argyll -V: more dark patches and denser modelling in shadows, with less emphasis on lighter regions. This is an InkProf trial strategy, not an Argyll matte preset or a guarantee of improvement. Applies to new targets and builds. Compare and print-verify the result. FWA requires Spectra.','WordWrap','on');profileHelp.Layout.Column=[1 2];
-note=uilabel(outer,'Text','Renaming also changes the project folder name. Corrected printing details require rebuilding the profiling stages. Existing measurements are preserved. For a different printing setup, create a new project.','WordWrap','on');
+note=uilabel(outer,'Text','Renaming also changes the project folder name. After editing printing details, choose documentation correction or an actual setup change. Corrections require a reason; actual changes invalidate affected steps. Original measurements are preserved.','WordWrap','on');
 buttons=uigridlayout(outer,[1 2]);buttons.Padding=[0 0 0 0];
 uibutton(buttons,'Text','Cancel','Tag','cancelProjectDetails','ButtonPushedFcn',@cancel);
 uibutton(buttons,'Text','Save','Tag','saveProjectDetails','ButtonPushedFcn',@save);

@@ -339,6 +339,16 @@ classdef ProjectWorkflow < handle
             printing=before.printing;
             for field=string(fieldnames(details.Printing))',printing.(field)=details.Printing.(field);end
             printingChanged=~strcmp(jsonencode(orderfields(printing)),jsonencode(orderfields(before.printing)));
+            correction=isfield(details,'ChangeKind')&&string(details.ChangeKind)=="documentation-correction";
+            correctionReason="";correctionFields=strings(0,1);
+            if correction
+                if isfield(details,'CorrectionReason'),correctionReason=strtrim(string(details.CorrectionReason));end
+                assert(isscalar(correctionReason)&&strlength(correctionReason)>0,'inkprof:CorrectionReason','Explain the documentation correction.');
+                correctionFields=inkprof.internal.validateMetadataCorrection(before,printing,obj.Root);
+                verifiedManifestHash=inkprof.internal.sha256(fullfile(obj.Root,'inkprof-project.json'));
+            elseif isfield(details,'ChangeKind')
+                assert(string(details.ChangeKind)=="actual-change",'inkprof:ProjectDetails','Unknown project details change kind.');
+            end
             sameUser=isfield(before,'user')&&string(before.user)==strtrim(string(details.User));
             paperLayout=struct;if isfield(details,'PaperLayout'),paperLayout=details.PaperLayout;end
             if ~printingChanged&&newName==string(before.name)&&sameUser
@@ -348,7 +358,7 @@ classdef ProjectWorkflow < handle
                 end
                 return
             end
-            if printingChanged
+            if printingChanged&&~correction
                 previousPrinting=before.printing;physicalPrinting=printing;
                 if isfield(previousPrinting,'fwaCompensation'),previousPrinting=rmfield(previousPrinting,'fwaCompensation');end
                 if isfield(physicalPrinting,'fwaCompensation'),physicalPrinting=rmfield(physicalPrinting,'fwaCompensation');end
@@ -367,7 +377,7 @@ classdef ProjectWorkflow < handle
                 else
                     obj.invalidate("input");
                 end
-            else
+            elseif ~correction||newName~=string(before.name)||~sameUser
                 obj.invalidate("export");obj.invalidate("numericalExport");
             end
             % Save invalidation first: an interrupted edit must not leave an old report current.
@@ -385,8 +395,24 @@ classdef ProjectWorkflow < handle
                 Name=newName,User=details.User,Printing=details.Printing,PaperLayout=paperLayout,Relocations=relocations,FolderName=string(java.io.File(char(obj.Root)).getName()));
             previous=struct('name',before.name,'user',"",'printing',before.printing);
             if isfield(before,'user'),previous.user=before.user;end
-            obj.event("project-details","updated",struct('before',previous,'after', ...
-                struct('name',record.name,'user',record.user,'printing',record.printing)));
+            change=struct('documentType',"inkprof.project-details-change", ...
+                'utc',string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'")), ...
+                'before',previous,'after', ...
+                struct('name',record.name,'user',record.user,'printing',record.printing));
+            if correction
+                change.changeKind="documentation-correction";change.reason=correctionReason;
+                change.correctedFields=correctionFields;change.operator=string(details.User);
+                change.verifiedPreviousManifestSHA256=verifiedManifestHash;
+                change.physicalConditionsUnchanged=true;change.profilingAndVerificationStepStatusesPreserved=true;
+                change.deliveryInvalidatedForIdentityChange=newName~=string(before.name)||~sameUser;
+                change.note="Existing measurements, profile, target and historical certificates were not rewritten. Existing stale steps were not restored.";
+                folder=obj.newFolder('reports');mkdir(folder);
+                file=fullfile(folder,'metadata-correction.json');
+                inkprof.internal.writeJson(file,change);change.auditFile=obj.relative(file);
+            else
+                change.changeKind="actual-change";
+            end
+            obj.event("project-details","updated",change);
             obj.save();clear lock
             record=inkprof.updateProject(obj.Root,Step="project-details-audited");
         end

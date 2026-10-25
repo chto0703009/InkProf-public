@@ -1,6 +1,6 @@
 # ISSUE-001 – Sensitivity of the inverse to measurement noise
 
-Status: **Open research question, not a confirmed defect in the current profile**.
+Status: **Closed by user decision on 2026-10-25: accepted based on practical measurement experience**.
 Recorded 2026-09-27; clarification accepted by the user 2026-10-16.
 Affects C1/C2 (validation) and D4 (own inverse).
 
@@ -41,3 +41,9 @@ rebuilt profiles using documented measurement variations and quantified the
 resulting inverse changes. Passing C1 checks is compatible with this research
 question remaining open. This clarification does not remove actual diagnostic
 alerts or establish print-quality validation. The closure criteria above remain.
+
+## Closure decision 2026-10-25
+
+The user requested closure after several measurements worked without observed problems. ISSUE-001 is closed on that practical basis; no corrective profile change is required by this issue.
+
+This decision accepts the remaining uncertainty for the current use. It does not claim that the previously proposed noise-propagation/refitting study was performed. The original investigation and closure criteria above are retained as historical context. Actual C1 diagnostic alerts and independent print verification remain applicable. Reopen the issue if a reproducible measurement-noise-related problem is observed.

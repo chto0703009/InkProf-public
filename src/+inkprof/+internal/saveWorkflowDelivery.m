@@ -10,6 +10,7 @@ arguments
  reportDestination (1,1) string
  options.Overwrite (1,1) logical = false
 end
+activity=inkprof.internal.calculationProgress("Preparing external delivery","Checking the destination and verified ICC files."); %#ok<NASGU>
 iccDestination=inkprof.internal.absolutePath(iccDestination);
 reportDestination=inkprof.internal.absolutePath(reportDestination);
 [iccParent,iccName,iccExt]=fileparts(iccDestination);[reportParent,stem,reportExt]=fileparts(reportDestination);
@@ -73,6 +74,8 @@ try
  mkdir(reportBundle);
  for k=1:numel(stages),stages(k)=string(tempname(fileparts(destinations(k))));end
  % Freeze a complete portable report bundle before publishing either file.
+ clear activity
+ activity=inkprof.internal.calculationProgress("Copying certificate package","Copying report assets to "+reportBundle); %#ok<NASGU>
  copyfile(folder,assets);
  naming=inkprof.internal.nameICC(source,stages(1),iccName);
  mkdir(fullfile(assets,'delivered'));naming.file="delivered/"+iccName+iccExt;
@@ -86,10 +89,16 @@ try
   inkprof.internal.writeJson(fullfile(assets,'icc-delivery-secondary.json'),secondaryNaming);
  end
  config=inkprof.paths();
+ clear activity
+ activity=inkprof.internal.calculationProgress("Rendering delivery certificates","Creating the named delivery PDFs and report files."); %#ok<NASGU>
  inkprof.runPython(fullfile(config.Root,'analysis','delivery_report.py'),assets,RequiredModules="reportlab",WorkingDirectory=config.Root);
  % Display previews use the exact named ICC included in this delivery.
+ clear activity
+ activity=inkprof.internal.calculationProgress("Creating delivery previews","Rendering gradients with the delivered ICC profile."); %#ok<NASGU>
  inkprof.runPython(fullfile(config.Root,'analysis','delivery_gradients.py'), ...
   [stages(1),reportBundle],RequiredModules="PIL",WorkingDirectory=config.Root);
+ clear activity
+ activity=inkprof.internal.calculationProgress("Verifying delivery copies","Copying certificates and checking ICC and measurement file hashes."); %#ok<NASGU>
  for k=2:numel(destinations)
   if k==secondaryIndex,continue;end
   if k==checkedIndex
@@ -138,6 +147,8 @@ try
  for k=1:numel(destinations)
   if isfile(destinations(k)),backups(k)=string(tempname(fileparts(destinations(k))));copyfile(destinations(k),backups(k));end
  end
+ clear activity
+ activity=inkprof.internal.calculationProgress("Saving delivery files","Publishing the verified files to "+reportBundle); %#ok<NASGU>
  for k=1:numel(destinations)
   if ~options.Overwrite,assert(~isfile(destinations(k)),'inkprof:Exists','The destination file was created while saving.');end
   [ok,msg]=movefile(stages(k),destinations(k),'f');assert(ok,'inkprof:IO','%s',msg);published(k)=true;

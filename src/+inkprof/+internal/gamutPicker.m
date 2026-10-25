@@ -1,7 +1,8 @@
 % Copyright (c) 2026 Christer Törnkvist.
 % SPDX-License-Identifier: GPL-3.0-or-later
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
-function gamutPicker(f,ax,surface,data,profile)
+function gamutPicker(f,ax,surface,data,profile,closeAfterCreate)
+if nargin<6,closeAfterCreate=false;end
 % Add explicit selection/rotation modes to the existing gamut figure.
 anchors=struct('vertexIndex',{},'lab',{},'rgbPercent',{},'mappedLab',{},'distanceDeltaE76',{},'profileSHA256',{});
 marker=line(ax,NaN,NaN,NaN,'LineStyle','none','Marker','o','MarkerSize',9, ...
@@ -84,6 +85,9 @@ surface.ButtonDownFcn=@pick;surface.PickableParts='visible';mode(true);update();
    if ~isempty(proposal)&&isgraphics(f)
     info.String=char("Saved: "+folder+newline+"Registered in step 15. Continue with step 16 to measure this exact package, then step 17 to build. Refresh the project view if needed.");
     fprintf('Gamut selection and TIFF16: %s\n',folder);
+    if closeAfterCreate
+     clear activityCleanup;delete(f);return
+    end
    end
   catch err
    clear activityCleanup;

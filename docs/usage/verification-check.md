@@ -44,7 +44,7 @@ The project manifest is updated, and the sources' paths and hash values are save
 
 ## Decision and remaining control
 
-The current C3 gives status `insufficient-evidence` and `qualityValidated=false`. This is intentional: the report is diagnostic and does not change the profile's status to approved. Automatic acceptance and profile ranking are not implemented. A final decision needs a verified print chain and agreed limits for colour error and gray balance. ISSUE-001 on measurement noise and the inverse remains open.
+The current C3 gives status `insufficient-evidence` and `qualityValidated=false`. This is intentional: the report is diagnostic and does not change the profile's status to approved. Automatic acceptance and profile ranking are not implemented. A final decision needs a verified print chain and agreed limits for colour error and gray balance. ISSUE-001 on measurement noise and the inverse was closed by user decision on 2026-10-25 based on practical measurement experience.
 
 The C2 TIFF has already been converted with the printer profile, absolute colorimetric, without black point compensation. It must not be converted again when printing.
 

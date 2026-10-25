@@ -3,6 +3,7 @@
 % InkProf is free software under GNU GPL version 3 or later.
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 function certificateMeasurementView(w,folder,includeVerification,scope)
+activity=inkprof.internal.calculationProgress("Creating certificate 3D measurements","Rendering measured colours for the certificate package."); %#ok<NASGU>
 % Use the current fit report: includes accumulated fitting data across iterations.
 request=struct('profileSHA256',inkprof.internal.sha256(w.output('profile','profile')), ...
  'fit',"",'verification',"",'verificationReference',"",'scope',string(scope));

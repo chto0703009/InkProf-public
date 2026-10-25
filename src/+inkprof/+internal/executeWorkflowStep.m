@@ -173,11 +173,11 @@ switch id
   activity=inkprof.internal.calculationProgress("Step 8 - ICC checks","Checking the profile. Three numerical checks are in progress."); %#ok<NASGU>
   job=fileparts(w.output('profile','job'));
   phase=inkprof.internal.calculationProgress("Step 8 - Fit (1/3)","Comparing ICC predictions with the measured profiling patches.");
-  [~,a]=inkprof.checkProfileFit(job,ShowDialog=get(o,'ShowDialog',true));clear phase
+  [~,a]=inkprof.checkProfileFit(job,ShowDialog=get(o,'ShowDialog',false));clear phase
   phase=inkprof.internal.calculationProgress("Step 8 - Grid (2/3)","Checking colour grids, inverse conversion and gradients.");
-  [~,b]=inkprof.checkProfileGrid(job,ShowDialog=get(o,'ShowDialog',true));clear phase
+  [~,b]=inkprof.checkProfileGrid(job,ShowDialog=get(o,'ShowDialog',false));clear phase
   phase=inkprof.internal.calculationProgress("Step 8 - C1 (3/3)","Checking the colour engine and damaged-profile controls.");
-  [c1,c]=inkprof.checkProfileC1(job,ShowDialog=get(o,'ShowDialog',true));clear phase
+  [c1,c]=inkprof.checkProfileC1(job,ShowDialog=get(o,'ShowDialog',false));clear phase
   assert(c1.allNegativeControlsDetected&&isempty(c1.grossFailureAlerts),'inkprof:WorkflowNumerical','C1 reports serious problems. Review the reports before C2.');
   out.fit=a;out.grid=b;out.c1=c;files=[a;b;c];
  case "c2"
@@ -242,6 +242,7 @@ switch id
    'reportSHA256',inkprof.internal.sha256(w.output('c3','report')),'notes',note,'isoCertification',false));
   out.approval=file;files=file;
  case "export"
+  calculation=inkprof.internal.calculationProgress("Saving ICC and certificate","Copying the verified ICC and gathering report evidence."); %#ok<NASGU>
   folder=w.newFolder('exports');mkdir(folder);
   [file,~]=inkprof.saveICC(w.output('profile','profile'),fullfile(folder,'profile.icc'));
   for pair={'approve','approval';'c3','report';'feedback','feedback'}'
@@ -300,7 +301,7 @@ switch id
    assert(method=="errors",'inkprof:Workflow','Unknown refinement method.');
    [ok,why]=w.valid('feedback');assert(ok,'inkprof:WorkflowBlocked','Error-driven refinement requires current C3 feedback: %s',why);
    [~,folder]=inkprof.refineVerification(w.output('c3','report'),Name="Iteration "+(w.State.cycle+1), ...
-    RefinementMode=string(get(o,'RefinementMode',"argyll")),MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true,PlanPaper=true);
+    ShowDialog=get(o,'ShowDialog',false),RefinementMode=string(get(o,'RefinementMode',"argyll")),MaxNewPatches=get(o,'MaxNewPatches',100),NormTarget=get(o,'NormTarget',1),GrayWeight=get(o,'GrayWeight',2),CreatePrint=true,PlanPaper=true);
   end
   inkprof.internal.writeJson(fullfile(folder,'workflow-review.json'),struct('notes',get(o,'Notes',""),'method',method,'includedC2',get(o,'IncludeC2',false),'utc',utc()));
   out=inkprof.internal.workflowTiffOutputs(fullfile(folder,'refinement-print','print','target.ti2'));out.proposal=fullfile(folder,'proposal.json');

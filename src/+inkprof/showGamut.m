@@ -2,7 +2,11 @@
 % SPDX-License-Identifier: GPL-3.0-or-later
 % InkProf is free software under GNU GPL version 3 or later.
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
-function f=showGamut(profile)
+function f=showGamut(profile,options)
+arguments
+ profile (1,1) string
+ options.CloseAfterCreate (1,1) logical = false
+end
 %SHOWGAMUT Display an ICC-derived surface, independently of measured patches.
 folder=string(tempname);mkdir(folder);cleanup=onCleanup(@()rmdir(folder,'s')); %#ok<NASGU>
 ref=inkprof.internal.reportGamut(profile,folder,true);
@@ -20,7 +24,7 @@ annotation(f,'textbox',[.04 .01 .61 .15],'String',string(name)+string(ext)+newli
  "ICC SHA-256: "+string(data.profileSHA256)+newline+ ...
  "A2B surface; sRGB preview colours. Not a measurement or a quality score.",'Interpreter','none','EdgeColor','none');
 f.UserData=data;
-inkprof.internal.gamutPicker(f,ax,surface,data,profile);
+inkprof.internal.gamutPicker(f,ax,surface,data,profile,options.CloseAfterCreate);
 uicontrol(f,'Style','pushbutton','String','Close','Tag','closeGamut', ...
  'Units','normalized','Position',[.70 .002 .28 .026],'Callback',@(~,~)delete(f));
 end

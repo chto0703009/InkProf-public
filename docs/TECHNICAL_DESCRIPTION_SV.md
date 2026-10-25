@@ -108,7 +108,7 @@ Träningsanpassning, numerisk transformkonsistens och oberoende utskriftsnoggran
 
 Fit-rapporten behåller patchidentiteter, predikterat och uppmätt Lab, absolut kolorimetriskt sammanhang och sammanfattande statistik. Filter för exempelvis RGB-grått, mörkt, hög kulörthet eller kubgräns hjälper granskningen men ändrar inte mätningarna.
 
-C1 använder också avsiktligt skadade profiler som negativa kontroller. Att upptäcka dem ger stöd åt diagnostiken, men bevisar inte att alla möjliga ICC-fel upptäcks. Den öppna forskningsfrågan ISSUE-001 förklaras inte vara ett fastställt profilfel. Mätbrusets fortplantning genom en ny anpassning är ännu inte fullständigt kvantifierad.
+C1 använder också avsiktligt skadade profiler som negativa kontroller. Att upptäcka dem ger stöd åt diagnostiken, men bevisar inte att alla möjliga ICC-fel upptäcks. ISSUE-001 stängdes på användarens beslut 2026-10-25 efter flera mätningar utan observerade problem; kvarvarande osäkerhet accepterades för aktuell användning. Mätbrusets fortplantning genom en ny anpassning är ännu inte fullständigt kvantifierad.
 
 Rapporter skapas i nya diagnostikmappar och registreras i projektet. Ny kontroll gäller vald ICC och indata; den får inte tyst skriva om ett tidigare levererat certifikat. Operatören/granskaren tolkar resultatet utifrån avsedda utskriftsförhållanden.
 

@@ -141,7 +141,31 @@ end
         try
             record=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
             d=inkprof.projectDetailsDialog(record);if isempty(d),return;end
+            if ~strcmp(jsonencode(orderfields(d.Printing)),jsonencode(orderfields(record.printing)))
+                choice=uiconfirm(fig, ...
+                    "Were the saved details incorrect, or did the actual printing setup change?"+newline+newline+ ...
+                    "Correct recorded details: confirm that the same physical conditions were used. Keep current results valid and record your reason."+newline+ ...
+                    "Changed actual setup: mark affected steps out of date. Original files are preserved."+newline+newline+ ...
+                    "Numerical processing settings cannot be treated as documentation corrections.", ...
+                    'Classify project details change','Options',{'Correct recorded details','Changed actual setup','Cancel'}, ...
+                    'DefaultOption',2,'CancelOption',3);
+                if strcmp(choice,'Cancel'),return;end
+                d.ChangeKind="actual-change";
+                if strcmp(choice,'Correct recorded details')
+                    note=inkprof.internal.withFocus(fig,@inputdlg, ...
+                        {'Explain what was recorded incorrectly. Confirm that actual printer, paper and print settings did not change:'}, ...
+                        'Documentation correction',[4 75],{''});
+                    if isempty(note),return;end
+                    d.ChangeKind="documentation-correction";d.CorrectionReason=string(note{1});
+                    if strlength(strtrim(d.CorrectionReason))==0
+                        uialert(fig,'A reason is required. No changes were saved.','Documentation correction');return;
+                    end
+                end
+            end
             w.editDetails(d);refresh();
+            if isfield(d,'ChangeKind')&&d.ChangeKind=="documentation-correction"
+                status.Text='Documentation correction recorded. Current profiling and verification validity retained; original files preserved.';
+            end
         catch err,uialert(fig,err.message,'Project details');end
     end
     function openProject(~,~)
@@ -476,7 +500,7 @@ end
                 end
                 if strcmp(choice,'Manual gamut points / inner shell')
                     previous=inkprof.internal.latestGamutProposal(w.Root,w.output('profile','profile'));
-                    gamutFigure=inkprof.showGamut(w.output('profile','profile'));waitfor(gamutFigure);
+                    gamutFigure=inkprof.showGamut(w.output('profile','profile'),CloseAfterCreate=true);waitfor(gamutFigure);
                     latest=inkprof.internal.latestGamutProposal(w.Root,w.output('profile','profile'));
                     if latest==""||latest==previous,o=[];return;end
                     w.reload();

@@ -82,11 +82,24 @@ end
 function testRestartControlsWithoutLeavingWizard(tc)
 exerciseWizard(tc,false,"all");
 end
-function exerciseWizard(tc,withOverride,retryMode)
+function testMultiPageSoundAndInlinePageChange(tc)
+exerciseWizard(tc,false,"",true);
+end
+function testInstrumentButtonPlaysStartCue(tc)
+exerciseWizard(tc,false,"",false,true);
+end
+function exerciseWizard(tc,withOverride,retryMode,multiPage,hardwareButton)
 if nargin<3,retryMode="";end
-retried=false;
+if nargin<4,multiPage=false;end
+if nargin<5,hardwareButton=false;end
+retried=false;toneCount=0;expectedTones=0;
 w=string(tempname);mkdir(w);clean=onCleanup(@()rmdir(w,'s'));
-pkg=fullfile(w,'target');inkprof.createTarget(pkg,PatchCount=20,GraySteps=3,DPI=100);
+pkg=fullfile(w,'target');
+if multiPage
+ inkprof.createTarget(pkg,PatchCount=400,GraySteps=5,DPI=100,PaperSizeMm=[148 148]);
+else
+ inkprof.createTarget(pkg,PatchCount=20,GraySteps=3,DPI=100);
+end
 folder=fullfile(w,'session');inkprof.prepareChart(fullfile(pkg,'target.ti2'),folder);
 chartHash=inkprof.internal.sha256(fullfile(folder,'chart.json'));
 if withOverride
@@ -96,13 +109,18 @@ if withOverride
  inkprof.internal.writeJson(fullfile(pkg,'print-control-reference.json'),reference);
 end
 bin=fullfile(w,'bin');mkdir(bin);runtime=inkprof.checkPython();
-for name=["targen","printtarg"],f=fopen(fullfile(bin,name),'w');fclose(f);end
+if hardwareButton,f=fopen(fullfile(bin,'hardware-button'),'w');fclose(f);expectedTones=3;end
+for name=["targen","printtarg"]
+ executable=fullfile(bin,name);f=fopen(executable,'w');fprintf(f,'#!/bin/sh\nprintf "Version 3.5.0 test fixture\\n"\n');fclose(f);
+ java.io.File(char(executable)).setExecutable(true);
+end
 root=fileparts(fileparts(mfilename('fullpath')));
 f=fopen(fullfile(bin,'spotread'),'w');fprintf(f,'#!%s\n%s',runtime.executable,fileread(fullfile(root,'tests','fixtures','fake_print_controls.py')));fclose(f);
 java.io.File(char(fullfile(bin,'spotread'))).setExecutable(true);
 started=tic;driver=timer('ExecutionMode','fixedSpacing','Period',.2,'TimerFcn',@advance);
 closer=onCleanup(@()stopDriver(driver));start(driver);
-file=inkprof.measurePrintControls(folder,ArgyllBin=bin);stop(driver);
+file=inkprof.measurePrintControls(folder,ArgyllBin=bin,StartTone=@recordTone);stop(driver);
+verifyEqual(tc,toneCount,expectedTones);verifyGreaterThan(tc,toneCount,0);
 report=jsondecode(fileread(file));
 verifyTrue(tc,report.complete);
 if withOverride
@@ -110,7 +128,8 @@ if withOverride
  verifyEqual(tc,string(report.override.reason),"Matte paper: checked settings; accept this print.");
  verifyTrue(tc,any([report.readings.flagged]));inkprof.internal.requirePrintControls(folder);
 else,verifyEqual(tc,string(report.status),"reference-needed");end
-verifyTrue(tc,report.excludedFromProfiling);verifyEqual(tc,numel(report.readings),3);
+verifyTrue(tc,report.excludedFromProfiling);savedChart=jsondecode(fileread(fullfile(folder,'chart.json')));verifyEqual(tc,numel(report.readings),3*numel(savedChart.passesInStrips));
+if multiPage,verifyGreaterThan(tc,numel(report.readings),3);end
 if retryMode~=""
  verifyTrue(tc,retried);
  attempts=dir(fullfile(folder,'print-control-spots','*','retry.json'));verifyEqual(tc,numel(attempts),1);
@@ -121,9 +140,14 @@ if retryMode~=""
 end
 verifyEqual(tc,inkprof.internal.sha256(fullfile(folder,'chart.json')),chartHash);
 verifyFalse(tc,isfile(fullfile(folder,'chart.ti3')),'Control spots must never become a profiling TI3.');
+ function recordTone()
+  toneCount=toneCount+1;
+ end
  function advance(~,~)
   fig=findall(groot,'Tag','InkProfPrintControls');if isempty(fig),return;end
-  if toc(started)>40,delete(fig);error('Control wizard timed out.');end
+  if toc(started)>40
+   label=findall(fig,'Tag','printControlStatus');disp(string(label.Text));delete(fig);error('Control wizard timed out.');
+  end
   dialog=findall(groot,'Tag','InkProfPrintControlOverride');
   if ~isempty(dialog)
    reason=findall(dialog,'Tag','printControlOverrideReason');save=findall(dialog,'Tag','printControlOverrideSave');
@@ -148,7 +172,13 @@ verifyFalse(tc,isfile(fullfile(folder,'chart.ti3')),'Control spots must never be
    return;
   end
   button=findall(fig,'Tag','printControlAction');if isempty(button),return;end
-  if strcmp(button.Enable,'on'),button.ButtonPushedFcn(button,[]);end
+  if strcmp(button.Enable,'on')
+   if startsWith(string(button.Text),"Measure page ")
+    if hardwareButton,return;end
+    expectedTones=expectedTones+1;
+   end
+   button.ButtonPushedFcn(button,[]);
+  end
  end
 end
 function stopDriver(driver)

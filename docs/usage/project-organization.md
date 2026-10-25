@@ -100,3 +100,30 @@ Print folders carry `PRINT_COPY_ONLY.txt`, even during copying. The app explains
 An explicitly requested project rename stays within the same parent, rejects occupied and Trash paths, verifies identity metadata, and attempts rollback by rename if verification fails. It never deletes either project location. Measurement originals are not changed; corrections and remeasurements use separate revisions.
 
 These additional safeguards are included in v1.2.6. Tests include simulated copy failure, destination collisions, source hash preservation and explicit rename checks. They do not establish what operation moved a historical project to Trash. Operating-system or Finder actions outside InkProf cannot be prevented by these application guards.
+
+
+## Correcting project details without changing print conditions
+
+Local addition after v1.2.6: after editing printing details in **Project details**, the app asks how to classify the change.
+
+- **Correct recorded details** means the documentation was wrong but the actual printer, paper and print conditions were already the same. Enter a required explanation. Integrity checks must pass. Current profiling/verification validity is retained; a correction never restores previously stale results automatically.
+- **Changed actual setup** uses the existing dependency invalidation rules. Measurements and profiles remain on disk, but affected steps must be repeated for the new conditions.
+- **Cancel** saves nothing.
+
+Only descriptive fields can be corrected this way, including media labels, quality text, coating descriptions and notes. FWA computation, shadow parameters, numerical input mode, ICC build quality and output-version selection cannot be reclassified as text corrections. The same current configuration value returned by a dialog does not count as a change merely because MATLAB represents text differently.
+
+The project history and result logs record the correction kind, operator, reason and complete before/after printing details. A separate `reports/<UUID>/metadata-correction.json` preserves the audit. Existing RAW/TI3 measurements, ICC profiles, TIFF targets, model parameters and historical certificates are not rewritten. New exports use the corrected project metadata; historical packages retain their original snapshots. Changing project name or operator can still invalidate certificate delivery metadata without invalidating the measured profile.
+
+### Activity while saving ICC and certificate
+
+Step 14 displays the current activity and elapsed time during certificate evidence collection, figure and PDF rendering, ICC variant preparation, and external delivery. Delivery phases identify the destination folder and show when copies are being verified and saved. The activity dialog closes on completion or failure; command-line batch exports do not open a window.
+
+### RGB control measurement cues
+
+The C2b RGB control window plays a short cue immediately before each requested spot measurement, including remeasurements. Calibration does not play the measurement cue. Use **Test measurement sound** in that window to check audio output. Page changes appear as an inline instruction; change to the indicated printed sheet before measuring its RGB squares. No additional page-change confirmation dialog is required.
+
+Spot start cues also apply to individual patch replacements and paper-white measurements. Both screen commands and the i1 Pro 2 physical switch are supported. Physical switch detection uses Argyll debug level 3; the acquisition trace remains in the attempt transcript. Calibration does not trigger the spot start cue.
+
+### Workflow result windows
+
+C1 workflow checks save their reports without automatically opening separate result windows. Use **Open selected step results** to inspect saved reports. C2 paper selection opens directly without a preliminary short-lived activity popup. When gamut points are added through **Refinement tools**, the gamut window closes after the print package is successfully saved and registered; cancelling or failing to save leaves the selection available for correction. The standalone gamut viewer remains open for inspection.

@@ -8,6 +8,7 @@ arguments
  options.SourceTI3 (1,1) string = ""
  options.ArgyllBin (1,1) string = ""
  options.PythonExecutable (1,1) string = ""
+ options.StartTone (1,1) function_handle = @inkprof.internal.measurementStartTone
  options.Port (1,1) double {mustBeInteger,mustBeNonnegative} = 0
  options.ThresholdDeltaE00 (1,1) double {mustBePositive,mustBeFinite} = 5
 end
@@ -58,14 +59,15 @@ shownPage=1;sessionBase=base;pendingIndices=1:numel(readings);selected=1;complet
 fig=uifigure('Name','InkProf - Page RGB print controls','Position',[160 110 850 690],'WindowStyle','modal','Tag','InkProfPrintControls');
 g=uigridlayout(fig,[7 1]);g.RowHeight={35,100,65,'1x',55,38,50};g.Padding=[18 16 18 16];
 uilabel(g,'Text','Separate RGB print checks','FontSize',22,'FontWeight','bold');
-uilabel(g,'Text','On new targets, the R, G and B squares sit at the upper right above the profiling grid. Older targets have them below the grid. Measure each square once. Each page requires three measurements: R, G and B. Keep i1 Pro 2 stationary at the centre, using the same backing. Do not swipe. Click Measure square, not the instrument button. Follow the displayed page and colour. If placement or order was wrong, restart the checks or select a measured row and remeasure it here. These readings never enter the profiling data.','WordWrap','on');
+uilabel(g,'Text','On new targets, the R, G and B squares sit at the upper right above the profiling grid. Older targets have them below the grid. Measure each square once. Each page requires three measurements: R, G and B. Keep i1 Pro 2 stationary at the centre, using the same backing. Do not swipe. Click Measure square or press the instrument button. Follow the displayed page and colour. If placement or order was wrong, restart the checks or select a measured row and remeasure it here. These readings never enter the profiling data.','WordWrap','on');
 status=uilabel(g,'Text','Start to connect and calibrate.','WordWrap','on','FontSize',18,'FontWeight','bold','Tag','printControlStatus');
 table=uitable(g,'Data',cell(numel(readings),4),'ColumnName',{'Page','Control','Status','Delta E00'}, ...
  'ColumnWidth',{70,90,450,'auto'},'ColumnEditable',false,'RowName',{},'Tag','printControlTable','CellSelectionCallback',@selectReading);
 for k=1:numel(readings),table.Data(k,:)={readings(k).page,char(readings(k).colour),'Waiting',''};end
 notice=uilabel(g,'Text','An approved reference from a known-correct print is needed for an absolute print check. Without one, pages are compared with page 1. Default review threshold: 5 Delta E00.','WordWrap','on');
-retrybar=uigridlayout(g,[1 2]);retrybar.Padding=[0 0 0 0];
+retrybar=uigridlayout(g,[1 3]);retrybar.Padding=[0 0 0 0];
 redo=uibutton(retrybar,'Text','Remeasure selected square','Enable','off','Tag','printControlRemeasure','ButtonPushedFcn',@remeasureSelected);
+uibutton(retrybar,'Text','Test measurement sound','Tag','printControlTestSound','ButtonPushedFcn',@(~,~)options.StartTone());
 restart=uibutton(retrybar,'Text','Restart all RGB checks','Enable','off','Tag','printControlRestart','ButtonPushedFcn',@restartAll);
 bar=uigridlayout(g,[1 4]);bar.Padding=[0 0 0 0];bar.ColumnWidth={'1x',220,140,'1x'};
 action=uibutton(bar,'Text','Start RGB checks','Tag','printControlAction','ButtonPushedFcn',@trigger);
@@ -80,12 +82,9 @@ uiwait(fig);
   busy=true;action.Enable='off';restart.Enable='off';redo.Enable='off';
   try
    if isempty(session)
-    session=inkprof.SpotReadSession(sessionBase,ArgyllBin=options.ArgyllBin,PythonExecutable=options.PythonExecutable,PrintControls=true);
+    session=inkprof.SpotReadSession(sessionBase,ArgyllBin=options.ArgyllBin,PythonExecutable=options.PythonExecutable,PrintControls=true,StartTone=options.StartTone);
     start(poller);
    else
-    if startsWith(string(action.Text),"Measure page ")
-     inkprof.internal.measurementStartTone();
-    end
     session.sendKey(' ');
    end
    status.Text='Instrument working. Wait for the next instruction.';
@@ -107,15 +106,16 @@ uiwait(fig);
       elseif any(string(e.kind)==["ready","retry"])&&index<=numel(pendingIndices)
        action.Text='Measure square';action.Enable='on';restart.Enable='on';q=readings(pendingIndices(index));
        if q.page~=shownPage
-        action.Enable='off';
-        uiconfirm(fig,sprintf('Place printed PAGE %d in front of you. Measure its R, G and B control squares before continuing. Do not reuse the previous page.',q.page), ...
-         'Change printed page','Options',{'This page is ready'},'Icon','info');
+        notice.Text=sprintf('CHANGE PRINTED PAGE: place PAGE %d in front of you before measuring. Follow its R, G and B squares; do not reuse the previous sheet.',q.page);
         shownPage=q.page;
        end
        showSquare(q);action.Enable='on';
        action.Text=sprintf('Measure page %d - %s',q.page,string(q.colour));
-       status.Text=sprintf('PAGE %d — %s\nKeep the instrument still at the centre. Then click Measure page %d - %s. (%d/%d)',q.page,string(q.colour),q.page,string(q.colour),index,numel(pendingIndices));
+       status.Text=sprintf('PAGE %d — %s\nKeep the instrument still at the centre. Then click Measure page %d - %s or press the instrument button. (%d/%d)',q.page,string(q.colour),q.page,string(q.colour),index,numel(pendingIndices));
       else,action.Enable='off';end
+     case 'measurement-started'
+      action.Enable='off';restart.Enable='off';redo.Enable='off';
+      status.Text='Instrument measuring. Keep it still until the reading is saved.';
      case 'candidate'
       row=pendingIndices(index);
       if sessionBase~=base

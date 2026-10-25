@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+- Close ISSUE-001 by user decision (2026-10-25), based on several measurements without observed problems. Update C1 messages and current documentation; retain historical reports and actual diagnostic checks.
+
+- Avoid automatic C1 result windows in workflow checks and the brief C2 pre-layout popup. Close the workflow gamut selection after successfully saving its target; avoid leaving a C3 proposal window open into the next step.
+
+- Play the start cue for all spot sessions (RGB controls, patch replacements and paper white), including the i1 Pro 2 physical switch. Use the Argyll trigger diagnostic to distinguish acquisition from calibration.
+
+- Drive the RGB control start sound from instrument readiness, add an in-dialog sound test and show printed-page changes inline without an extra confirmation window.
+
+- Show timed activity throughout step 14 certificate rendering, ICC variant preparation and external delivery copying, verification and publishing.
+
+- Add explicit documentation-correction versus actual-setup-change handling for project details. Require a reason and verified original hashes, retain current profile/verification validity for descriptive corrections, and record before/after/operator/reason in history and a separate audit file. Numerical processing changes cannot use this path; stale results are not automatically restored.
+
 ## v1.2.6 - 2026-10-24
 
 - Preserve original projects during copying with atomic new destinations, source checks and no whole-project print copying.

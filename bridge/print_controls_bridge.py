@@ -18,12 +18,13 @@ def main():
     if list(folder.glob('reading-*.json')):
         raise ValueError('Use a new test folder; existing readings are preserved.')
     standard = {'XRGA': 'G', 'XRDI': 'X', 'GMDI': 'A'}[request['calibrationStandard']]
-    command = [str(Path(args.executable).resolve()), '-v', '-s', '-i', 'D50', '-Q', '1931_2', '-A', standard]
+    command = [str(Path(args.executable).resolve()), '-v', '-D3', '-s', '-i', 'D50', '-Q', '1931_2', '-A', standard]
     if request.get('port'): command += ['-c', str(request['port'])]
     run = dict(arguments=command, started=time.time(), autoTrigger=False, sameSession=True)
     lock = open(Path('/tmp') / f'inkprof-spot-{os.getuid()}.lock', 'a')
     fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     master, slave = pty.openpty(); proc = None; sel = None
+    armed = False
     state = 'busy'; buffer = ''; full = ''; pending = b''; count = 0
     quitting = False; quit_confirmed = False; deadline = time.monotonic() + 1800
     decoder = codecs.getincrementaldecoder('utf-8')('replace')
@@ -42,6 +43,14 @@ def main():
                         if not data: alive = False; break
                         log.write(data); log.flush()
                         text = decoder.decode(data); full += text; buffer += text; emit('output', text=text)
+                        # i1 Pro 2 reports this before acquisition with -D3, including
+                        # physical switch presses (which send no controller command).
+                        trigger = re.search(r'#+ triggered #+\s*', buffer)
+                        if trigger and armed and not quitting:
+                            emit('measurement-started', source='instrument')
+                            armed = False
+                            state = 'busy'
+                            buffer = buffer[trigger.end():]
                         new = prompt_state(buffer)
                         if new == 'ready' and 'Result is XYZ:' in buffer and not quitting:
                             candidate = parse_reading(buffer)
@@ -57,7 +66,7 @@ def main():
                             count += 1; path = folder / f'reading-{count:03d}.json'
                             with path.open('x') as handle: json.dump(candidate, handle, indent=2, allow_nan=False)
                             emit('candidate', path=str(path), index=count)
-                            buffer = ''; state = 'ready'
+                            buffer = ''; state = 'ready'; armed = True
                             if count == len(request['readings']):
                                 quitting = True; os.write(master, b'q'); deadline = time.monotonic() + 10
                             else:
@@ -65,7 +74,10 @@ def main():
                         elif quitting and not quit_confirmed and re.search(r'Hit Esc or Q to give up, any other key to retry:\s*$', buffer):
                             quit_confirmed = True; buffer = ''; os.write(master, b'q')
                         elif not quitting and new != state:
-                            state = new; emit('state', kind=state)
+                            state = new
+                            if new in ('ready', 'retry'): armed = True
+                            if new in ('calibration', 'calibrationRetry'): armed = False
+                            emit('state', kind=state)
                     else:
                         data = read_ready(sys.stdin.fileno())
                         if data is None: continue
@@ -76,6 +88,7 @@ def main():
                             if msg.get('command') == 'stop': raise RuntimeError('Cancelled; saved spots are preserved.')
                             if quitting or msg.get('command') != 'key' or msg.get('text') != ' ' or state not in ('calibration', 'calibrationRetry', 'ready', 'retry'):
                                 raise ValueError('Command does not match an instrument prompt.')
+                            armed = False
                             os.write(master, b' '); buffer = ''; state = 'busy'; emit('state', kind=state)
         code = proc.wait(timeout=5)
         if code != 0 or count != len(request['readings']): raise RuntimeError('Control test ended before all spots were recorded.')

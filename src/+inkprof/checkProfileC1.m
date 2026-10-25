@@ -31,7 +31,7 @@ reportFile=fullfile(folder,'c1-check.json');
 inkprof.internal.recordProjectStep(folder,"C1 float CMM, inverse neighbourhood and negative-control diagnostics");
 fprintf('InkProf C1: float CMM forward max dE00 %.6f; inverse max RGB difference %.6f percentage points.\n', ...
  report.cmmFloat.forwardDeltaE00.max,report.cmmFloat.backwardRGBPercent.max);
-fprintf('All negative controls detected: %d. ISSUE-001 is an open research question, not a confirmed profile defect.\nReport: %s\n',report.allNegativeControlsDetected,reportFile);
+fprintf('All negative controls detected: %d. ISSUE-001 was closed by user decision on 2026-10-25 after repeated measurements without observed problems.\nReport: %s\n',report.allNegativeControlsDetected,reportFile);
 if ~isempty(report.grossFailureAlerts)||~report.allNegativeControlsDetected
  warning('inkprof:C1Review','C1 diagnostic alerts require review; inspect the saved report.');
 end
@@ -40,7 +40,7 @@ clear activity
 f=uifigure('Name','InkProf - C1 numerical diagnostics','Position',[150 100 1000 700], ...
  'WindowStyle','alwaysontop','Visible','off');
 g=uigridlayout(f,[3 1]);g.RowHeight={75,'1x',36};
-uilabel(g,'Text',sprintf('C1 numerical diagnostics saved.\nISSUE-001 is an open research question, not a confirmed profile defect. Measurement-noise propagation through refitting is not yet quantified. Print quality is assessed separately.'),'WordWrap','on');
+uilabel(g,'Text',sprintf('C1 numerical diagnostics saved.\nISSUE-001 was closed by user decision on 2026-10-25 after repeated measurements without observed problems. Print quality is assessed separately.'),'WordWrap','on');
 uitextarea(g,'Editable','off','Value',splitlines(string(fileread(fullfile(folder,'c1-check.md')))));
 uibutton(g,'Text','Close','ButtonPushedFcn',@(~,~)delete(f));f.Visible='on';drawnow;focus(f);
 end

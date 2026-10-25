@@ -108,7 +108,7 @@ Training fit, numerical transform consistency and independent print accuracy are
 
 Fit reports retain patch identities, predicted/measured Lab, absolute-colourimetric context and summary statistics. Filters such as grey RGB, dark, high chroma or RGB boundary aid inspection; they do not change the measurements.
 
-C1 also checks deliberately damaged profiles as negative controls. Detecting those controls supports the diagnostic mechanism, not a blanket validation of all possible ICC defects. The open ISSUE-001 research question is not declared a proven profile defect. Measurement-noise propagation through refitting is not yet fully quantified.
+C1 also checks deliberately damaged profiles as negative controls. Detecting those controls supports the diagnostic mechanism, not a blanket validation of all possible ICC defects. ISSUE-001 was closed by user decision on 2026-10-25 after several measurements without observed problems; remaining uncertainty was accepted for current use. Measurement-noise propagation through refitting is not yet fully quantified.
 
 Reports are stored in new diagnostic subfolders and registered with the project. Rebuilding a check creates evidence for the selected ICC and inputs; it must not silently rewrite a previously delivered certificate. Interpretation remains an operator/reviewer decision within the intended printing conditions.
 

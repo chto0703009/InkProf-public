@@ -106,13 +106,14 @@ def run(job,exe,out):
     result=dict(schemaVersion=1,documentType='inkprof.profile-c1-check',profileSHA256=sha(p),intent='relative colorimetric',bpc=False,gridCount=729,
         cmmFloat=comparison,inverseLocalPerturbations=local,inverseRamps=ramps,negativeControls=controls,
         grossFailureAlerts=numerical_alerts(de,back),allNegativeControlsDetected=all(c['detected'] for c in controls),
-        measurementNoiseIssue='ISSUE-001 is an open research question, not a confirmed defect in this profile. Measurement-noise propagation through refitting has not been quantified; PCS perturbations alone do not test it.',qualityValidated=False)
+        measurementNoiseIssueStatus='closed-user-accepted',measurementNoiseIssueClosedDate='2026-10-25',
+        measurementNoiseIssue='ISSUE-001 closed by user decision on 2026-10-25: several measurements worked without observed problems. Residual uncertainty accepted for current use; a full noise-propagation/refitting study was not performed.',qualityValidated=False)
     out.mkdir(parents=True);(out/'c1-check.json').write_text(json.dumps(result,indent=2,allow_nan=False))
     lines=['# C1 – kompletterande numerisk kontroll','',f'Profil: {sha(p)}','',
         f'LittleCMS framåt ΔE00: {comparison["forwardDeltaE00"]}',f'LittleCMS invers RGB, procentenheter: {comparison["backwardRGBPercent"]}',
         f'Färgskillnad mellan inverslösningarna via Argyll A2B: {comparison["backwardColourDeltaE00ViaArgyll"]}',
         '',f'Lokala inversprov: {local}', '',f'Inversramper: {ramps}', '',f'Negativa kontroller: {controls}',
-        '', 'ISSUE-001 är en öppen undersökningsfråga, inte ett konstaterat fel i denna profil. Bruspåverkan genom ny profilberäkning är ännu inte kvantifierad. C1 kan godkännas inom sin numeriska omfattning; fysisk utskriftskvalitet bedöms separat.']
+        '', 'ISSUE-001 closed by user decision on 2026-10-25 after several measurements without observed problems. Residual uncertainty accepted for current use; no full noise-propagation/refitting study was performed. Print quality is assessed separately.']
     (out/'c1-check.md').write_text('\n'.join(lines)+'\n');return result
 
 if __name__=='__main__':

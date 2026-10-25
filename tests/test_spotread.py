@@ -14,11 +14,20 @@ class SpotTest(unittest.TestCase):
   for bad in [s+s,s.replace('1,2,3','1,2'),s.replace('1,2,3','1,2,3,4'),s.replace('Result is XYZ','Missing XYZ')]:
    with self.assertRaises(ValueError):spot.parse_reading(bad)
  def test_transport(self):
+  self.exercise_transport(False)
+ def test_instrument_button_start_event(self):
+  self.exercise_transport(True)
+ def exercise_transport(self,hardware):
   with tempfile.TemporaryDirectory() as d:
    Path(d,'request.json').write_text(json.dumps({'calibrationStandard':'XRGA','port':0}))
-   p=subprocess.Popen([sys.executable,'-u',str(ROOT/'bridge/spotread_bridge.py'),d,str(ROOT/'tests/fixtures/fake_spotread.py')],stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True)
+   fixture=ROOT/'tests/fixtures/fake_spotread.py'
+   if hardware:
+    source=fixture.read_text().replace('import sys,tty','import sys,tty,time')
+    source=source.replace("key();say('Result is XYZ:","time.sleep(.2);sys.stdout.write('############# trig');sys.stdout.flush();time.sleep(.1);say('gered ##############');time.sleep(.2);say('Result is XYZ:")
+    fixture=Path(d,'fake-spotread');fixture.write_text(source);fixture.chmod(0o755)
+   p=subprocess.Popen([sys.executable,'-u',str(ROOT/'bridge/spotread_bridge.py'),d,str(fixture)],stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True)
    try:
-    states=[];candidate=False
+    states=[];candidate=False;starts=0
     # reader thread avoids text buffering and enforces an overall deadline.
     import queue,threading
     q=queue.Queue()
@@ -29,11 +38,15 @@ class SpotTest(unittest.TestCase):
     while time.monotonic()<deadline:
      e=q.get(timeout=5)
      self.assertNotEqual(e['event'],'error',e)
+     if e['event']=='measurement-started':
+      starts+=1;self.assertFalse(candidate)
      if e['event']=='state' and e['kind']!='busy':
-      states.append(e['kind']);p.stdin.write(json.dumps({'command':'key','text':' '})+'\n');p.stdin.flush()
+      states.append(e['kind'])
+      if hardware and e['kind']=='ready':continue
+      p.stdin.write(json.dumps({'command':'key','text':' '})+'\n');p.stdin.flush()
      if e['event']=='candidate':candidate=True;break
     self.assertTrue(candidate);self.assertEqual(states,['calibration','calibrationRetry','ready'])
-    self.assertEqual(p.wait(timeout=5),0)
+    self.assertEqual(p.wait(timeout=5),0);self.assertEqual(starts,1 if hardware else 0)
     c=json.loads(Path(d,'candidate.json').read_text());self.assertEqual(c['instrumentSerial'],'FIXTURE');self.assertEqual(len(c['spectra']),36)
    finally:
     if p.poll() is None:p.kill();p.wait()

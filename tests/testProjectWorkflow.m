@@ -159,7 +159,15 @@ verifyEqual(tc,u.currentStep,'c2measurement');verifyEqual(tc,u.steps.c2print,s.s
 verifyEqual(tc,u.steps.export.status,"stale");verifyEqual(tc,u.steps.export.outputs.profile,"old.icc");
 end
 function testFinalReportSavedWithICC(tc)
-w=finalReportFixture(tc);inkprof.updateProject(w.Root,Printing=struct('printer',"Certificate printer <demo>"));w.run('export',struct('ReportUser',"Christer Törnkvist"));
+w=finalReportFixture(tc);inkprof.updateProject(w.Root,Printing=struct('printer',"Certificate printer <demo>"));
+f=uifigure('Visible','off','Tag','InkProfWorkflow');windowCleanup=onCleanup(@()delete(f));setappdata(f,'InkProfRunning',true);
+seen=strings(0);watch=timer('ExecutionMode','fixedSpacing','Period',.1,'TimerFcn',@observeExport);
+timerCleanup=onCleanup(@()delete(watch));start(watch);
+w.run('export',struct('ReportUser',"Christer Törnkvist"));stop(watch);
+verifyTrue(tc,any(contains(seen,"Rendering certificate PDF")));
+verifyFalse(tc,isappdata(f,'InkProfCalculationState'));
+verifyEmpty(tc,timerfindall('Tag','InkProfCalculationTimer'));
+delete(f);clear windowCleanup
 verifyTrue(tc,w.valid('export'));
 for key=["profile","finalReport","reportJSON","reportText","reportPDF"],verifyTrue(tc,isfile(w.output('export',key)));end
 verifyTrue(tc,isfile(w.output('export','measurementAppendix')));
@@ -196,6 +204,9 @@ verifyTrue(tc,contains(fileread(fullfile(w.Root,'result-log.txt')),'finalReport'
 f=inkprof.app(w.Root);verifyEqual(tc,string(findobj(f,'Tag','openFinalReport').Enable),"on");delete(f);
 % A report belongs to its saved ICC bytes, not only to the output path.
 fid=fopen(w.output('export','profile'),'a');fprintf(fid,'altered');fclose(fid);verifyFalse(tc,w.valid('export'));
+ function observeExport(~,~)
+  if isappdata(f,'InkProfCalculationPhase'),seen(end+1)=string(getappdata(f,'InkProfCalculationPhase'));end
+ end
 end
 function testFinalReportRejectsDifferentApproval(tc)
 w=finalReportFixture(tc);a=w.output('approve','approval');r=jsondecode(fileread(a));r.profileSHA256='wrong';inkprof.internal.writeJson(a,r);
@@ -336,6 +347,54 @@ r=inkprof.internal.saveWorkflowDelivery(folder,icc,txt,Overwrite=true);txt=strin
 verifyTrue(tc,contains(fileread(txt),'Rapportunderlag:'));verifyEqual(tc,string(r.iccSHA256),original);
 delete(icc);verifyTrue(tc,w.valid('export'));
 verifyError(tc,@()inkprof.internal.saveWorkflowDelivery(folder,w.output('profile','profile'),report,Overwrite=true),'inkprof:Delivery');
+end
+function testDocumentationCorrectionPreservesProfileAndC2(tc)
+w=finalReportFixture(tc);inkprof.updateProject(w.Root,Step="fixture");
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+steps=w.State.steps;profile=w.output('profile','profile');hash=inkprof.internal.sha256(profile);
+reference=w.output('c2','reference');refHash=inkprof.internal.sha256(reference);
+d=struct('Name',string(a.name),'User',"Correcting operator",'Printing',struct('media',"Correct Baryta setting"), ...
+ 'ChangeKind',"documentation-correction",'CorrectionReason',"The printer already used Baryta; the project label was wrong.");
+d.Printing.profileOutputVersions=string(a.printing.profileOutputVersions);
+% Keep identity metadata unchanged as this test concerns printing descriptions.
+d.User=string(java.lang.System.getProperty('user.name'));
+if isfield(a,'user'),d.User=string(a.user);end
+if strlength(strtrim(d.User))==0,d.User="Tester";end
+w.editDetails(d);
+verifyEqual(tc,inkprof.internal.sha256(profile),hash);verifyEqual(tc,inkprof.internal.sha256(reference),refHash);
+verifyTrue(tc,w.valid('profile'));verifyTrue(tc,w.valid('c2'));verifyTrue(tc,w.ready('c2measurement'));
+verifyEqual(tc,string(w.State.steps.input.status),string(steps.input.status));
+verifyEqual(tc,string(w.State.steps.checks.status),string(steps.checks.status));
+h=w.State.history;if iscell(h),e=h{end};else,e=h(end);end
+verifyEqual(tc,string(e.details.changeKind),"documentation-correction");
+verifyEqual(tc,string(e.details.reason),d.CorrectionReason);
+verifyTrue(tc,isfile(w.resolve(e.details.auditFile)));verifyTrue(tc,inkprof.verifyProject(w.Root).passed);
+end
+function testDocumentationCorrectionRejectsMissingReasonAndProcessing(tc)
+w=finalReportFixture(tc);inkprof.updateProject(w.Root,Step="fixture");
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+d=struct('Name',string(a.name),'User',"Tester",'Printing',struct('media',"Correct label"),'ChangeKind',"documentation-correction");
+before=fileread(fullfile(w.Root,'workflow.json'));
+verifyError(tc,@()w.editDetails(d),'inkprof:CorrectionReason');
+d.CorrectionReason="Correction";d.Printing=struct('fwaCompensation',true);
+verifyError(tc,@()w.editDetails(d),'inkprof:CorrectionProcessing');
+verifyEqual(tc,fileread(fullfile(w.Root,'workflow.json')),before);
+end
+function testDocumentationCorrectionRejectsChangedArtifacts(tc)
+w=finalReportFixture(tc);inkprof.updateProject(w.Root,Step="fixture");
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+f=fopen(w.output('profile','profile'),'a');fwrite(f,1,'uint8');fclose(f);
+d=struct('Name',string(a.name),'User',"Tester",'Printing',struct('media',"Correction"), ...
+ 'ChangeKind',"documentation-correction",'CorrectionReason',"Correct text only");
+verifyError(tc,@()w.editDetails(d),'inkprof:Integrity');
+end
+function testDocumentationCorrectionDoesNotRestoreStaleChain(tc)
+w=finalReportFixture(tc);s=w.State;s.steps.input.status="stale";
+inkprof.internal.writeJson(fullfile(w.Root,'workflow.json'),s);w.reload();inkprof.updateProject(w.Root,Step="fixture");
+a=jsondecode(fileread(fullfile(w.Root,'inkprof-project.json')));
+d=struct('Name',string(a.name),'User',"Tester",'Printing',struct('media',"Correction"), ...
+ 'ChangeKind',"documentation-correction",'CorrectionReason',"Correct text only");
+w.editDetails(d);verifyEqual(tc,string(w.State.steps.input.status),"stale");verifyFalse(tc,w.ready('c2measurement'));
 end
 function testEditDetailsKeepsEvidenceAndInvalidatesDelivery(tc)
 w=finalReportFixture(tc);w.run('export',struct('ReportUser',"Alice"));

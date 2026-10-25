@@ -40,12 +40,13 @@ def main():
     if (folder/'candidate.json').exists():raise ValueError('Candidate already exists; create a new attempt.')
     # Same conversion standard as the original TI3, never inherit an environment override.
     standard={'XRGA':'G','XRDI':'X','GMDI':'A'}[request['calibrationStandard']]
-    command=[str(Path(args.executable).resolve()),'-v','-s','-i','D50','-Q','1931_2','-A',standard]
+    command=[str(Path(args.executable).resolve()),'-v','-D3','-s','-i','D50','-Q','1931_2','-A',standard]
     if request.get('port',0):command+=['-c',str(request['port'])]
     run={'arguments':command,'started':time.time(),'mode':'reflection','autoTrigger':False}
     (folder/'run.json').write_text(json.dumps(run,indent=2))
     lock=open(Path('/tmp')/f'inkprof-spot-{os.getuid()}.lock','a');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     master,slave=pty.openpty();proc=None;candidate=None;state='busy';buffer='';full='';pending=b'';quitting=False;quit_confirmed=False;deadline=time.monotonic()+900
+    armed=False
     decoder=codecs.getincrementaldecoder('utf-8')('replace')
     try:
         proc=subprocess.Popen(command,cwd=folder,stdin=slave,stdout=slave,stderr=slave,start_new_session=True);os.close(slave);slave=None
@@ -60,6 +61,9 @@ def main():
                         if data is None:continue
                         if not data:alive=False;break
                         log.write(data);log.flush();text=decoder.decode(data);full+=text;buffer+=text;emit('output',text=text)
+                        trigger=re.search(r'#+ triggered #+\s*',buffer)
+                        if trigger and armed and not quitting:
+                            emit('measurement-started',source='instrument');armed=False;state='busy';buffer=buffer[trigger.end():]
                         new=prompt_state(buffer)
                         if new=='ready' and 'Result is XYZ:' in full and not quitting:
                             candidate=parse_reading(full);quitting=True;buffer='';os.write(master,b'q');deadline=time.monotonic()+10
@@ -67,7 +71,11 @@ def main():
                             # i1Pro 2 may treat the first q as aborting a pending spot read,
                             # then ask whether to retry. Confirm exit, never trigger a retry.
                             quit_confirmed=True;buffer='';os.write(master,b'q');deadline=time.monotonic()+10
-                        elif new!=state and not quitting:state=new;emit('state',kind=state)
+                        elif new!=state and not quitting:
+                            state=new
+                            if new in ('ready','retry'):armed=True
+                            if new in ('calibration','calibrationRetry'):armed=False
+                            emit('state',kind=state)
                     else:
                         data=read_ready(sys.stdin.fileno())
                         if data is None:continue
@@ -77,6 +85,7 @@ def main():
                             line,pending=pending.split(b'\n',1);msg=json.loads(line)
                             if msg.get('command')=='stop':raise RuntimeError('Cancelled by user.')
                             if msg.get('command')!='key' or msg.get('text')!=' ' or state not in ('calibration','calibrationRetry','ready','retry'):raise ValueError('Command does not match a complete instrument prompt.')
+                            armed=False
                             os.write(master,b' ');buffer='';state='busy';emit('state',kind=state)
         code=proc.wait(timeout=5)
         if code!=0 or candidate is None:raise RuntimeError('Spotread ended without one valid spectral reading.')

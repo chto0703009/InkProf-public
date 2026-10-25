@@ -56,7 +56,7 @@ Use exactly the same physical printer, paper, media and quality settings as when
 
 Measure with the matching TI2 and the same documented measurement conditions. C3 computes Lab with the same D50/2° convention and compares it with the desired absolute Lab. Keep model-reachable, other colours, gray samples and repeats apart. C2 only builds the target; the comparison is done separately in [C3](verification-check.md), which is diagnostic and does not approve the profile.
 
-Acceptance limits for ΔE00 and gray balance are recorded as **awaiting user acceptance** in JSON. No arbitrary limits are used to pick a winning profile. ISSUE-001 remains open, and C2 does not perform a full measurement-noise study.
+Acceptance limits for ΔE00 and gray balance are recorded as **awaiting user acceptance** in JSON. No arbitrary limits are used to pick a winning profile. ISSUE-001 was closed by user decision on 2026-10-25 based on practical measurement experience. C2 does not perform a full measurement-noise study.
 
 ## Preparation feedback and colour management
 

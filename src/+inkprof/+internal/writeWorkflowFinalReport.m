@@ -9,6 +9,7 @@ arguments
  folder (1,1) string
  options.User (1,1) string = string(java.lang.System.getProperty('user.name'))
 end
+activity=inkprof.internal.calculationProgress("Preparing measurement certificate","Checking the approved ICC and collecting measurement evidence."); %#ok<NASGU>
 % Save a portable human report and structured evidence after the ICC is saved.
 assert(isfile(profile),'inkprof:FinalReport','Spara ICC-profilen innan mätcertifikatet skapas.');
 assert(strlength(strtrim(options.User))>0&&strlength(options.User)<=120,'inkprof:FinalReport','Ange rapportens användare (1-120 tecken).');
@@ -122,6 +123,8 @@ if isfield(w.State.steps.c2.outputs,'reference')
  if isfield(ref,'referenceSet'),r.referenceTarget=ref.referenceSet;end
  if external,addDetail("Verification patch count including repeats",string(numel(ref.patches)));end
  assert(string(ref.printerProfile.sha256)==digest,'inkprof:FinalReport','3D-underlaget hör till en annan ICC.');
+ clear activity
+ activity=inkprof.internal.calculationProgress("Creating certificate figures","Rendering the verification target in Lab colour space."); %#ok<NASGU>
  f=inkprof.showVerificationLab(reference,Visible=false);
  cleanFigure=onCleanup(@()delete(f));
  exportgraphics(f,fullfile(folder,'profile-lab-3d.png'),'Resolution',160);
@@ -149,9 +152,13 @@ r.verificationSummary=struct('desired',c3.summary,'predicted',struct('count',num
 end
 
 r.fwa=inkprof.internal.fwaReportSummary(r.results.checks_fit,r.results.c3_report,project.printing,digest);
+clear activity
+activity=inkprof.internal.calculationProgress("Creating certificate gamut views","Calculating profile gamut and preparing report illustrations."); %#ok<NASGU>
 r.gamut=inkprof.internal.reportGamut(profile,folder);
 inkprof.internal.writeJson(paths.json,r);
 config=inkprof.paths();
+clear activity
+activity=inkprof.internal.calculationProgress("Rendering measurement views","Creating the certificate measurement illustrations."); %#ok<NASGU>
 inkprof.runPython(fullfile(config.Root,'analysis','lab_views.py'),string(folder),RequiredModules="reportlab",WorkingDirectory=config.Root);
 lines=["INKPROF - MEASUREMENT CERTIFICATE";"Project: "+string(project.name);"Project ID: "+string(project.projectId);"Date: "+r.reportDate;"User: "+r.reportUser; ...
  "Iteration: "+w.State.cycle;"Iteration ID: "+w.State.iterationId;"Local time: "+r.createdLocal; ...
@@ -302,6 +309,8 @@ pages=replace(pages,"__REPORT_FURNITURE__",metadata);
 animation=string(fileread(fullfile(config.Root,'resources','workflow-report-3d.html')));
 html=replace(html,"</html>",pages+animation+"</html>");
 writeText(paths.html,html);
+clear activity
+activity=inkprof.internal.calculationProgress("Rendering certificate PDF","Writing the measurement certificate and supplement PDF files."); %#ok<NASGU>
 inkprof.runPython(fullfile(config.Root,'analysis','workflow_final_pdf.py'),string(folder),RequiredModules="reportlab",WorkingDirectory=config.Root);
     function addDetail(label,value)
         value=strtrim(string(value));if isempty(value)||strlength(value)==0||value=="unknown",value="Not specified";end

@@ -45,6 +45,6 @@ The limit of 10 ΔE00 is used only as a gross-error indicator in this test, neve
 
 ## Status
 
-Implemented and tested 2026-09-27 with the denser B2A candidate; see the [C1 result](../research/c1-verification-20260927.md). C1's defined numerical checks are complete for this candidate. Other profiles and rendering intents need their own checks. Independent print validation belongs to C2. ISSUE-001 is kept open per the user's decision.
+Implemented and tested 2026-09-27 with the denser B2A candidate; see the [C1 result](../research/c1-verification-20260927.md). C1's defined numerical checks are complete for this candidate. Other profiles and rendering intents need their own checks. Independent print validation belongs to C2. ISSUE-001 was closed by user decision on 2026-10-25 based on several measurements without observed problems; no full noise-propagation/refitting study is claimed.
 
 API reference: [LittleCMS lcms2.h](https://github.com/mm2/Little-CMS/blob/master/include/lcms2.h).
