@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.3.0 | 2026-10-25",
+    "tag": "ANVÄNDARHANDBOK | v1.4.0 | 2026-10-25",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Öppen metod och tydliga förutsättningar",
-        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.3.0, dokumenterad 2026-10-25; appens knappar och fältnamn är engelska."
+        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.4.0, dokumenterad 2026-10-25; appens knappar och fältnamn är engelska."
       ]
     ],
     "callout": "InkProf samlar profilering, kontroll och dokumentation i ett projekt. Utskriften av färgmålen gör du i ett separat utskriftsprogram."
@@ -33,8 +33,8 @@
     "lead": "Installera först beroendena och sedan InkProf. Följande installationsgång gäller macOS, den miljö som har testats.",
     "sections": [
       [
-        "Hårdvara och utskriftsprogram",
-        "Använd licensierad MATLAB (testat med R2025b, grundversionen) och Python 3.13.6. Uppdaterad macOS-programmapp innehåller ArgyllCMS 3.5.0 för Apple Silicon och Intel med separata originallicenser. Native verktyg prioriteras och provstartas. Stäng andra instrumentprogram före mätning."
+        "Programvara och beroenden",
+        "Använd licensierad MATLAB (testat med R2025b, grundversionen) och Python 3.13.6. Programmappen för macOS innehåller ArgyllCMS 3.5.0 för Apple Silicon och Intel med separata originallicenser. Nativa verktyg prioriteras och provstartas. Stäng andra instrumentprogram före mätning."
       ],
       [
         "1. Använd uppdaterad kodmapp",
@@ -126,7 +126,7 @@
       ],
       [
         "9-10",
-        "C2. Save verification target; Measure / select verification revision",
+        "C2a. Prepare verification print (TIFF16); C2b. Measure verification print / select saved measurement",
         "Skriv ut och mät kontrollmål. Sida 19."
       ],
       [
@@ -141,7 +141,7 @@
       ],
       [
         "15-17",
-        "Save refinement TIFF16; Measure refinement; Build next iteration",
+        "Refinement tools; Measure refinement; Build next iteration",
         "Nya färgprov och ny profil. Sidor 21-23."
       ],
       [
@@ -153,11 +153,6 @@
         "19",
         "Save ICC + measurement certificate without print verification",
         "Avgränsat beslut utan ny kontrollutskrift. Sida 29."
-      ],
-      [
-        "2026-10-25",
-        "Uppdaterat arbetsflöde",
-        "Sidor 77-78."
       ]
     ],
     "sections": [
@@ -166,8 +161,8 @@
         "B2 behövs för den manuella profileringsvägen. Profiljämförelsen på rad 18 är ett stöd för beslut. Rad 19 är ett särskilt alternativ när den aktuella iterationen har kontrollerats numeriskt men inte verifierats med en separat utskrift och mätning."
       ],
       [
-        "Läs vidare: sidorna 25-69",
-        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian. 70: senare OBA/FWA-val. 71-72: delmätning, återupptagning och RGB-kontroller (v1.2.2)."
+        "Läs vidare: sidorna 25-81",
+        "25: FWA. 26-34: profileringsvägar, beslut, leverans och ordlista. 35-37: utjämning, gradienter och ommätning. 38-41: verifiering och felsökning. 42-43: kandidatjämförelse och fotografiska gradienter. 44: certifikatunderlag. 45-47: återgivningsmetoder och ICC. 48-54: komplett arbetsgång. 55-59: förfining och sparade mål. 60: soft proof. 61: Python. 62: ICC-rutnät. 63: nästa rad och bilagor. 64-67: målmetoder. 68-69: Jacobian. 70: senare OBA/FWA-val. 71-72: delmätning, återupptagning och RGB-kontroller. 73: i1Profiler-export. 74-75: målidentitet och utskriftsmappar. 76-78: verifiering, rättelser, mätning och leverans. 79-81: gamut, utökade mål, Lab-täthet och aktivitet."
       ]
     ]
   },
@@ -229,7 +224,7 @@
         "examples/main-window.png",
         174,
         116,
-        "Figur 1. InkProfs huvudfönster med påhittade projektuppgifter. Aktiva knappar och status varierar med projektet."
+        "Figur 1. Aktuell app med syntetiskt projekt och neutral exempelsökväg. Knappar och status beror på projektet."
       ]
     ],
     "sections": [
@@ -262,7 +257,7 @@
       ],
       [
         "Korrigera eller börja om?",
-        "Rätta felskrivna uppgifter i Project details. Receptet hämtar de gemensamma uppgifterna härifrån, och gemensamma projektuppgifter ändras i Project details. Ett senare FWA-val uppdaterar också projektet. Om skrivare, papper, bläck eller utskriftsförhållanden faktiskt ska bli en annan kombination är ett nytt projekt tydligare. Följ appens krav på att köra om steg när underlag ändras."
+        "Rätta felskrivna uppgifter i Project details. Receptet hämtar de gemensamma projektuppgifterna härifrån. Ett senare FWA-val uppdaterar också projektet. Om skrivare, papper, bläck eller utskriftsförhållanden faktiskt ska bli en annan kombination är ett nytt projekt tydligare. Följ appens krav på att köra om steg när underlag ändras."
       ],
       [
         "Byta namn och flytta",
@@ -311,7 +306,7 @@
       ],
       [
         "Optiska vitmedel: FWA / OBA",
-        "FWA (Fluorescent Whitening Agents) och OBA (Optical Brightening Agents) är två namn för optiska vitmedel i papper. OBC (Optical Brightener Compensation) betyder kompensation för deras effekt: OBC avser kompensationen, inte själva ämnet. Argyll kallar det FWA compensation och X-Rite använder OBC. Algoritmerna behöver inte vara identiska. Compensate optical brighteners (D50) väljer InkProfs kompensation. Den M0-väg som stöds modellerar D50 men blir inte en fysisk M1-mätning."
+        "FWA (Fluorescent Whitening Agents) och OBA (Optical Brightening Agents) är två namn för optiska vitmedel i papper. OBC (Optical Brightener Compensation) betyder kompensation för deras effekt. Argyll kallar det FWA compensation och X-Rite använder OBC. Algoritmerna behöver inte vara identiska. Compensate optical brighteners (D50) väljer InkProfs kompensation. Den M0-väg som stöds modellerar D50 men blir inte en fysisk M1-mätning."
       ],
       [
         "Ändra FWA efter mätning",
@@ -569,7 +564,7 @@
     "sections": [
       [
         "Rad 9: spara kontrollmålet",
-        "C2 skapar ett kontrollmål för aktuell ICC. Lab-referenser omvandlas en gång till skrivar-RGB med absolut kolorimetri utan BPC. Förberedelsen visar aktivitet och förfluten tid. Spara TIFF16, skriv ut separat och låt torka. C2 innehåller vanliga färger, neutrala toner, utmanande färger och upprepningar; inte enbart problemområden."
+        "C2a. Prepare verification print (TIFF16) skapar ett kontrollmål för aktuell ICC. Lab-referenser omvandlas en gång till skrivar-RGB med absolut kolorimetri utan BPC. Förberedelsen visar aktivitet och förfluten tid. Spara TIFF16, skriv ut separat och låt torka. C2 innehåller vanliga färger, neutrala toner, utmanande färger och upprepningar; inte enbart problemområden."
       ],
       [
         "Undvik dubbel profilomvandling",
@@ -577,7 +572,7 @@
       ],
       [
         "Rad 10: mät och välj revision",
-        "Measure / select verification revision använder kontrollmålets egen målfil. Mät, spara och välj rätt revision på samma sätt som vid grundmätningen. Ett kontrollmål från en tidigare ICC-kandidat är inte automatiskt verifiering av den nya kandidaten."
+        "C2b. Measure verification print / select saved measurement använder kontrollmålets egen målfil. Mät, spara och välj rätt revision på samma sätt som vid grundmätningen. Ett kontrollmål från en tidigare ICC-kandidat är inte automatiskt verifiering av den nya kandidaten."
       ],
       [
         "Rad 11: C3. Compare model and print",
@@ -600,7 +595,7 @@
     "sections": [
       [
         "Rad 13: Approve for intended use",
-        "Granska aktuella C3-resultat och kör rad 12 först. I rad 13 skriver du avsedd användning och accepterade begränsningar i Your assessment. Kryssa i att du granskat resultaten och kontrollerat att utskriftsinställningarna stämmer med projektet. Klicka Approve for stated use. Rad 14 för sedan in det sparade beslutet i certifikatet. Se steg-för-steg på sidan 58."
+        "Granska C3 och kör rad 12. Markera rad 13 och välj Open review and approval. Ange avsedd användning och begränsningar i Your assessment, bekräfta granskningen och spara med Approve for stated use. Rad 14 tar med beslutet i certifikatet. Se sidan 58."
       ],
       [
         "När godkännandet blir inaktuellt",
@@ -612,7 +607,7 @@
       ],
       [
         "Profilnamn i fil och bildprogram",
-        "Profilnamnet hämtas från Profile name i projektdefinitionen, utan en extra namnfråga. Det används för ICC-filnamnet och profilens interna beskrivning. Rapportnamnet föreslås som <profilnamn>_iter-<nummer>_<UUID-kodens sista åtta tecken>.pdf. Hela UUID-koden behålls i rapportdata. Välj Save delivery elsewhere i rad 14. Sparadialogen börjar i Downloads och huvudfönstret döljs tills Spara eller Avbryt."
+        "Profile name styr ICC-filnamn och intern beskrivning. Rapportnamnet är <profilnamn>_iter-<nummer>_<UUID-kodens sista åtta tecken>.pdf; hela UUID finns i rapportdata. Rad 14: Save ICC and certificate..., sedan Also save copies elsewhere eller Save in project only. Save delivery elsewhere… kopierar en befintlig leverans. Extern sparning börjar i Downloads."
       ],
       [
         "Certifikatets innehåll",
@@ -620,7 +615,7 @@
       ],
       [
         "Certifikat och separat supplement",
-        "Leveransmappen innehåller engelskt certifikat, svensk PDF med suffix -sv.pdf, engelsk HTML, measurement-appendix.pdf och valda ICC-filer. Högst 100 största avvikelser med ΔE00 > 1 visas i stigande ordning. Vänster färg är önskad, höger är uppmätt; talet under paret är ΔE00. Supplementet behåller alla patchar, Lab-värden och spårbarhet."
+        "Mappen innehåller engelskt certifikat, svensk PDF (-sv.pdf), HTML, measurement-appendix.pdf och valda ICC-filer. Högst 100 största ΔE00 över 1 visas från minst till störst inom urvalet; C3 visar störst först. Färgparen visar önskat till vänster och uppmätt till höger. Supplementet behåller samtliga patchar, Lab och spårbarhet."
       ]
     ],
     "callout": "Se sidan 63 för huvudcertifikat, bilaga A/B och separat mätbilaga. Certifikatet anger omfattning och beslut; det är inte ackrediterad certifiering."
@@ -692,7 +687,7 @@
       ],
       [
         "Färgproven har olika roller",
-        "Det kombinerade målet bevarar C2-provets skrivarvärden och referenser. Bildförslag och kompletterande kontrollprov läggs till. Ett bildfilter på ΔE00 tar inte bort de väntande C2-proven. Därför kan det totala antal färgprovet bli större än antalet valda bildfärger."
+        "Det kombinerade målet bevarar C2-provets skrivarvärden och referenser. Bildförslag och kompletterande kontrollprov läggs till. Ett bildfilter på ΔE00 tar inte bort de väntande C2-proven. Därför kan det totala antalet färgprov bli större än antalet valda bildfärger."
       ],
       [
         "Rad 16: Measure refinement",
@@ -851,7 +846,7 @@
       ],
       [
         "1. Kontrollera och skapa slutmålet",
-        "Efter rad 17 kör du rad 8 (Fit, Grid and C1) för den valda aktuella profilen. Kör rad 9 (C2: save verification TIFF16). Kontrollera att målet hör till denna profil och iteration. ICC-omvandlingen har redan tillämpats en gång."
+        "Efter rad 17 kör du rad 8 (Fit, Grid and C1) för den valda aktuella profilen. Kör rad 9 (C2a. Prepare verification print (TIFF16)). Kontrollera att målet hör till denna profil och iteration. ICC-omvandlingen har redan tillämpats en gång."
       ],
       [
         "2. Skriv ut utan ytterligare färgomvandling",
@@ -1007,7 +1002,7 @@
       ],
       [
         "Underlag för denna handbok",
-        "Båda handböckerna beskriver programversion 1.2.1 med skalförfining och aktuella arbetsflödesförbättringar, dokumentrevision 2026-10-24. Version 1.2.1 ges ut 16 oktober 2026; releasetaggen identifierar källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
+        "Handboken beskriver InkProf 1.4.0, utgiven 25 oktober 2026, med dokumentrevision 2026-10-25. Releasetaggen identifierar den publicerade källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
       ]
     ],
     "links": [
@@ -1056,7 +1051,7 @@
     ]
   },
   {
-    "tag": "v1.2.4 | LEVERANS OCH LICENS",
+    "tag": "v1.4.0 | LEVERANS OCH LICENS",
     "title": "Gamut, certifikat och källkod",
     "sections": [
       [
@@ -1077,7 +1072,7 @@
       ],
       [
         "Utgåvestatus",
-        "Handboken beskriver källversion 1.2.1, utgiven 16 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. Externa program installeras separat."
+        "Handboken beskriver InkProf 1.4.0, utgiven 25 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. macOS-programmappen innehåller Argyll för ARM och Intel. MATLAB och den separata Pythonmiljön behöver förberedas enligt installationsanvisningen."
       ]
     ],
     "links": [
@@ -1502,7 +1497,7 @@
     "sections": [
       [
         "11. Verifiera exakt den profil som ska levereras",
-        "Efter val av slutiteration, kör rad 8 (Fit, Grid and C1) och rad 9 (C2: save verification TIFF16) för aktuell profil. Gör en ny kontrollutskrift med dokumenterade inställningar och utan ytterligare färgkonvertering. Mät i rad 10, bevara revisionen och kör rad 11 (C3) och rad 12 (feedback). Gör detta även om utvecklings- eller träningsmätningar ser bra ut. En mätning som tränat ett senare bygge kan inte oberoende verifiera denna senare ICC."
+        "Efter val av slutiteration, kör rad 8 (Fit, Grid and C1) och rad 9 (C2a. Prepare verification print (TIFF16)) för aktuell profil. Gör en ny kontrollutskrift med dokumenterade inställningar och utan ytterligare färgkonvertering. Mät i rad 10, bevara revisionen och kör rad 11 (C3) och rad 12 (feedback). Gör detta även om utvecklings- eller träningsmätningar ser bra ut. En mätning som tränat ett senare bygge kan inte oberoende verifiera denna senare ICC."
       ],
       [
         "12. Bedöm hela resultatet",
@@ -1576,11 +1571,11 @@
       ],
       [
         "Ett mer omfattande mätflöde",
-        "X-Rites rekommenderade RGB-flöde föreslår 2 033 eller 1 586 färgprov, bredare färgprov för bättre sampling, cirka en timmes torkning, instrumentkalibrering och sparade mätdata. Råden gäller dess egen programvara och layout: öka inte InkProfs färgprovens bredd blint och anta inte att en timme ger stabilitet för varje papper. i1Profiler erbjuder också riktad optimering och kompensation för optiska vitmedel; dess interna motor är inte Argyll och dess OBC ska inte beskrivas som identisk med InkProfs M0-metod."
+        "X-Rites rekommenderade RGB-flöde föreslår 2 033 eller 1 586 färgprov, bredare färgprov för bättre sampling, cirka en timmes torkning, instrumentkalibrering och sparade mätdata. Råden gäller dess egen programvara och layout: öka inte InkProfs färgprovsbredd blint och anta inte att en timme ger stabilitet för varje papper. i1Profiler erbjuder också riktad optimering och kompensation för optiska vitmedel; dess interna motor är inte Argyll och dess OBC ska inte beskrivas som identisk med InkProfs M0-metod."
       ],
       [
         "Samlad rekommendation för InkProf",
-        "För noggrann profilering: planera cirka 1 500-2 000 färgprov när mättiden tillåter. Cirka 800-1 000 är en start med mindre budget. Ett pilotmål med 300-600 är för inställningskontroll. Designfönstrets startvärde 575 är en mindre startbudget, inte en generell kvalitetsrekommendation. Totalbudgeten omfattar även kontroller och repetitioner. Kontrollera faktiskt antal i förhandsvisningen. Rådet är en praktisk utgångspunkt, inte ett universellt optimum. Använd lämplig start-ICC, neutrala/vita kontroller och tillförlitlig mätgeometri. Välj senare förfining från mätunderlaget."
+        "Använd budgetråden på sidan 49. Komplettera med lämplig start-ICC, neutrala/vita kontroller och tillförlitlig mätgeometri. Välj senare förfining från mätunderlaget."
       ],
       [
         "Slutbeslutet grundas fortfarande på mätning",
@@ -1661,7 +1656,7 @@
       ],
       [
         "2. Mät de tre kontrollrutorna före raderna",
-        "Varje TIFF16-sida har R, G och B uppe till höger. Rutorna är nominellt 8 × 8 mm och utökas med 1 pixel på varje sida; texten under hålls fri. Äldre ark har rutorna längst ned. Kalibrera i1Pro 2 enligt anvisning och mät stilla i M0, med samma underlag. Mät varje ruta en gång: tre mätningar per sida. Klicka programknappen, inte instrumentknappen; svep inte. Bekräfta att nästa ark ligger framme när Change printed page visas. Alla sidor ska kontrolleras."
+        "Varje ny TIFF16-sida har R, G och B uppe till höger, nominellt 9 × 9 mm med en extra pixels utvidgning på varje sida. Äldre filer kan ha 8 × 8 mm eller rutorna längst ned; befintliga TIFF-filer ändras inte. Kalibrera i1 Pro 2 enligt anvisning och mät stilla i M0 med samma underlag. Mät varje ruta en gång: tre mätningar per sida. Starta med Measure square eller instrumentknappen när rutinen visar att den är redo; svep inte. Följ sid- och färganvisningen i fönstret. Alla sidor ska kontrolleras."
       ],
       [
         "3. Godkänn en känd korrekt utskrift som referens",
@@ -1700,7 +1695,7 @@
       ],
       [
         "5. Rad 13: spara ditt uttryckliga godkännande",
-        "Kör Approve for intended use. Skriv avsedd användning, kvalitetskrav och accepterade begränsningar i Your assessment. Kryssa i att resultaten granskats och utskriftsinställningarna stämmer med projektet. Klicka Approve for stated use. Exempel: Godkänd för fotografiska utskrifter på angivet papper efter ColorChecker-verifiering. Uppmätta färgfel och angivna begränsningar accepteras för denna användning. Anpassa texten till din faktiska bedömning."
+        "Kör Approve for intended use. Skriv avsedd användning, kvalitetskrav och accepterade begränsningar i Your assessment. Kryssa i att resultaten granskats och utskriftsinställningarna stämmer med projektet. Öppna först dialogen med Open review and approval; där sparas beslutet med Approve for stated use. Exempel: Godkänd för fotografiska utskrifter på angivet papper efter ColorChecker-verifiering. Uppmätta färgfel och angivna begränsningar accepteras för denna användning. Anpassa texten till din faktiska bedömning."
       ],
       [
         "6. Rad 14: exportera certifikatet",
@@ -1790,7 +1785,7 @@
         "En felaktig eller inkompatibel version av Python eller ett beroendepaket kan göra att analysen inte fungerar, även om paketet är installerat. InkProf kontrollerar Python-versionens grundkrav och provar att de nödvändiga paketen och deras kompilerade bibliotek kan laddas. Vid installation kontrolleras även att Argyll-verktygen kan startas och lämna versionsinformation. Använd paketversionerna i requirements-filerna som hör till din InkProf-utgåva. Kontrollen prövar funktion och grundkrav; den ersätter inte installationsfilernas angivna paketversioner."
       ]
     ],
-    "callout": "Anvisningen gäller 1.2.1 med aktuella källuppdateringar, dokumentrevision 2026-10-24. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
+    "callout": "Anvisningen gäller InkProf 1.4.0, dokumentrevision 2026-10-25. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
     "links": [
       [
         "Detaljer och reparationskommandon",
@@ -1823,7 +1818,7 @@
     "callout": "Skalförtätning ändrar mätunderlaget. Gridprovet ändrar profilens beräknade tabeller. Prova dem separat för att förstå vad som påverkar resultatet."
   },
   {
-    "tag": "v1.2.4 | ARBETSGÅNG OCH CERTIFIKAT",
+    "tag": "v1.4.0 | ARBETSGÅNG OCH CERTIFIKAT",
     "title": "Nästa steg och tydlig leverans",
     "lead": "Här beskrivs rekommenderad nästa rad och hur leveransens dokument hänger ihop.",
     "sections": [
@@ -2054,7 +2049,7 @@
   },
   {
     "title": "Spara och återuppta delmätning",
-    "tag": "MÄTNING / NYTT I v1.2.4",
+    "tag": "MÄTNING OCH RGB-KONTROLLER",
     "lead": "För stora mål kan färdiga hela rader sparas och mätningen fortsätta senare.",
     "sections": [
       [
@@ -2082,11 +2077,11 @@
         "Efter alla rader: Save and finish och granska mätningen som vanligt. En delmätning markerar inte arbetsflödessteget som färdigt. Vid ett oväntat avbrott kan skanningar sedan senaste sparpunkten gå förlorade. Ändrat mål, inställningar eller sparad fil avvisas."
       ]
     ],
-    "callout": "Ingår i v1.2.2: automatiskt testad; prov av återupptagning med verkligt instrument återstår."
+    "callout": "Funktionen ingår i InkProf 1.4.0. Sparade original och utskriftsfiler bevaras. Automatiska tester ersätter inte kontroll med det avsedda instrumentet."
   },
   {
     "title": "Ommätning och RGB-kontroller",
-    "tag": "MÄTNING / NYTT I v1.2.4",
+    "tag": "MÄTNING OCH RGB-KONTROLLER",
     "sections": [
       [
         "Fortsätt efter ommätt rad",
@@ -2101,15 +2096,15 @@
         "För en ny utskrift mäts R, G och B på varje sida. Kontrollerna är separata från profileringens färgprov och går inte in i modellträningen. Tidigare godkända kontroller kan behållas när samma sparade delmätning återupptas."
       ],
       [
-        "Större rutor i nya mål",
-        "RGB-kontrollrutorna ökas med 0,5 mm på varje sida, alltså 1 mm i nominell bredd och höjd. Det tidigare rastertillägget på en pixel per sida behålls. Registrerade mätområden och etiketter följer geometrin. Befintliga TIFF-filer ändras inte; skapa ett nytt mål för den nya storleken."
+        "RGB-rutornas storlek",
+        "Nya mål har nominellt 9 × 9 mm stora RGB-rutor och en extra pixels rasterutvidgning per sida. Det är 1 mm större i bredd och höjd än äldre 8 × 8 mm-rutor. Mätområden och etiketter följer geometrin. Befintliga TIFF-filer ändras inte."
       ],
       [
         "Om RGB-kontrollen avbryts",
         "En avbruten eller underkänd kontroll låser inte starten permanent. Rätta till problemet och starta igen. Ingen mätning eller avvikelse blir automatiskt godkänd genom detta."
       ]
     ],
-    "callout": "Ingår i v1.2.2. Starta om InkProf för att läsa uppdaterad kod. Äldre sparade utskriftsfiler ändras inte."
+    "callout": "Funktionen ingår i InkProf 1.4.0. Sparade original och utskriftsfiler bevaras. Automatiska tester ersätter inte kontroll med det avsedda instrumentet."
   },
   {
     "title": "Överför mätningen till i1Profiler",
@@ -2118,7 +2113,7 @@
     "sections": [
       [
         "Spara CGATS från appen",
-        "När du sparar ICC och certifikat i steg 14 eller 19, markera kryssrutan Include CGATS for i1Profiler when saving ICC/certificate i huvudfönstret. Ingen extra CGATS-dialog visas. Filerna i1profiler-measurement.txt och motsvarande JSON med ursprung följer med i leveransmappen. Exporten gäller den valda ursprungliga profileringsmätningen, inte sammanslagna refinement-data eller C2-mätningen. Alternativet visas inte för importerade profiler utan profileringsmätning. Endast kompletta nativa M0-mätningar med XRGA och 36 spektralband stöds."
+        "När du sparar ICC och certifikat i rad 14 eller 19, markera kryssrutan Include CGATS for i1Profiler when saving ICC/certificate i huvudfönstret. Ingen extra CGATS-dialog visas. Filerna i1profiler-measurement.txt och motsvarande JSON med ursprung följer med i leveransmappen. Exporten gäller den valda ursprungliga profileringsmätningen, inte sammanslagna refinement-data eller C2-mätningen. Alternativet visas inte för importerade profiler utan profileringsmätning. Endast kompletta nativa M0-mätningar med XRGA och 36 spektralband stöds."
       ],
       [
         "Läs in i rätt arbetsflöde",
@@ -2126,7 +2121,7 @@
       ],
       [
         "Vad testet verifierade",
-        "På macOS med i1Profiler 3.8.5 kunde användaren läsa in Canons 2 200 färgprov och skapa en ICC-profil. Den skapade profilens inbäddade CxF-data kontrollerades: samtliga 2 200 mål- och mätobjekt fanns med och alla 36 spektralvärden per prov matchade originalet inom numerisk precision. Filnamnet Chart 2033 Patches var ett kvarvarande namn, inte antalet överförda prov."
+        "På macOS med i1Profiler 3.8.5 kunde användaren läsa in Canon-skrivarens 2 200 uppmätta färgprov och skapa en ICC-profil. Den skapade profilens inbäddade CxF-data kontrollerades: samtliga 2 200 mål- och mätobjekt fanns med och alla 36 spektralvärden per prov matchade originalet inom numerisk precision. Filnamnet Chart 2033 Patches var ett kvarvarande namn, inte antalet överförda prov."
       ],
       [
         "Precision och sidindelning",
@@ -2142,7 +2137,7 @@
   {
     "tag": "MÄTNING | TARGETIDENTITET | 2026-10-24",
     "title": "Identifiera utskriften före mätning",
-    "lead": "Datum räcker inte ensamt. Matcha targettyp, sidantal och paketets sökväg mot det fysiska arket.",
+    "lead": "Datum räcker inte ensamt. Matcha måltyp, sidantal och paketets sökväg mot det fysiska arket.",
     "images": [
       [
         "examples/measurement-target-identity.png",
@@ -2153,16 +2148,16 @@
     ],
     "sections": [
       [
-        "Grundtarget eller C2-verifiering?",
-        "Steg 3. Measure / select measurement revision läser grundtargeten från steg 2. En C2-utskrift hör till C2b. Measure verification print / select saved measurement. Är rätt paket redan valt går du direkt till den mätningen utan att skapa en ny target. När alla rader lästs: Save and finish, sedan C3. Compare model and print och Review feedback."
+        "Grundmål eller C2-verifiering?",
+        "Rad 3. Measure / select measurement revision läser grundmålet från rad 2. En C2-utskrift hör till C2b. Measure verification print / select saved measurement. Är rätt paket redan valt går du direkt till den mätningen utan att skapa ett nytt mål. När alla rader lästs: Save and finish, sedan C3. Compare model and print och Review feedback."
       ],
       [
         "Target locked är avsiktligt",
-        "En förberedd mätning är bunden till sin TI2. Den grå Choose chart-knappen heter nu Target locked. För att byta: stäng mätfönstret och välj motsvarande target i arbetsflödet. Byt inte till ett liknande kort mitt i en förberedd eller delvis inläst session."
+        "En förberedd mätning är bunden till sin TI2. Knappen Target locked visar att målvalet är låst. För att byta: stäng mätfönstret och välj motsvarande mål i arbetsflödet. Byt inte till ett liknande kort mitt i en förberedd eller delvis inläst session."
       ],
       [
         "Detta visas i fönstret",
-        "Sammanfattningen visar patchantal, registrerad targettyp, sidantal, sparad lokal tid och UTC. Target details visar hela sökvägen och erbjuder sidförhandsvisning. Saknade historiska uppgifter gissas inte. Jämför med utskriftens sidfot. Paketets skapelsetid bevisar inte utskriftsdatum eller torktid."
+        "Sammanfattningen visar patchantal, registrerad måltyp, sidantal, sparad lokal tid och UTC. Target details visar hela sökvägen och erbjuder sidförhandsvisning. Saknade historiska uppgifter gissas inte. Jämför med utskriftens sidfot. Paketets skapelsetid bevisar inte utskriftsdatum eller torktid."
       ]
     ]
   },
@@ -2177,24 +2172,24 @@
       ],
       [
         "PROJECT_INFO.txt",
-        "UTF-8-filen innehåller exakt projektnamn och ID, projektets ursprungliga sökväg, arbetssteg, aktuell iteration/iterations-ID, targetens ursprungsiteration/ID när historiken kan styrka den, lokala tider och UTC, registrerad targetbeskrivning, ursprunglig TI2 och SHA-256, projektets utskriftsinställningar samt kopierade filnamn med SHA-256. Okänt ursprung förblir okänt."
+        "UTF-8-filen innehåller exakt projektnamn och ID, projektets ursprungliga sökväg, arbetssteg, aktuell iteration/iterations-ID, målets ursprungsiteration/ID när historiken kan styrka den, lokala tider och UTC, registrerad målbeskrivning, ursprunglig TI2 och SHA-256, projektets utskriftsinställningar samt kopierade filnamn med SHA-256. Okänt ursprung förblir okänt."
       ],
       [
         "Kopior och original",
         "PRINTING.txt innehåller utskriftsinstruktioner. print-delivery.json innehåller strukturerat kvitto; kopieringen registreras även i projektets rapporter/historik. TIFF kopieras och kontrolleras byte för byte. En hash identifierar inte det fysiska arket: matcha sidfoten och dokumenterade inställningar. TIFF-leveransen ersätter inte originalets TI2/layout vid mätning."
       ],
       [
-        "Targetens iteration kan vara äldre",
-        "En grund- eller C2-target kan ha skapats i en tidigare iteration. Mappnamnet anger iterationen vid kopiering. PROJECT_INFO.txt anger separat targetens ursprung när matchande historik finns. Skapelsedatum och kopieringsdatum är skilda händelser och bevisar inte fysisk utskriftstid."
+        "Målets iteration kan vara äldre",
+        "En grund- eller C2-mål kan ha skapats i en tidigare iteration. Mappnamnet anger iterationen vid kopiering. PROJECT_INFO.txt anger separat målets ursprung när matchande historik finns. Skapelsedatum och kopieringsdatum är skilda händelser och bevisar inte fysisk utskriftstid."
       ],
       [
-        "Kopia av hela targetpaketet",
-        "Den alternativa kopieringen av komplett targetpaket från förfiningsverktyg använder också projektbaserat namn och projektinformation när ursprunget finns i ett identifierat projekt. Utan projektkontext används ett generellt läsbart namn; projekt och iteration hittas inte på."
+        "Kopia av hela målpaketet",
+        "Den alternativa kopieringen av komplett målpaket från förfiningsverktyg använder också projektbaserat namn och projektinformation när ursprunget finns i ett identifierat projekt. Utan projektkontext används ett generellt läsbart namn; projekt och iteration hittas inte på."
       ]
     ]
   },
   {
-    "tag": "2026-10-24 | v1.2.4 | b813525",
+    "tag": "ARBETSGÅNG OCH LEVERANS",
     "title": "Verifiering och komplett leverans",
     "sections": [
       [
@@ -2203,11 +2198,11 @@
       ],
       [
         "Läs C3-återkopplingen",
-        "Kör Review feedback för att öppna ett läsbart återkopplingsfönster. Öppna det igen med Open selected step results när återkopplingsraden är vald. C3-filerna heter verification-check.md och verification-check.json under targets/<target>/checks/<check>. Varje kontroll får en egen mapp. Jämför samma ICC och target; skilj felet mot önskat Lab från felet mot profilens förutsägelse."
+        "Kör Review feedback för att öppna ett läsbart återkopplingsfönster. Öppna det igen med Open selected step results när återkopplingsraden är vald. C3-filerna heter verification-check.md och verification-check.json under targets/<target>/checks/<check>. Varje kontroll får en egen mapp. Jämför samma ICC och mål; skilj felet mot önskat Lab från felet mot profilens förutsägelse."
       ],
       [
         "Godkännande och certifikat är skilda åtgärder",
-        "Ett radval navigerar bara. Kör Open review and approval, granska resultatet, kryssa i bekräftelsen och spara bedömningen. Välj sedan rad 14, Save ICC and measurement certificate, och klicka Save ICC and certificate... Välj Also save copies elsewhere för paketets namn och plats. Save in project only behåller leveransen i projektet. En tidigare numerisk export från steg 19 döljer inte längre nästa steg efter godkänd utskriftskontroll."
+        "Ett radval navigerar bara. Kör Open review and approval, granska resultatet, kryssa i bekräftelsen och spara bedömningen. Välj sedan rad 14, Save ICC and measurement certificate, och klicka Save ICC and certificate... Välj Also save copies elsewhere för paketets namn och plats. Save in project only behåller leveransen i projektet. En tidigare numerisk export från rad 19 hindrar inte leverans efter godkänd utskriftskontroll."
       ],
       [
         "Exakt verifierad ICC följer med",
@@ -2215,37 +2210,37 @@
       ],
       [
         "Ny verifiering efter ändrade skrivarinställningar",
-        "Skriv ut samma target igen med avsedda inställningar och dokumentera faktisk CO/coating, mediatyp, kvalitet och torktid för varje ark. Starta en ny C2b-mätning; tidigare mätningar bevaras. Jämför motsvarande C3-rapporter. Enbart sparad Automatic-inställning bevisar inte vilken fysisk CO-inställning som användes."
+        "Skriv ut samma mål igen med avsedda inställningar och dokumentera faktisk CO/coating, mediatyp, kvalitet och torktid för varje ark. Starta en ny C2b-mätning; tidigare mätningar bevaras. Jämför motsvarande C3-rapporter. Enbart sparad Automatic-inställning bevisar inte vilken fysisk CO-inställning som användes."
       ]
     ]
   },
   {
-    "tag": "1.3.0 | 2026-10-25",
-    "title": "Uppdaterat arbetsflöde - 25 oktober 2026",
-    "lead": "Flödesändringar som ingår i release 1.3.0.",
+    "tag": "ARBETSGÅNG",
+    "title": "Granskning, låsning och rättelser",
+    "lead": "Så hanteras granskning och ändrade projektuppgifter.",
     "sections": [
       [
         "Granska och lås en gång",
-        "Steg 4 håller mätgranskningen öppen tills Continue to assessment väljs. B1 kontrollerar vald mätrevision, visar en modal bekräftelse Lock profile input och sparar sedan en verifierad kopia. Aktivitet och tid visas under kontroll och sparande. Föreslagen ordning är B1, B2, B3; B2 visas för receptgranskning, men Automatic B3 skapar fortfarande egna recept."
+        "Rad 4 håller mätgranskningen öppen tills Continue to assessment väljs. B1 kontrollerar vald mätrevision, visar en modal bekräftelse Lock profile input och sparar sedan en verifierad kopia. Aktivitet och tid visas under kontroll och sparande. Föreslagen ordning är B1, B2, B3; B2 visas för receptgranskning, men Automatic B3 skapar fortfarande egna recept."
       ],
       [
         "Patchantal och resultatfönster",
-        "Första B3 frågar inte längre efter parametrar för extra kompletteringspatcher. De används vid komplettering och fortsättning. C1 sparar numeriska rapporter utan att automatiskt öppna flera resultatfönster; använd Open selected step results. C2a förbereder verifieringstargetet; välj befintliga filer när en redan utskriven target återanvänds."
+        "Parametrar för extra kompletteringspatcher anges vid komplettering och fortsättning, inte vid det första B3-bygget. C1 sparar numeriska rapporter utan att automatiskt öppna flera resultatfönster; använd Open selected step results. C2a förbereder verifieringsmålet; välj befintliga filer när ett redan utskrivet mål återanvänds."
       ],
       [
         "Rätta registrerade uppgifter",
         "Vid ändring i Project details skiljs Correct recorded details från Changed actual setup. En dokumentationsrättelse kräver förklaring och oförändrade fysiska förhållanden. Originalfilernas hash kontrolleras och en ny revisionspost dokumenterar före/efter. Numeriska beräkningsändringar kan inte göras som dokumentationsrättelser. Redan inaktuella steg återställs inte automatiskt."
       ],
       [
-        "ISSUE-001 stängd",
-        "ISSUE-001 stängdes på användarens beslut 2026-10-25 efter flera mätningar utan observerade problem. Kvarvarande osäkerhet accepterades för aktuell användning. Detta innebär inte att en fullständig studie av brus genom ny profilanpassning har utförts. Faktiska numeriska varningar och oberoende utskriftsverifiering gäller fortfarande."
+        "Mätosäkerhet och verifiering",
+        "Upprepade mätningar visar mätningens spridning. Numeriska varningar behöver granskas och resultatet bedömas med en oberoende utskrift. Avsaknad av observerade problem bevisar inte att brusets påverkan genom en ny profilanpassning är fullständigt undersökt."
       ]
     ]
   },
   {
-    "tag": "1.3.0 | 2026-10-25",
+    "tag": "ARBETSGÅNG",
     "title": "Mätning och leverans",
-    "lead": "Flödesändringar som ingår i release 1.3.0.",
+    "lead": "Följ mätanvisningarna och spara en komplett leverans.",
     "sections": [
       [
         "RGB och andra spotmätningar",
@@ -2253,7 +2248,7 @@
       ],
       [
         "Avbryt och fortsätt säkert",
-        "Skip / close och fönstrets stängknapp kan avbryta RGB-kontrollen medan kalibreringen väntar. Sparade förfrågningar, loggar och läsningar behålls. Ofullständiga textrader blockerar inte längre pollningen och Argylls debugtext efter en fråga hanteras. Huvudfönstrets aktivitetsläge återställs vid avbrott. Starta om InkProf efter kodändringar; återuppta sparade rader endast för samma fysiska utskrift."
+        "Skip / close och fönstrets stängknapp kan avbryta RGB-kontrollen medan kalibreringen väntar. Sparade förfrågningar, loggar och läsningar behålls. Ofullständiga textrader blockerar inte pollningen och Argylls debugtext efter en fråga hanteras. Huvudfönstrets aktivitetsläge återställs vid avbrott. Starta om InkProf efter kodändringar; återuppta sparade rader endast för samma fysiska utskrift."
       ],
       [
         "Utskriftskopia av komplettering",
@@ -2261,7 +2256,7 @@
       ],
       [
         "Aktivitet vid certifikatleverans",
-        "Steg 14 visar aktivitet och tid vid insamling av underlag, figurer och PDF, ICC-varianter samt kopiering och verifiering av leveransfiler. Den externa mappen innehåller den exakt kontrollerade profilen som <namn>-verified-original.icc samt namngivna leveransvarianter. Ett sparat certifikat genereras inte om på plats; skapa en ny exportrevision när något ändras."
+        "Rad 14 visar aktivitet och tid vid insamling av underlag, figurer och PDF, ICC-varianter samt kopiering och verifiering av leveransfiler. Den externa mappen innehåller den exakt kontrollerade profilen som <namn>-verified-original.icc samt namngivna leveransvarianter. Ett sparat certifikat genereras inte om på plats; skapa en ny exportrevision när något ändras."
       ]
     ]
   },
@@ -2271,15 +2266,15 @@
     "sections": [
       [
         "Undersök modellens gräns",
-        "View gamut har Gamut boundary exploration (both sides), utöver inre skal och valda områden. Ange Boundary distance i Delta E76, minsta RGB-avstånd och högsta antal NYA punkter. Kandidaterna har utskrivbara skrivar-RGB-värden. Negativt signerat avstånd betyder beräknat utanför den befintliga modellens yta; det bevisar inte ett större fysiskt färgomfång."
+        "View gamut har Gamut boundary exploration (both sides), utöver inre skal och valda områden. Ange Boundary distance i Delta E76, minsta RGB-avstånd och högsta antal nya punkter. Kandidaterna har utskrivbara skrivar-RGB-värden. Negativt signerat avstånd betyder beräknat utanför den befintliga modellens yta; det bevisar inte ett större fysiskt färgomfång."
       ],
       [
         "Extend latest target",
         "Kryssa i Extend latest target för att kombinera senaste färdiga gamututskriften för exakt samma ICC med nya punkter. Förslag utan färdig TIFF hoppas över. Tidigare anpassnings-/utvecklingspunkter och extra mörka punkter behålls; exakta dubbletter och RGB som redan ingår i träningen utesluts. Kontroller skapas på nytt. Påbörjade eller pausade mätningar hindrar att samma mål utökas. Äldre TIFF, TI2 och avläsningar bevaras."
       ],
       [
-        "Skriv ut och mät den NYA versionen",
-        "Hela målet sparas normalt i projektet. Dialogen för frivillig extern kopia öppnas i Downloads; Cancel hoppar bara över kopian. Skriv ut alla sidor utan färgkonvertering. Steg 16 mäter nya TI2 och steg 17 bygger nästa profil med tidigare träningsdata. Använd inte äldre utskriftslayout med nya TI2. View gamut stängs efter lyckad målskapning och kopieringsdialog; vid avbrott/fel finns fönstret kvar."
+        "Skriv ut och mät den nya versionen",
+        "Hela målet sparas normalt i projektet. Dialogen för frivillig extern kopia öppnas i Downloads; Cancel hoppar bara över kopian. Skriv ut alla sidor utan färgkonvertering. Rad 16 mäter nya TI2 och rad 17 bygger nästa profil med tidigare träningsdata. Använd inte äldre utskriftslayout med nya TI2. View gamut stängs efter lyckad målskapning och kopieringsdialog; vid avbrott/fel finns fönstret kvar."
       ]
     ]
   },
@@ -2297,7 +2292,7 @@
       ],
       [
         "Bygg separat kandidat",
-        "Close stänger bara granskningen. Build separate balanced candidate använder det granskade urvalet och är spärrad när noll punkter skulle utelämnas. Ändra inställningar och välj Recalculate i stället för att tvinga bort punkter. Båda profilerna jämförs mot ALLA ursprungliga träningsobservationer, även utelämnade rader, tillgängliga undanhållna utvecklingspatcher och samma tonövergångar. Det ersätter inte oberoende utskriftsverifiering. Kandidaten ersätter aldrig automatiskt aktiv profil."
+        "Close stänger bara granskningen. Build separate balanced candidate använder det granskade urvalet och är spärrad när noll punkter skulle utelämnas. Ändra inställningar och välj Recalculate i stället för att tvinga bort punkter. Båda profilerna jämförs mot alla ursprungliga träningsobservationer, även utelämnade rader, tillgängliga undanhållna utvecklingspatcher och samma tonövergångar. Det ersätter inte oberoende utskriftsverifiering. Kandidaten ersätter aldrig automatiskt aktiv profil."
       ]
     ]
   },
@@ -2314,8 +2309,8 @@
         "Varje program har egen .venv med Python 3.13.6 och samma låsta paketlista. Från kodmappen används setup_python_environment(\"check\"), \"sync\" eller \"rebuild\". Ombyggnad bevarar tidigare miljö som backup och återställer den vid fel. En flyttad .venv ersätter inte ombyggnad för en annan dator. Projekt och originalmätningar är separata från körmiljön."
       ],
       [
-        "Native Argyll och dokumentets omfattning",
-        "Programmappen innehåller separat licensierad ArgyllCMS 3.5.0 för ARM och Intel macOS, med originalnotiser och ursprungsuppgifter. Native verktyg prioriteras och provstartas. Uppdateringen beskriver release 1.4.0. Starta om appen efter källkodsändring."
+        "Nativ Argyll och dokumentets omfattning",
+        "Programmappen innehåller separat licensierad ArgyllCMS 3.5.0 för ARM och Intel macOS, med originalnotiser och ursprungsuppgifter. Nativa verktyg prioriteras och provstartas. Uppdateringen beskriver release 1.4.0. Starta om appen efter källkodsändring."
       ]
     ]
   }

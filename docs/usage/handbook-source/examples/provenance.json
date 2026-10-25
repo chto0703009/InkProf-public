@@ -25,5 +25,12 @@
     "figure": "measurement-target-identity.png",
     "context": "Synthetic prepared C2 target with 141 IDs, one page and a sample timestamp; no instrument process or physical measurement",
     "capture": "MATLAB exportapp; crop shows target identity and measurement settings"
+  },
+  "mainWindowCurrent": {
+    "date": "2026-10-25",
+    "appVersion": "1.4.0",
+    "figure": "main-window.png",
+    "capture": "MATLAB exportapp from current app with a newly created synthetic project; display path replaced by /Users/example/InkProf/projects/Handbook-example",
+    "scope": "Documentation only; no instrument or user project used"
   }
 }

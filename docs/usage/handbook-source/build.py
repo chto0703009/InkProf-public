@@ -122,7 +122,7 @@ coverDetails=ParagraphStyle('coverDetails',parent=S['body'],alignment=2)
 story=[Spacer(1,8*mm),p(local('ANVÄNDARHANDBOK','USER HANDBOOK'),'tag'),
  Paragraph('InkProf',coverTitle),
  Paragraph(local('Handbok','User Handbook'),coverSubtitle),
- p('Quality Profiling RGB printer','lead'),
+ p(local('Kvalitetsprofilering av RGB-skrivare','Quality profiling for RGB printers'),'lead'),
  p(local('Profilering, mätning och verifiering av RGB-skrivare','Profiling, measurement and verification of RGB printers'),'body'),
  Spacer(1,9*mm),
  Image(str(ROOT/'examples/cover-gamut.png'),width=174*mm,height=100*mm,kind='proportional'),

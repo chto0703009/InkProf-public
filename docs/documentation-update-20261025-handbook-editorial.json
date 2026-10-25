@@ -1,0 +1,101 @@
+{
+  "DocumentDate": "2026-10-25",
+  "SourceVersion": "1.4.0",
+  "Scope": "Handbook editorial review in Swedish and English; post-release documentation correction",
+  "Status": "PASS",
+  "Checks": [
+    "All 164 handbook PDF pages rendered",
+    "All 81 chapter titles remain on their original pages in both languages",
+    "Changed pages visually reviewed",
+    "UI labels and RGB dimensions checked against source",
+    "Certificate ascending order confirmed in source; C3 descending order distinguished",
+    "Current synthetic main window replaces historical screenshot",
+    "Downloads copies SHA-256 verified"
+  ],
+  "Documents": [
+    {
+      "Path": "docs/usage/InkProf-user-handbook-English.pdf",
+      "Pages": 82,
+      "ChangedPDFPages": [
+        1,
+        2,
+        5,
+        7,
+        8,
+        20,
+        21,
+        29,
+        32,
+        34,
+        45,
+        53,
+        55,
+        57,
+        58,
+        59,
+        60,
+        62,
+        64,
+        72,
+        73,
+        74,
+        75,
+        77,
+        78,
+        79,
+        80,
+        81
+      ],
+      "SHA256": "80878b4738efe96696ae3a4c3ac1373ccd6c414526d5fc6ad874ea859f16f926",
+      "DownloadsCopySHA256": "80878b4738efe96696ae3a4c3ac1373ccd6c414526d5fc6ad874ea859f16f926"
+    },
+    {
+      "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
+      "Pages": 82,
+      "ChangedPDFPages": [
+        1,
+        2,
+        3,
+        5,
+        7,
+        8,
+        9,
+        11,
+        20,
+        21,
+        24,
+        29,
+        32,
+        34,
+        53,
+        55,
+        58,
+        59,
+        62,
+        64,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82
+      ],
+      "SHA256": "7b762961731895ec35ebd4c5df81a1bbfb1b48dda81f3a82fab739524c9712fd",
+      "DownloadsCopySHA256": "7b762961731895ec35ebd4c5df81a1bbfb1b48dda81f3a82fab739524c9712fd"
+    },
+    {
+      "Path": "docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf",
+      "Pages": 17,
+      "ChangedPDFPages": [
+        6
+      ],
+      "SHA256": "238f8617865e3e5bdf68cfc19987e7a10aea974fa56acfdeddcaae9f560eff39",
+      "DownloadsCopySHA256": "238f8617865e3e5bdf68cfc19987e7a10aea974fa56acfdeddcaae9f560eff39"
+    }
+  ]
+}

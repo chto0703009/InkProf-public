@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.3.0 | 2026-10-25",
+    "tag": "USER HANDBOOK | v1.4.0 | 2026-10-25",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Open methods and clear conditions",
-        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.3.0, documented 2026-10-25; app buttons and field names are English."
+        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.4.0, documented 2026-10-25; app buttons and field names are English."
       ]
     ],
     "callout": "InkProf brings profiling, checks and documentation together in one project. Print the colour targets using a separate printing application."
@@ -103,8 +103,8 @@
         "B2 is needed for the manual profiling route. The profile comparison on row 18 supports your decision. Row 19 is a separate option when the current iteration has been checked numerically but has not been verified by a separate print and measurement."
       ],
       [
-        "Further reading: pages 25-69",
-        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian. 70: later OBA/FWA choice. 71-72: measurement checkpoints, resume and RGB controls (v1.2.2)."
+        "Further reading: pages 25-81",
+        "25: FWA. 26-34: profile routes, decisions, delivery and glossary. 35-37: smoothing, gradients and remeasurement. 38-41: verification and troubleshooting. 42-43: candidate comparison and photographic gradients. 44: certificate evidence. 45-47: rendering intents and ICC. 48-54: full workflow. 55-59: refinement and saved targets. 60: soft proof. 61: Python. 62: ICC grid. 63: next row and appendices. 64-67: target methods. 68-69: Jacobian. 70: later OBA/FWA choice. 71-72: measurement checkpoints, resume and RGB controls. 73: i1Profiler export. 74-75: target identity and print folders. 76-78: verification, corrections, measurement and delivery. 79-81: gamut, target extension, Lab density and activity."
       ]
     ],
     "lead": "The row number on the left and the internal step identifier are different things. This handbook uses row numbers to help you find the step in the app.",
@@ -136,7 +136,7 @@
       ],
       [
         "9-10",
-        "C2. Save verification target; Measure / select verification revision",
+        "C2a. Prepare verification print (TIFF16); C2b. Measure verification print / select saved measurement",
         "Print and measure a verification target. Page 19."
       ],
       [
@@ -151,7 +151,7 @@
       ],
       [
         "15-17",
-        "Save refinement TIFF16; Measure refinement; Build next iteration",
+        "Refinement tools; Measure refinement; Build next iteration",
         "New colour patches and a new profile. Pages 21-23."
       ],
       [
@@ -163,11 +163,6 @@
         "19",
         "Save ICC + measurement certificate without print verification",
         "Limited decision without a new verification print. Page 29."
-      ],
-      [
-        "2026-10-25",
-        "Workflow updates",
-        "Pages 77-78."
       ]
     ]
   },
@@ -229,7 +224,7 @@
         "examples/main-window.png",
         174,
         116,
-        "Figure 1. InkProf’s main window with fictional project details. Available buttons and status depend on the project."
+        "Figure 1. Current app with a synthetic project and neutral example path. Buttons and status depend on the project."
       ]
     ],
     "sections": [
@@ -569,7 +564,7 @@
     "sections": [
       [
         "Row 9: save the verification target",
-        "C2 creates a verification target for the current ICC. Lab references are converted once to printer RGB with absolute colorimetry and no BPC. Preparation displays activity and elapsed time. Save TIFF16, print separately and allow it to dry. C2 contains colours, neutrals, challenges and repeats, not only problem regions."
+        "C2a. Prepare verification print (TIFF16) creates a verification target for the current ICC. Lab references are converted once to printer RGB with absolute colorimetry and no BPC. Preparation displays activity and elapsed time. Save TIFF16, print separately and allow it to dry. C2 contains colours, neutrals, challenges and repeats, not only problem regions."
       ],
       [
         "Avoid double profile conversion",
@@ -577,7 +572,7 @@
       ],
       [
         "Row 10: measure and select a revision",
-        "Measure / select verification revision uses the verification target definition. Measure, save and select the correct revision just as for the base measurement. A target from an earlier ICC candidate does not automatically verify the new candidate."
+        "C2b. Measure verification print / select saved measurement uses the verification target definition. Measure, save and select the correct revision just as for the base measurement. A target from an earlier ICC candidate does not automatically verify the new candidate."
       ],
       [
         "Row 11: C3. Compare model and print",
@@ -600,7 +595,7 @@
     "sections": [
       [
         "Row 13: Approve for intended use",
-        "Review current C3 results and run row 12 first. In row 13, enter the intended use and accepted limitations in Your assessment. Tick the confirmation that you reviewed the results and checked the print settings against the project. Select Approve for stated use. Row 14 includes the saved decision in the certificate. See the walkthrough on page 58."
+        "Review C3 and run row 12. Select row 13 and Open review and approval. Enter intended use and limitations in Your assessment, confirm review and save with Approve for stated use. Row 14 includes the decision in the certificate. See page 58."
       ],
       [
         "When approval becomes stale",
@@ -612,7 +607,7 @@
       ],
       [
         "Profile names in files and image applications",
-        "The profile name comes from Profile name in Project details without an additional prompt. It identifies the ICC filename and internal description. The suggested report name is <profile name>_iter-<number>_<last eight UUID characters>.pdf. The full UUID remains in report data for traceability. Select Save delivery elsewhere in step 14. The save dialog starts in Downloads; the main window is temporarily hidden until Save or Cancel."
+        "Profile name supplies the ICC filename and internal description. Reports use <profile name>_iter-<number>_<last eight UUID characters>.pdf; report data retain the full UUID. Row 14: Save ICC and certificate..., then Also save copies elsewhere or Save in project only. Save delivery elsewhere… copies an existing delivery. External saving starts in Downloads."
       ],
       [
         "Certificate contents",
@@ -620,7 +615,7 @@
       ],
       [
         "Certificate and separate supplement",
-        "The delivery folder contains the English certificate, a Swedish PDF with suffix -sv.pdf, English HTML, measurement-appendix.pdf and selected ICC files. Up to 100 largest deviations with ΔE00 > 1 are shown in ascending order. Left is desired colour, right is measured; the number below each pair is ΔE00. The supplement retains every patch, Lab values and traceability."
+        "The folder contains the English certificate, Swedish PDF (-sv.pdf), HTML, measurement-appendix.pdf and selected ICCs. Up to 100 largest ΔE00 values above 1 appear smallest first within the selection; C3 shows largest first. Pairs show desired colour on the left and measured on the right. The supplement retains every patch, Lab and provenance."
       ]
     ],
     "callout": "See page 63 for the main certificate, Appendices A/B and separate measurement appendix. It records scope and decisions; it is not accredited certification."
@@ -851,7 +846,7 @@
       ],
       [
         "1. Check and create the final target",
-        "After row 17, run row 8 (Fit, Grid and C1) for the selected current profile. Run row 9 (C2: save verification TIFF16). Check that the target belongs to this profile and iteration. The ICC transform has already been applied once."
+        "After row 17, run row 8 (Fit, Grid and C1) for the selected current profile. Run row 9 (C2a. Prepare verification print (TIFF16)). Check that the target belongs to this profile and iteration. The ICC transform has already been applied once."
       ],
       [
         "2. Print without another colour conversion",
@@ -969,7 +964,7 @@
       ],
       [
         "Basis of this handbook",
-        "Both handbooks describe program version 1.2.1 with inner-shell refinement and current workflow updates, document revision 2026-10-24. Version 1.2.1 is released on 16 October 2026; the release tag identifies this source version. Documentation and numerical tests are not new physical validation."
+        "This handbook describes InkProf 1.4.0, released 25 October 2026, with document revision 2026-10-25. The release tag identifies the published source version. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -1057,7 +1052,7 @@
   },
   {
     "title": "Gamut, certificates and source code",
-    "tag": "v1.2.4 | DELIVERY AND LICENSING",
+    "tag": "v1.4.0 | DELIVERY AND LICENSING",
     "sections": [
       [
         "Surfaces and measurement points are different views",
@@ -1077,7 +1072,7 @@
       ],
       [
         "Release status",
-        "This handbook describes source version 1.2.1, released 16 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. External runtimes are installed separately."
+        "This handbook describes InkProf 1.4.0, released 25 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. The macOS program folder includes ARM and Intel Argyll tools. Prepare MATLAB and the separate Python environment using the installation instructions."
       ]
     ],
     "links": [
@@ -1323,7 +1318,7 @@
       ],
       [
         "Gradient evidence and regeneration",
-        "A saved photographic-gradient report is included only if its SHA-256 matches the certificate ICC. The certificate summarizes CMM, settings, sample count, interior coverage, reversals and curvature, and embeds full per-path evidence in JSON. Missing evidence is stated explicitly. Re-run step 14 for a new certificate; historical and signed certificates are preserved."
+        "A saved photographic-gradient report is included only if its SHA-256 matches the certificate ICC. The certificate summarizes CMM, settings, sample count, interior coverage, reversals and curvature, and embeds full per-path evidence in JSON. Missing evidence is stated explicitly. Re-run row 14 for a new certificate; historical and signed certificates are preserved."
       ]
     ]
   },
@@ -1506,7 +1501,7 @@
     "sections": [
       [
         "11. Verify the exact profile to be delivered",
-        "After choosing the final iteration, run row 8 (Fit, Grid and C1) and row 9 (C2: save verification TIFF16) for that current profile. Make a new control print with the documented settings and no further colour conversion. Measure it in row 10, retain the revision, and run row 11 (C3) and row 12 (feedback). Do this even if development or training measurements already look good. A measurement used to train a later build cannot independently verify that later ICC."
+        "After choosing the final iteration, run row 8 (Fit, Grid and C1) and row 9 (C2a. Prepare verification print (TIFF16)) for that current profile. Make a new control print with the documented settings and no further colour conversion. Measure it in row 10, retain the revision, and run row 11 (C3) and row 12 (feedback). Do this even if development or training measurements already look good. A measurement used to train a later build cannot independently verify that later ICC."
       ],
       [
         "12. Assess the whole result",
@@ -1584,7 +1579,7 @@
       ],
       [
         "Reconciled recommendation for InkProf",
-        "For careful profiling, plan about 1,500-2,000 patches when time permits. About 800-1,000 is a lower-budget start. A 300-600 pilot checks setup. The design-window initial value of 575 is a smaller starting budget, not a general quality recommendation. The total includes controls and repeats. Inspect the actual count in preview. This is practical guidance, not a universal optimum. Use a suitable starting ICC, neutral/white controls and reliable geometry. Select later refinement from measured evidence."
+        "Use the patch-budget guidance on page 49, together with a suitable starting ICC, neutral/white controls and reliable measurement geometry. Select later refinement from measured evidence."
       ],
       [
         "The final decision remains measured",
@@ -1644,12 +1639,12 @@
         "Review paper dimensions and choose Create TIFF16 target. Status shows phase and elapsed time, including copying and checksum checks. Select another destination or cancel the copy chooser to retain only the project package. Close exits the gamut view."
       ],
       [
-        "5. Register the exact print in step 15",
-        "After closing, step 15 returns to registration. For already printed sheets: From saved gamut selection, select the correct proposal.json and Use existing print package. Record your reason. The same TI2 and patch order are preserved; pending C2 patches are not added. Create new print package requires a new print."
+        "5. Register the exact print in row 15",
+        "After closing, row 15 returns to registration. For already printed sheets: From saved gamut selection, select the correct proposal.json and Use existing print package. Record your reason. The same TI2 and patch order are preserved; pending C2 patches are not added. Create new print package requires a new print."
       ],
       [
         "6. Measure and rebuild",
-        "Step 15 must be Complete before step 16 unlocks. Print at 100% without colour conversion and allow drying. Measure the matching TI2 in step 16 and build the next iteration in step 17. Assess it with a fresh independent verification print."
+        "Row 15 must be Complete before row 16 unlocks. Print at 100% without colour conversion and allow drying. Measure the matching TI2 in row 16 and build the next iteration in row 17. Assess it with a fresh independent verification print."
       ]
     ],
     "callout": "The shell follows the estimated ICC gamut. Extra measurements may improve the model but cannot expand physical printer gamut. ΔE76 is geometric thickness, not ΔE00 or measured print error."
@@ -1665,7 +1660,7 @@
       ],
       [
         "2. Measure the three controls before the strips",
-        "Every TIFF16 page has R, G and B at the upper right. Nominal 8 × 8 mm squares expand by one pixel on every side, with clearance for the caption. Older targets place them below. Calibrate i1 Pro 2 as instructed; measure stationary in M0 on the same backing. Measure each square ONCE: three readings per page. Use the program button, not the instrument button; do not swipe. Confirm the next sheet at Change printed page. All pages are checked."
+        "Each new TIFF16 page has R, G and B at the upper right, nominally 9 × 9 mm with a one-pixel raster extension on every edge. Older files may have 8 × 8 mm squares or place them below the grid; existing TIFF files are unchanged. Calibrate i1 Pro 2 as instructed and measure stationary in M0 using the same backing. Measure each square once: three readings per page. Start with Measure square or the instrument button when the routine is ready; do not swipe. Follow the inline page and colour instructions. Check every page."
       ],
       [
         "3. Approve a known-correct print as the reference",
@@ -1704,7 +1699,7 @@
       ],
       [
         "5. Row 13: save your explicit approval",
-        "Run Approve for intended use. Enter intended use, quality requirements and accepted limitations in Your assessment. Tick the confirmation that you reviewed the results and checked print settings against the project. Select Approve for stated use. Example: Approved for photographic prints on the stated paper after ColorChecker verification. Measured colour errors and stated limitations are accepted for this use. Adapt the text to your actual assessment."
+        "Run Approve for intended use. Enter intended use, quality requirements and accepted limitations in Your assessment. Tick the confirmation that you reviewed the results and checked print settings against the project. Open the dialog with Open review and approval; save the decision there with Approve for stated use. Example: Approved for photographic prints on the stated paper after ColorChecker verification. Measured colour errors and stated limitations are accepted for this use. Adapt the text to your actual assessment."
       ],
       [
         "6. Row 14: export the certificate",
@@ -1718,7 +1713,7 @@
     "lead": "Select a saved verification target for the current ICC without creating or printing it again.",
     "sections": [
       [
-        "1. Select the target in step 9",
+        "1. Select the target in row 9",
         "Select C2a. Prepare verification print (TIFF16) and click Run selected step. Choose Select existing target. The list shows saved targets in this project for the current ICC, with names, patch counts and folder IDs."
       ],
       [
@@ -1730,7 +1725,7 @@
         "InkProf checks ICC identity, TI2, manifest and TIFF16 patch values. The same saved print files are reused; no new layout or colour conversion is created. File checks do not prove that the physical print was made with the correct settings."
       ],
       [
-        "4. Begin measurement in step 10",
+        "4. Begin measurement in row 10",
         "Run C2b. Measure verification print / select saved measurement and choose Measure. Confirm measurement target shows the target name and patch count. If they match your sheet, choose Measure this target, then Start measurement. Saved revisions is for measurements that are already saved."
       ],
       [
@@ -1787,14 +1782,14 @@
       ],
       [
         "Check again and continue",
-        "Restart MATLAB and run setupInkProf(CheckPython=true). Once the check passes, retry the operation, for example From image in step 15. If it still fails, retain the complete message and Python path for diagnosis."
+        "Restart MATLAB and run setupInkProf(CheckPython=true). Once the check passes, retry the operation, for example From image in row 15. If it still fails, retain the complete message and Python path for diagnosis."
       ],
       [
         "Version compatibility",
         "An incorrect or incompatible Python or dependency-package version can prevent analysis from working even when the package is installed. InkProf checks the Python version requirement and tests that required packages and their compiled libraries load. Setup also checks that Argyll tools start and report version information. Use the package versions in the requirements files supplied with your InkProf release. The checks test functionality and basic requirements; they do not replace the package versions specified in those files."
       ]
     ],
-    "callout": "This guidance applies to 1.2.1 with current source updates, document revision 2026-10-24. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
+    "callout": "This guidance applies to InkProf 1.4.0, document revision 2026-10-25. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
     "links": [
       [
         "Details and repair commands",
@@ -1827,17 +1822,17 @@
     "callout": "Shell refinement changes the measurement set. Grid trials change computed profile tables. Test separately to understand their effects."
   },
   {
-    "tag": "v1.2.4 | WORKFLOW AND CERTIFICATES",
+    "tag": "v1.4.0 | WORKFLOW AND CERTIFICATES",
     "title": "Next steps and clear delivery",
     "lead": "This page explains suggested next rows and how the delivery documents fit together.",
     "sections": [
       [
         "Next step",
-        "The app suggests the next step from saved, valid results. After step 15, measure in 16, build in 17 and compare in 18. Go to suggested next step selects the step; it does not run it."
+        "The app suggests the next step from saved, valid results. After row 15, measure in 16, build in 17 and compare in 18. Go to suggested next step selects the step; it does not run it."
       ],
       [
         "Stopped profile build",
-        "When numerical checks stop a build, open step 17 results and inspect the latest C1 and Grid reports. Measurements and the previous active ICC are retained. The candidate is not activated automatically. Review the cause before repeating the build."
+        "When numerical checks stop a build, open row 17 results and inspect the latest C1 and Grid reports. Measurements and the previous active ICC are retained. The candidate is not activated automatically. Review the cause before repeating the build."
       ],
       [
         "Optional 3D and measurement groups",
@@ -2058,7 +2053,7 @@
   },
   {
     "title": "Save and resume a partial measurement",
-    "tag": "MEASUREMENT / NEW IN v1.2.4",
+    "tag": "MEASUREMENT AND RGB CONTROLS",
     "lead": "For large targets, save completed physical rows and continue later.",
     "sections": [
       [
@@ -2086,11 +2081,11 @@
         "After all rows, select Save and finish and review the measurement as usual. A checkpoint does not complete the workflow step. An unexpected interruption may lose scans since the last checkpoint. Changed chart data, settings or saved readings are rejected."
       ]
     ],
-    "callout": "Included in v1.2.2: automatically tested; real-instrument resume validation remains necessary."
+    "callout": "Available in InkProf 1.4.0. Saved originals and print files are preserved. Automated tests do not replace checks with the intended instrument."
   },
   {
     "title": "Remeasurement and RGB controls",
-    "tag": "MEASUREMENT / NEW IN v1.2.4",
+    "tag": "MEASUREMENT AND RGB CONTROLS",
     "sections": [
       [
         "Continue after rereading",
@@ -2105,15 +2100,15 @@
         "For a new print, measure R, G and B on every page. These controls are separate from profiling patches and excluded from fitting. Approved controls are retained when resuming the same saved partial measurement."
       ],
       [
-        "Larger squares in newly generated targets",
-        "RGB squares gain 0.5 mm on each edge: 1 mm in nominal width and height. The existing one-pixel raster extension on each edge remains. Measurement rectangles and labels follow the geometry. Existing TIFF files are unchanged; generate a new target to use the larger squares."
+        "RGB control dimensions",
+        "New targets have nominal 9 × 9 mm RGB squares with a one-pixel raster extension on every edge, 1 mm wider and taller than older 8 × 8 mm squares. Measurement rectangles and labels follow the geometry. Existing TIFF files are unchanged."
       ],
       [
         "If RGB checking is interrupted",
-        "A cancelled or failed RGB check no longer permanently disables startup. Correct the problem and start again. This does not automatically approve measurements or exceptions."
+        "After a cancelled or failed RGB check, startup remains available. Correct the problem and start again. This does not automatically approve measurements or exceptions."
       ]
     ],
-    "callout": "Included in v1.2.2. Restart InkProf to load the updated code. Existing print files are unchanged."
+    "callout": "Available in InkProf 1.4.0. Saved originals and print files are preserved. Automated tests do not replace checks with the intended instrument."
   },
   {
     "title": "Transfer measurements to i1Profiler",
@@ -2122,7 +2117,7 @@
     "sections": [
       [
         "Save CGATS from the app",
-        "When saving the ICC and certificate in step 14 or 19, tick Include CGATS for i1Profiler when saving ICC/certificate in the main window. No additional CGATS dialog is shown. The delivery includes i1profiler-measurement.txt and its provenance JSON. This exports the selected original profiling measurement, not accumulated refinement data or C2 verification. The option is not shown for imported profiles without a profiling measurement. Only complete native M0 measurements with XRGA and 36 spectral bands are supported."
+        "When saving the ICC and certificate in row 14 or 19, tick Include CGATS for i1Profiler when saving ICC/certificate in the main window. No additional CGATS dialog is shown. The delivery includes i1profiler-measurement.txt and its provenance JSON. This exports the selected original profiling measurement, not accumulated refinement data or C2 verification. The option is not shown for imported profiles without a profiling measurement. Only complete native M0 measurements with XRGA and 36 spectral bands are supported."
       ],
       [
         "Use the correct workflow",
@@ -2158,11 +2153,11 @@
     "sections": [
       [
         "Base target or C2 verification?",
-        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
+        "Row 3. Measure / select measurement revision reads the base target saved in row 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
       ],
       [
         "Target locked is intentional",
-        "A prepared measurement is bound to its TI2. The disabled Choose chart button now says Target locked. To change the target, close the measurement window and select the matching target in the workflow. Do not substitute a similar-looking chart while a session is prepared or partially measured."
+        "A prepared measurement is bound to its TI2. The disabled Target locked button indicates that target selection is fixed. To change the target, close the measurement window and select the matching target in the workflow. Do not substitute a similar-looking chart while a session is prepared or partially measured."
       ],
       [
         "What the window shows",
@@ -2198,7 +2193,7 @@
     ]
   },
   {
-    "tag": "2026-10-24 | v1.2.4 | b813525",
+    "tag": "WORKFLOW AND DELIVERY",
     "title": "Verification feedback and complete delivery",
     "sections": [
       [
@@ -2211,7 +2206,7 @@
       ],
       [
         "Approval and certificate are separate actions",
-        "Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous step-19 numerical-only export no longer hides this next step after print approval."
+        "Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous numerical-only export from row 19 does not prevent delivery after print approval."
       ],
       [
         "The exact verified ICC is included",
@@ -2224,32 +2219,32 @@
     ]
   },
   {
-    "tag": "1.3.0 | 2026-10-25",
-    "title": "Workflow updates - 25 October 2026",
-    "lead": "Workflow changes included in release 1.3.0.",
+    "tag": "WORKFLOW",
+    "title": "Review, locking and corrections",
+    "lead": "How review and project-detail changes are handled.",
     "sections": [
       [
         "Review and lock once",
-        "Step 4 keeps the measurement preview open until Continue to assessment. B1 validates the selected revision, opens a modal Lock profile input confirmation, then saves a checked snapshot. Activity and elapsed time are shown during validation and saving. Suggested navigation is B1, B2, B3; B2 is shown for recipe review, while Automatic B3 still creates its own recipes."
+        "Row 4 keeps the measurement preview open until Continue to assessment. B1 validates the selected revision, opens a modal Lock profile input confirmation, then saves a checked snapshot. Activity and elapsed time are shown during validation and saving. Suggested navigation is B1, B2, B3; B2 is shown for recipe review, while Automatic B3 still creates its own recipes."
       ],
       [
         "Patch counts and result windows",
-        "Initial B3 no longer asks for extra refinement patch parameters. Those apply when adding patches or continuing an iteration. C1 saves its numerical reports without opening successive result windows automatically; use Open selected step results. C2a handles verification-target preparation; choose existing files when reusing a printed sheet."
+        "Extra refinement patch parameters apply when adding patches or continuing an iteration, rather than during the initial B3 build. C1 saves its numerical reports without opening successive result windows automatically; use Open selected step results. C2a handles verification-target preparation; choose existing files when reusing a printed sheet."
       ],
       [
         "Correct recorded details",
         "When Project details changes, distinguish Correct recorded details from Changed actual setup. A documentation correction requires a reason and unchanged physical conditions. Original file hashes are checked and a new audit record stores before/after values. Numerical processing changes cannot use this exception. Existing stale steps are not automatically restored."
       ],
       [
-        "ISSUE-001 closed",
-        "ISSUE-001 was closed by user decision on 2026-10-25 after several measurements without observed problems. Remaining uncertainty was accepted for current use. This is not a claim that a full noise-propagation/refitting study was performed; real numerical alerts and independent print verification still apply."
+        "Measurement uncertainty and verification",
+        "Repeated measurements show measurement spread. Review numerical alerts and assess results with an independent print. An absence of observed problems does not establish that noise propagation through refitting has been fully studied."
       ]
     ]
   },
   {
-    "tag": "1.3.0 | 2026-10-25",
-    "title": "Measurement and delivery updates",
-    "lead": "Workflow changes included in release 1.3.0.",
+    "tag": "WORKFLOW",
+    "title": "Measurement and delivery",
+    "lead": "Follow measurement instructions and save a complete delivery.",
     "sections": [
       [
         "RGB and other spot measurements",
@@ -2257,7 +2252,7 @@
       ],
       [
         "Cancel and resume safely",
-        "Skip / close and the window close button can cancel the RGB control dialog while calibration is waiting. Saved requests, transcripts and readings remain. Partial output lines no longer block GUI polling, and Argyll debug text after a prompt is handled. Main workflow activity is cleared on interruption. Restart InkProf after source changes; resume saved chart rows only for the same physical print."
+        "Skip / close and the window close button can cancel the RGB control dialog while calibration is waiting. Saved requests, transcripts and readings remain. Partial output lines do not block GUI polling, and Argyll debug text after a prompt is handled. Main workflow activity is cleared on interruption. Restart InkProf after source changes; resume saved chart rows only for the same physical print."
       ],
       [
         "Refinement print copies",
@@ -2265,7 +2260,7 @@
       ],
       [
         "Timed certificate delivery",
-        "Step 14 shows activity and elapsed time while collecting evidence, rendering figures and PDFs, preparing ICC variants, and copying and verifying delivery files. The external bundle includes the exact checked ICC as <name>-verified-original.icc as well as named delivery variants. A stored certificate is not regenerated in place; create a new export revision when changes are needed."
+        "Row 14 shows activity and elapsed time while collecting evidence, rendering figures and PDFs, preparing ICC variants, and copying and verifying delivery files. The external bundle includes the exact checked ICC as <name>-verified-original.icc as well as named delivery variants. A stored certificate is not regenerated in place; create a new export revision when changes are needed."
       ]
     ]
   },
@@ -2275,15 +2270,15 @@
     "sections": [
       [
         "Explore the current model boundary",
-        "View gamut offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in Delta E76, minimum RGB spacing and maximum NEW patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion."
+        "View gamut offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in Delta E76, minimum RGB spacing and maximum new patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion."
       ],
       [
         "Extend latest target",
         "Tick Extend latest target to combine the latest completed gamut print for the exact current ICC with new points. Unprinted proposals are skipped. Previous fitting/development points and supplementary shadow points are retained; exact duplicates and existing training RGB are excluded. Controls are regenerated. Started or paused measurements prevent extending that same target. The earlier TIFF, TI2 and readings remain unchanged."
       ],
       [
-        "Print and measure the NEW version",
-        "The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Step 16 measures the new TI2, and step 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. View gamut closes after successful creation and the copy dialog; cancellation/error leaves it open."
+        "Print and measure the new version",
+        "The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Row 16 measures the new TI2, and row 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. View gamut closes after successful creation and the copy dialog; cancellation/error leaves it open."
       ]
     ]
   },
@@ -2301,7 +2296,7 @@
       ],
       [
         "Build a separate candidate",
-        "Close only closes the review. Build separate balanced candidate uses the reviewed subset and is disabled when zero points would be omitted. Try different settings and Recalculate rather than forcing removal. Both profiles are compared to ALL original fitting observations, including omitted rows, to available reserved development patches and to matching photographic gradients. These are diagnostics, not final independent print verification. No candidate automatically replaces the active profile."
+        "Close only closes the review. Build separate balanced candidate uses the reviewed subset and is disabled when zero points would be omitted. Try different settings and Recalculate rather than forcing removal. Both profiles are compared to all original fitting observations, including omitted rows, to available reserved development patches and to matching photographic gradients. These are diagnostics, not final independent print verification. No candidate automatically replaces the active profile."
       ]
     ]
   },
