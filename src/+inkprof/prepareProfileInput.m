@@ -24,6 +24,7 @@ if any(lower(ext)==[".ti3",".mxf"])
  [~,source]=inkprof.importMeasurement(source,TargetFile=options.TargetFile,ShowPreview=false);
  if source=="",return;end
 end
+activity=inkprof.internal.calculationProgress("Locking profiling inputs","Checking measurement identity, completeness and row direction."); %#ok<NASGU>
 fprintf('InkProf B1: checking the selected measurement revision...\n');drawnow;
 measurement=jsondecode(fileread(source));
 assert(isfield(measurement,'documentType')&&string(measurement.documentType)=="inkprof.chart-measurement", ...
@@ -107,10 +108,12 @@ summary=sprintf('Revision: %s\nSHA-256: %s\nRGB patches: %d\nSpectral bands: %d 
  source,measurementHash,sum(keep),numel(verified.data.wavelengthNm),~isempty(verified.data.xyz), ...
  jsonencode(measurement.measurementCondition,PrettyPrint=true),jsonencode(manifest.printing,PrettyPrint=true),strjoin(notes,newline));
 name=options.Name;
+clear activity
 if options.ShowDialog
  [accepted,name]=inkprof.internal.confirmProfileInput(summary,name);if ~accepted,return;end
 end
 assert(strlength(strtrim(name))>0,'inkprof:Name','Enter a name for this profile input.');
+activity=inkprof.internal.calculationProgress("Saving locked profiling inputs","Copying the validated measurement snapshot and verifying its hashes."); %#ok<NASGU>
 fprintf('InkProf B1: saving the validated snapshot...\n');drawnow;
 package=fullfile(work,'locked');mkdir(package);
 copyfile(source,fullfile(package,'measurement.json'));copyfile(chartFile,fullfile(package,'chart.json'));copyfile(ti3,fullfile(package,'source.ti3'));

@@ -88,10 +88,14 @@ end
 function testInstrumentButtonPlaysStartCue(tc)
 exerciseWizard(tc,false,"",false,true);
 end
-function exerciseWizard(tc,withOverride,retryMode,multiPage,hardwareButton)
+function testCloseWhileCalibrationWaits(tc)
+exerciseWizard(tc,false,"",false,false,true);
+end
+function exerciseWizard(tc,withOverride,retryMode,multiPage,hardwareButton,closeDuringCalibration)
 if nargin<3,retryMode="";end
 if nargin<4,multiPage=false;end
 if nargin<5,hardwareButton=false;end
+if nargin<6,closeDuringCalibration=false;end
 retried=false;toneCount=0;expectedTones=0;
 w=string(tempname);mkdir(w);clean=onCleanup(@()rmdir(w,'s'));
 pkg=fullfile(w,'target');
@@ -120,6 +124,12 @@ java.io.File(char(fullfile(bin,'spotread'))).setExecutable(true);
 started=tic;driver=timer('ExecutionMode','fixedSpacing','Period',.2,'TimerFcn',@advance);
 closer=onCleanup(@()stopDriver(driver));start(driver);
 file=inkprof.measurePrintControls(folder,ArgyllBin=bin,StartTone=@recordTone);stop(driver);
+if closeDuringCalibration
+ verifyEqual(tc,file,"");verifyEqual(tc,toneCount,0);
+ verifyEqual(tc,inkprof.internal.sha256(fullfile(folder,'chart.json')),chartHash);
+ attempts=dir(fullfile(folder,'print-control-spots','*','request.json'));verifyEqual(tc,numel(attempts),1);
+ verifyEmpty(tc,findall(groot,'Tag','InkProfPrintControls'));return
+end
 verifyEqual(tc,toneCount,expectedTones);verifyGreaterThan(tc,toneCount,0);
 report=jsondecode(fileread(file));
 verifyTrue(tc,report.complete);
@@ -172,6 +182,9 @@ verifyFalse(tc,isfile(fullfile(folder,'chart.ti3')),'Control spots must never be
    return;
   end
   button=findall(fig,'Tag','printControlAction');if isempty(button),return;end
+  if closeDuringCalibration&&strcmp(button.Text,'Calibrate')
+   close.ButtonPushedFcn(close,[]);return;
+  end
   if strcmp(button.Enable,'on')
    if startsWith(string(button.Text),"Measure page ")
     if hardwareButton,return;end

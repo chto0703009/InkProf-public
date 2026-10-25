@@ -30,12 +30,13 @@ end
 if valid('profile')&&~valid('checks')&&mode~="verification"
  choose('checks',"The current ICC needs up-to-date Fit, Grid and C1 checks before verification or refinement.");return;
 end
-order=["definition","render","measurement","review","input","profile","checks","c2","c2measurement","c3","feedback","approve","export"];
+order=["definition","render","measurement","review","input","recipe","profile","checks","c2","c2measurement","c3","feedback","approve","export"];
 for id=order
  index=find(string({defs.id})==id,1);
  if isempty(index)||~defs(index).enabled||valid(id),continue;end
  if ready(id)
   explanation="Complete this step to continue the current workflow.";
+  if id=="recipe",explanation="Review and save the profile recipe before building the ICC in B3.";end
   if id=="c2",explanation="Verify the current ICC with a new print. Alternatively choose step 19 for numerical-only delivery or Refinement tools for more measurements.";end
   if id=="measurement"||id=="c2measurement",explanation="Print the saved target, allow drying, then measure the matching TI2. Creating a TIFF does not confirm that it was physically printed.";end
   if id=="approve",explanation="Review the measured result and decide whether it is suitable for the intended use.";end

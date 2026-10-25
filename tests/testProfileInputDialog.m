@@ -23,6 +23,7 @@ cleanupTimer(t);
  function clickButton(~,~)
   f=findall(groot,'Tag','InkProfProfileInput');
   if isempty(f),return;end
+  verifyEqual(tc,string(f.WindowStyle),"modal");
   b=findall(f,'Tag',button);if isempty(b),return;end
   stop(t);cb=b.ButtonPushedFcn;cb(b,[]);
  end

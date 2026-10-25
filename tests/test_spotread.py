@@ -8,6 +8,12 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/"bridge"))
 spec=importlib.util.spec_from_file_location('spot',ROOT/'bridge/spotread_bridge.py');spot=importlib.util.module_from_spec(spec);spec.loader.exec_module(spot)
 class SpotTest(unittest.TestCase):
+ def test_debug_after_prompt_does_not_hide_calibration_or_ready(self):
+  calibration='Place instrument on white reference, or hit Esc or Q to abort:'
+  ready='Hit ESC or Q to exit, instrument switch or any other key to take a reading: '
+  debug='i1pro_imp_measure: Taking 1 measurments in Refl Adaptive mode called\n'
+  self.assertEqual(spot.prompt_state(calibration+debug),'calibration')
+  self.assertEqual(spot.prompt_state(calibration+'\n'+ready+debug),'ready')
  def test_parser(self):
   s='Spectrum from 380 to 400 nm in 3 steps\n1,2,3\nPeak value 3\nResult is XYZ: 1 2 3, D50 Lab: 4 5 6\n'
   self.assertEqual(spot.parse_reading(s)['spectra'],[1,2,3])

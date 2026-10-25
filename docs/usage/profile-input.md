@@ -67,3 +67,9 @@ The corrected 575 revision `measurement-20260927-154833490-rows22-23.json` has b
 B1 shows status messages during checking and saving. The confirmation window is shown on top and gets focus before the function waits for **Lock profile input** or **Cancel**. It is not modal against the whole MATLAB desktop. The function returns only when a choice is made; the close button counts as Cancel.
 
 If an older run is waiting behind other windows: cancel with Ctrl+C in MATLAB, close only the window `InkProf - Select profile input`, run `rehash` and start again. No profile input is published before locking is confirmed. The window's accept and cancel paths have separate automatic GUI tests.
+
+## Local workflow update 2026-10-25
+
+B1 now shows a modal Lock profile input confirmation and timed validation/snapshot-saving activity. Suggested navigation is B1 → B2 → B3. Step 4 keeps the measurement preview open until Continue to assessment is chosen.
+
+See [current workflow notes](workflow-updates-20261025.md). Applies to 1.3.0.

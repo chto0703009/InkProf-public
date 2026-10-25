@@ -53,3 +53,12 @@ grid=struct('roundtripDeltaE00',struct('max',16.452));
 m=inkprof.internal.iterationNumericalMessage(c1,grid,"c1-check.json","grid-check.json");
 verifyTrue(tc,contains(m,'16.452'));verifyTrue(tc,contains(m,'not been activated'));verifyTrue(tc,contains(m,'grid-check.json'));
 end
+
+function testInputLeadsToRecipeBeforeProfile(tc)
+[s,a]=fixture();
+for id=["definition","render","measurement","review","input"],a.(id).valid=true;end
+a.recipe.ready=true;a.profile.ready=true;
+n=inkprof.internal.recommendWorkflowStep(s,a);verifyEqual(tc,n.id,"recipe");
+a.recipe.valid=true;
+n=inkprof.internal.recommendWorkflowStep(s,a);verifyEqual(tc,n.id,"profile");
+end

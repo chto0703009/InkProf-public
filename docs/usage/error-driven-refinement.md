@@ -90,3 +90,9 @@ C3 residuals and Jacobian-guided patch selection are used, followed by compariso
 **Saved choice and verification**
 
 The method is saved in proposal.json as refinementMode and passed to row 17 after the new target is printed and measured. Choose another method when creating a later error-driven refinement; existing targets and measurements are not rewritten. Image-guided refinement uses a separate path. Numerical B3 fit checks are not independent print verification: print and measure the new C2 target to assess the new result.
+
+## Local workflow update 2026-10-25
+
+Workflow refinement does not leave an automatically opened C3 proposal window above the next step. To copy an existing step-15 print, select row 15 and choose Copy TIFF16 for printing..., then Downloads. Do not create a new target simply to copy the existing files.
+
+See [current workflow notes](workflow-updates-20261025.md). Applies to 1.3.0.

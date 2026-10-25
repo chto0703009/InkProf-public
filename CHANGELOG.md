@@ -1,18 +1,14 @@
 # Changelog
 
-## Unreleased
+## v1.3.0 - 2026-10-25
 
-- Close ISSUE-001 by user decision (2026-10-25), based on several measurements without observed problems. Update C1 messages and current documentation; retain historical reports and actual diagnostic checks.
-
-- Avoid automatic C1 result windows in workflow checks and the brief C2 pre-layout popup. Close the workflow gamut selection after successfully saving its target; avoid leaving a C3 proposal window open into the next step.
-
-- Play the start cue for all spot sessions (RGB controls, patch replacements and paper white), including the i1 Pro 2 physical switch. Use the Argyll trigger diagnostic to distinguish acquisition from calibration.
-
-- Drive the RGB control start sound from instrument readiness, add an in-dialog sound test and show printed-page changes inline without an extra confirmation window.
-
-- Show timed activity throughout step 14 certificate rendering, ICC variant preparation and external delivery copying, verification and publishing.
-
-- Add explicit documentation-correction versus actual-setup-change handling for project details. Require a reason and verified original hashes, retain current profile/verification validity for descriptive corrections, and record before/after/operator/reason in history and a separate audit file. Numerical processing changes cannot use this path; stale results are not automatically restored.
+- Add audited project-detail corrections without invalidating unchanged physical measurements or current profiles. Require a reason and verify original hashes; numerical processing changes retain normal invalidation.
+- Keep measurement review open until assessment; guide B1 → B2 → B3, use modal B1 confirmation and timed validation/saving, and remove unused initial B3 refinement prompts.
+- Add start cues for screen and i1 Pro 2 switch spot measurements; simplify RGB prompts, inline page changes and remove the temporary sound-test button.
+- Keep acquisition responsive with bounded nonblocking reads, recognize Argyll prompts followed by diagnostics, allow cancellation during calibration, and clear workflow busy state on interruption.
+- Show timed phases throughout certificate and ICC delivery; avoid automatic C1 result windows and close saved workflow gamut selections.
+- Close ISSUE-001 by user decision based on practical measurements without observed problems; retain historical evidence and independent verification requirements.
+- Update seven PDF guides, editable sources and Markdown documentation for this release.
 
 ## v1.2.6 - 2026-10-24
 

@@ -26,12 +26,19 @@ def parse_reading(text):
     return dict(wavelengthNm=[lo+i*(hi-lo)/(n-1) for i in range(n)],spectra=values,xyz=coordinates[:3],lab=coordinates[3:],spectralScale=100,illuminant='D50',observer='1931_2')
 
 def prompt_state(text):
-    text=text.replace('\r','')
-    if re.search(r'Hit any key to retry, or Esc or Q to abort:\s*$',text):return 'calibrationRetry' if re.search('calibration',text,re.I) else 'retry'
-    if 'white reference' in text and re.search(r'or hit Esc or Q to abort:\s*$',text):return 'calibration'
-    if re.search(r'(?:Hit|hit) ESC or Q to exit.*take a reading:\s*$',text,re.S):return 'ready'
-    if re.search(r'(?:Hit|hit) Esc to give up, any other key to retry:\s*$',text):return 'retry'
-    return 'busy'
+    # Debug output can follow a complete prompt on the same line. Select the
+    # latest complete prompt instead of requiring it at the end of the buffer.
+    text=text.replace('\r','');prompts=[]
+    for m in re.finditer(r'Hit any key to retry, or Esc or Q to abort:',text):
+        kind='calibrationRetry' if re.search('calibration',text[:m.end()],re.I) else 'retry'
+        prompts.append((m.start(),kind))
+    for m in re.finditer(r'or hit Esc or Q to abort:',text):
+        if 'white reference' in text[:m.end()]:prompts.append((m.start(),'calibration'))
+    for m in re.finditer(r'(?:Hit|hit) ESC or Q to exit[^\n]*take a reading:',text):
+        prompts.append((m.start(),'ready'))
+    for m in re.finditer(r'(?:Hit|hit) Esc to give up, any other key to retry:',text):
+        prompts.append((m.start(),'retry'))
+    return max(prompts,key=lambda item:item[0])[1] if prompts else 'busy'
 
 def main():
     import pty,fcntl

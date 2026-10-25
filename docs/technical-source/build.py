@@ -41,7 +41,7 @@ class Flow(Flowable):
   cv.setFont('Body',8);cv.drawString(0,7,'Data + identitet + SHA-256' if self.sv else 'Data + identity + SHA-256')
 def footer(cv,doc):
  cv.saveState();cv.setStrokeColor(colors.HexColor('#bad0d7'));cv.line(54,50,541,50)
- cv.setFont('Body',7);cv.setFillColor(C);cv.drawString(54,39,f'InkProf {VERSION} | 2026-10-24');cv.drawRightString(541,39,str(doc.page))
+ cv.setFont('Body',7);cv.setFillColor(C);cv.drawString(54,39,f'InkProf {VERSION} | 2026-10-25');cv.drawRightString(541,39,str(doc.page))
  cv.setFont('Body',6.6);cv.drawString(54,27,'christer@borgasundsfotografiska.se | https://github.com/chto0703009/InkProf-public');cv.restoreState()
 def build(lang):
  path=ROOT/'docs'/f'TECHNICAL_DESCRIPTION_{lang}.md';lines=path.read_text().splitlines();story=[];i=0
@@ -65,7 +65,7 @@ def build(lang):
     data.append([Paragraph(inline(c),styles['CellDoc']) for c in cells])
    n=len(data[0]);widths=[148,339] if n==2 else [76,200,211]
    t=Table(data,colWidths=widths,repeatRows=1,hAlign='LEFT')
-   t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#d9e9ee')),('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.HexColor('#f3f7f8')]),('LINEBELOW',(0,0),(-1,0),.6,ACC),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),6)]));story.extend([t,Spacer(1,14)]);continue
+   t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#d9e9ee')),('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.HexColor('#f3f7f8')]),('LINEBELOW',(0,0),(-1,0),.6,ACC),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),4 if len(data)>15 else 6),('BOTTOMPADDING',(0,0),(-1,-1),4 if len(data)>15 else 6)]));story.extend([t,Spacer(1,14)]);continue
   group=[s]
   while i<len(lines) and lines[i].strip() and not lines[i].startswith(('##','---PAGE---','|','![')):
    group.append(lines[i].strip());i+=1

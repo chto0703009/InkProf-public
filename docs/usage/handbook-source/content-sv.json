@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.2.4 | 2026-10-24",
+    "tag": "USER HANDBOOK | v1.3.0 | 2026-10-25",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Öppen metod och tydliga förutsättningar",
-        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.2.1; appens knappar och fältnamn är engelska."
+        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.3.0, dokumenterad 2026-10-25; appens knappar och fältnamn är engelska."
       ]
     ],
     "callout": "InkProf samlar profilering, kontroll och dokumentation i ett projekt. Utskriften av färgmålen gör du i ett separat utskriftsprogram."
@@ -153,6 +153,11 @@
         "19",
         "Save ICC + measurement certificate without print verification",
         "Avgränsat beslut utan ny kontrollutskrift. Sida 29."
+      ],
+      [
+        "2026-10-25",
+        "Uppdaterat arbetsflöde",
+        "Sidor 77-78."
       ]
     ],
     "sections": [
@@ -2211,6 +2216,52 @@
       [
         "Ny verifiering efter ändrade skrivarinställningar",
         "Skriv ut samma target igen med avsedda inställningar och dokumentera faktisk CO/coating, mediatyp, kvalitet och torktid för varje ark. Starta en ny C2b-mätning; tidigare mätningar bevaras. Jämför motsvarande C3-rapporter. Enbart sparad Automatic-inställning bevisar inte vilken fysisk CO-inställning som användes."
+      ]
+    ]
+  },
+  {
+    "tag": "1.3.0 | 2026-10-25",
+    "title": "Uppdaterat arbetsflöde - 25 oktober 2026",
+    "lead": "Flödesändringar som ingår i release 1.3.0.",
+    "sections": [
+      [
+        "Granska och lås en gång",
+        "Steg 4 håller mätgranskningen öppen tills Continue to assessment väljs. B1 kontrollerar vald mätrevision, visar en modal bekräftelse Lock profile input och sparar sedan en verifierad kopia. Aktivitet och tid visas under kontroll och sparande. Föreslagen ordning är B1, B2, B3; B2 visas för receptgranskning, men Automatic B3 skapar fortfarande egna recept."
+      ],
+      [
+        "Patchantal och resultatfönster",
+        "Första B3 frågar inte längre efter parametrar för extra kompletteringspatcher. De används vid komplettering och fortsättning. C1 sparar numeriska rapporter utan att automatiskt öppna flera resultatfönster; använd Open selected step results. C2a förbereder verifieringstargetet; välj befintliga filer när en redan utskriven target återanvänds."
+      ],
+      [
+        "Rätta registrerade uppgifter",
+        "Vid ändring i Project details skiljs Correct recorded details från Changed actual setup. En dokumentationsrättelse kräver förklaring och oförändrade fysiska förhållanden. Originalfilernas hash kontrolleras och en ny revisionspost dokumenterar före/efter. Numeriska beräkningsändringar kan inte göras som dokumentationsrättelser. Redan inaktuella steg återställs inte automatiskt."
+      ],
+      [
+        "ISSUE-001 stängd",
+        "ISSUE-001 stängdes på användarens beslut 2026-10-25 efter flera mätningar utan observerade problem. Kvarvarande osäkerhet accepterades för aktuell användning. Detta innebär inte att en fullständig studie av brus genom ny profilanpassning har utförts. Faktiska numeriska varningar och oberoende utskriftsverifiering gäller fortfarande."
+      ]
+    ]
+  },
+  {
+    "tag": "1.3.0 | 2026-10-25",
+    "title": "Mätning och leverans",
+    "lead": "Flödesändringar som ingår i release 1.3.0.",
+    "sections": [
+      [
+        "RGB och andra spotmätningar",
+        "RGB-kontroller, ommätning av enstaka patcher och pappersvitt har ett kort startpip både vid skärmknappen och vid i1 Pro 2:s instrumentknapp. Kalibrering använder inte mätpipet. RGB-färgraden visar endast sida, färg och förlopp. Den tillfälliga ljudtestknappen är borttagen. Sidbytet visas i samma fönster utan separat bekräftelsedialog."
+      ],
+      [
+        "Avbryt och fortsätt säkert",
+        "Skip / close och fönstrets stängknapp kan avbryta RGB-kontrollen medan kalibreringen väntar. Sparade förfrågningar, loggar och läsningar behålls. Ofullständiga textrader blockerar inte längre pollningen och Argylls debugtext efter en fråga hanteras. Huvudfönstrets aktivitetsläge återställs vid avbrott. Starta om InkProf efter kodändringar; återuppta sparade rader endast för samma fysiska utskrift."
+      ],
+      [
+        "Utskriftskopia av komplettering",
+        "När gamutpatchar har sparats och registrerats från Refinement tools stängs arbetsflödets gamutfönster. Den fristående gamutvisaren kan vara kvar. För att kopiera en befintlig komplettering: markera rad 15 i huvudlistan, välj Copy TIFF16 for printing... och välj Downloads. En ny mapp identifierar projekt och iteration och innehåller utskriftsfiler och spårbarhet. Originalprojektet bevaras."
+      ],
+      [
+        "Aktivitet vid certifikatleverans",
+        "Steg 14 visar aktivitet och tid vid insamling av underlag, figurer och PDF, ICC-varianter samt kopiering och verifiering av leveransfiler. Den externa mappen innehåller den exakt kontrollerade profilen som <namn>-verified-original.icc samt namngivna leveransvarianter. Ett sparat certifikat genereras inte om på plats; skapa en ny exportrevision när något ändras."
       ]
     ]
   }

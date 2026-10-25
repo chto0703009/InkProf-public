@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.2.4 | 2026-10-24",
+    "tag": "InkProf | v1.3.0 | 2026-10-25",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -312,5 +312,24 @@
       ]
     ],
     "compact": true
+  },
+  {
+    "tag": "1.3.0 | 2026-10-25",
+    "title": "Tydligare flöde och bevarade underlag",
+    "sections": [
+      [
+        "Granska och lås en gång",
+        "Steg 4 håller mätgranskningen öppen tills Continue to assessment väljs. B1 kontrollerar vald mätrevision, visar en modal bekräftelse Lock profile input och sparar sedan en verifierad kopia. Aktivitet och tid visas under kontroll och sparande. Föreslagen ordning är B1, B2, B3; B2 visas för receptgranskning, men Automatic B3 skapar fortfarande egna recept."
+      ],
+      [
+        "Rätta registrerade uppgifter",
+        "Vid ändring i Project details skiljs Correct recorded details från Changed actual setup. En dokumentationsrättelse kräver förklaring och oförändrade fysiska förhållanden. Originalfilernas hash kontrolleras och en ny revisionspost dokumenterar före/efter. Numeriska beräkningsändringar kan inte göras som dokumentationsrättelser. Redan inaktuella steg återställs inte automatiskt."
+      ],
+      [
+        "RGB och andra spotmätningar",
+        "RGB-kontroller, ommätning av enstaka patcher och pappersvitt har ett kort startpip både vid skärmknappen och vid i1 Pro 2:s instrumentknapp. Kalibrering använder inte mätpipet. RGB-färgraden visar endast sida, färg och förlopp. Den tillfälliga ljudtestknappen är borttagen. Sidbytet visas i samma fönster utan separat bekräftelsedialog."
+      ]
+    ],
+    "callout": "ISSUE-001 stängd på användarens beslut 2026-10-25. Ingår i release 1.3.0."
   }
 ]

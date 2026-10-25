@@ -120,10 +120,12 @@ Step 14 displays the current activity and elapsed time during certificate eviden
 
 ### RGB control measurement cues
 
-The C2b RGB control window plays a short cue immediately before each requested spot measurement, including remeasurements. Calibration does not play the measurement cue. Use **Test measurement sound** in that window to check audio output. Page changes appear as an inline instruction; change to the indicated printed sheet before measuring its RGB squares. No additional page-change confirmation dialog is required.
+The C2b RGB control window plays a short cue immediately before each requested spot measurement, including remeasurements. Calibration does not play the measurement cue. Page changes appear as an inline instruction; change to the indicated printed sheet before measuring its RGB squares. No additional page-change confirmation dialog is required.
 
 Spot start cues also apply to individual patch replacements and paper-white measurements. Both screen commands and the i1 Pro 2 physical switch are supported. Physical switch detection uses Argyll debug level 3; the acquisition trace remains in the attempt transcript. Calibration does not trigger the spot start cue.
 
 ### Workflow result windows
 
 C1 workflow checks save their reports without automatically opening separate result windows. Use **Open selected step results** to inspect saved reports. C2 paper selection opens directly without a preliminary short-lived activity popup. When gamut points are added through **Refinement tools**, the gamut window closes after the print package is successfully saved and registered; cancelling or failing to save leaves the selection available for correction. The standalone gamut viewer remains open for inspection.
+
+RGB control calibration can be cancelled with **Skip / close** or the window close button. Saved attempt requests, transcripts and readings remain in their attempt folder. Spot transport reads only available characters, retains partial JSON lines and bounds work per GUI polling tick so a partial line cannot block the close action.

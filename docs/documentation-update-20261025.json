@@ -1,0 +1,65 @@
+{
+  "DocumentDate": "2026-10-25",
+  "SourceVersion": "1.3.0",
+  "Status": "PASS",
+  "NewApplicationRelease": true,
+  "Checks": [
+    "Seven affected PDFs rebuilt as version 1.3.0 from editable sources",
+    "All 226 pages rendered; covers and changed pages visually inspected",
+    "Existing chapter page positions retained with appended updates and current contents",
+    "Downloads copies verified byte for byte",
+    "No private measurements, profiles or registered certificates modified",
+    "Future-opportunities PDF and historical planning/research PDFs retain their scope"
+  ],
+  "Documents": [
+    {
+      "Path": "docs/usage/InkProf_Teknisk_beskrivning_SV.pdf",
+      "Pages": 16,
+      "SHA256": "5fe52bcdfcb9a717c13cf770e741e35a3d42c7c2e897a4246ed22c989c298479",
+      "RenderedPages": 16,
+      "DownloadsCopySHA256": "5fe52bcdfcb9a717c13cf770e741e35a3d42c7c2e897a4246ed22c989c298479"
+    },
+    {
+      "Path": "docs/usage/InkProf-presentation-English.pdf",
+      "Pages": 11,
+      "SHA256": "08c116e6b4df379141910517552c04cfdbb89f90c9292f4fd365143dc3b9108f",
+      "RenderedPages": 11,
+      "DownloadsCopySHA256": "08c116e6b4df379141910517552c04cfdbb89f90c9292f4fd365143dc3b9108f"
+    },
+    {
+      "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
+      "Pages": 79,
+      "SHA256": "c24571888ce954d69f660e983f649a70fae00b2d61a5f996e17e24b38dbeb86a",
+      "RenderedPages": 79,
+      "DownloadsCopySHA256": "c24571888ce954d69f660e983f649a70fae00b2d61a5f996e17e24b38dbeb86a"
+    },
+    {
+      "Path": "docs/usage/InkProf-presentation-svenska.pdf",
+      "Pages": 11,
+      "SHA256": "c5553ac56762b2893f2aa8a02d59bad956591d4ebd13dc169bd1aba17fe172a7",
+      "RenderedPages": 11,
+      "DownloadsCopySHA256": "c5553ac56762b2893f2aa8a02d59bad956591d4ebd13dc169bd1aba17fe172a7"
+    },
+    {
+      "Path": "docs/usage/InkProf-user-handbook-English.pdf",
+      "Pages": 79,
+      "SHA256": "24a277294a1f1246f139aa46b29facfac3ed37dd67702e1b7ed5c469518b4771",
+      "RenderedPages": 79,
+      "DownloadsCopySHA256": "24a277294a1f1246f139aa46b29facfac3ed37dd67702e1b7ed5c469518b4771"
+    },
+    {
+      "Path": "docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf",
+      "Pages": 14,
+      "SHA256": "7da5710c1820f3f0d3e8fb7b5ab2531b0e2a20c470a413e4dd5f90eb6c67547d",
+      "RenderedPages": 14,
+      "DownloadsCopySHA256": "7da5710c1820f3f0d3e8fb7b5ab2531b0e2a20c470a413e4dd5f90eb6c67547d"
+    },
+    {
+      "Path": "docs/usage/InkProf_Technical_Description_EN.pdf",
+      "Pages": 16,
+      "SHA256": "5c7f325c05496da1cbc8ad75a4aa9c41da15fe7e9d63eee5c41d401236c15476",
+      "RenderedPages": 16,
+      "DownloadsCopySHA256": "5c7f325c05496da1cbc8ad75a4aa9c41da15fe7e9d63eee5c41d401236c15476"
+    }
+  ]
+}

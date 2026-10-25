@@ -281,3 +281,9 @@ See the [export instructions and verified test](i1profiler-cgats-test.md) for pr
 The v1.2.5 ICC naming fix preserves `åäö ÅÄÖ ü Ü`, including decomposed characters. ICC v4 stores the exact name in its UTF-16 description. ICC v2 now also retains the exact name in the Unicode field of its `desc` tag, alongside a simplified ASCII fallback for older readers. Applications using the legacy field may display the simplified name. All other tag payloads, including colour tables, are preserved; the checked original ICC is not renamed in place.
 
 A C2 print folder's `C2-verified-profile.icc` is distinct from the certificate bundle's `-verified-original.icc`. Both identify checked originals in their respective contexts. The C2 file accompanies an already transformed TIFF and must not be applied again. See [C2 copy and RGB measurement instructions](chart-measurement.md#updates-in-v125).
+
+## Local workflow update 2026-10-25
+
+Step 14 displays activity and elapsed time during evidence collection, PDF/figure rendering, ICC variant preparation and external delivery copying and verification. The exact checked ICC is retained as <name>-verified-original.icc in the delivery. Registered project exports are preserved; use a new export revision for changes.
+
+See [current workflow notes](workflow-updates-20261025.md). Applies to 1.3.0.

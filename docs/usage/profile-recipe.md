@@ -77,3 +77,9 @@ B2 separates **Measurement data smoothing** (optional pre-regularization) from *
 **Perceptual compression (%)** requests a dedicated gamut-mapped perceptual B2A0 with `colprof -s`; 20% is a configurable starting value. Relative uses B2A1; absolute uses the relative table and media white. Automatic B3 carries forward this B2 compression setting, while pre-regularization and its gradient checkbox belong to Manual B3. Existing recipes are preserved; save a new B2 recipe and rebuild B3 for the new mapping.
 
 See [quality tradeoffs](profile-quality-tradeoffs.md) for comparison tools, safeguards and diagnostic limitations.
+
+## Local workflow update 2026-10-25
+
+After B1, the suggested next step is B2 recipe review. Manual B3 uses this saved recipe; Automatic B3 still creates its own recipes. Initial B3 no longer asks for extra refinement-patch parameters.
+
+See [current workflow notes](workflow-updates-20261025.md). Applies to 1.3.0.

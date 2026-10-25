@@ -307,7 +307,9 @@ end
                 uialert(fig,reason,'Step not available','Icon','info');return;
             end
             o=optionsFor(selected,saveElsewhere);if isempty(o),return;end
-            busy=true;setappdata(fig,'InkProfRunning',true);fig.Visible='on';figure(fig);runButton.Enable='off';started=datetime('now');
+            busy=true;setappdata(fig,'InkProfRunning',true);
+            operationCleanup=onCleanup(@releaseRunState); %#ok<NASGU>
+            fig.Visible='on';figure(fig);runButton.Enable='off';started=datetime('now');
             index=find(string({defs.id})==active);
             data=table.Data;data{index,2}='Running';table.Data=data;
             titleLabel.Text="Running — "+string(defs(index).label);
@@ -372,6 +374,14 @@ end
             end
             if ~isempty(progress)&&isvalid(progress),progress.Message=char(text);end
             details.Value=cellstr(splitlines(text+newline+"Work is in progress. Complete any open input dialog; otherwise please wait."));status.Text="Running: "+phase+". Please wait.";
+        end
+        function releaseRunState()
+            % Also runs for Ctrl+C, which bypasses the normal catch/end path.
+            stopProgress();busy=false;
+            if isgraphics(fig)&&~finished
+                runButton.Enable='on';
+                status.Text='Operation stopped. Saved files are retained. Refresh to continue.';
+            end
         end
         function stopProgress()
             if isgraphics(fig),setappdata(fig,'InkProfRunning',false);end
@@ -551,7 +561,13 @@ end
                 end
             end
             if id=="review"
-                m=w.output('measurement','measurement');inkprof.previewMeasurement(fileparts(m),jsondecode(fileread(m)));
+                m=w.output('measurement','measurement');
+                reviewFigure=inkprof.previewMeasurement(fileparts(m),jsondecode(fileread(m)));
+                setappdata(reviewFigure,'InkProfFocusOwner',fig);
+                closeButton=findall(reviewFigure,'Type','uibutton','Text','Close');
+                if ~isempty(closeButton),closeButton.Text='Continue to assessment';end
+                % Finish inspection before opening the modal assessment dialog.
+                waitfor(reviewFigure);
             end
             a=inkprof.internal.withFocus(fig,@inputdlg,char(instruction(id)),'Record assessment',[4 65],{''});
             if isempty(a),o=[];return;end
@@ -614,8 +630,8 @@ end
                 if strcmp(choice,'Select RoleFile'),o.RoleFile=pick('*.json','Select RoleFile');if o.RoleFile=="",o=[];return;end,end
             end
         end
-        if any(id==["profile","refine","continue"])&&~(id=="refine"&&isfield(o,'Method')&&o.Method=="image")
-            a=inkprof.internal.withFocus(fig,@inputdlg,{'MaxNewPatches','NormTarget','GrayWeight'},'Iteration parameters',1,{'100','1','2'});
+        if (any(id==["refine","continue"])||(id=="profile"&&isfield(w.State,'activeContinuation')))&&~(id=="refine"&&isfield(o,'Method')&&o.Method=="image")
+            a=inkprof.internal.withFocus(fig,@inputdlg,{'Maximum NEW refinement patches','Refinement error target','Refinement gray weight'},'Refinement parameters',1,{'100','1','2'});
             if isempty(a),o=[];return;end
             o.MaxNewPatches=str2double(a{1});o.NormTarget=str2double(a{2});o.GrayWeight=str2double(a{3});
         end

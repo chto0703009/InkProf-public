@@ -13,6 +13,7 @@ classdef SpotReadSession < handle
         Writer
         PromptKind = "busy"
         StartTone
+        PendingOutput = ''
     end
     methods
         function obj=SpotReadSession(folder,options)
@@ -51,8 +52,9 @@ classdef SpotReadSession < handle
                 pause(.05);
             end
             events={};
-            while obj.Reader.ready()
-                line=obj.Reader.readLine();if isempty(line),break;end
+            [lines,obj.PendingOutput]=inkprof.internal.readSpotLines(obj.Reader,obj.PendingOutput);
+            for lineIndex=1:numel(lines)
+                line=lines{lineIndex};if isempty(line),continue;end
                 try,event=jsondecode(char(line));catch,event=struct('event','diagnostic','text',char(line));end
                 if isfield(event,'event')
                     if string(event.event)=="state",obj.PromptKind=string(event.kind);end

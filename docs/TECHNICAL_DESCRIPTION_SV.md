@@ -6,13 +6,13 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.2.4 | 2026-10-24 | GPL-3.0-or-later
+Version 1.3.0 | 2026-10-25 | GPL-3.0-or-later
 
 Implementation, beräkningskedja och datakontrakt
 
-Beskrivningen gäller den släppta appen för profilering av RGB-skrivare. Den följer data från definition av färgmål via mätning, ICC-bygge och numeriska kontroller till uppmätt verifieringsutskrift och leverans. Handboken beskriver användarens knapptryckningar; detta dokument förklarar vad stegen innebär och vilka filer de behöver.
+Beskrivningen gäller version 1.3.0, släppt 2026-10-25. Den följer data från definition av färgmål via mätning, ICC-bygge och numeriska kontroller till uppmätt verifieringsutskrift och leverans. Handboken beskriver användarens knapptryckningar; detta dokument förklarar vad stegen innebär och vilka filer de behöver.
 
-Teknisk bas är källkodsversion 1.2.4. Äldre gränssnittsbilder anges uttryckligen som dokumentationsexempel. De visar fiktiva projekt och är inte mätresultat som bevisar utskriftskvalitet. Sökvägar i appendix är relativa till installationens eller projektets rot. Genererade UUID och mappnamn varierar.
+Teknisk bas är källkodsversion 1.3.0, dokumenterad 2026-10-25. Äldre gränssnittsbilder anges uttryckligen som dokumentationsexempel. De visar fiktiva projekt och är inte mätresultat som bevisar utskriftskvalitet. Sökvägar i appendix är relativa till installationens eller projektets rot. Genererade UUID och mappnamn varierar.
 
 
 | Läsordning / sida | Innehåll |
@@ -30,6 +30,8 @@ Teknisk bas är källkodsversion 1.2.4. Äldre gränssnittsbilder anges uttryckl
 | 12 | Appendix C. Avstämning och kodreferenser |
 | 13 | Appendix D. Mättargetens identitet och spårbara utskriftskopior |
 | 14 | Bilaga E. Återkoppling och verifierad ICC i leveransen |
+| 15 | Lokala flödesändringar - granskning, låsning, rättelse och ärendestatus |
+| 16 | Mätning, avbrott och leverans |
 
 ---PAGE---
 ## 1. Arkitektur och avgränsning
@@ -280,3 +282,44 @@ Ett radval navigerar bara. Kör Open review and approval, granska resultatet, kr
 ### Exakt verifierad ICC följer med
 
 Den externa leveransmappen innehåller <profil>-verified-original.icc, en byteidentisk kopia av kontrollerad ICC. ICC-filen med vanligt namn har uppdaterad namnmetadata; eventuell -v4.4.icc är en konverterad variant och är inte den verifierade originalfilen. delivery.json registrerar verifiedOriginalICCFile och verifiedOriginalICCSHA256. Behåll hela paketet, inklusive underlag.
+
+
+---PAGE---
+
+## Lokala flödesändringar - 2026-10-25
+
+### Granska och lås en gång
+
+Steg 4 håller mätgranskningen öppen tills Continue to assessment väljs. B1 kontrollerar vald mätrevision, visar en modal bekräftelse Lock profile input och sparar sedan en verifierad kopia. Aktivitet och tid visas under kontroll och sparande. Föreslagen ordning är B1, B2, B3; B2 visas för receptgranskning, men Automatic B3 skapar fortfarande egna recept.
+
+### Patchantal och resultatfönster
+
+Första B3 frågar inte längre efter parametrar för extra kompletteringspatcher. De används vid komplettering och fortsättning. C1 sparar numeriska rapporter utan att automatiskt öppna flera resultatfönster; använd Open selected step results. C2a förbereder verifieringstargetet; välj befintliga filer när en redan utskriven target återanvänds.
+
+### Rätta registrerade uppgifter
+
+Vid ändring i Project details skiljs Correct recorded details från Changed actual setup. En dokumentationsrättelse kräver förklaring och oförändrade fysiska förhållanden. Originalfilernas hash kontrolleras och en ny revisionspost dokumenterar före/efter. Numeriska beräkningsändringar kan inte göras som dokumentationsrättelser. Redan inaktuella steg återställs inte automatiskt.
+
+### ISSUE-001 stängd
+
+ISSUE-001 stängdes på användarens beslut 2026-10-25 efter flera mätningar utan observerade problem. Kvarvarande osäkerhet accepterades för aktuell användning. Detta innebär inte att en fullständig studie av brus genom ny profilanpassning har utförts. Faktiska numeriska varningar och oberoende utskriftsverifiering gäller fortfarande.
+
+---PAGE---
+
+## Mätning, avbrott och leverans
+
+### RGB och andra spotmätningar
+
+RGB-kontroller, ommätning av enstaka patcher och pappersvitt har ett kort startpip både vid skärmknappen och vid i1 Pro 2:s instrumentknapp. Kalibrering använder inte mätpipet. RGB-färgraden visar endast sida, färg och förlopp. Den tillfälliga ljudtestknappen är borttagen. Sidbytet visas i samma fönster utan separat bekräftelsedialog.
+
+### Avbryt och fortsätt säkert
+
+Skip / close och fönstrets stängknapp kan avbryta RGB-kontrollen medan kalibreringen väntar. Sparade förfrågningar, loggar och läsningar behålls. Ofullständiga textrader blockerar inte längre pollningen och Argylls debugtext efter en fråga hanteras. Huvudfönstrets aktivitetsläge återställs vid avbrott. Starta om InkProf efter kodändringar; återuppta sparade rader endast för samma fysiska utskrift.
+
+### Utskriftskopia av komplettering
+
+När gamutpatchar har sparats och registrerats från Refinement tools stängs arbetsflödets gamutfönster. Den fristående gamutvisaren kan vara kvar. För att kopiera en befintlig komplettering: markera rad 15 i huvudlistan, välj Copy TIFF16 for printing... och välj Downloads. En ny mapp identifierar projekt och iteration och innehåller utskriftsfiler och spårbarhet. Originalprojektet bevaras.
+
+### Aktivitet vid certifikatleverans
+
+Steg 14 visar aktivitet och tid vid insamling av underlag, figurer och PDF, ICC-varianter samt kopiering och verifiering av leveransfiler. Den externa mappen innehåller den exakt kontrollerade profilen som <namn>-verified-original.icc samt namngivna leveransvarianter. Ett sparat certifikat genereras inte om på plats; skapa en ny exportrevision när något ändras.

@@ -6,7 +6,7 @@ function [accepted,name]=confirmProfileInput(summary,name)
 % Show the B1 decision visibly before waiting; do not block the MATLAB desktop.
 accepted=false;dismissed=false;
 f=uifigure('Name','InkProf - Select profile input','Tag','InkProfProfileInput', ...
- 'Position',[180 140 850 650],'WindowStyle','alwaysontop','Visible','off');
+ 'Position',[180 140 850 650],'WindowStyle','modal','Visible','off');
 cleanup=onCleanup(@()closeFigure(f));g=uigridlayout(f,[4 1]);g.RowHeight={25,32,'1x',36};
 uilabel(g,'Text','Name for the frozen measurement revision');
 field=uieditfield(g,'text','Value',char(name),'Tag','ProfileInputName');
@@ -15,9 +15,9 @@ b=uigridlayout(g,[1 2]);b.Padding=[0 0 0 0];
 uibutton(b,'Text','Lock profile input','Tag','LockProfileInput','ButtonPushedFcn',@accept);
 uibutton(b,'Text','Cancel','Tag','CancelProfileInput','ButtonPushedFcn',@cancel);
 f.CloseRequestFcn=@cancel;
+topGuard=inkprof.internal.lowerTopWindows(f); %#ok<NASGU>
 f.Visible='on';drawnow;focus(f);
 fprintf('InkProf B1: review the Select profile input window; choose Lock profile input or Cancel.\n');
-topGuard=inkprof.internal.lowerTopWindows(f); %#ok<NASGU> keep the dialog above always-on-top windows
 if ~dismissed,uiwait(f);end
 if isvalid(f),name=string(field.Value);delete(f);end
  function accept(~,~)

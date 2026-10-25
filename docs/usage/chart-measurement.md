@@ -557,3 +557,9 @@ C2 copies include the TIFF pages and `C2-verified-profile.icc`: a byte-identical
 The ICC is already applied to the C2 TIFF pixels. **Do not apply the companion ICC again when printing.** Print at 100% with all further colour conversion disabled.
 
 Older print-copy folders are not modified automatically. A manually added ICC can have a separate `C2-profile-info.json` recording its identity and hash; the original receipt is preserved.
+
+## Local workflow update 2026-10-25
+
+Spot start sounds apply to screen-triggered and i1 Pro 2 instrument-button measurements, including RGB controls, patch replacements and paper white. RGB colour rows show page, colour and progress; the temporary Test measurement sound button has been removed. Page changes are shown inline. Skip / close can cancel while calibration waits; saved evidence remains. Partial process lines and debug text after prompts are handled without blocking GUI polling.
+
+See [current workflow notes](workflow-updates-20261025.md). Applies to 1.3.0.

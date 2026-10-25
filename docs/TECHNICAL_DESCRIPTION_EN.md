@@ -6,13 +6,13 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.2.4 | 2026-10-24 | GPL-3.0-or-later
+Version 1.3.0 | 2026-10-25 | GPL-3.0-or-later
 
 Implementation, calculation chain and data contracts
 
-This description covers the released RGB printer profiling application. It follows the data from target definition through measurement, ICC construction, numerical diagnostics, physical verification and delivery. The handbook describes the operator's click sequence; this document explains what those steps mean and which files they depend on.
+This description covers version 1.3.0, released 2026-10-25. It follows the data from target definition through measurement, ICC construction, numerical diagnostics, physical verification and delivery. The handbook describes the operator's click sequence; this document explains what those steps mean and which files they depend on.
 
-The technical baseline is source version 1.2.4. Older interface illustrations are explicitly identified as documentation examples. They show fictional projects, not measurements proving printer quality. File paths in the appendices are relative to the installation or project root; generated UUIDs and directory names vary.
+The technical baseline is source version 1.3.0, documented 2026-10-25. Older interface illustrations are explicitly identified as documentation examples. They show fictional projects, not measurements proving printer quality. File paths in the appendices are relative to the installation or project root; generated UUIDs and directory names vary.
 
 
 | Reading order / page | Contents |
@@ -30,6 +30,8 @@ The technical baseline is source version 1.2.4. Older interface illustrations ar
 | 12 | Appendix C. Audit checklist and source references |
 | 13 | Appendix D. Measurement-target identity and external print provenance |
 | 14 | Appendix E. Feedback and verified ICC delivery |
+| 15 | Local workflow updates - review, locking, correction and issue status |
+| 16 | Acquisition, cancellation and delivery |
 
 ---PAGE---
 ## 1. Architecture and scope
@@ -280,3 +282,44 @@ Selecting a row navigates only. Run Open review and approval, review the results
 ### The exact verified ICC is included
 
 The external delivery folder contains <profile>-verified-original.icc, a byte-identical copy of the checked ICC. The normally named ICC has updated name metadata; an optional -v4.4.icc is a converted variant and is not the original verified file. delivery.json records verifiedOriginalICCFile and verifiedOriginalICCSHA256. Keep the whole bundle, including underlag.
+
+
+---PAGE---
+
+## Local workflow updates - 2026-10-25
+
+### Review and lock once
+
+Step 4 keeps the measurement preview open until Continue to assessment. B1 validates the selected revision, opens a modal Lock profile input confirmation, then saves a checked snapshot. Activity and elapsed time are shown during validation and saving. Suggested navigation is B1, B2, B3; B2 is shown for recipe review, while Automatic B3 still creates its own recipes.
+
+### Patch counts and result windows
+
+Initial B3 no longer asks for extra refinement patch parameters. Those apply when adding patches or continuing an iteration. C1 saves its numerical reports without opening successive result windows automatically; use Open selected step results. C2a handles verification-target preparation; choose existing files when reusing a printed sheet.
+
+### Correct recorded details
+
+When Project details changes, distinguish Correct recorded details from Changed actual setup. A documentation correction requires a reason and unchanged physical conditions. Original file hashes are checked and a new audit record stores before/after values. Numerical processing changes cannot use this exception. Existing stale steps are not automatically restored.
+
+### ISSUE-001 closed
+
+ISSUE-001 was closed by user decision on 2026-10-25 after several measurements without observed problems. Remaining uncertainty was accepted for current use. This is not a claim that a full noise-propagation/refitting study was performed; real numerical alerts and independent print verification still apply.
+
+---PAGE---
+
+## Acquisition, cancellation and delivery
+
+### RGB and other spot measurements
+
+RGB controls, single-patch replacements and paper-white spots use a short start sound for screen-triggered and i1 Pro 2 instrument-button measurements. Calibration does not use the spot start sound. RGB colour rows show page, colour and progress only. The temporary sound-test button has been removed. Page changes are shown inline without a separate confirmation window.
+
+### Cancel and resume safely
+
+Skip / close and the window close button can cancel the RGB control dialog while calibration is waiting. Saved requests, transcripts and readings remain. Partial output lines no longer block GUI polling, and Argyll debug text after a prompt is handled. Main workflow activity is cleared on interruption. Restart InkProf after source changes; resume saved chart rows only for the same physical print.
+
+### Refinement print copies
+
+After successfully saving and registering gamut patches from Refinement tools, the workflow gamut window closes. A standalone gamut viewer remains open. To copy an existing refinement target, select row 15 in the main table and use Copy TIFF16 for printing..., then choose Downloads. The new folder identifies the project and iteration and contains printing files and traceability information. The source project is preserved.
+
+### Timed certificate delivery
+
+Step 14 shows activity and elapsed time while collecting evidence, rendering figures and PDFs, preparing ICC variants, and copying and verifying delivery files. The external bundle includes the exact checked ICC as <name>-verified-original.icc as well as named delivery variants. A stored certificate is not regenerated in place; create a new export revision when changes are needed.

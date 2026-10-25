@@ -65,9 +65,8 @@ table=uitable(g,'Data',cell(numel(readings),4),'ColumnName',{'Page','Control','S
  'ColumnWidth',{70,90,450,'auto'},'ColumnEditable',false,'RowName',{},'Tag','printControlTable','CellSelectionCallback',@selectReading);
 for k=1:numel(readings),table.Data(k,:)={readings(k).page,char(readings(k).colour),'Waiting',''};end
 notice=uilabel(g,'Text','An approved reference from a known-correct print is needed for an absolute print check. Without one, pages are compared with page 1. Default review threshold: 5 Delta E00.','WordWrap','on');
-retrybar=uigridlayout(g,[1 3]);retrybar.Padding=[0 0 0 0];
+retrybar=uigridlayout(g,[1 2]);retrybar.Padding=[0 0 0 0];
 redo=uibutton(retrybar,'Text','Remeasure selected square','Enable','off','Tag','printControlRemeasure','ButtonPushedFcn',@remeasureSelected);
-uibutton(retrybar,'Text','Test measurement sound','Tag','printControlTestSound','ButtonPushedFcn',@(~,~)options.StartTone());
 restart=uibutton(retrybar,'Text','Restart all RGB checks','Enable','off','Tag','printControlRestart','ButtonPushedFcn',@restartAll);
 bar=uigridlayout(g,[1 4]);bar.Padding=[0 0 0 0];bar.ColumnWidth={'1x',220,140,'1x'};
 action=uibutton(bar,'Text','Start RGB checks','Tag','printControlAction','ButtonPushedFcn',@trigger);
@@ -83,12 +82,16 @@ uiwait(fig);
   try
    if isempty(session)
     session=inkprof.SpotReadSession(sessionBase,ArgyllBin=options.ArgyllBin,PythonExecutable=options.PythonExecutable,PrintControls=true,StartTone=options.StartTone);
+    if closed,delete(session);return;end
     start(poller);
    else
     session.sendKey(' ');
    end
+   if closed,return;end
    status.Text='Instrument working. Wait for the next instruction.';
-  catch err,status.Text=string(err.message);restart.Enable='on';end
+  catch err
+   if ~closed&&isgraphics(fig),status.Text=string(err.message);restart.Enable='on';end
+  end
   busy=false;
  end
  function poll(~,~)
@@ -96,6 +99,7 @@ uiwait(fig);
   busy=true;
   try
    events=session.poll(0,false);
+   if closed||~isgraphics(fig),return;end
    for j=1:numel(events)
     e=events{j};
     switch string(e.event)
@@ -111,7 +115,7 @@ uiwait(fig);
        end
        showSquare(q);action.Enable='on';
        action.Text=sprintf('Measure page %d - %s',q.page,string(q.colour));
-       status.Text=sprintf('PAGE %d — %s\nKeep the instrument still at the centre. Then click Measure page %d - %s or press the instrument button. (%d/%d)',q.page,string(q.colour),q.page,string(q.colour),index,numel(pendingIndices));
+       status.Text=sprintf('PAGE %d — %s   (%d/%d)',q.page,string(q.colour),index,numel(pendingIndices));
       else,action.Enable='off';end
      case 'measurement-started'
       action.Enable='off';restart.Enable='off';redo.Enable='off';
@@ -244,7 +248,7 @@ uiwait(fig);
   end
  end
  function closeDialog(varargin)
-  if busy,return;end
+  if closed,return;end
   closed=true;if isgraphics(fig),uiresume(fig);delete(fig);end
  end
  function cleanup(varargin)
