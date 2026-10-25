@@ -7,6 +7,11 @@ function fig=startInkProfApp(projectFolder)
 arguments
  projectFolder (1,1) string = ""
 end
+root=string(fileparts(mfilename('fullpath')));addpath(root);addpath(fullfile(root,'src'));
+% Reload dependency functions from this installation after source updates.
+clear setupInkProf inkprof.paths inkprof.internal.argyllBin inkprof.internal.argyllUsable inkprof.internal.runTool inkprof.internal.nativeArchitecture inkprof.internal.argyllCandidates
+rehash path
 setupInkProf();
+inkprof.internal.ensurePython();
 fig=inkprof.app(projectFolder);
 end

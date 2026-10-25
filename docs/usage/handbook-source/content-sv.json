@@ -34,23 +34,23 @@
     "sections": [
       [
         "Hårdvara och utskriftsprogram",
-        "MATLAB kräver licens; grundversionen räcker. Python 3.11-3.13 stöds för analys och rapporter; 3.13 är den testade versionen i exemplen. Anpassa python3.13 och python@3.13 till din installerade version. Installera även ArgyllCMS (3.5.0 används i utvecklingen). Git behövs för kloning."
+        "Använd licensierad MATLAB (testat med R2025b, grundversionen) och Python 3.13.6. Uppdaterad macOS-programmapp innehåller ArgyllCMS 3.5.0 för Apple Silicon och Intel med separata originallicenser. Native verktyg prioriteras och provstartas. Stäng andra instrumentprogram före mätning."
       ],
       [
-        "1. Installera MATLAB, Python och ArgyllCMS",
-        "MATLAB kräver egen licens; InkProf har testats med R2025b utan obligatoriska tilläggsverktygslådor. Installera Python 3.11-3.13 (testat med 3.13) och ArgyllCMS (3.5.0 användes i utvecklingen). Git behövs om du använder kloningskommandot nedan. På macOS kan Python, Git och ArgyllCMS installeras med Homebrew; med Homebrew installerat: brew install python@3.13 git argyll-cms."
+        "1. Använd uppdaterad kodmapp",
+        "Hämta källkods-ZIP för v1.4.0 från den publika releasesidan, packa upp och öppna hela InkProf-mappen. Alternativt: git clone --branch v1.4.0 https://github.com/chto0703009/InkProf-public.git . Blanda inte filer från olika installationer."
       ],
       [
-        "2. Hämta InkProf v1.2.2",
-        "Hämta källkodens ZIP för v1.2.2, packa upp den och öppna mappen i Terminal. Alternativt kör: git clone --branch v1.2.2 https://github.com/chto0703009/InkProf-public.git\nGå sedan till mappen: cd InkProf-public"
+        "2. Förbered programmets miljö",
+        "Välj InkProfs kodmapp som Current Folder i MATLAB. Kör:\nsetup_python_environment(\"sync\");\nHela den låsta paketlistan installeras i programmets egen .venv. Python 3.13.6 måste finnas; första installation kan kräva internet."
       ],
       [
-        "3. Installera Python-paketen i InkProf-mappen",
-        "Kör i Terminal:\npython3.13 -m venv .venv\n.venv/bin/python -m pip install -r requirements-report.txt\nPaketen för mätning, färgberäkning och PDF ingår i beroendekedjan. InkProf hittar den lokala .venv-miljön."
+        "3. Kontrollera och starta",
+        "Kör:\nsetup_python_environment(\"check\");\npaths = setupInkProf(CheckPython=true);\nstartInkProfApp();\nMiljön är isolerad från andra programs miljöer."
       ],
       [
-        "4. Kontrollera och starta i MATLAB",
-        "Välj InkProf-mappen som Current Folder. Kör:\npaths = setupInkProf(CheckPython=true);\nstartInkProfApp();\nKör setupInkProf vid varje ny MATLAB-session. ArgyllCMS hittas normalt automatiskt på macOS. Vid behov anger du verktygsmappen med setupInkProf(ArgyllBin=\"/sökväg/till/Argyll/bin\",CheckPython=true)."
+        "4. Efter byte av dator",
+        "Använd setup_python_environment(\"rebuild\") om den kopierade miljön inte fungerar. Tidigare miljö sparas som backup och återställs om ombyggnaden misslyckas. setupInkProf(ArgyllBin=\"auto\") återställer gamla datorspecifika Argyll-sökvägar. Egna projekt och originalmätningar bevaras."
       ]
     ],
     "links": [
@@ -2262,6 +2262,60 @@
       [
         "Aktivitet vid certifikatleverans",
         "Steg 14 visar aktivitet och tid vid insamling av underlag, figurer och PDF, ICC-varianter samt kopiering och verifiering av leveransfiler. Den externa mappen innehåller den exakt kontrollerade profilen som <namn>-verified-original.icc samt namngivna leveransvarianter. Ett sparat certifikat genereras inte om på plats; skapa en ny exportrevision när något ändras."
+      ]
+    ]
+  },
+  {
+    "tag": "1.4.0 | 2026-10-25",
+    "title": "Gamutgräns och utökat utskriftsmål",
+    "sections": [
+      [
+        "Undersök modellens gräns",
+        "View gamut har Gamut boundary exploration (both sides), utöver inre skal och valda områden. Ange Boundary distance i Delta E76, minsta RGB-avstånd och högsta antal NYA punkter. Kandidaterna har utskrivbara skrivar-RGB-värden. Negativt signerat avstånd betyder beräknat utanför den befintliga modellens yta; det bevisar inte ett större fysiskt färgomfång."
+      ],
+      [
+        "Extend latest target",
+        "Kryssa i Extend latest target för att kombinera senaste färdiga gamututskriften för exakt samma ICC med nya punkter. Förslag utan färdig TIFF hoppas över. Tidigare anpassnings-/utvecklingspunkter och extra mörka punkter behålls; exakta dubbletter och RGB som redan ingår i träningen utesluts. Kontroller skapas på nytt. Påbörjade eller pausade mätningar hindrar att samma mål utökas. Äldre TIFF, TI2 och avläsningar bevaras."
+      ],
+      [
+        "Skriv ut och mät den NYA versionen",
+        "Hela målet sparas normalt i projektet. Dialogen för frivillig extern kopia öppnas i Downloads; Cancel hoppar bara över kopian. Skriv ut alla sidor utan färgkonvertering. Steg 16 mäter nya TI2 och steg 17 bygger nästa profil med tidigare träningsdata. Använd inte äldre utskriftslayout med nya TI2. View gamut stängs efter lyckad målskapning och kopieringsdialog; vid avbrott/fel finns fönstret kvar."
+      ]
+    ]
+  },
+  {
+    "tag": "1.4.0 | 2026-10-25",
+    "title": "Granska uppmätt Lab-täthet",
+    "sections": [
+      [
+        "Läs mätresultatet",
+        "Refinement tools > Review measured Lab density / balanced trial visar täta grupper av uppmätt Lab och deras RGB-spridning. Readings är heltalsantal för upprepade RGB16-avläsningar; högsta Delta E00 beskriver repeterbarheten. Liknande Lab från olika RGB kan visa mättnad. Originalmätningar raderas, skrivs över eller medelvärdesbildas inte."
+      ],
+      [
+        "Ställ in, räkna om och välj",
+        "Ändra Lab distance (Delta E76), Target per group och Repeat review (Delta E00), sedan Recalculate. Standard 1 / 4 / 1 är provisorisk. Use balancing använder automatiska representanter i kryssade grupper; övriga behåller alla rader. Select all kryssar/markerar alla; Clear all återför alla rader till föreslaget underlag. Neutrala RGB, ljushets-/RGB-ytterlägen och inkonsekventa upprepningar skyddas. Därför kan målantalet överskridas."
+      ],
+      [
+        "Bygg separat kandidat",
+        "Close stänger bara granskningen. Build separate balanced candidate använder det granskade urvalet och är spärrad när noll punkter skulle utelämnas. Ändra inställningar och välj Recalculate i stället för att tvinga bort punkter. Båda profilerna jämförs mot ALLA ursprungliga träningsobservationer, även utelämnade rader, tillgängliga undanhållna utvecklingspatcher och samma tonövergångar. Det ersätter inte oberoende utskriftsverifiering. Kandidaten ersätter aldrig automatiskt aktiv profil."
+      ]
+    ]
+  },
+  {
+    "tag": "1.4.0 | 2026-10-25",
+    "title": "Aktivitet, spårbarhet och datorbyte",
+    "sections": [
+      [
+        "Synliga arbetssteg",
+        "Täthetsgranskning, Recalculate och kandidatförsök visar tid och arbetsfas: kontroll av indata, originalkopior, ICC-bygge, jämförelse av alla patcher, originalets/kandidatens tonövergångar, tillgängliga utvecklingskontroller och resultatsparning. Ändrade inställningar kräver Recalculate före bygge. Parametrar, kryssade grupper, källrader och SHA-256 sparas i separata gransknings-/försöksfiler."
+      ],
+      [
+        "En miljö per program",
+        "Varje program har egen .venv med Python 3.13.6 och samma låsta paketlista. Från kodmappen används setup_python_environment(\"check\"), \"sync\" eller \"rebuild\". Ombyggnad bevarar tidigare miljö som backup och återställer den vid fel. En flyttad .venv ersätter inte ombyggnad för en annan dator. Projekt och originalmätningar är separata från körmiljön."
+      ],
+      [
+        "Native Argyll och dokumentets omfattning",
+        "Programmappen innehåller separat licensierad ArgyllCMS 3.5.0 för ARM och Intel macOS, med originalnotiser och ursprungsuppgifter. Native verktyg prioriteras och provstartas. Uppdateringen beskriver release 1.4.0. Starta om appen efter källkodsändring."
       ]
     ]
   }

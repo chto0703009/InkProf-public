@@ -35,7 +35,7 @@ if options.CheckPython || options.PythonExecutable~=""
     if options.CheckPython
         modules=["numpy","scipy","colour","PIL","reportlab","tifffile","imagecodecs"];
     end
-    inkprof.checkPython(PythonExecutable=paths.PythonExecutable, ...
+    inkprof.checkPython(PythonExecutable=options.PythonExecutable, ...
         RequiredModules=modules);
 end
 if options.SaveLocalConfig

@@ -1,13 +1,2 @@
-# Optional spectral analysis, tested on Python 3.13; supported Python 3.11–3.13.
-# The chartread bridge remains standard-library-only.
-numpy==2.2.6
-scipy==1.16.3
-colour-science==0.4.6
-# Transitive dependencies locked for reproducible installs.
-imageio==2.37.4
-pillow==12.3.0
-typing-extensions==4.16.0
-
-# RGB16 TIFF pixel diagnostics, including LZW-compressed targets.
-tifffile==2026.9.20
-imagecodecs==2026.8.16
+# Compatibility alias for the unified full environment.
+-r requirements.txt

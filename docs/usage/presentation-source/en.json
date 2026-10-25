@@ -331,5 +331,24 @@
       ]
     ],
     "callout": "ISSUE-001 closed by user decision 2026-10-25. Included in release 1.3.0."
+  },
+  {
+    "tag": "1.4.0 | 2026-10-25",
+    "title": "Measured refinement with preserved originals",
+    "sections": [
+      [
+        "Extend latest target",
+        "Tick Extend latest target to combine the latest completed gamut print for the exact current ICC with new points. Unprinted proposals are skipped. Previous fitting/development points and supplementary shadow points are retained; exact duplicates and existing training RGB are excluded. Controls are regenerated. Started or paused measurements prevent extending that same target. The earlier TIFF, TI2 and readings remain unchanged."
+      ],
+      [
+        "Set, recalculate, select",
+        "Adjust Lab distance (Delta E76), Target per group and Repeat review (Delta E00), then Recalculate. Defaults 1 / 4 / 1 are provisional. Use balancing applies automatic representatives to checked groups; unchecked groups keep all rows. Select all checks/highlights all groups; Clear all restores every row to the proposed input. Neutrals, lightness/RGB extrema and inconsistent repeats stay protected. The target count may therefore be exceeded."
+      ],
+      [
+        "Build a separate candidate",
+        "Close only closes the review. Build separate balanced candidate uses the reviewed subset and is disabled when zero points would be omitted. Try different settings and Recalculate rather than forcing removal. Both profiles are compared to ALL original fitting observations, including omitted rows, to available reserved development patches and to matching photographic gradients. These are diagnostics, not final independent print verification. No candidate automatically replaces the active profile."
+      ]
+    ],
+    "compact": true
   }
 ]

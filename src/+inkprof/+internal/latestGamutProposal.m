@@ -1,7 +1,8 @@
 % Copyright (c) 2026 Christer Törnkvist.
 % SPDX-License-Identifier: GPL-3.0-or-later
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
-function file=latestGamutProposal(project,profile)
+function file=latestGamutProposal(project,profile,completedPrintOnly)
+if nargin<3,completedPrintOnly=false;end
 % Offer only saved selections for the exact current ICC, newest first.
 file="";sha=inkprof.internal.sha256(profile);
 entries=dir(fullfile(project,'refinements','*','proposal.json'));
@@ -11,6 +12,11 @@ for k=order
  try
   p=jsondecode(fileread(candidate));
   if string(p.documentType)=="inkprof.gamut-refinement"&&string(p.sourceProfileSHA256)==sha&&~isempty(p.candidates)
+   if completedPrintOnly
+    % A reviewed selection can be saved before paper planning is cancelled.
+    % It is not a printable parent. Integrity is checked by the caller.
+    if ~isfield(p,'print'),continue;end
+   end
    file=candidate;return;
   end
  catch

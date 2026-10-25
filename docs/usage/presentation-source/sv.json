@@ -331,5 +331,24 @@
       ]
     ],
     "callout": "ISSUE-001 stängd på användarens beslut 2026-10-25. Ingår i release 1.3.0."
+  },
+  {
+    "tag": "1.4.0 | 2026-10-25",
+    "title": "Uppmätt förfining med bevarade original",
+    "sections": [
+      [
+        "Extend latest target",
+        "Kryssa i Extend latest target för att kombinera senaste färdiga gamututskriften för exakt samma ICC med nya punkter. Förslag utan färdig TIFF hoppas över. Tidigare anpassnings-/utvecklingspunkter och extra mörka punkter behålls; exakta dubbletter och RGB som redan ingår i träningen utesluts. Kontroller skapas på nytt. Påbörjade eller pausade mätningar hindrar att samma mål utökas. Äldre TIFF, TI2 och avläsningar bevaras."
+      ],
+      [
+        "Ställ in, räkna om och välj",
+        "Ändra Lab distance (Delta E76), Target per group och Repeat review (Delta E00), sedan Recalculate. Standard 1 / 4 / 1 är provisorisk. Use balancing använder automatiska representanter i kryssade grupper; övriga behåller alla rader. Select all kryssar/markerar alla; Clear all återför alla rader till föreslaget underlag. Neutrala RGB, ljushets-/RGB-ytterlägen och inkonsekventa upprepningar skyddas. Därför kan målantalet överskridas."
+      ],
+      [
+        "Bygg separat kandidat",
+        "Close stänger bara granskningen. Build separate balanced candidate använder det granskade urvalet och är spärrad när noll punkter skulle utelämnas. Ändra inställningar och välj Recalculate i stället för att tvinga bort punkter. Båda profilerna jämförs mot ALLA ursprungliga träningsobservationer, även utelämnade rader, tillgängliga undanhållna utvecklingspatcher och samma tonövergångar. Det ersätter inte oberoende utskriftsverifiering. Kandidaten ersätter aldrig automatiskt aktiv profil."
+      ]
+    ],
+    "compact": true
   }
 ]

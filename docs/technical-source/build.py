@@ -63,9 +63,10 @@ def build(lang):
     cells=[t.strip() for t in row.strip('|').split('|')]
     if all(re.fullmatch(r'[- :]+',v) for v in cells):continue
     data.append([Paragraph(inline(c),styles['CellDoc']) for c in cells])
+   toc=any(token in rows[0] for token in ['Reading order','Läsordning'])
    n=len(data[0]);widths=[148,339] if n==2 else [76,200,211]
    t=Table(data,colWidths=widths,repeatRows=1,hAlign='LEFT')
-   t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#d9e9ee')),('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.HexColor('#f3f7f8')]),('LINEBELOW',(0,0),(-1,0),.6,ACC),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),4 if len(data)>15 else 6),('BOTTOMPADDING',(0,0),(-1,-1),4 if len(data)>15 else 6)]));story.extend([t,Spacer(1,14)]);continue
+   t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#d9e9ee')),('VALIGN',(0,0),(-1,-1),'TOP'),('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.HexColor('#f3f7f8')]),('LINEBELOW',(0,0),(-1,0),.6,ACC),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),2 if toc else (4 if len(data)>15 else 6)),('BOTTOMPADDING',(0,0),(-1,-1),2 if toc else (4 if len(data)>15 else 6))]));story.extend([t,Spacer(1,14)]);continue
   group=[s]
   while i<len(lines) and lines[i].strip() and not lines[i].startswith(('##','---PAGE---','|','![')):
    group.append(lines[i].strip());i+=1

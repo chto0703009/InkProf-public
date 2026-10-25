@@ -6,13 +6,13 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.3.0 | 2026-10-25 | GPL-3.0-or-later
+Version 1.4.0 | 2026-10-25 | GPL-3.0-or-later
 
 Implementation, beräkningskedja och datakontrakt
 
-Beskrivningen gäller version 1.3.0, släppt 2026-10-25. Den följer data från definition av färgmål via mätning, ICC-bygge och numeriska kontroller till uppmätt verifieringsutskrift och leverans. Handboken beskriver användarens knapptryckningar; detta dokument förklarar vad stegen innebär och vilka filer de behöver.
+Beskrivningen gäller version 1.4.0, släppt 2026-10-25. Den följer data från definition av färgmål via mätning, ICC-bygge och numeriska kontroller till uppmätt verifieringsutskrift och leverans. Handboken beskriver användarens knapptryckningar; detta dokument förklarar vad stegen innebär och vilka filer de behöver.
 
-Teknisk bas är källkodsversion 1.3.0, dokumenterad 2026-10-25. Äldre gränssnittsbilder anges uttryckligen som dokumentationsexempel. De visar fiktiva projekt och är inte mätresultat som bevisar utskriftskvalitet. Sökvägar i appendix är relativa till installationens eller projektets rot. Genererade UUID och mappnamn varierar.
+Teknisk bas är release 1.4.0, dokumenterad 2026-10-25. Äldre gränssnittsbilder anges uttryckligen som dokumentationsexempel. De visar fiktiva projekt och är inte mätresultat som bevisar utskriftskvalitet. Sökvägar i appendix är relativa till installationens eller projektets rot. Genererade UUID och mappnamn varierar.
 
 
 | Läsordning / sida | Innehåll |
@@ -32,6 +32,9 @@ Teknisk bas är källkodsversion 1.3.0, dokumenterad 2026-10-25. Äldre gränssn
 | 14 | Bilaga E. Återkoppling och verifierad ICC i leveransen |
 | 15 | Lokala flödesändringar - granskning, låsning, rättelse och ärendestatus |
 | 16 | Mätning, avbrott och leverans |
+| 17 | Gamutgräns och utökat utskriftsmål |
+| 18 | Granska uppmätt Lab-täthet |
+| 19 | Aktivitet, spårbarhet och datorbyte |
 
 ---PAGE---
 ## 1. Arkitektur och avgränsning
@@ -167,14 +170,14 @@ Långa beräkningar visar aktivitet, arbetsfas och förfluten tid. Filval och an
 | Komponent | Funktion och krav |
 | --- | --- |
 | MATLAB | App, geometri och samordning. Base MATLAB R2025b testad på macOS; innebär inte verifiering av Windows/Linux. |
-| Python | Extern arbetare. Körkontrollen accepterar Python 3.10+ inom 3.x; analyskraven anger testade/stödda 3.11-3.13. Paketen måste passa vald tolk. |
-| ArgyllCMS | Installeras separat. Relevanta vägar använder targen, printtarg, chartread/spotread, colprof, xicclu, profcheck och närliggande verktyg. |
+| Python | Extern arbetare. Release 1.4.0 använder Python 3.13.6 i egen isolerad .venv med hela den låsta paketlistan; check/sync/rebuild görs med setup_python_environment. |
+| ArgyllCMS | Uppdaterad macOS-mapp innehåller separat licensierade 3.5.0-verktyg för ARM/Intel som provstartas. Andra plattformar behöver kompatibel installation. Verktyg är bland annat targen, printtarg, chartread/spotread, colprof, xicclu och profcheck. |
 | NumPy, SciPy, colour-science | Numerisk och spektral analys. Exakta låsningar finns i requirements-analysis.txt. |
 | Pillow / LittleCMS | ICC-behandling och jämförelser; ursprunglig profil och transformvillkor spelar roll. |
 | tifffile, imagecodecs | Diagnostik av RGB16-TIFF och komprimerad TIFF vid behov. |
 | ReportLab | PDF-rapporter via requirements-report.txt. |
 
-En projektlokal `.venv` rekommenderas för isolerad Python; en uttryckligt konfigurerad tolk stöds också. Miljöskapande och paketinstallation hör till installationen, inte varje målberäkning. `setupInkProf(CheckPython=true)` kontrollerar vald Python; `startInkProfApp` öppnar appen. Chartread-bryggan använder standardbiblioteket, medan analys och rapportering behöver de ytterligare requirements-filerna.
+Programmet använder egen isolerad `.venv` med Python 3.13.6 och låst `requirements.txt`; analys-/rapportfiler hänvisar till samma lista. `setup_python_environment` kontrollerar, synkroniserar eller bygger om miljön. `setupInkProf(CheckPython=true)` kontrollerar installationen och `startInkProfApp` öppnar appen. Native Python prioriteras på Apple Silicon.
 
 Mätbryggan innehåller POSIX-beroende vägar. Testad instrumentanvändning omfattar i1Pro 2 på macOS; andra system och instrument kräver egen verifiering. Fungerande kommunikation bevisar inte korrekt instrumentkalibrering eller rätt mätvillkor.
 
@@ -318,8 +321,66 @@ Skip / close och fönstrets stängknapp kan avbryta RGB-kontrollen medan kalibre
 
 ### Utskriftskopia av komplettering
 
-När gamutpatchar har sparats och registrerats från Refinement tools stängs arbetsflödets gamutfönster. Den fristående gamutvisaren kan vara kvar. För att kopiera en befintlig komplettering: markera rad 15 i huvudlistan, välj Copy TIFF16 for printing... och välj Downloads. En ny mapp identifierar projekt och iteration och innehåller utskriftsfiler och spårbarhet. Originalprojektet bevaras.
+När gamutpatchar har sparats och registrerats från Refinement tools stängs arbetsflödets gamutfönster. Även den fristående gamutvisaren stängs efter lyckad TIFF16-skapning. För att kopiera en befintlig komplettering: markera rad 15 i huvudlistan, välj Copy TIFF16 for printing... och välj Downloads. En ny mapp identifierar projekt och iteration och innehåller utskriftsfiler och spårbarhet. Originalprojektet bevaras.
 
 ### Aktivitet vid certifikatleverans
 
 Steg 14 visar aktivitet och tid vid insamling av underlag, figurer och PDF, ICC-varianter samt kopiering och verifiering av leveransfiler. Den externa mappen innehåller den exakt kontrollerade profilen som <namn>-verified-original.icc samt namngivna leveransvarianter. Ett sparat certifikat genereras inte om på plats; skapa en ny exportrevision när något ändras.
+
+---PAGE---
+## Gamutgräns och utökat utskriftsmål
+
+1.4.0 | 2026-10-25
+
+### Undersök modellens gräns
+
+View gamut har Gamut boundary exploration (both sides), utöver inre skal och valda områden. Ange Boundary distance i Delta E76, minsta RGB-avstånd och högsta antal NYA punkter. Kandidaterna har utskrivbara skrivar-RGB-värden. Negativt signerat avstånd betyder beräknat utanför den befintliga modellens yta; det bevisar inte ett större fysiskt färgomfång.
+
+### Extend latest target
+
+Kryssa i Extend latest target för att kombinera senaste färdiga gamututskriften för exakt samma ICC med nya punkter. Förslag utan färdig TIFF hoppas över. Tidigare anpassnings-/utvecklingspunkter och extra mörka punkter behålls; exakta dubbletter och RGB som redan ingår i träningen utesluts. Kontroller skapas på nytt. Påbörjade eller pausade mätningar hindrar att samma mål utökas. Äldre TIFF, TI2 och avläsningar bevaras.
+
+### Skriv ut och mät den NYA versionen
+
+Hela målet sparas normalt i projektet. Dialogen för frivillig extern kopia öppnas i Downloads; Cancel hoppar bara över kopian. Skriv ut alla sidor utan färgkonvertering. Steg 16 mäter nya TI2 och steg 17 bygger nästa profil med tidigare träningsdata. Använd inte äldre utskriftslayout med nya TI2. View gamut stängs efter lyckad målskapning och kopieringsdialog; vid avbrott/fel finns fönstret kvar.
+
+
+---PAGE---
+## Granska uppmätt Lab-täthet
+
+1.4.0 | 2026-10-25
+
+### Läs mätresultatet
+
+Refinement tools > Review measured Lab density / balanced trial visar täta grupper av uppmätt Lab och deras RGB-spridning. Readings är heltalsantal för upprepade RGB16-avläsningar; högsta Delta E00 beskriver repeterbarheten. Liknande Lab från olika RGB kan visa mättnad. Originalmätningar raderas, skrivs över eller medelvärdesbildas inte.
+
+### Ställ in, räkna om och välj
+
+Ändra Lab distance (Delta E76), Target per group och Repeat review (Delta E00), sedan Recalculate. Standard 1 / 4 / 1 är provisorisk. Use balancing använder automatiska representanter i kryssade grupper; övriga behåller alla rader. Select all kryssar/markerar alla; Clear all återför alla rader till föreslaget underlag. Neutrala RGB, ljushets-/RGB-ytterlägen och inkonsekventa upprepningar skyddas. Därför kan målantalet överskridas.
+
+### Bygg separat kandidat
+
+Close stänger bara granskningen. Build separate balanced candidate använder det granskade urvalet och är spärrad när noll punkter skulle utelämnas. Ändra inställningar och välj Recalculate i stället för att tvinga bort punkter. Båda profilerna jämförs mot ALLA ursprungliga träningsobservationer, även utelämnade rader, tillgängliga undanhållna utvecklingspatcher och samma tonövergångar. Det ersätter inte oberoende utskriftsverifiering. Kandidaten ersätter aldrig automatiskt aktiv profil.
+
+
+---PAGE---
+## Aktivitet, spårbarhet och datorbyte
+
+1.4.0 | 2026-10-25
+
+### Synliga arbetssteg
+
+Täthetsgranskning, Recalculate och kandidatförsök visar tid och arbetsfas: kontroll av indata, originalkopior, ICC-bygge, jämförelse av alla patcher, originalets/kandidatens tonövergångar, tillgängliga utvecklingskontroller och resultatsparning. Ändrade inställningar kräver Recalculate före bygge. Parametrar, kryssade grupper, källrader och SHA-256 sparas i separata gransknings-/försöksfiler.
+
+### En miljö per program
+
+Varje program har egen .venv med Python 3.13.6 och samma låsta paketlista. Från kodmappen används setup_python_environment("check"), "sync" eller "rebuild". Ombyggnad bevarar tidigare miljö som backup och återställer den vid fel. En flyttad .venv ersätter inte ombyggnad för en annan dator. Projekt och originalmätningar är separata från körmiljön.
+
+### Native Argyll och dokumentets omfattning
+
+Programmappen innehåller separat licensierad ArgyllCMS 3.5.0 för ARM och Intel macOS, med originalnotiser och ursprungsuppgifter. Native verktyg prioriteras och provstartas. Uppdateringen beskriver release 1.4.0. Starta om appen efter källkodsändring.
+
+
+### Källfiler
+
+Gamut extension: src/+inkprof/refineFromGamut.m, src/+inkprof/+internal/gamutTargetExtension.m and analysis/gamut_refinement.py. Density review/trial: src/+inkprof/reviewMeasuredDensity.m, src/+inkprof/buildDensityTrial.m, src/+inkprof/+internal/showMeasuredDensity.m, densityGroupSelection.m, showDensityTrial.m, analysis/measurement_density.py and density_comparison.py. Environment: setup_python_environment.m, tools/manage_python_environment.py, requirements.txt and third_party/argyll/provenance.json.

@@ -3,6 +3,7 @@
 # InkProf is free software under GNU GPL version 3 or later.
 # Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 import hashlib
+import shutil
 import json
 from pathlib import Path
 import struct
@@ -175,13 +176,13 @@ class JobTests(unittest.TestCase):
         req['files']={n:hashlib.sha256((p/n).read_bytes()).hexdigest() for n in req['files']}
         (p/'request.json').write_text(json.dumps(req));return p
 
-    @unittest.skipUnless(Path('/usr/local/bin/spec2cie').exists(),'Argyll spec2cie unavailable')
+    @unittest.skipUnless(bool(shutil.which('spec2cie')),'Argyll spec2cie unavailable')
     def test_fwa_preparation_once_before_both_passes(self):
         from test_fwa_preparation import ti3, COND, COLOR
         with tempfile.TemporaryDirectory() as d:
             p=self.prepare_pre(d)
             (p/'engine.ti3').write_text(ti3());raw=(p/'engine.ti3').read_bytes()
-            (p/'spec2cie').symlink_to('/usr/local/bin/spec2cie')
+            (p/'spec2cie').symlink_to(shutil.which('spec2cie'))
             recipe=json.loads((p/'recipe.json').read_text());recipe['colorimetry']=COLOR|dict(illuminant='D50',observer='1931_2');recipe['measurementCondition']=COND
             recipe['engine']['preRegularization']['plannedArguments']=['-qm','-al','-r','1','-bl','-nc','-D','InkProf pre-regularization model']
             (p/'recipe.json').write_text(json.dumps(recipe));request=json.loads((p/'request.json').read_text());request['files']={f:hashlib.sha256((p/f).read_bytes()).hexdigest() for f in request['files']};(p/'request.json').write_text(json.dumps(request))

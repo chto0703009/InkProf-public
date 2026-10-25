@@ -1,3 +1,2 @@
--r requirements-analysis.txt
-reportlab==4.4.3
-charset-normalizer==3.5.1
+# Compatibility alias for the unified full environment.
+-r requirements.txt

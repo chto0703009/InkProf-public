@@ -87,5 +87,8 @@ info.verificationPatchCount=c2count;info.c2TrainingCount=0;
 if c2count>0,info.c2TrainingCount=sum(c2roles=="fit");end
 info.roleSHA256=inkprof.internal.sha256(info.roleFile);info.ti2SHA256=inkprof.internal.sha256(info.ti2);
 f=fopen(fullfile(folder,'PRINTING.txt'),'w');c=onCleanup(@()fclose(f));
+if isfield(proposal,'extension')
+ fprintf(f,'EXTENDED TARGET: new complete print version of %s. Retained patches: %d; newly selected: %d. Print every page and measure this NEW target.ti2. Previous TIFF and TI2 remain unchanged.\n',string(proposal.extension.parentIterationId),proposal.extension.counts.retainedCount,proposal.extension.newSelectedCount);
+end
 fprintf(f,'REFINEMENT: device RGB16, no ICC applied. Print at 100%% with all colour conversion disabled.\nUse the same printer, paper and print settings. Measure print/target.ti2.\nKeep placement-plan.json with the measurement: fit, adaptive development and repeated controls must not be mixed.\nC2 patches, when included, are already converted to device RGB: do NOT apply the ICC again. C2 colour patches are used in the next profile training; repeats and paper white remain controls. C2 cannot independently validate that next ICC.\nExisting-RGB controls and C2 patches are additional to the new-point budget. Contrast bars and padding are not source patches.\n');
 end

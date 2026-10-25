@@ -1,15 +1,11 @@
-# Public release scope — v1.3.0
+# Public release scope - v1.4.0
 
-This is a source-only minor release (tag v1.3.0, version 1.3.0, 2026-10-25) in the separate public repository. Private development history is neither merged into it nor rewritten.
+Release 1.4.0 (2026-10-25) is published from the separate public repository. Private development history is not merged into it or rewritten.
 
-Current published release: [v1.3.0 stable release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.3.0).
+Included: current MATLAB/Python source, synthetic tests, editable documentation and seven rebuilt current PDF guides. The future-opportunities PDF remains a proposal. Unmodified ArgyllCMS 3.5.0 macOS ARM/Intel distributions are included under third_party/argyll with full upstream licences, reference files and archive provenance. Corresponding source is available from the upstream locations recorded in THIRD_PARTY_NOTICES.md. These are separate programs under upstream terms, including AGPL-3.0.
 
-Excluded: local projects/measurements/ICC profiles, imported i1Profiler reference packages and real MXF fixtures, vendor screenshots, private historical datasets, machine settings, virtual environments, caches and external runtime binaries. Synthetic fixtures and original explanatory documentation figures are included. Some historical research notes refer to excluded data; they are not reproducible release tests. This private development repository still contains some of the excluded material (for example the real MXF fixtures in `tests/fixtures/i1profiler/` and the Chart 575 `reference.tif`); it is not copied to the public repository.
+Excluded: private projects, user measurements/ICC profiles, imported i1Profiler packages and real MXF fixtures, vendor screenshots, private historical datasets, local machine settings, virtual environments and caches. Upstream Argyll reference files and synthetic documentation examples retain their own recorded scope.
 
-Separately licensed resources: complete unmodified CxF3 schema with its licence and provenance; unmodified DejaVu Sans font with full notice and hash. ReportLab's separately installed fonts are embedded in PDFs with notices. MATLAB, Python and ArgyllCMS must be installed separately. The root GPL licence does not relicense these dependencies.
+MATLAB and Python 3.13.6 must be installed separately. Each program builds its own pinned .venv. Other operating systems require a compatible Argyll installation and their own validation. Native macOS discovery does not imply cross-platform instrument qualification.
 
-Eight current documentation PDFs have reproducible sources: Swedish/English presentations, Swedish/English user handbooks, both technical descriptions, the English MATLAB workflow guide and the explicitly labelled future-development overview. Existing private measurement certificates are not regenerated or included as release assets.
-
-Only reviewed current source patches are copied between repositories. Do not merge private Git history into the public tree. Consult LICENSE_SCOPE.md, THIRD_PARTY_NOTICES.md and licenses/review-v1.0.0.md before adding source or assets.
-
-The v1.3.0 minor release updates source, Markdown and seven documentation PDFs. The future-opportunities PDF remains a proposal document. Existing user certificates and project evidence are not modified.
+Separately licensed resources include the unmodified CxF3 schema and font assets; see LICENSE_SCOPE.md, THIRD_PARTY_NOTICES.md and licenses/inventory.json. Existing user certificates and project evidence are not regenerated or included. Copy only reviewed paths between repositories; never merge private history into the public tree.

@@ -8,6 +8,10 @@ arguments
     options.PythonExecutable (1,1) string = ""
     options.RequiredModules (1,:) string = strings(1,0)
 end
+if options.PythonExecutable==""
+    runtime=inkprof.internal.ensurePython();
+    options.PythonExecutable=string(runtime.Executable);
+end
 executable=inkprof.internal.pythonExecutable(options.PythonExecutable);
 assert(executable~=""&&isfile(executable),'inkprof:PythonMissing', ...
     'Python is unavailable. Create .venv in the InkProf root or configure PythonExecutable with setupInkProf.');

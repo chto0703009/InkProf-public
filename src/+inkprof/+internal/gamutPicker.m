@@ -8,13 +8,14 @@ anchors=struct('vertexIndex',{},'lab',{},'rgbPercent',{},'mappedLab',{},'distanc
 marker=line(ax,NaN,NaN,NaN,'LineStyle','none','Marker','o','MarkerSize',9, ...
  'MarkerEdgeColor','k','MarkerFaceColor','w','HitTest','off','PickableParts','none');
 panel=uipanel(f,'Units','normalized','Position',[.69 .03 .30 .93],'Title','Add measurements in a gamut area','BackgroundColor','white');
-control('text','Whole inner gamut shell adds patches across the surface. Set thickness from the depth of the RGB features you want to investigate.',[.04 .86 .92 .10]);
+control('text','Choose an inner shell or explore both sides of the current gamut boundary. Print, measure, then build the next iteration.',[.04 .86 .92 .10]);
 select=control('pushbutton','Select area',[.04 .81 .44 .045]);select.Tag='gamutSelectMode';select.Callback=@(~,~)mode(false);
 rotate=control('pushbutton','Rotate view',[.52 .81 .44 .045]);rotate.Callback=@(~,~)mode(true);
 t=uitable(panel,'Units','normalized','Position',[.04 .46 .92 .33],'Data',cell(0,5), ...
  'ColumnName',{'Area','R %','G %','B %','ΔE76 offset'},'ColumnWidth',{45,65,65,65,95},'RowName',{},'Tag','gamutAnchorTable');
-clearButton=control('pushbutton','Clear selection',[.04 .40 .92 .045]);clearButton.Callback=@clearSelection;
-sampling=control('popupmenu',{'Selected RGB neighbourhoods','Selected inner shell areas','Whole inner gamut shell'},[.04 .35 .92 .04]);
+clearButton=control('pushbutton','Clear selection',[.04 .40 .40 .045]);clearButton.Callback=@clearSelection;
+extend=control('checkbox','Extend latest target',[.46 .40 .52 .045]);extend.Value=0;extend.Tag='gamutExtendLatestTarget';
+sampling=control('popupmenu',{'Selected RGB neighbourhoods','Selected inner shell areas','Whole inner gamut shell','Gamut boundary exploration (both sides)'},[.04 .35 .92 .04]);
 sampling.Value=3;sampling.Tag='gamutSamplingMode';sampling.Callback=@(~,~)update();
 radiusLabel=control('text','Shell thickness (ΔE76)',[.04 .30 .72 .04]);
 radius=control('edit','3',[.78 .30 .18 .04]);radius.Tag='gamutRadius';
@@ -29,7 +30,7 @@ info=control('text','Shell thickness is Lab distance inward from the ICC surface
 job=fileparts(fileparts(string(profile)));jobFile=fullfile(job,'status.json');
 canCreate=isfile(jobFile)&&isfile(fullfile(job,'engine.ti3'))&&isfile(fullfile(job,'result','profile.icc')) ...
  &&inkprof.internal.sha256(fullfile(job,'result','profile.icc'))==string(data.profileSHA256);
-if ~canCreate,info.String='Read-only ICC: creating patches requires a successful profile job in an InkProf project.';end
+if ~canCreate,extend.Enable='off';info.String='Read-only ICC: creating patches requires a successful profile job in an InkProf project.';end
 surface.ButtonDownFcn=@pick;surface.PickableParts='visible';mode(true);update();
  function h=control(style,label,position)
   h=uicontrol(panel,'Style',style,'String',label,'Units','normalized','Position',position,'FontSize',11,'BackgroundColor','white');
@@ -55,7 +56,12 @@ surface.ButtonDownFcn=@pick;surface.PickableParts='visible';mode(true);update();
  end
  function update()
   if sampling.Value==1,radiusLabel.String='Neighbour radius (RGB percentage points)';
+  elseif sampling.Value==4,radiusLabel.String='Boundary distance (ΔE76)';
   else,radiusLabel.String='Shell thickness (ΔE76)';end
+  if canCreate
+   if sampling.Value==4,info.String='Printable RGB near either side of the mesh. Negative distance means outside. Expansion requires measurements and a new profile.';
+   else,info.String='Inner shell: distance inward. RGB neighbourhoods: device RGB spacing. New measurements are required.';end
+  end
   region.Enable='off';if sampling.Value==2,region.Enable='on';end
   rows=cell(numel(anchors),5);
   for k=1:numel(anchors)
@@ -68,7 +74,7 @@ surface.ButtonDownFcn=@pick;surface.PickableParts='visible';mode(true);update();
    points=reshape([anchors.lab],3,[])';marker.XData=points(:,2);marker.YData=points(:,3);marker.ZData=points(:,1);
    if canCreate,create.Enable='on';end
   end
-  if sampling.Value==3&&canCreate,create.Enable='on';end
+  if any(sampling.Value==[3 4])&&canCreate,create.Enable='on';end
  end
  function createTarget(~,~)
   create.Enable='off';create.String='Working — please wait';
@@ -76,18 +82,17 @@ surface.ButtonDownFcn=@pick;surface.PickableParts='visible';mode(true);update();
   activityCleanup=onCleanup(@()activity.close()); %#ok<NASGU>
   drawnow;
   try
-   samplingMode="neighbour";if sampling.Value==2,samplingMode="shell-region";elseif sampling.Value==3,samplingMode="shell";end
+   samplingMode="neighbour";if sampling.Value==2,samplingMode="shell-region";elseif sampling.Value==3,samplingMode="shell";elseif sampling.Value==4,samplingMode="boundary";end
    neighbourRadius=3;shellThickness=3;
    if samplingMode=="neighbour",neighbourRadius=str2double(radius.String);else,shellThickness=str2double(radius.String);end
    [proposal,folder]=inkprof.refineFromGamut(jobFile,anchors(:),RadiusPercent=neighbourRadius, ...
     MinSpacingPercent=str2double(spacing.String),MaxNewPatches=str2double(budget.String), ...
-    SamplingMode=samplingMode,ShellThicknessDeltaE76=shellThickness,Surface=data,RegionRadiusDeltaE76=str2double(region.String),Activity=activity.stage);
+    ExtendLatestTarget=logical(extend.Value),SamplingMode=samplingMode,ShellThicknessDeltaE76=shellThickness,Surface=data,RegionRadiusDeltaE76=str2double(region.String),Activity=activity.stage);
    if ~isempty(proposal)&&isgraphics(f)
     info.String=char("Saved: "+folder+newline+"Registered in step 15. Continue with step 16 to measure this exact package, then step 17 to build. Refresh the project view if needed.");
     fprintf('Gamut selection and TIFF16: %s\n',folder);
-    if closeAfterCreate
-     clear activityCleanup;delete(f);return
-    end
+    % A completed target returns control to the workflow in every entry path.
+    clear activityCleanup;delete(f);return
    end
   catch err
    clear activityCleanup;

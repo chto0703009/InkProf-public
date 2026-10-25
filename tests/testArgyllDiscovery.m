@@ -6,11 +6,15 @@ function tests=testArgyllDiscovery
 tests=functiontests(localfunctions);
 end
 function testNativeHomebrewOrder(tc)
-a=inkprof.internal.argyllCandidates("maca64","","");
+a=inkprof.internal.argyllCandidates("maca64","","","");
 verifyEqual(tc,a(1),"/opt/homebrew/opt/argyll-cms/bin");
-b=inkprof.internal.argyllCandidates("maci64","","");
+b=inkprof.internal.argyllCandidates("maci64","","","");
 verifyEqual(tc,b(1),"/usr/local/opt/argyll-cms/bin");
 verifyTrue(tc,any(a=="/opt/homebrew/bin"));
+end
+function testUserInstallation(tc)
+a=inkprof.internal.argyllCandidates("maca64","","","/example/home");
+verifyEqual(tc,a(1),"/example/home/Applications/ArgyllCMS/bin");
 end
 function testResolution(tc)
 root=string(tempname);mkdir(root);cleanup=onCleanup(@()rmdir(root,'s'));
@@ -28,7 +32,7 @@ verifyEqual(tc,resolve("","",a,false),inkprof.internal.absolutePath(a));
 verifyEqual(tc,resolve("","","",false),inkprof.internal.absolutePath(b));
 verifyEqual(tc,resolve("auto","missing","",false),inkprof.internal.absolutePath(b));
 verifyError(tc,@()resolve("missing",a,b,false),'inkprof:Argyll');
-verifyError(tc,@()resolve("","missing",b,false),'inkprof:Argyll');
+verifyWarning(tc,@()resolve("","missing",b,false),'inkprof:ArgyllLegacyPath');
 verifyWarning(tc,@()resolve("","missing","",true),'inkprof:ArgyllLegacyPath');
 warning('off','inkprof:ArgyllLegacyPath');c=onCleanup(@()warning('on','inkprof:ArgyllLegacyPath'));
 verifyEqual(tc,resolve("","missing","",true),inkprof.internal.absolutePath(b));

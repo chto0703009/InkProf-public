@@ -1,4 +1,4 @@
-# InkProf documentation - v1.3.0, documentation update 2026-10-25
+# InkProf documentation - v1.4.0, documentation update 2026-10-25
 
 
 Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.

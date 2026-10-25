@@ -1,3 +1,15 @@
+InkProf v1.4.0 validation - 2026-10-25
+=====================================
+PASS: 32 targeted MATLAB tests in the separate public checkout: gamut picker (2), target extension (5), density trial (3), density selection UI (1), calculation progress (9), Argyll discovery (4), executable validation (3), refinement continuation (5). No failures or incomplete tests.
+PASS: 39 Python tests in the public checkout: gamut (15), measurement density (5), profile job (14), FWA preparation (5).
+PASS: pinned Python environment check in the public checkout's own local environment.
+PASS: seven maintained PDF guides rebuilt as 1.4.0; all 243 pages rendered, covers and changed pages visually inspected, chapter positions retained; Downloads copies SHA-verified.
+Source archive manifest, privacy exclusions and documentation hashes are verified by the release packaging script before publication. Bundled macOS ARM and Intel Argyll tools retain upstream notices and licensing.
+
+Tests use synthetic fixtures and isolated temporary projects. No new physical instrument or printer/paper colour-quality qualification is claimed. Original user projects and measurements are not release inputs and remain untouched.
+
+Earlier validation history follows unchanged.
+
 InkProf v1.3.0 validation - 2026-10-25
 =====================================
 PASS: 50 targeted MATLAB tests in the separate public checkout:

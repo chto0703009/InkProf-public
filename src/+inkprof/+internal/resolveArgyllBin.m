@@ -20,7 +20,7 @@ elseif environment~="",folder=environment;source="environment";
 end
 if folder~=""
  folder=resolve(folder);
- if source=="config"&&legacy&&~available(folder)
+ if source=="config"&&~available(folder)
   warning('inkprof:ArgyllLegacyPath','Saved ArgyllCMS path is unavailable (%s). Discovering this computer''s installation.',folder);
   folder="";source="auto";
   if environment~="",folder=resolve(environment);source="environment";end

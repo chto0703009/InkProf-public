@@ -63,6 +63,24 @@ class ShellTests(unittest.TestCase):
         np.fill_diagonal(distances,np.inf)
         self.assertTrue(np.all(distances >= 1))
 
+    def test_boundary_keeps_printable_outside_predictions_but_inner_shell_excludes_them(self):
+        request=self.request()
+        request['surface']['vertices']=(np.asarray(self.v)*.8+10).tolist()
+        request.update(samplingMode='boundary',maxPatches=150,shellThicknessDeltaE76=5)
+        with patch.object(s,'forward_lookup',side_effect=lambda exe, profile, rgb: rgb*100):
+            rows,lab,depth=s.candidates(request,'fake')
+            request['samplingMode']='shell'
+            inner_rows,inner_lab,inner_depth=s.candidates(request,'fake')
+        self.assertTrue(np.any(depth<0))
+        self.assertTrue(np.any(depth>0))
+        self.assertTrue(np.all(np.abs(depth)<=5))
+        self.assertTrue(np.all((np.asarray(rows)>=0)&(np.asarray(rows)<=100)))
+        distances,inside=s.shell_depth(lab,request['surface']['vertices'],self.t)
+        np.testing.assert_array_equal(depth<0,~inside)
+        np.testing.assert_allclose(np.abs(depth),distances)
+        self.assertTrue(np.all(inner_depth>=0))
+        self.assertTrue(np.all(s.shell_depth(inner_lab,request['surface']['vertices'],self.t)[1]))
+
     def test_local_shell_and_invalid_parameters(self):
         request=self.request(); request.update(samplingMode='shell-region',anchors=[dict(lab=[0,50,50])],regionRadiusDeltaE76=10)
         with patch.object(s,'forward_lookup',side_effect=lambda exe, profile, rgb: rgb*100):

@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.4.0 - 2026-10-25
+
+- Add gamut-boundary exploration and immutable extension of the latest completed, unmeasured target with full parent provenance.
+- Add measured Lab density/repeat review, adjustable thresholds, Select all/Clear all, separate balanced-row ICC candidates and all-source/development/gradient comparisons.
+- Improve 3D rotation, automatic gamut-window closing, Downloads copy defaults and visible timed work phases.
+- Standardize isolated Python 3.13.6 environments and ship native macOS ArgyllCMS 3.5.0 for ARM and Intel under upstream licences.
+- Update seven PDF guides, editable sources, installation instructions and Markdown for this release.
+
 ## v1.3.0 - 2026-10-25
 
 - Add audited project-detail corrections without invalidating unchanged physical measurements or current profiles. Require a reason and verify original hashes; numerical processing changes retain normal invalidation.

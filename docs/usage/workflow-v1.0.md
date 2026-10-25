@@ -162,3 +162,7 @@ A base or C2 target may have been created in an earlier cycle. The folder names 
 ### Complete target-package copy
 
 The optional complete-package copy from refinement tools uses the same project-based naming and project identification when its source is inside a recognised project. Without project context it uses a generic readable print-copy name; missing project/iteration facts are not invented.
+
+## Release 1.4.0 (2026-10-25)
+
+The current gamut boundary/extended-target, measured Lab density, Select all/Recalculate and activity-timer instructions are in [workflow updates](workflow-updates-20261025.md). Targets remain unmanaged device RGB; new print versions use their own TI2 in step 16 and continue in step 17. Balanced density trials never replace the selected profile automatically.

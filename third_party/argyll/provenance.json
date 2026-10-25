@@ -1,0 +1,19 @@
+{
+  "Schema": "inkprof.argyll-distributions.v1",
+  "Distributions": [
+    {
+      "Architecture": "arm64",
+      "Version": "3.5.0",
+      "URL": "https://www.argyllcms.com/Argyll_V3.5.0_macOS11_arm64_bin.tgz",
+      "ArchiveSHA256": "b1f27d638ddca054db3f5ff866410d5b36f179770cee5591f116352b1853d957",
+      "Directory": "arm64/Argyll_V3.5.0"
+    },
+    {
+      "Architecture": "x86_64",
+      "Version": "3.5.0",
+      "URL": "https://www.argyllcms.com/Argyll_V3.5.0_osx10.6_x86_64_bin.tgz",
+      "ArchiveSHA256": "69fcab29d555890434e90c91f7a2b86f0a21551f194dd816a8681d0f7e99a01d",
+      "Directory": "x86_64/Argyll_V3.5.0"
+    }
+  ]
+}

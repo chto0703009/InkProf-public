@@ -23,3 +23,14 @@ local-config/
 *.ffs_batch
 *.ffs_db
 *.ffs_lock
+
+# Standardized local Python runtime
+!.python-version
+!requirements.txt
+!requirements-tools.txt
+!setup_python_environment.m
+!PYTHON_ENVIRONMENT.md
+**/.venv/
+**/.venv.backup_*/
+**/.venv.failed_*/
+local-config/

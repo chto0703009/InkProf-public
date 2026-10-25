@@ -6,10 +6,12 @@ function [proposal,folder]=refineFromGamut(jobFile,anchors,options)
 arguments
  jobFile (1,1) string
  anchors (:,1) struct
+ options.ExtendLatestTarget (1,1) logical = false
+ options.ExtensionProposal (1,1) string = ""
  options.RadiusPercent (1,1) double {mustBeFinite,mustBePositive,mustBeLessThanOrEqual(options.RadiusPercent,20)} = 3
  options.MinSpacingPercent (1,1) double {mustBeFinite,mustBePositive,mustBeLessThanOrEqual(options.MinSpacingPercent,20)} = 1
  options.MaxNewPatches (1,1) double {mustBeInteger,mustBePositive,mustBeLessThanOrEqual(options.MaxNewPatches,1000)} = 100
- options.SamplingMode (1,1) string {mustBeMember(options.SamplingMode,["neighbour","shell","shell-region"])} = "neighbour"
+ options.SamplingMode (1,1) string {mustBeMember(options.SamplingMode,["neighbour","shell","shell-region","boundary"])} = "neighbour"
  options.ShellThicknessDeltaE76 (1,1) double {mustBeFinite,mustBePositive,mustBeLessThanOrEqual(options.ShellThicknessDeltaE76,50)} = 3
  options.RegionRadiusDeltaE76 (1,1) double {mustBeFinite,mustBePositive,mustBeLessThanOrEqual(options.RegionRadiusDeltaE76,100)} = 15
  options.Surface (1,1) struct = struct()
@@ -27,7 +29,7 @@ assert(string(status.status)=="succeeded"&&inkprof.internal.sha256(profile)==str
 if options.SamplingMode~="neighbour"
  assert(isfield(options.Surface,'profileSHA256')&&string(options.Surface.profileSHA256)==string(status.profileSHA256),'inkprof:Integrity','Gamut mesh must come from the current ICC.');
 end
-if options.SamplingMode~="shell"
+if ~ismember(options.SamplingMode,["shell","boundary"])
 assert(~isempty(anchors)&&all(string({anchors.profileSHA256})==string(status.profileSHA256)),'inkprof:Integrity','Select points from the current ICC.');
 end
 v=inkprof.cgatsData(inkprof.importCgats(training),RGBScale=100);trainingHash=inkprof.internal.sha256(training);
@@ -43,6 +45,12 @@ if options.SamplingMode~="neighbour"
  request.shellThicknessDeltaE76=options.ShellThicknessDeltaE76;
  request.surface=struct('profileSHA256',options.Surface.profileSHA256,'vertices',options.Surface.vertices,'triangles',options.Surface.triangles);
 end
+extension=[];
+if options.ExtendLatestTarget
+ options.Activity("Checking latest target for extension");
+ extension=inkprof.internal.gamutTargetExtension(project,profile,options.ExtensionProposal);
+ request.inheritedRGBPercent=extension.rgbPercent;
+end
 inkprof.internal.writeJson(fullfile(work,'request.json'),request);
 options.Activity("Calculating gamut patches");
 calculation=inkprof.internal.calculationProgress("Gamut patches","Calculating device RGB patches near the gamut surface...");
@@ -50,16 +58,47 @@ stage=fullfile(work,'proposal');
 inkprof.runPython(fullfile(paths.Root,'analysis','gamut_refinement.py'),[fullfile(work,'request.json'),stage],RequiredModules=["numpy","colour","scipy"],TimeoutSeconds=600);
 proposal=jsondecode(fileread(fullfile(stage,'proposal.json')));clear calculation;
 selected=1:numel(proposal.candidates);
+if options.ExtendLatestTarget,proposal.extension=extension.provenance;end
 if options.ShowDialog,options.Activity("Review patches");selected=inkprof.internal.reviewGamutCandidates(proposal);if isempty(selected),proposal=[];return;end,end
 proposal.name="Gamut-area refinement";if options.SamplingMode~="neighbour",proposal.name="Inner gamut shell refinement";end
+if options.SamplingMode=="boundary",proposal.name="Gamut boundary exploration";end
 proposal.iterationId=string(java.util.UUID.randomUUID());
 proposal.createdUTC=string(datetime('now','TimeZone','UTC','Format',"yyyy-MM-dd'T'HH:mm:ss'Z'"));
 proposal.selection=struct('proposedCount',numel(proposal.candidates),'selectedPatchIds',string({proposal.candidates(selected).patchId}), ...
  'reviewed',options.ShowDialog,'selectedCount',numel(selected));
-inkprof.internal.writeJson(fullfile(stage,'proposed-candidates.json'),proposal.candidates);
+allProposed=proposal.candidates;
+if options.ExtendLatestTarget&&~isempty(proposal.inheritedCandidates)
+ allProposed=[orderfields(proposal.inheritedCandidates(:),fieldnames(allProposed));allProposed(:)];
+end
+inkprof.internal.writeJson(fullfile(stage,'proposed-candidates.json'),allProposed);
 proposal.candidates=proposal.candidates(selected);proposal.status="selected-for-print";
+if options.ExtendLatestTarget
+ inherited=proposal.inheritedCandidates;
+ proposal=rmfield(proposal,'inheritedCandidates');
+ if ~isempty(inherited),proposal.candidates=[orderfields(inherited(:),fieldnames(proposal.candidates));proposal.candidates(:)];end
+ proposal.extension=extension.provenance;
+ proposal.extension.counts=proposal.extensionCounts;
+ proposal.extension.newSelectedCount=numel(selected);
+ proposal.extension.totalCandidateCount=numel(proposal.candidates);
+ proposal.selection.proposedNewCount=proposal.selection.proposedCount;
+ proposal.selection.proposedCount=numel(allProposed);
+ proposal.selection.selectedCount=numel(proposal.candidates);
+ proposal.selection.selectedPatchIds=string({proposal.candidates.patchId});
+ proposal.name="Extended gamut target";
+end
 context=struct('profileJob',inkprof.internal.relativePath(project,job),'trainingTI3SHA256',trainingHash);
 mkdir(fullfile(stage,'sources'));inkprof.internal.writeJson(fullfile(stage,'sources','context.json'),context);
+if options.ExtendLatestTarget
+ mkdir(fullfile(stage,'sources','extension'));
+ copyfile(extension.sourceFile,fullfile(stage,'sources','extension','parent-proposal.json'));
+ copyfile(extension.roleFile,fullfile(stage,'sources','extension','parent-roles.json'));
+ copyfile(extension.targetFile,fullfile(stage,'sources','extension','parent-target.ti2'));
+ assert(inkprof.internal.sha256(fullfile(stage,'sources','extension','parent-target.ti2'))==string(extension.provenance.parentTI2SHA256), ...
+  'inkprof:Integrity','Parent TI2 changed during extension.');
+ assert(inkprof.internal.sha256(extension.sourceFile)==string(extension.provenance.parentProposalSHA256)&& ...
+  inkprof.internal.sha256(extension.roleFile)==string(extension.provenance.parentRoleSHA256), ...
+  'inkprof:Integrity','Parent target changed during extension.');
+end
 copyfile(profile,fullfile(stage,'sources','profile.icc'));copyfile(training,fullfile(stage,'sources','training.ti3'));
 assert(inkprof.internal.sha256(fullfile(stage,'sources','profile.icc'))==string(proposal.sourceProfileSHA256) ...
  &&inkprof.internal.sha256(profile)==string(proposal.sourceProfileSHA256) ...
@@ -86,5 +125,7 @@ if options.CreatePrint&&options.ShowDialog&&options.OfferPrintCopy
  options.Activity("Choose save location");
  inkprof.internal.offerTargetCopy(proposal.print.folder,options.Activity);
 end
-inkprof.internal.recordProjectStep(folder,"Gamut-area refinement: "+numel(proposal.candidates)+" selected patches; device RGB, no ICC applied");
+note="Gamut-area refinement: "+numel(proposal.candidates)+" selected patches; device RGB, no ICC applied";
+if options.ExtendLatestTarget,note=note+"; extended target "+string(proposal.extension.parentIterationId)+" with "+numel(selected)+" new patches; original retained";end
+inkprof.internal.recordProjectStep(folder,note);
 end

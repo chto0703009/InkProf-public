@@ -11,13 +11,16 @@ proposal=struct('candidates',repmat(p,3,1),'parameters',struct('shellThicknessDe
  'surface',struct('vertices',[0 0 0;100 0 0;0 100 0;0 0 100],'triangles',[0 1 2;0 1 3;0 2 3;1 2 3]));
 for k=1:3,proposal.candidates(k).patchId="GAM-000"+k;end
 t=timer('ExecutionMode','fixedSpacing','StartDelay',1,'Period',.2,'TimerFcn',@choose);
-watchdog=timer('StartDelay',20,'TimerFcn',@(~,~)delete(findall(groot,'Name','InkProf - Review gamut patches')));
+watchdog=timer('StartDelay',60,'TimerFcn',@(~,~)delete(findall(groot,'Name','InkProf - Review gamut patches')));
 c=onCleanup(@()stopTimers([t watchdog]));start(t);start(watchdog);
 selected=inkprof.internal.reviewGamutCandidates(proposal);verifyEqual(tc,selected,[1 3]);
 verifyEmpty(tc,findall(groot,'Name','InkProf - Review gamut patches'));
 clear c;
  function choose(~,~)
   table=findall(groot,'Tag','gamutPatchTable');if isempty(table),return;end
+  if ~isequal(getappdata(ancestor(table,'figure'),'gamutReviewReady'),true),return;end
+  axes3d=findall(groot,'Tag','gamutReview3D');
+  verifyTrue(tc,any(arrayfun(@(i)isa(i,'matlab.graphics.interaction.interactions.RotateInteraction'),axes3d.Interactions)));
   table.Data{2,1}=false;button=findall(groot,'Type','uibutton','Text','Create TIFF16 target');
   feval(button.ButtonPushedFcn,button,[]);
  end
@@ -36,7 +39,11 @@ f.UserData=data;p=patch(ax,'Vertices',data.vertices(:,[2 3 1]),'Faces',[1 2 3]);
 inkprof.internal.gamutPicker(f,ax,p,data,"/missing/profile.icc");
 e=struct('IntersectionPoint',[40 60 50]);
 feval(p.ButtonDownFcn,p,e);t=findobj(f,'Tag','gamutAnchorTable');verifyEmpty(tc,t.Data);
+verifyEqual(tc,findobj(f,'Tag','gamutExtendLatestTarget').Enable,'off');
 sampling=findobj(f,'Tag','gamutSamplingMode');verifyEqual(tc,sampling.Value,3);
+verifyEqual(tc,findobj(f,'Tag','gamutShellRegionRadius').Enable,'off');
+sampling.Value=4;feval(sampling.Callback,sampling,[]);
+verifyEqual(tc,findobj(f,'String','Boundary distance (ΔE76)').Type,'uicontrol');
 verifyEqual(tc,findobj(f,'Tag','gamutShellRegionRadius').Enable,'off');
 sampling.Value=2;feval(sampling.Callback,sampling,[]);
 verifyEqual(tc,findobj(f,'Tag','gamutShellRegionRadius').Enable,'on');

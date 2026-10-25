@@ -1,6 +1,6 @@
 # ICC gamut surface
 
-> InkProf 1.0.0-rc.4, version marking updated 2026-10-09. See the [current app workflow](workflow-v1.0.md) for the complete 19-step process. Dated experiments and legacy examples below retain their original scope.
+> InkProf 1.4.0, released 2026-10-25. See the [current app workflow](workflow-v1.0.md) and [source updates](workflow-updates-20261025.md). These instructions are included in release 1.4.0.
 
 The **View gamut** button becomes available when the current iteration has a valid ICC profile. It opens a separate rotatable surface in CIELAB D50. The existing 2D/3D sample-point views remain available and retain their own meaning.
 
@@ -139,3 +139,110 @@ hashes. It does not regenerate the target or add pending C2 patches. Complete
 the assessment note; step 16 then measures that same printed package.
 When the gamut viewer was opened from step 15, close it after saving to return
 to this registration flow. A new print package always requires its own print.
+
+## Explore the current gamut boundary
+
+Choose **Gamut boundary exploration (both sides)** in the sampling menu.
+Set **Boundary distance (ΔE76)** and the patch budget. No selected area is
+required. The same reproducible printable RGB pool is used, but candidates
+near either side of the current mesh are retained. Signed distance is positive
+inside and negative outside; outside predictions are recorded explicitly.
+The pool may contain no outside predictions: no artificial Lab targets or
+unprintable RGB values are invented. Existing measurements and duplicate
+colours remain excluded. Review, print, measure in step 16 and build step 17.
+The existing profile is preserved. Only new measurements can establish whether
+the rebuilt model describes a larger usable gamut; physical expansion is not
+guaranteed. The inner shell options continue to sample inward only.
+
+## Extend the latest unmeasured target
+
+In **View gamut**, tick **Extend latest target**, choose the shell/area and
+additional patch budget, then **Review patches / create TIFF16**. InkProf
+resolves the latest saved gamut target for the exact current ICC and verifies
+its TIFF package, TI2, roles and source training snapshot. The review lists
+only the NEW candidates and states how many previous patches are retained.
+Previously selected fitting/development patches (including supplementary
+shadow patches) are carried forward automatically. Existing training RGB and
+exact duplicates are excluded; new candidates also respect the minimum
+spacing from retained points. Controls and development roles are frozen again
+for the new print version. No original file is overwritten or deleted.
+
+A target with started measurement data cannot be extended: keep measuring its
+original TI2 or create a separate additional target. The new proposal records
+the parent proposal, TI2 and role hashes, retained/new counts and snapshots.
+The new TIFF package is registered for **step 16** and can be copied to Downloads
+through the existing print-copy dialog. Print every page of this new package,
+measure its NEW TI2 in step 16, and build the next profile in step 17.
+The earlier print layout and measurements never belong to the new TI2.
+
+Programmatic use: `inkprof.refineFromGamut(..., ExtendLatestTarget=true)`.
+`ExtensionProposal` optionally selects a specific checked parent proposal
+inside the current project rather than the latest one.
+
+The external-copy folder dialog opens in **Downloads**. It appears only after
+the target is saved normally inside the project. Selecting a folder creates
+a separate print-package copy there; **Cancel** skips this optional copy and
+keeps the completed project target available for measurement.
+
+After successful TIFF16 creation and the optional external-copy dialog,
+**View gamut** closes automatically. Cancelling patch review or encountering
+an error leaves the viewer open so the selection can be corrected.
+
+## Review measured Lab density and a balanced candidate
+
+**Refinement tools → Review measured Lab density / balanced trial** reviews
+measured training Lab from the source job's colourimetry-aware fit check.
+The report lists dense Lab groups and their RGB span, and identical RGB16
+repeat groups with maximum ΔE00. New iteration builds also save this density
+review automatically with their first candidate. Original observations stay
+unchanged. Provisional defaults: complete-link distance 1 ΔE76, target four
+representatives per group, repeatability review threshold 1 ΔE00.
+
+**Build separate balanced candidate** creates an experimental subset of
+unchanged measured rows; it does not assign numerical weights or average
+measurements. Neutral device RGB, global lightness extremes, each group's
+RGB channel extrema and inconsistent repeat groups are protected, so the
+target count can be exceeded. Complete-link grouping avoids chains that
+join distant Lab endpoints. Similar Lab at distinct RGB can describe
+saturation and is not automatically labelled a bad measurement.
+
+The original input, source rows, report parameters and hashes are retained
+in a separate density-trial folder. The recipe keeps source profiling
+settings; only fitting row selection changes. The candidate is compared
+against ALL original fitting observations, including omitted rows, and
+matching photographic gradients. Reserved development IDs are compared
+when available from the current iteration. Missing development evidence is
+stated explicitly. There is no automatic replacement or approval of the
+active profile. Fresh independent print verification remains required.
+
+Programmatic APIs: `inkprof.reviewMeasuredDensity(job, LabRadius=1,
+TargetPerGroup=4, RepeatLimit=1)` and `inkprof.buildDensityTrial(job, reportFile)`.
+`RunBuild=false` prepares the derived input/recipe without building;
+`DevelopmentMeasurement` and `DevelopmentIds` supply reserved development
+observations for the comparison. Thresholds are experimental, not standards.
+
+The density review shows integer **Readings**, **Count** and **Retained**
+values. Tick **Use balancing** for groups to include in the balanced trial;
+**Select all** checks every group. Unchecked groups retain every measured
+point. Protected observations remain retained in either case. Building saves
+a separate dated group selection with the original report hash; **Close**
+only closes the review and changes no fitting input.
+
+**Select all** now both checks every balancing group and highlights its rows.
+The header shows the selected/total group count. **Clear all** restores all
+measured rows to the proposed fitting input; no source observations are deleted.
+The repeatability review flag is read-only text, not a selection checkbox.
+
+Adjust **Lab distance (ΔE76)**, **Target per group** and **Repeat review (ΔE00)**
+in the density window, then press **Recalculate**. This saves a fresh review
+using the same colourimetry-aware measured Lab report. Candidate building is
+disabled when the current selection omits zero points, with an explicit
+explanation. Selecting all groups does not override protected observations
+or force removal; increasing Lab distance or reducing the target can propose
+a smaller subset, subject to the existing protections.
+
+Density analysis and **Recalculate** use an activity dialog attached to the
+visible app/review window. Balanced candidate building keeps the elapsed timer
+visible and reports source verification, snapshots, ICC construction, common
+measured-patch comparison, original/candidate gradients, development checks
+and result saving. The timer closes on completion or failure.

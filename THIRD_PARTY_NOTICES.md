@@ -101,3 +101,7 @@ Validation of this schema is not a certification of every ISO 17972 workflow.
 - Standards, ICC specifications and referenced manufacturer documents are citations, not relicensed source imports. User measurements and third-party ICC files are excluded from the public release.
 
 See [licensing review](licenses/review-v1.0.0.md) and [release scope](RELEASE_SCOPE.md). A source/notice audit does not determine every possible legal question about future binaries, services or contributions.
+
+## Bundled ArgyllCMS 3.5.0 macOS tools
+
+Unmodified official binary distributions are included in `third_party/argyll/arm64/Argyll_V3.5.0` and `third_party/argyll/x86_64/Argyll_V3.5.0`. These remain separate programs under their upstream licenses, including AGPL-3.0. The complete upstream `License.txt`, `ReadMe.txt`, documentation and reference files are retained in each distribution. Upstream downloads and corresponding source: https://www.argyllcms.com/downloadmac.html and https://www.argyllcms.com/downloadsrc.html . Provenance and archive checksums are recorded in `third_party/argyll/provenance.json`.

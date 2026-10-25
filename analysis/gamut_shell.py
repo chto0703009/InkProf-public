@@ -84,7 +84,10 @@ def candidates(request, profile):
         rgb = rgb[keep]
     lab = forward_lookup(request['xicclu'], profile, rgb/100)
     depth, inside = shell_depth(lab, surface['vertices'], surface['triangles'])
-    keep = inside & (depth <= thickness)
+    boundary_mode = request.get('samplingMode') == 'boundary'
+    keep = (depth <= thickness) if boundary_mode else inside & (depth <= thickness)
+    if boundary_mode:
+        depth = np.where(inside, depth, -depth)  # Negative: predicted outside the mesh.
     if request.get('samplingMode') == 'shell-region':
         region_radius = float(request['regionRadiusDeltaE76'])
         anchors = request['anchors']

@@ -500,11 +500,21 @@ end
             o=inkprof.internal.approvalDialog(w);
         elseif any(id==["review","refine"])
             if id=="refine"
-                sources={'From image','Manual gamut points / inner shell','From saved gamut selection','From verification errors','Try higher ICC grid (same measurements)'};
+                sources={'From image','Manual gamut points / inner shell','From saved gamut selection','From verification errors','Try higher ICC grid (same measurements)','Review measured Lab density / balanced trial'};
                 [index,accepted]=inkprof.internal.withFocus(fig,@listdlg,'PromptString','Refinement tools: choose additional measurements or a separate ICC grid trial.', ...
                     'SelectionMode','single','ListString',sources,'Name','Refinement tools','ListSize',[430 150]);
                 if ~accepted,o=[];return;end
                 choice=sources{index};
+                if strcmp(choice,'Review measured Lab density / balanced trial')
+                    devFile="";devIds=strings(0,1);
+                    if isfield(w.State.steps.profile.outputs,'iteration')
+                        iteration=jsondecode(fileread(w.output('profile','iteration')));
+                        if isfield(iteration,'roles')&&isfield(iteration.roles,'developmentIds')
+                            devFile=string(iteration.measurementFile);devIds=string(iteration.roles.developmentIds(:));
+                        end
+                    end
+                    inkprof.reviewMeasuredDensity(fileparts(w.output('profile','job')),Parent=fig,DevelopmentMeasurement=devFile,DevelopmentIds=devIds);o=[];return;
+                end
                 if strcmp(choice,'Try higher ICC grid (same measurements)')
                     inkprof.internal.profileGridTrialDialog(w,fig);o=[];return;
                 end

@@ -38,13 +38,25 @@ def run(request, folder):
     profile = Path(request['profile'])
     if digest(profile) != request['profileSHA256']:
         raise ValueError('Selected ICC changed.')
-    shell = request.get('samplingMode', 'neighbour') in ('shell', 'shell-region')
+    inherited = np.asarray(request.get('inheritedRGBPercent', []), float).reshape(-1, 3)
+    if not np.isfinite(inherited).all() or np.any((inherited < 0) | (inherited > 100)):
+        raise ValueError('Invalid inherited target RGB.')
+    existing = np.asarray(request['existingRGBPercent'], float).reshape(-1, 3)
+    retained = []
+    for rgb in inherited:
+        occupied = np.vstack([existing, np.asarray(retained).reshape(-1, 3)])
+        # Keep exact parent RGB16 colours, excluding measured and exact duplicate RGB.
+        if len(occupied) and np.any(np.max(np.abs(occupied-rgb), axis=1) < .0008):
+            continue
+        retained.append(rgb.tolist())
+    extended_request = dict(request, existingRGBPercent=np.vstack([existing, np.asarray(retained).reshape(-1, 3)]).tolist())
+    shell = request.get('samplingMode', 'neighbour') in ('shell', 'shell-region', 'boundary')
     if shell:
         from gamut_shell import candidates as shell_candidates
-        rows, lab, depths = shell_candidates(request, profile)
+        rows, lab, depths = shell_candidates(extended_request, profile)
         sources = [0] * len(rows)
     else:
-        rows, sources = candidates(request['anchorRGBPercent'], request['existingRGBPercent'],
+        rows, sources = candidates(request['anchorRGBPercent'], extended_request['existingRGBPercent'],
                                    request['radiusPercent'], request['minSpacingPercent'], request['maxPatches'])
     if not rows:
         raise ValueError('No new patches remain. Increase the radius or reduce the minimum spacing.')
@@ -73,6 +85,30 @@ def run(request, folder):
         result['parameters']['candidateSeed'] = 42
         result['surface'] = request['surface']
         result['caveat'] = 'Forward ICC predictions within the inner Lab shell, not measured print errors. Extra measurements cannot extend physical gamut.'
+        if request['samplingMode'] == 'boundary':
+            result['caveat'] = 'Printable RGB exploration on either side of the current mesh; negative signed distance means predicted outside. No physical gamut expansion is guaranteed.'
+            result['parameters']['surfaceDistanceConvention'] = 'positive inside, negative outside'
+            for patch in patches:
+                patch['kind'] = 'gamut-boundary'
+                patch['predictedOutsideMesh'] = patch['surfaceDistanceDeltaE76'] < 0
+    if 'inheritedRGBPercent' in request:
+        inherited_lab = forward_lookup(request['xicclu'], profile, np.asarray(retained).reshape(-1, 3)/100) if retained else np.empty((0, 3))
+        inherited_preview = np.clip(colour.XYZ_to_sRGB(colour.Lab_to_XYZ(inherited_lab, illuminant=white), illuminant=white,
+                                                     chromatic_adaptation_transform='Bradford'), 0, 1)
+        inherited_patches = [dict(patchId=f'EXT-{i+1:04d}', rgbPercent=rgb, anchorIndex=0,
+                                  predictedLab=pred.tolist(), previewRGB=preview_rgb.tolist(), kind='inherited-target')
+                             for i, (rgb, pred, preview_rgb) in enumerate(zip(retained, inherited_lab, inherited_preview))]
+        if shell and retained:
+            from gamut_shell import shell_depth
+            distances, inside = shell_depth(inherited_lab, request['surface']['vertices'], request['surface']['triangles'])
+            for item, distance, is_inside in zip(inherited_patches, distances, inside):
+                item['surfaceDistanceDeltaE76'] = float(distance if is_inside else -distance)
+                if request['samplingMode'] == 'boundary':
+                    item['predictedOutsideMesh'] = not bool(is_inside)
+        result['inheritedCandidates'] = inherited_patches
+        result['extensionCounts'] = dict(parentCount=len(inherited), retainedCount=len(retained), excludedMeasuredOrDuplicate=len(inherited)-len(retained))
+    if digest(profile) != request['profileSHA256']:
+        raise ValueError('ICC changed during target extension.')
     folder = Path(folder); folder.mkdir(parents=True)
     (folder / 'proposal.json').write_text(json.dumps(result, indent=2, allow_nan=False))
     return result

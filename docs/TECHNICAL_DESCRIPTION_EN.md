@@ -6,13 +6,13 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.3.0 | 2026-10-25 | GPL-3.0-or-later
+Version 1.4.0 | 2026-10-25 | GPL-3.0-or-later
 
 Implementation, calculation chain and data contracts
 
-This description covers version 1.3.0, released 2026-10-25. It follows the data from target definition through measurement, ICC construction, numerical diagnostics, physical verification and delivery. The handbook describes the operator's click sequence; this document explains what those steps mean and which files they depend on.
+This description covers version 1.4.0, released 2026-10-25. It follows the data from target definition through measurement, ICC construction, numerical diagnostics, physical verification and delivery. The handbook describes the operator's click sequence; this document explains what those steps mean and which files they depend on.
 
-The technical baseline is source version 1.3.0, documented 2026-10-25. Older interface illustrations are explicitly identified as documentation examples. They show fictional projects, not measurements proving printer quality. File paths in the appendices are relative to the installation or project root; generated UUIDs and directory names vary.
+The technical baseline is release 1.4.0, documented 2026-10-25. Older interface illustrations are explicitly identified as documentation examples. They show fictional projects, not measurements proving printer quality. File paths in the appendices are relative to the installation or project root; generated UUIDs and directory names vary.
 
 
 | Reading order / page | Contents |
@@ -32,6 +32,9 @@ The technical baseline is source version 1.3.0, documented 2026-10-25. Older int
 | 14 | Appendix E. Feedback and verified ICC delivery |
 | 15 | Local workflow updates - review, locking, correction and issue status |
 | 16 | Acquisition, cancellation and delivery |
+| 17 | Gamut boundaries and extended targets |
+| 18 | Review measured Lab density |
+| 19 | Activity, provenance and computer changes |
 
 ---PAGE---
 ## 1. Architecture and scope
@@ -167,14 +170,14 @@ Long calculations use elapsed-time activity and phase messages. Native file dial
 | Component | Role and requirement |
 | --- | --- |
 | MATLAB | App, geometry and orchestration. Base MATLAB R2025b tested on macOS; do not infer Windows/Linux qualification. |
-| Python | External worker process. Runtime check accepts Python 3.10+ in the 3.x family; analysis requirements describe tested/supported 3.11-3.13. Match packages to the chosen interpreter. |
-| ArgyllCMS | Installed separately. targen, printtarg, chartread/spotread, colprof, xicclu, profcheck and related tools are used by relevant routes. |
+| Python | External worker process. Release 1.4.0 uses Python 3.13.6 in its own isolated .venv with the full pinned requirements; check/sync/rebuild use setup_python_environment. |
+| ArgyllCMS | Updated macOS folder includes separately licensed ArgyllCMS 3.5.0 for ARM/Intel, with native startup checks. Other platforms need a compatible installation. Tools include targen, printtarg, chartread/spotread, colprof, xicclu and profcheck. |
 | NumPy, SciPy, colour-science | Numerical and spectral analysis. Exact pins are in requirements-analysis.txt. |
 | Pillow / LittleCMS | ICC processing and comparison routes; original ICC and transform conditions matter. |
 | tifffile, imagecodecs | RGB16 TIFF diagnostics and compressed TIFF support where required. |
 | ReportLab | Report PDF generation, included through requirements-report.txt. |
 
-A project-local `.venv` is the recommended isolated Python location; an explicitly configured interpreter is also supported. Creating an environment and installing dependencies are setup actions, not required on every target calculation. `setupInkProf(CheckPython=true)` checks the configured Python; `startInkProfApp` opens the app. The chartread bridge itself uses the standard library, while full analysis/reporting requires the additional requirements files.
+The program uses its own isolated `.venv` with Python 3.13.6 and pinned `requirements.txt`; analysis/report requirement files reference the same list. `setup_python_environment` checks, synchronises or rebuilds it. `setupInkProf(CheckPython=true)` checks setup and `startInkProfApp` opens the app. Native Python is preferred on Apple Silicon.
 
 The measurement bridge contains POSIX-dependent routes. Tested instrument operation includes i1Pro 2 on macOS; other OS/instrument combinations require their own validation. Communication success does not prove correct instrument calibration or measurement conditions.
 
@@ -318,8 +321,66 @@ Skip / close and the window close button can cancel the RGB control dialog while
 
 ### Refinement print copies
 
-After successfully saving and registering gamut patches from Refinement tools, the workflow gamut window closes. A standalone gamut viewer remains open. To copy an existing refinement target, select row 15 in the main table and use Copy TIFF16 for printing..., then choose Downloads. The new folder identifies the project and iteration and contains printing files and traceability information. The source project is preserved.
+After successfully saving and registering gamut patches from Refinement tools, the workflow gamut window closes. The standalone gamut viewer also closes after successful TIFF16 creation. To copy an existing refinement target, select row 15 in the main table and use Copy TIFF16 for printing..., then choose Downloads. The new folder identifies the project and iteration and contains printing files and traceability information. The source project is preserved.
 
 ### Timed certificate delivery
 
 Step 14 shows activity and elapsed time while collecting evidence, rendering figures and PDFs, preparing ICC variants, and copying and verifying delivery files. The external bundle includes the exact checked ICC as <name>-verified-original.icc as well as named delivery variants. A stored certificate is not regenerated in place; create a new export revision when changes are needed.
+
+---PAGE---
+## Gamut boundaries and extended targets
+
+1.4.0 | 2026-10-25
+
+### Explore the current model boundary
+
+View gamut offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in Delta E76, minimum RGB spacing and maximum NEW patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion.
+
+### Extend latest target
+
+Tick Extend latest target to combine the latest completed gamut print for the exact current ICC with new points. Unprinted proposals are skipped. Previous fitting/development points and supplementary shadow points are retained; exact duplicates and existing training RGB are excluded. Controls are regenerated. Started or paused measurements prevent extending that same target. The earlier TIFF, TI2 and readings remain unchanged.
+
+### Print and measure the NEW version
+
+The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Step 16 measures the new TI2, and step 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. View gamut closes after successful creation and the copy dialog; cancellation/error leaves it open.
+
+
+---PAGE---
+## Review measured Lab density
+
+1.4.0 | 2026-10-25
+
+### Read the measurements
+
+Refinement tools > Review measured Lab density / balanced trial lists close measured Lab groups and their RGB span. Readings is an integer count of repeated RGB16 observations; maximum Delta E00 describes their repeatability. Similar Lab at different RGB may describe saturation. No original measurement is deleted, overwritten or averaged.
+
+### Set, recalculate, select
+
+Adjust Lab distance (Delta E76), Target per group and Repeat review (Delta E00), then Recalculate. Defaults 1 / 4 / 1 are provisional. Use balancing applies automatic representatives to checked groups; unchecked groups keep all rows. Select all checks/highlights all groups; Clear all restores every row to the proposed input. Neutrals, lightness/RGB extrema and inconsistent repeats stay protected. The target count may therefore be exceeded.
+
+### Build a separate candidate
+
+Close only closes the review. Build separate balanced candidate uses the reviewed subset and is disabled when zero points would be omitted. Try different settings and Recalculate rather than forcing removal. Both profiles are compared to ALL original fitting observations, including omitted rows, to available reserved development patches and to matching photographic gradients. These are diagnostics, not final independent print verification. No candidate automatically replaces the active profile.
+
+
+---PAGE---
+## Activity, provenance and computer changes
+
+1.4.0 | 2026-10-25
+
+### Visible work stages
+
+Density review, Recalculate and the balanced trial show elapsed time and current phase: input verification, original snapshots, ICC build, all-patch comparison, original/candidate gradients, available development checks and result saving. Changing settings requires Recalculate before building. Trial parameters, checked groups, source rows and SHA-256 hashes remain in separate review/trial records.
+
+### One environment per program
+
+Each program has its own .venv with Python 3.13.6 and the same pinned requirements. From the code folder use setup_python_environment("check"), "sync" or "rebuild". A rebuild preserves the previous environment as a backup and restores it on failure. Do not commit or move a .venv as a portable replacement for rebuilding it. Projects and measured originals are separate from the runtime.
+
+### Native Argyll and documentation scope
+
+The program folder includes separately licensed ArgyllCMS 3.5.0 for ARM and Intel macOS, with upstream notices and provenance. Native tools are preferred and checked for actual startup. This document describes release 1.4.0. Restart the app after source updates.
+
+
+### Source files
+
+Gamut extension: src/+inkprof/refineFromGamut.m, src/+inkprof/+internal/gamutTargetExtension.m and analysis/gamut_refinement.py. Density review/trial: src/+inkprof/reviewMeasuredDensity.m, src/+inkprof/buildDensityTrial.m, src/+inkprof/+internal/showMeasuredDensity.m, densityGroupSelection.m, showDensityTrial.m, analysis/measurement_density.py and density_comparison.py. Environment: setup_python_environment.m, tools/manage_python_environment.py, requirements.txt and third_party/argyll/provenance.json.

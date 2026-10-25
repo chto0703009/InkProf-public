@@ -1,11 +1,11 @@
 # Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
 # Copyright (c) 2026 Christer Törnkvist.
 # SPDX-License-Identifier: GPL-3.0-or-later
-import hashlib,json,sys,tempfile,unittest
+import hashlib,json,sys,tempfile,unittest,shutil
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'analysis'))
 from fwa import prepare,reference_from_candidates
-EXE=Path('/usr/local/bin/spec2cie')
+EXE=Path(shutil.which('spec2cie') or '__missing_spec2cie__')
 WAVES=list(range(380,731,10))
 COLOR=dict(mode='spectral',fwaCompensation=True,fwaIlluminant='D50',fwaPreparation='white-reference-spec2cie-v1')
 COND=dict(interpreted='M0',instrument='X-Rite i1 Pro 2')

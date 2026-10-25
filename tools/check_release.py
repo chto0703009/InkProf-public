@@ -12,7 +12,7 @@ assert version==json.loads((root/'resources/release.json').read_text())['version
 count=0
 for name in files:
  p=root/name
- if p.suffix in ('.m','.py','.js') and not name.startswith(('licenses/','schemas/')):
+ if p.suffix in ('.m','.py','.js') and not name.startswith(('licenses/','schemas/','third_party/')):
   text=p.read_text();assert 'SPDX-License-Identifier: GPL-3.0-or-later' in text[:1200],name
   assert 'Copyright' in text[:1200] and 'WITHOUT ANY WARRANTY' in text[:1200],name
   count+=1

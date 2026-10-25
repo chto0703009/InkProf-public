@@ -124,6 +124,9 @@ try
   [job,status]=inkprof.runProfileJob(recipeFile,ShowDialog=options.ShowJobDialog);jobs(k)=job;
   assert(string(status.status)=="succeeded",'inkprof:IterationBuild','ICC build %s; inspect %s.',string(status.status),job);
   [fit,fitFile]=inkprof.checkProfileFit(job,ShowDialog=false);
+  if k==1
+   [~,densityFile]=inkprof.reviewMeasuredDensity(job,FitReportFile=fitFile,ShowDialog=false);result.measurementDensity=relative(densityFile);
+  end
   c=struct('job',relative(job),'profile',relative(fullfile(job,'result','profile.icc')),'sha256',status.profileSHA256, ...
    'quality',qualities(k),'smoothing',smooth(k),'fitReport',relative(fitFile),'trainingFit',fit.summary);
   c.gradientEvidence=[];
