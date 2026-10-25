@@ -1,0 +1,42 @@
+{
+  "DocumentDate": "2026-10-25",
+  "SourceVersion": "1.4.0",
+  "Scope": "English workflow editorial review and bilingual continuation clarification",
+  "Status": "PASS",
+  "Checks": [
+    "All 17 guide pages rendered and visually reviewed",
+    "Guide headings remain on original pages",
+    "Both handbooks retain 81 content pages plus cover with chapter locations verified",
+    "Both handbook page-28 corrections visually reviewed",
+    "Internal build diagnostics versus workflow check status verified against source",
+    "Bundled Argyll scope aligned with current distribution",
+    "Downloads and collection copies SHA-256 verified"
+  ],
+  "Documents": [
+    {
+      "Path": "docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf",
+      "Pages": 17,
+      "RenderedPages": 17,
+      "SHA256": "430e02aa7abd50a1f9ba6cebb49231c007d3124a61b392e728ddb9fdabcaf169",
+      "DownloadsCopySHA256": "430e02aa7abd50a1f9ba6cebb49231c007d3124a61b392e728ddb9fdabcaf169"
+    },
+    {
+      "Path": "docs/usage/InkProf-user-handbook-English.pdf",
+      "Pages": 82,
+      "VisuallyReviewedPDFPages": [
+        29
+      ],
+      "SHA256": "2e576ae9541ad40e5adade28fa6887893bf64ee3a5f4be1e4186a4e6eaf4c947",
+      "DownloadsCopySHA256": "2e576ae9541ad40e5adade28fa6887893bf64ee3a5f4be1e4186a4e6eaf4c947"
+    },
+    {
+      "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
+      "Pages": 82,
+      "VisuallyReviewedPDFPages": [
+        29
+      ],
+      "SHA256": "63cb786ba5ceb4b2daa539a2c752f2618fd5613326453763192ea1bcd9ad43d8",
+      "DownloadsCopySHA256": "63cb786ba5ceb4b2daa539a2c752f2618fd5613326453763192ea1bcd9ad43d8"
+    }
+  ]
+}

@@ -846,7 +846,7 @@
       ],
       [
         "1. Check and create the final target",
-        "After row 17, run row 8 (Fit, Grid and C1) for the selected current profile. Run row 9 (C2a. Prepare verification print (TIFF16)). Check that the target belongs to this profile and iteration. The ICC transform has already been applied once."
+        "Row 17 runs internal Fit, Grid and C1 build diagnostics. Registering the new iteration marks workflow checks stale. Therefore run row 8 (Fit, Grid and C1) for the current iteration, then row 9 (C2a. Prepare verification print (TIFF16)). The target must belong to the current profile; ICC conversion to device RGB is applied once."
       ],
       [
         "2. Print without another colour conversion",

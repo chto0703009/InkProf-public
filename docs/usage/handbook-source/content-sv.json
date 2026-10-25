@@ -846,7 +846,7 @@
       ],
       [
         "1. Kontrollera och skapa slutmålet",
-        "Efter rad 17 kör du rad 8 (Fit, Grid and C1) för den valda aktuella profilen. Kör rad 9 (C2a. Prepare verification print (TIFF16)). Kontrollera att målet hör till denna profil och iteration. ICC-omvandlingen har redan tillämpats en gång."
+        "Rad 17 kör interna Fit-, Grid- och C1-diagnoser under bygget. När den nya iterationen registreras markeras arbetsflödets kontroller som inaktuella. Kör därför rad 8 (Fit, Grid and C1) för aktuell iteration, sedan rad 9 (C2a. Prepare verification print (TIFF16)). Målet ska höra till aktuell profil; ICC-omvandlingen till skrivar-RGB görs en gång."
       ],
       [
         "2. Skriv ut utan ytterligare färgomvandling",

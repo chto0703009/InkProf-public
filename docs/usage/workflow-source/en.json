@@ -1,25 +1,25 @@
 [
   {
-    "tag": "MATLAB WORKFLOW | v1.3.0",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "From colour target to ICC",
     "sections": [
       [
         "Requirements and startup",
-        "Source version 1.3.0, released 2026-10-25, with updated workflow and documentation. Tested with base MATLAB R2025b (no additional MATLAB toolboxes), Python 3.13 and ArgyllCMS on macOS. Python performs colour analysis and report generation; MATLAB provides the application and workflow. Install these runtimes separately. Windows and Linux are untested; use of a POSIX measurement bridge does not establish Linux compatibility. Run the commands below from the InkProf source folder."
+        "Source version 1.4.0, released 2026-10-25. Tested with base MATLAB R2025b (no additional MATLAB toolboxes) and Python 3.13.6 on macOS. The macOS program folder includes separately licensed ArgyllCMS 3.5.0 tools for Apple Silicon and Intel. MATLAB is installed separately; setup_python_environment prepares the program’s own pinned Python environment and needs a suitable Python 3.13.6 interpreter. Python performs analysis and reporting; MATLAB provides the app and workflow. Windows and Linux are untested and require compatible tools; a POSIX bridge does not establish Linux qualification."
       ],
       [
         "How to use this guide",
-        "A step is a numbered row in the application’s left-hand workflow table. Follow the saved status and suggested next step. A completed calculation is evidence, not automatic approval of print quality."
+        "This guide uses row for a numbered entry in the application’s left-hand workflow table. Run selected step is the app’s button label. Follow saved status and suggested navigation; a completed calculation is evidence, not automatic approval of print quality."
       ]
     ],
     "lead": "InkProf - Quality profiling for RGB printers",
     "printedURL": true,
     "codeBlocks": [
-      "setupInkProf(CheckPython=true);\nstartInkProfApp();"
+      "setup_python_environment(\"sync\");\nsetup_python_environment(\"check\");\nsetupInkProf(CheckPython=true);\nstartInkProfApp();"
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.4",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "One project, one source of settings",
     "sections": [
       [
@@ -38,11 +38,11 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.4",
-    "title": "The 19 steps",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "title": "Workflow rows 1-10",
     "rows": [
       [
-        "Step",
+        "Row",
         "Action",
         "What it creates or decides"
       ],
@@ -88,12 +88,12 @@
       ],
       [
         "9",
-        "C2: save verification TIFF16",
+        "C2a. Prepare verification print (TIFF16)",
         "Profile-applied verification target"
       ],
       [
         "10",
-        "Measure verification",
+        "C2b. Measure verification print / select saved measurement",
         "Saved verification revision"
       ]
     ],
@@ -106,11 +106,11 @@
     ]
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.4",
-    "title": "The 19 steps - continued",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
+    "title": "Workflow rows 11-19",
     "rows": [
       [
-        "Step",
+        "Row",
         "Action",
         "What it creates or decides"
       ],
@@ -126,12 +126,12 @@
       ],
       [
         "13",
-        "Approve intended use",
-        "Explicit scope, notes and confirmation tied to current evidence"
+        "Approve for intended use",
+        "Open review and approval opens the dialog; Approve for stated use saves the reviewed decision"
       ],
       [
         "14",
-        "Save ICC and certificate",
+        "Save ICC and measurement certificate",
         "Delivery copies plus PDF/HTML measurement certificate"
       ],
       [
@@ -169,7 +169,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.4",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Targets, paper and measurement",
     "sections": [
       [
@@ -190,7 +190,7 @@
       ],
       [
         "Save and resume completed rows",
-        "Choose Save completed rows / pause and wait for confirmation before closing. A save requested during scanning waits for a row prompt and excludes the unfinished row; paired rows require both scans. Later choose Resume saved session and its folder, then Resume measurement. The dialog states page, row and direction. Confirm the SAME printed sheets; reprinted or replaced pages need a new session and fresh RGB checks. A checkpoint is not a completed workflow measurement. Real-instrument resume validation remains necessary."
+        "Choose Save completed rows / pause and wait for confirmation before closing. A save requested during scanning waits for a row prompt and excludes the unfinished row; paired rows require both scans. Later choose Resume saved session and its folder, then Resume measurement. The dialog states page, row and direction. Confirm the same printed sheets; reprinted or replaced pages need a new session and fresh RGB checks. A checkpoint is not a completed workflow measurement. Real-instrument resume validation remains necessary."
       ]
     ],
     "printedURL": true
@@ -205,39 +205,39 @@
       ],
       [
         "",
-        "Unmeasured C2 colours can be included with the new target. C2 colour/gray/challenge patches train the next iteration; repeated and paper-white patches retain control roles. Once used for fitting they are not independent validation of that next ICC. Challenge patches deliberately probe difficult colours or transitions; they are not automatic proof of print accuracy."
+        "Unmeasured C2 colours can be included with the new target. C2 colour/grey/challenge patches train the next iteration; repeated and paper-white patches retain control roles. Once used for fitting they are not independent validation of that next ICC. Challenge patches deliberately probe difficult colours or transitions; they are not automatic proof of print accuracy."
       ],
       [
         "",
-        "Project details > Project and materials: Paper finish = Matte. Profiling: Matte shadows = Extra shadow detail for Matte; Dark patch emphasis = 2; Shadow grid emphasis = 1.3; Extra iteration patches = 48. New refinement targets reserve about one third of the shadow budget for neutral patches and one third for weakly coloured shadows (predicted C*ab up to 10); remaining slots cover other dark colours. With 48 available patches this normally gives 16 per group. Dense device-gray probes and small channel offsets supplement Argyll sampling. Unavailable quota slots return to the dark pool. Existing RGB16 colours are excluded. The receipt records policy and source ICC hash. Print device RGB without colour conversion, measure the new TI2 and build the next iteration. The current ICC only predicts selection; it is not applied to this print. Original targets and profiles remain unchanged. Verify the candidate with a fresh print; more patches cannot guarantee a darker physical black."
+        "Project details > Project and materials: Paper finish = Matte. Profiling: Matte shadows = Extra shadow detail for Matte; Dark patch emphasis = 2; Shadow grid emphasis = 1.3; Extra iteration patches = 48. New refinement targets reserve about one third of the shadow budget for neutral patches and one third for weakly coloured shadows (predicted C*ab up to 10); remaining slots cover other dark colours. With 48 available patches this normally gives 16 per group. Dense device-grey probes and small channel offsets supplement Argyll sampling. Unused quota slots return to the dark pool. Existing RGB16 colours are excluded. The receipt records policy and source ICC hash. Print device RGB without colour conversion, measure the new TI2 and build the next iteration. The current ICC only predicts selection; it is not applied to this print. Original targets and profiles remain unchanged. Verify the candidate with a fresh print; more patches cannot guarantee a darker physical black."
       ]
     ],
     "printedURL": true,
-    "lead": "Open step 15, \"Refinement tools\", to choose the source of additional patches."
+    "lead": "Open row 15, \"Refinement tools\", to choose the source of additional patches."
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.4",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Shell refinement and continuation",
     "lead": "Use Refinement tools to strengthen coverage near the gamut surface.",
     "sections": [
       [
         "Review before printing",
-        "Choose the whole inner shell or selected areas, set geometric thickness in ΔE76, and review plotted candidates. Save the TIFF16 package and use its matching target for measurement. Saved packages are registered in step 15 without regenerating patch order."
+        "Choose the whole inner shell or selected areas, set geometric thickness in ΔE76, and review plotted candidates. Save the TIFF16 package and use its matching target for measurement. Saved packages are registered in row 15 without regenerating patch order."
       ],
       [
         "Continue from measurements",
-        "Measure in step 16 and build in step 17. Step 17 runs Fit, Grid and C1 as part of the build. Compare in step 18; if the current checks are missing or stale, run step 8 before delivery or verification. Follow the app’s suggested next step. A build stopped by numerical alerts retains measurements and the previous active ICC. Open step 17 results and inspect the latest C1/Grid reports before retrying."
+        "Measure in row 16 and build in row 17. The build runs internal Fit, Grid and C1 diagnostics. Registering the new iteration marks the workflow checks stale and selects row 8; run row 8 to record the checks for the new active iteration before verification or delivery. Row 18 compares profiles. A build stopped by numerical alerts retains measurements and the previous active ICC; row 17 results link its latest C1/Grid reports."
       ],
       [
         "Choose the delivery path",
-        "With current numerical checks, choose either steps 9-11 for a new verification print and measurement, step 12 to review feedback, step 13 to approve intended use and step 14 to deliver; or step 18 for comparison and step 19 for explicitly numerical-only delivery. Earlier measurements are historical evidence, not verification of the new ICC."
+        "With current numerical checks, choose either rows 9-11 for a new verification print and measurement, row 12 to review feedback, row 13 to approve intended use and row 14 to deliver; or row 18 for comparison and row 19 for explicitly numerical-only delivery. Earlier measurements are historical evidence, not verification of the new ICC."
       ]
     ],
     "printedURL": true,
-    "callout": "Iteration: 16 -> 17 (includes Fit, Grid and C1) -> 18\nIf checks are missing/stale: step 8.\nPrint-verified delivery: 9 -> 10 -> 11 -> 12 -> 13 -> 14\nNumerical-only delivery: 18 -> 19"
+    "callout": "Iteration: 16 -> 17 (internal build diagnostics) -> 8 (current workflow checks) -> 18 (comparison)\nPrint-verified delivery: 9 -> 10 -> 11 -> 12 -> 13 -> 14\nNumerical-only delivery: 18 -> 19"
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.4",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Interpret and deliver",
     "sections": [
       [
@@ -246,7 +246,7 @@
       ],
       [
         "Stable delivery names and HTML support",
-        "The project retains the checked ICC candidate. The proposed external filename combines the profile name, iter-N and the final eight characters of the iteration UUID; the save dialog lets you choose its destination. The same stem identifies the ICC and certificate. The delivery ICC description is updated, so its file hash differs from the checked candidate even though colour-tag payloads are preserved. Keep the complete delivery folder and its underlag support folder for portable HTML, linked reports and assets."
+        "The project retains the checked ICC candidate. The proposed external filename combines the profile name, iter-N and the final eight characters of the iteration UUID; the save dialog lets you choose its destination. The same stem identifies the ICC and certificate. The delivery ICC description is updated, so its file hash differs from the checked candidate even though colour-tag payloads are preserved. Keep the complete delivery folder and its supporting evidence folder (underlag/) for portable HTML, linked reports and assets."
       ],
       [
         "Certificate and separate measurement appendix",
@@ -260,12 +260,12 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.4",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Code, licensing and runtime checks",
     "sections": [
       [
         "",
-        "InkProf code and authored documentation: GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. Dependencies and schema/fonts have their own terms. This is a source-only release: no MATLAB, Python or Argyll runtime is included. See docs/releases/v1.2.4.md and licenses/review-v1.0.0.md for the checked release boundary and remaining validation limits. The v1.0.0 licence review is a historical review, not a new legal clearance for every v1.2.2 change."
+        "InkProf code and authored documentation use GNU GPL v3 or later, without warranty; see LICENSE and THIRD_PARTY_NOTICES.md. The macOS distribution includes separately licensed ArgyllCMS 3.5.0 tools for ARM and Intel, with upstream notices and provenance. MATLAB and a portable Python runtime are not bundled; the isolated Python environment is prepared locally. Dependencies, schemas and fonts retain their own terms. See docs/releases/v1.4.0.md and LICENSE_SCOPE.md for current scope. The review in licenses/review-v1.0.0.md is historical evidence, not a legal review of the complete current release."
       ],
       [
         "Version checks and reporting problems",
@@ -275,17 +275,17 @@
     "printedURL": true
   },
   {
-    "tag": "MEASUREMENT | TARGET IDENTITY | 2026-10-24",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Identify the printed target before measuring",
     "lead": "A saved date alone is not enough. Match the target type, page count and original package path to the physical sheet.",
     "sections": [
       [
         "Base target or C2 verification?",
-        "Step 3. Measure / select measurement revision reads the base target saved in step 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
+        "Row 3. Measure / select measurement revision reads the base target saved in row 2. A C2 print belongs to C2b. Measure verification print / select saved measurement. If its package is already selected, go directly to that measurement step; do not generate the target again. After all rows are read, choose Save and finish, then C3. Compare model and print and Review feedback."
       ],
       [
         "Target locked is intentional",
-        "A prepared measurement is bound to its TI2. The disabled Choose chart button now says Target locked. To change the target, close the measurement window and select the matching target in the workflow. Do not substitute a similar-looking chart while a session is prepared or partially measured."
+        "A prepared measurement is bound to its TI2. The disabled Target locked button indicates that target selection is fixed. To change the target, close the measurement window and select the matching target in the workflow. Do not substitute a similar-looking chart while a session is prepared or partially measured."
       ],
       [
         "What the window shows",
@@ -294,17 +294,17 @@
     ]
   },
   {
-    "tag": "PRINT DELIVERY | PROJECT IDENTITY | 2026-10-24",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Readable print folders and traceability",
     "lead": "Copy TIFF16 for printing creates a separate delivery with the project name instead of a UUID-only folder.",
     "sections": [
       [
         "Folder naming",
-        "Example: My printer paper_iter-1_c2_20261024-123456. The prefix is the saved project name, followed by the workflow cycle at copy, step and local copy timestamp. A collision creates another numbered folder rather than overwriting a previous delivery. This is the project name, not an independently entered ICC/profile description."
+        "Example: My printer paper_iter-1_c2_20261024-123456. The prefix is the saved project name, followed by the workflow iteration at copy, step and local copy timestamp. A collision creates another numbered folder rather than overwriting a previous delivery. This is the project name, not an independently entered ICC/profile description."
       ],
       [
         "PROJECT_INFO.txt",
-        "The UTF-8 text file retains the exact project name and ID, original project path, workflow step, current cycle/iteration ID, target-origin cycle/iteration ID when found in history, UTC and local copy/creation times, target description when present, source TI2 and its SHA-256, project printing settings and copied filenames with SHA-256. Unknown origin metadata stays unknown."
+        "The UTF-8 text file retains the exact project name and ID, original project path, workflow step, current iteration and iteration ID, target-origin iteration and ID when found in history, UTC and local copy/creation times, target description when present, source TI2 and its SHA-256, project printing settings and copied filenames with SHA-256. Unknown origin metadata stays unknown."
       ],
       [
         "Copies versus originals",
@@ -312,7 +312,7 @@
       ],
       [
         "A target can outlive an iteration",
-        "A base or C2 target may have been created in an earlier cycle. The folder names the workflow cycle at copy; PROJECT_INFO.txt separately records the target-origin cycle recovered from matching history. Package creation date and copy date are different events and neither proves when the sheet was physically printed."
+        "A base or C2 target may have been created in an earlier iteration. The folder names the workflow iteration at copy; PROJECT_INFO.txt separately records the target-origin iteration recovered from matching history. Package creation date and copy date are different events and neither proves when the sheet was physically printed."
       ],
       [
         "Complete target-package copy",
@@ -321,7 +321,7 @@
     ]
   },
   {
-    "tag": "2026-10-24 | v1.2.4 | b813525",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Verification and complete delivery",
     "sections": [
       [
@@ -334,51 +334,51 @@
       ],
       [
         "Approval and certificate are separate actions",
-        "Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous step-19 numerical-only export no longer hides this next step after print approval."
+        "Selecting a row navigates only. Run Open review and approval, review the results, tick the confirmation and save your assessment. Then select row 14, Save ICC and measurement certificate, and click Save ICC and certificate... Choose Also save copies elsewhere to select the bundle name and location. Save in project only keeps the delivery inside the project. A previous numerical-only export from row 19 does not prevent delivery after print approval."
       ],
       [
         "The exact verified ICC is included",
-        "The external delivery folder contains <profile>-verified-original.icc, a byte-identical copy of the checked ICC. The normally named ICC has updated name metadata; an optional -v4.4.icc is a converted variant and is not the original verified file. delivery.json records verifiedOriginalICCFile and verifiedOriginalICCSHA256. Keep the whole bundle, including underlag."
+        "The external delivery folder contains <profile>-verified-original.icc, a byte-identical copy of the checked ICC. The normally named ICC has updated name metadata; an optional -v4.4.icc is a converted variant and is not the original verified file. delivery.json records verifiedOriginalICCFile and verifiedOriginalICCSHA256. Keep the whole bundle, including the supporting evidence folder (underlag/)."
       ],
       [
         "Repeat verification after changing printer settings",
-        "Print the same target again with the intended settings and document the actual CO/coating choice, media, quality and drying time for each sheet. Start a new C2b measurement; previous measurements remain. Compare the matching C3 reports. A saved Automatic setting alone does not establish which physical CO setting was used."
+        "Print the same target again with the intended settings and document the actual Chroma Optimizer (CO) or other coating choice, media, quality and drying time for each sheet. Start a new C2b measurement; previous measurements remain. Compare matching C3 reports. A saved Automatic setting alone does not establish the physical coating used."
       ]
     ]
   },
   {
-    "tag": "1.3.0 | 2026-10-25",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Current workflow: decisions and navigation",
     "sections": [
       [
         "Review and lock once",
-        "Step 4 keeps the measurement preview open until Continue to assessment. B1 validates the selected revision, opens a modal Lock profile input confirmation, then saves a checked snapshot. Activity and elapsed time are shown during validation and saving. Suggested navigation is B1, B2, B3; B2 is shown for recipe review, while Automatic B3 still creates its own recipes."
+        "Row 4 keeps the measurement preview open until Continue to assessment is chosen. B1 validates the selected revision, opens a modal Lock profile input confirmation, then saves a checked snapshot. Activity and elapsed time are shown during validation and saving. Suggested navigation is B1, B2, B3; B2 is shown for recipe review, while Automatic B3 still creates its own recipes."
       ],
       [
         "Patch counts and result windows",
-        "Initial B3 no longer asks for extra refinement patch parameters. Those apply when adding patches or continuing an iteration. C1 saves its numerical reports without opening successive result windows automatically; use Open selected step results. C2a handles verification-target preparation; choose existing files when reusing a printed sheet."
+        "Extra refinement patch parameters apply when adding patches or continuing an iteration, rather than during the initial B3 build. C1 saves its numerical reports without opening successive result windows automatically; use Open selected step results. C2a handles verification-target preparation; choose existing files when reusing a printed sheet."
       ],
       [
         "Correct recorded details",
         "When Project details changes, distinguish Correct recorded details from Changed actual setup. A documentation correction requires a reason and unchanged physical conditions. Original file hashes are checked and a new audit record stores before/after values. Numerical processing changes cannot use this exception. Existing stale steps are not automatically restored."
       ],
       [
-        "ISSUE-001 closed",
-        "ISSUE-001 was closed by user decision on 2026-10-25 after several measurements without observed problems. Remaining uncertainty was accepted for current use. This is not a claim that a full noise-propagation/refitting study was performed; real numerical alerts and independent print verification still apply."
+        "Measurement uncertainty and verification",
+        "Repeated measurements show measurement spread. Review numerical alerts and assess results with an independent print. An absence of observed problems does not establish that noise propagation through refitting has been fully studied."
       ]
     ]
   },
   {
-    "tag": "1.3.0 | 2026-10-25",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Current workflow: measurement and delivery",
     "sections": [
       [
         "RGB and other spot measurements",
-        "RGB controls, single-patch replacements and paper-white spots use a short start sound for screen-triggered and i1 Pro 2 instrument-button measurements. Calibration does not use the spot start sound. RGB colour rows show page, colour and progress only. The temporary sound-test button has been removed. Page changes are shown inline without a separate confirmation window."
+        "RGB controls, single-patch replacements and paper-white spots use a short start sound for screen-triggered and i1Pro 2 instrument-button measurements. Calibration does not use the spot start sound. RGB colour rows show page, colour and progress only. The temporary sound-test button has been removed. Page changes are shown inline without a separate confirmation window."
       ],
       [
         "Cancel and resume safely",
-        "Skip / close and the window close button can cancel the RGB control dialog while calibration is waiting. Saved requests, transcripts and readings remain. Partial output lines no longer block GUI polling, and Argyll debug text after a prompt is handled. Main workflow activity is cleared on interruption. Restart InkProf after source changes; resume saved chart rows only for the same physical print."
+        "Skip / close and the window close button can cancel the RGB control dialog while calibration is waiting. Saved requests, transcripts and readings remain. Partial output lines do not block GUI polling, and Argyll debug text after a prompt is handled. Main workflow activity is cleared on interruption. Restart InkProf after source changes; resume saved chart rows only for the same physical print."
       ],
       [
         "Refinement print copies",
@@ -386,48 +386,48 @@
       ],
       [
         "Timed certificate delivery",
-        "Step 14 shows activity and elapsed time while collecting evidence, rendering figures and PDFs, preparing ICC variants, and copying and verifying delivery files. The external bundle includes the exact checked ICC as <name>-verified-original.icc as well as named delivery variants. A stored certificate is not regenerated in place; create a new export revision when changes are needed."
+        "Row 14 shows activity and elapsed time while collecting evidence, rendering figures and PDFs, preparing ICC variants, and copying and verifying delivery files. The external bundle includes the exact checked ICC as <name>-verified-original.icc as well as named delivery variants. A stored certificate is not regenerated in place; create a new export revision when changes are needed."
       ]
     ]
   },
   {
-    "tag": "1.4.0 | 2026-10-25",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Gamut boundaries and extended targets",
     "sections": [
       [
         "Explore the current model boundary",
-        "View gamut offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in Delta E76, minimum RGB spacing and maximum NEW patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion."
+        "View gamut offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in ΔE76, minimum RGB spacing and maximum new patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion."
       ],
       [
         "Extend latest target",
         "Tick Extend latest target to combine the latest completed gamut print for the exact current ICC with new points. Unprinted proposals are skipped. Previous fitting/development points and supplementary shadow points are retained; exact duplicates and existing training RGB are excluded. Controls are regenerated. Started or paused measurements prevent extending that same target. The earlier TIFF, TI2 and readings remain unchanged."
       ],
       [
-        "Print and measure the NEW version",
-        "The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Step 16 measures the new TI2, and step 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. View gamut closes after successful creation and the copy dialog; cancellation/error leaves it open."
+        "Print and measure the new version",
+        "The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Row 16 measures the new TI2, and row 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. View gamut closes after successful creation and the copy dialog; cancellation/error leaves it open."
       ]
     ]
   },
   {
-    "tag": "1.4.0 | 2026-10-25",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Review measured Lab density",
     "sections": [
       [
         "Read the measurements",
-        "Refinement tools > Review measured Lab density / balanced trial lists close measured Lab groups and their RGB span. Readings is an integer count of repeated RGB16 observations; maximum Delta E00 describes their repeatability. Similar Lab at different RGB may describe saturation. No original measurement is deleted, overwritten or averaged."
+        "Refinement tools > Review measured Lab density / balanced trial lists close measured Lab groups and their RGB span. Readings is an integer count of repeated RGB16 observations; maximum ΔE00 describes their repeatability. Similar Lab at different RGB may describe saturation. No original measurement is deleted, overwritten or averaged."
       ],
       [
         "Set, recalculate, select",
-        "Adjust Lab distance (Delta E76), Target per group and Repeat review (Delta E00), then Recalculate. Defaults 1 / 4 / 1 are provisional. Use balancing applies automatic representatives to checked groups; unchecked groups keep all rows. Select all checks/highlights all groups; Clear all restores every row to the proposed input. Neutrals, lightness/RGB extrema and inconsistent repeats stay protected. The target count may therefore be exceeded."
+        "Adjust Lab distance (ΔE76), Target per group and Repeat review (ΔE00), then Recalculate. Defaults 1 / 4 / 1 are provisional. Use balancing applies automatic representatives to checked groups; unchecked groups keep all rows. Select all checks/highlights all groups; Clear all restores every row to the proposed input. Neutrals, lightness/RGB extrema and inconsistent repeats stay protected. The target count may therefore be exceeded."
       ],
       [
         "Build a separate candidate",
-        "Close only closes the review. Build separate balanced candidate uses the reviewed subset and is disabled when zero points would be omitted. Try different settings and Recalculate rather than forcing removal. Both profiles are compared to ALL original fitting observations, including omitted rows, to available reserved development patches and to matching photographic gradients. These are diagnostics, not final independent print verification. No candidate automatically replaces the active profile."
+        "Close only closes the review. Build separate balanced candidate uses the reviewed subset and is disabled when zero points would be omitted. Try different settings and Recalculate rather than forcing removal. Both profiles are compared to all original fitting observations, including omitted rows, to available reserved development patches and to matching photographic gradients. These are diagnostics, not final independent print verification. No candidate automatically replaces the active profile."
       ]
     ]
   },
   {
-    "tag": "1.4.0 | 2026-10-25",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Activity, provenance and computer changes",
     "sections": [
       [
