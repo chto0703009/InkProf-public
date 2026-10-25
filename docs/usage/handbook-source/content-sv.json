@@ -1030,7 +1030,7 @@
     ]
   },
   {
-    "tag": "v1.2.4 | MATERIAL OCH SKUGGOR",
+    "tag": "v1.4.0 | MATERIAL OCH SKUGGOR",
     "title": "Fler mätpunkter i mörka färger",
     "sections": [
       [
@@ -1043,7 +1043,7 @@
       ],
       [
         "Urvalet följer profilens svärta",
-        "Den aktuella ICC-profilen används för att uppskatta Lab. Urvalet täcker den mörkaste fjärdedelen mellan modellens svart och vitt, så det fungerar även när matt papper har ett relativt ljust svart. Dubbletter i RGB16 undviks. Faktiskt antal, färger, gränser och profilhash sparas i shadow-patches.json."
+        "Nya förfiningsmål reserverar ungefär en tredjedel av skuggbudgeten för neutrala patchar och en tredjedel för svagt färgade skuggor (beräknat C*ab högst 10). Återstående platser täcker andra mörka färger. Med 48 tillgängliga patchar blir det normalt 16 per grupp. Täta grå RGB-prover och små kanalavvikelser kompletterar Argyll-urvalet. Oanvänd kvot återgår till mörkerurvalet. Befintliga RGB16-färger utesluts. Urvalsregler och källprofilens hash sparas. Skriv ut enhets-RGB utan färgkonvertering, mät det nya TI2-målet och bygg nästa iteration. ICC-profilen används bara för urvalets prognos och appliceras inte på utskriften. Originalmål och profiler bevaras. Verifiera kandidaten med en ny utskrift; fler patchar garanterar inte mörkare fysiskt svart."
       ],
       [
         "Mät och jämför",

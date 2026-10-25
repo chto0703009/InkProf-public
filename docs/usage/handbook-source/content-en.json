@@ -1031,7 +1031,7 @@
   },
   {
     "title": "More samples in dark colours",
-    "tag": "v1.2.4 | MATERIALS AND SHADOWS",
+    "tag": "v1.4.0 | MATERIALS AND SHADOWS",
     "sections": [
       [
         "Matte paper",
@@ -1043,7 +1043,7 @@
       ],
       [
         "Selection follows the profile black point",
-        "The current ICC profile estimates Lab. Selection covers the darkest quarter between model black and white, so it also works when matte paper has a relatively light black. RGB16 duplicates are avoided. Actual count, colours, limits and profile hash are saved in shadow-patches.json."
+        "New refinement targets reserve about one third of the shadow budget for neutral patches and one third for weakly coloured shadows (predicted C*ab up to 10); remaining slots cover other dark colours. With 48 available patches this normally gives 16 per group. Dense device-gray probes and small channel offsets supplement Argyll sampling. Unavailable quota slots return to the dark pool. Existing RGB16 colours are excluded. The receipt records policy and source ICC hash. Print device RGB without colour conversion, measure the new TI2 and build the next iteration. The current ICC only predicts selection; it is not applied to this print. Original targets and profiles remain unchanged. Verify the candidate with a fresh print; more patches cannot guarantee a darker physical black."
       ],
       [
         "Measure and compare",

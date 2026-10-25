@@ -246,3 +246,13 @@ visible app/review window. Balanced candidate building keeps the elapsed timer
 visible and reports source verification, snapshots, ICC construction, common
 measured-patch comparison, original/candidate gradients, development checks
 and result saving. The timer closes on completion or failure.
+
+### Dark neutral refinement sampling
+
+For matte projects with shadow processing enabled, each newly generated refinement print now supplements the Argyll candidate pool with 129 device-gray levels and small positive/negative channel offsets. The selector reserves approximately one third of the existing shadow-patch budget for neutral patches and one third for weakly coloured patches (predicted C*ab up to 10). The remaining budget covers other dark colours; unavailable quota slots return to the general dark pool. The total configured budget is unchanged (48 by default).
+
+Selection uses the lower quarter of the current ICC's predicted black-to-white L* range. Device-gray probes remain eligible even if that ICC predicts a colour cast. Existing RGB values and duplicates are excluded at 16-bit quantization. The selection receipt records the policy, source ICC hash and predicted Lab. These are model estimates, not new measurements.
+
+The new target contains device RGB with no profile applied. Print without colour conversion, measure the new TI2, and build the next iteration through the ordinary refinement workflow. Existing targets, measurements and profiles are preserved. A separate fresh verification print is required to assess shadow neutrality, tone separation and changes elsewhere. This cannot guarantee a lower physical paper black point.
+
+Enable this in **Project details > General > Paper finish: Matte**, then **Profiling > Matte shadows: Extra shadow detail for Matte**. Defaults: **Dark patch emphasis 2**, **Shadow grid emphasis 1.3**, **Extra iteration patches 48**. In Refinement tools choose **Manual gamut points / inner shell**, select an area, then **Review patches / create TIFF16**. Shadow patches are added automatically to the new refinement target; they are additional to the selected gamut points. **Extend latest target** creates a new complete print version when extension is eligible; print all its pages and use its new TI2.

@@ -1,0 +1,48 @@
+{
+  "DocumentDate": "2026-10-25",
+  "SourceVersion": "1.4.0",
+  "Scope": "Post-release dark neutral refinement sampling update; existing release assets unchanged",
+  "Status": "PASS",
+  "Checks": [
+    "Five changed pages rendered and visually reviewed",
+    "Page counts unchanged",
+    "Downloads copies SHA-256 verified"
+  ],
+  "Documents": [
+    {
+      "Path": "docs/usage/InkProf-user-handbook-English.pdf",
+      "Pages": 82,
+      "ReviewedPage": 33,
+      "SHA256": "3ef3a4bd05cfc98ebd564ab144ccd9303137d42ba8508ebf2904d55ee7004c16",
+      "DownloadsSHA256": "3ef3a4bd05cfc98ebd564ab144ccd9303137d42ba8508ebf2904d55ee7004c16"
+    },
+    {
+      "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
+      "Pages": 82,
+      "ReviewedPage": 33,
+      "SHA256": "b407e49a538be53d2eb40f30e4606829f3055bc39481be6369b37dc706bac414",
+      "DownloadsSHA256": "b407e49a538be53d2eb40f30e4606829f3055bc39481be6369b37dc706bac414"
+    },
+    {
+      "Path": "docs/usage/InkProf_Technical_Description_EN.pdf",
+      "Pages": 19,
+      "ReviewedPage": 8,
+      "SHA256": "f7684597dd7782801026ee3e12be32a3fb8a85cbfe8bac2f591daf953b42fccc",
+      "DownloadsSHA256": "f7684597dd7782801026ee3e12be32a3fb8a85cbfe8bac2f591daf953b42fccc"
+    },
+    {
+      "Path": "docs/usage/InkProf_Teknisk_beskrivning_SV.pdf",
+      "Pages": 19,
+      "ReviewedPage": 8,
+      "SHA256": "7bb32cee0acc0aaffa8e9c252874aa075995bc61f45ee4caa0ef32c869cea8e1",
+      "DownloadsSHA256": "7bb32cee0acc0aaffa8e9c252874aa075995bc61f45ee4caa0ef32c869cea8e1"
+    },
+    {
+      "Path": "docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf",
+      "Pages": 17,
+      "ReviewedPage": 6,
+      "SHA256": "121e09bbac667911cf55e95d733ad773e63071393c5b0944a36ced431547a4de",
+      "DownloadsSHA256": "121e09bbac667911cf55e95d733ad773e63071393c5b0944a36ced431547a4de"
+    }
+  ]
+}

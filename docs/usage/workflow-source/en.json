@@ -196,7 +196,7 @@
     "printedURL": true
   },
   {
-    "tag": "MATLAB WORKFLOW | v1.2.4",
+    "tag": "MATLAB WORKFLOW | v1.4.0",
     "title": "Refinement and shadows",
     "sections": [
       [
@@ -209,7 +209,7 @@
       ],
       [
         "",
-        "For Matte paper, the configurable shadow strategy defaults to targen patch emphasis 2 (-V2), colprof grid emphasis 1.3 (-V 1.3) and up to 48 extra dark fitting patches per iteration. The first target has no current ICC: emphasis redistributes its chosen patch budget. Later refinement can use the current ICC to select the lower quarter of its black-to-white L* range and exclude RGB16 duplicates. Additional dark patches do not remove chosen image/C3 colours. Counts and source ICC identity are recorded. This is an InkProf strategy, not an official Argyll matte preset; improvement requires measurement. Existing targets remain unchanged."
+        "Project details > General: Paper finish = Matte. Profiling: Matte shadows = Extra shadow detail for Matte; Dark patch emphasis = 2; Shadow grid emphasis = 1.3; Extra iteration patches = 48. New refinement targets reserve about one third of the shadow budget for neutral patches and one third for weakly coloured shadows (predicted C*ab up to 10); remaining slots cover other dark colours. With 48 available patches this normally gives 16 per group. Dense device-gray probes and small channel offsets supplement Argyll sampling. Unavailable quota slots return to the dark pool. Existing RGB16 colours are excluded. The receipt records policy and source ICC hash. Print device RGB without colour conversion, measure the new TI2 and build the next iteration. The current ICC only predicts selection; it is not applied to this print. Original targets and profiles remain unchanged. Verify the candidate with a fresh print; more patches cannot guarantee a darker physical black."
       ]
     ],
     "printedURL": true,
