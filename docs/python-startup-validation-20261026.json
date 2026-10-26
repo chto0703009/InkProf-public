@@ -1,0 +1,15 @@
+{
+  "Date": "2026-10-26",
+  "Program": "InkProf",
+  "RuntimeVersion": "3.13.6",
+  "ValidatedArchitecture": "arm64",
+  "Checks": [
+    "Checksum-verified private Python download from MATLAB",
+    "New isolated venv and pinned-package health check",
+    "Read-only identify (suite variants)",
+    "Failed-install rollback preserving prior environment (suite variants)"
+  ],
+  "PhysicalIntelTested": false,
+  "SystemPythonModified": false,
+  "OriginalProjectsModified": false
+}

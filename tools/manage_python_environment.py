@@ -184,7 +184,9 @@ def manage(root: Path, mode: str, profile: str, wheelhouse: Path | None = None) 
             if sys.version_info[:3] != (3, 13, 6):
                 raise RuntimeError('Create the unified environment with Python 3.13.6.')
             print(f'Creating {target}', flush=True)
-            venv.EnvBuilder(with_pip=True, system_site_packages=False).create(target)
+            # Preserve the standalone interpreter's relative libpython layout.
+            venv.EnvBuilder(with_pip=True, system_site_packages=False,
+                            symlinks=(os.name != 'nt')).create(target)
             pin_native_interpreter(root)
             command = [str(executable(root)), '-I', '-m', 'pip', '--isolated', 'install', '--only-binary=:all:']
             if wheelhouse is not None:

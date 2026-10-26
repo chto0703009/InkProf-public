@@ -34,3 +34,6 @@ local-config/
 **/.venv.backup_*/
 **/.venv.failed_*/
 local-config/
+
+# Private managed interpreter
+.python/
