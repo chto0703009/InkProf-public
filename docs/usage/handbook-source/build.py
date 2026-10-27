@@ -15,7 +15,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 ROOT=Path(__file__).resolve().parent
 VERSION=(ROOT.parents[2]/'VERSION').read_text().strip()
-DATE='2026-10-25'
+DATE='2026-10-27'
 CODE_REVISION='v'+VERSION
 LANG=sys.argv[2] if len(sys.argv)>2 else 'en'
 if LANG not in ('sv','en'):raise ValueError('Language must be sv or en.')

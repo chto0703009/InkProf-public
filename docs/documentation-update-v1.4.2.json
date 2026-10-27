@@ -1,0 +1,42 @@
+{
+  "SourceVersion": "1.4.2",
+  "SourceRevision": "v1.4.2",
+  "DocumentationDate": "2026-10-27",
+  "Documents": [
+    {
+      "Path": "docs/usage/InkProf-user-handbook-English.pdf",
+      "SHA256": "3bc73877a3f7eb6cf4a3704e1b1cf8b7913faa111aa104b85e8ee8a01a28cfc6"
+    },
+    {
+      "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
+      "SHA256": "76da6d40bd011077dad6f00fcf22477a50ef4f2b150417e1b6e9c9b377d1fe0e"
+    },
+    {
+      "Path": "docs/usage/InkProf_Technical_Description_EN.pdf",
+      "SHA256": "0176d3092041fae8fc9256ff5574b051dfa40d14e00930bd6731bdacb8ee0722"
+    },
+    {
+      "Path": "docs/usage/InkProf_Teknisk_beskrivning_SV.pdf",
+      "SHA256": "a78dae29e277e9103b0b20e56cbe1e0a3372fd5181b2972b5fdf2e79497cb4ee"
+    },
+    {
+      "Path": "docs/usage/InkProf-presentation-English.pdf",
+      "SHA256": "3577e4347358b1261b55683036eea60f1914989fab861055fe0f5e4b23da2c17"
+    },
+    {
+      "Path": "docs/usage/InkProf-presentation-svenska.pdf",
+      "SHA256": "726bef3982adbf3002349c28b60ee4ccb802c6880e804596da7aaca1f92531e8"
+    },
+    {
+      "Path": "docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf",
+      "SHA256": "070a72693c7954fdaca7dedb1439a0c550e7b304e01886a1bbc75f6cb3e4f608"
+    },
+    {
+      "Path": "docs/usage/InkProf-profileringsarbetsflode-MATLAB-guide-svenska.pdf",
+      "SHA256": "b64d7eb913a095a0babefd99e246caa83a8aad1dc4b367f948001bb75eed5169"
+    }
+  ],
+  "Status": "PASS",
+  "OriginalMeasurementsModified": false,
+  "PriorPhysicalQualificationRelabelled": false
+}

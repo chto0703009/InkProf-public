@@ -6,11 +6,11 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.4.1 | 2026-10-25 | GPL-3.0-or-later
+Version 1.4.2 | 2026-10-27 | GPL-3.0-or-later
 
 Implementation, beräkningskedja och datakontrakt
 
-Beskrivningen gäller version 1.4.1, släppt 2026-10-25. Den följer data från definition av färgmål via mätning, ICC-bygge och numeriska kontroller till uppmätt verifieringsutskrift och leverans. Handboken beskriver användarens knapptryckningar; detta dokument förklarar vad stegen innebär och vilka filer de behöver.
+Beskrivningen gäller version 1.4.2, släppt 2026-10-27. Den följer data från definition av färgmål via mätning, ICC-bygge och numeriska kontroller till uppmätt verifieringsutskrift och leverans. Handboken beskriver användarens knapptryckningar; detta dokument förklarar vad stegen innebär och vilka filer de behöver.
 
 Äldre gränssnittsbilder anges uttryckligen som dokumentationsexempel. De visar fiktiva projekt och är inte mätresultat som bevisar utskriftskvalitet. Sökvägar i appendix är relativa till installationens eller projektets rot. Genererade UUID och mappnamn varierar.
 
@@ -36,6 +36,11 @@ Beskrivningen gäller version 1.4.1, släppt 2026-10-25. Den följer data från 
 | 18 | Bilaga I. Uppmätt Lab-täthet och separat kandidat |
 | 19 | Bilaga J. Aktivitet, spårbarhet och körmiljö |
 ---PAGE---
+## Portabel Pythonförberedelse
+
+Starten kontrollerar den isolerade Pythonmiljön med Python 3.13.6 i .venv. På macOS kan Prepare hämta en privat tolk i .python med kontrollsummeskyddade verktyg; systemets Python ändras inte. Första förberedelsen kräver internet. Identify/check är skrivskyddade kontroller. Misslyckad paketinstallation återställer föregående miljö. Se PYTHON_ENVIRONMENT.md. Originalmätningar och ICC-profiler bevaras.
+
+
 ## 1. Arkitektur och avgränsning
 
 InkProf samordnar profilering av en RGB-skrivare med bestämt papper, bläck och utskriftsinställningar. Appen profilerar inte digitala kameror och styr inte en analogkamera. Ett utskrivet RGB-färgmål är något annat än en fotograferad ColorChecker. InkProf stöder valbara uppsättningar av skrivarpatchar utan begränsning till en viss fotograferad ColorChecker-modell.
@@ -72,7 +77,7 @@ Motsvarande TI2/layout behövs: en mätning är mer än en lista med Lab-värden
 
 ![Mätgränssnitt](docs/usage/handbook-source/examples/measurement-window.png)
 
-Figur 1. Gränssnittsexempel för dokumentation från 2026-10-09, före instrumentstart. Bilden visar ingen genomförd mätning. Gränssnittets texter kan skilja sig från version 1.4.1.
+Figur 1. Gränssnittsexempel för dokumentation från 2026-10-09, före instrumentstart. Bilden visar ingen genomförd mätning. Gränssnittets texter kan skilja sig från version 1.4.2.
 
 En ommätning blir först en kandidat och sedan en accepterad revision. Registrerade avläsningar får inte ersättas i det tysta. Parvisa skanningar, upprepningar och punktkorrektioner svarar på olika frågor. Repeterbarhetsmått gäller de faktiskt genomförda upprepningarna och beskriver inte all osäkerhet i skrivare, instrument och miljö.
 
@@ -171,7 +176,7 @@ Kodreferenser: `ProjectWorkflow.m`, `updateProject.m`, `verifyProject.m`, `+inte
 | Komponent | Funktion och krav |
 | --- | --- |
 | MATLAB | App, geometri och samordning. Base MATLAB R2025b testad på macOS; innebär inte verifiering av Windows/Linux. |
-| Python | Extern arbetare. Release 1.4.1 använder Python 3.13.6 i egen isolerad .venv med hela den låsta paketlistan; check/sync/rebuild görs med setup_python_environment. |
+| Python | Extern arbetare. Release 1.4.2 använder Python 3.13.6 i egen isolerad .venv med hela den låsta paketlistan; check/sync/rebuild görs med setup_python_environment. |
 | ArgyllCMS | Uppdaterad macOS-mapp innehåller separat licensierade 3.5.0-verktyg för ARM/Intel som provstartas. Andra plattformar behöver kompatibel installation. Verktyg är bland annat targen, printtarg, chartread/spotread, colprof, xicclu och profcheck. |
 | NumPy, SciPy, colour-science | Numerisk och spektral analys. Exakta låsningar finns i requirements.txt; `requirements-analysis.txt` hänvisar till samma lista. |
 | Pillow / LittleCMS | ICC-behandling och jämförelser; ursprunglig profil och transformvillkor spelar roll. |
@@ -223,13 +228,13 @@ För ett nytt mätflöde tillför användaren fysisk skrivare/papper/bläck, ins
 | Vad verifierades fysiskt? | C2-paket, motsvarande utskriftsmätning och C3-rapport |
 | Vad godkändes? | Uttryckligt beslut om avsedd användning och leveransomfattning, inte bara klar rad |
 
-Primära implementationsreferenser är kodfilerna i respektive kapitel. Referenser utan katalogprefix avser `src/+inkprof/`. Publik källkod och release: https://github.com/chto0703009/InkProf-public samt https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.1.
+Primära implementationsreferenser är kodfilerna i respektive kapitel. Referenser utan katalogprefix avser `src/+inkprof/`. Publik källkod och release: https://github.com/chto0703009/InkProf-public samt https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.2.
 
-Fördjupning i repot: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.4.1.md`, `VALIDATION.txt` och licensfilerna. Äldre guider kan behålla historiska versionsrubriker; här används implementationen i v1.4.1.
+Fördjupning i repot: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.4.2.md`, `VALIDATION.txt` och licensfilerna. Äldre guider kan behålla historiska versionsrubriker; här används implementationen i v1.4.2.
 
-Release 1.4.1 kontrollerades i den separata publika källkopian med 59 godkända riktade MATLAB-tester och 29 godkända Python-tester; inga fel eller ofullständiga MATLAB-tester rapporterades. Miljökontroll och PDF-/paketkontroller dokumenteras i VALIDATION.txt och docs/releases/v1.4.1.md. Tester med syntetiska data och isolerade projekt är inte ny fysisk instrument- eller skrivarkvalificering.
+Historisk validering för release 1.4.1 omfattade 59 riktade MATLAB-tester och 29 Python-tester. Aktuella start- och dokumentationskontroller för 1.4.2 redovisas separat i VALIDATION.txt och docs/releases/v1.4.2.md.
 
-Historiskt underlag: release 1.2.2 hade 23 riktade MATLAB-kontroller. Denna äldre uppgift beskriver inte testomfattningen för 1.4.1.
+Historiskt underlag: release 1.2.2 hade 23 riktade MATLAB-kontroller. Denna äldre uppgift beskriver inte testomfattningen för 1.4.2.
 
 Begränsningar kvarstår: samplad diagnostik täcker inte alla transformindata; profiljämförelse är inte mätning; okända förhållanden kan inte återskapas från filnamn; FWA-simulering är inte uppmätt M1; verifieringsfärger som senare används för träning ändrar roll. Bevara underlaget som behövs för tolkning i stället för att enbart lita på ICC-filen.
 

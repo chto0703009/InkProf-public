@@ -1,6 +1,6 @@
-# InkProf v1.4.1 - Workflow clarity and measurement reliability
+# InkProf v1.4.2 - Workflow clarity and measurement reliability
 
-> **New in v1.4.1:** audited metadata corrections, clearer B1-B3 navigation, responsive RGB/spot measurement, timed certificate delivery and updated PDF guides. Original measurements and profiles are preserved.
+> **New in v1.4.2:** private native Python preparation on macOS, isolated environment recovery and current bilingual documentation. Original measurements and profiles are preserved.
 
 **Keep your i1Pro 2. Take control of your prints.**
 
@@ -25,17 +25,17 @@ Version **1.1.1** adds saved whole-row measurement checkpoints and guided resump
 
 ## Availability and requirements
 
-InkProf is **free to download** under GPL version 3 or later. **MATLAB requires a licence**; base MATLAB is sufficient. Python, ArgyllCMS and a compatible spectrophotometer are installed separately. The complete workflow is tested on **macOS with the i1Pro 2**; Windows/Linux and all instrument modes are not qualified.
+InkProf is **free to download** under GPL version 3 or later. **MATLAB requires a licence**; base MATLAB is sufficient. A compatible spectrophotometer is required. The macOS folder includes separately licensed ArgyllCMS; Prepare can obtain private Python 3.13.6. The complete workflow is tested on **macOS with the i1Pro 2**; Windows/Linux and all instrument modes are not qualified.
 
-[Download the stable v1.4.1 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.1) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
+[Download the stable v1.4.2 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.2) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
 
-Source and Markdown include current local workflow fixes. Seven PDF guides were rebuilt on 2026-10-25 for v1.4.1 plus local updates; the future-opportunities PDF retains its proposal scope. These updates are included in release 1.4.1. See [release notes](docs/releases/v1.4.1.md) and [validation](VALIDATION.txt).
+Source and Markdown include current local workflow fixes. Eight PDF guides were rebuilt on 2026-10-27 for v1.4.2 plus local updates; the future-opportunities PDF retains its proposal scope. These updates are included in release 1.4.2. See [release notes](docs/releases/v1.4.2.md) and [validation](VALIDATION.txt).
 
 Print accuracy depends on the printer, paper, ink and settings. Numerical checks and screen previews do not replace physical verification. Certificates document evidence and decisions; they are not accredited certification or a declaration of full ISO conformity.
 
 ## Install and start
 
-This is a **MATLAB source release**. Install MATLAB and Python 3.13.6 separately. The macOS program folder includes ArgyllCMS 3.5.0 for Apple Silicon and Intel; other platforms need a compatible ArgyllCMS installation.
+This is a **MATLAB source release**. Install MATLAB separately. On macOS, Prepare can obtain private Python 3.13.6; an existing exact interpreter is also accepted. The macOS program folder includes ArgyllCMS 3.5.0 for Apple Silicon and Intel; other platforms need a compatible ArgyllCMS installation.
 
 - Tested on macOS with MATLAB R2025b (base MATLAB; no mandatory add-on toolboxes).
 - Python 3.13.6 with the full pinned package list in `requirements.txt`, installed in this program’s own `.venv`. The analysis/report requirement files are aliases for the same environment.
@@ -46,7 +46,7 @@ This is a **MATLAB source release**. Install MATLAB and Python 3.13.6 separately
 Clone the stable source release:
 
 ```sh
-git clone --branch v1.4.1 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.4.2 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 ```
 
@@ -66,7 +66,7 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.4.1 release notes](docs/releases/v1.4.1.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.4.2 release notes](docs/releases/v1.4.2.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
@@ -74,7 +74,7 @@ The user handbook is maintained in matching Swedish and English editions. App la
 - [Swedish presentation (PDF)](docs/usage/InkProf-presentation-svenska.pdf)
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.4.1.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.4.2.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 
@@ -84,7 +84,7 @@ The guides describe callable operations as well as the project workflow. Histori
 
 Renaming a project also renames its folder, while retaining its ID, relative references and original evidence. Existing destination folders are never overwritten. When a folder was renamed outside InkProf, opening it prompts you to adopt the folder name as the project name, restore the saved folder name, or cancel. Decisions (including cancellation and failure) are recorded in `folderNameHistory`, workflow JSON and the result log. Moving to a different parent directory or computer with the same folder name does not trigger this prompt. Changed physical printing declarations invalidate B1 and subsequent profiling stages; measurements are preserved. Changing only FWA/OBA compensation preserves B1 and invalidates B2 and later profile results. Name/user corrections require a new final report. Historical files and change logs are retained.
 
-To move between computers, finish active operations, close the project and copy the **entire project folder**, including hidden files. Open it on the destination computer with **Open project**. The app verifies registered files against SHA-256 checksums before opening; **Verify project** repeats the read-only check. Missing/changed files or active lock files block opening. Install InkProf, MATLAB, Python dependencies and ArgyllCMS separately on the destination and configure local runtime paths there. Do not copy the application `.venv` or `local-config`. External exports are separate; project copies are included. Recorded drying hours are documentation, not proof that a print has dried.
+To move between computers, finish active operations, close the project and copy the **entire project folder**, including hidden files. Open it on the destination computer with **Open project**. The app verifies registered files against SHA-256 checksums before opening; **Verify project** repeats the read-only check. Missing/changed files or active lock files block opening. Install InkProf and MATLAB on the destination and prepare the program's own Python environment there. Bundled native macOS Argyll tools are selected locally; other platforms require compatible tools. Do not copy the application `.venv` or `local-config`. External exports are separate; project copies are included. Recorded drying hours are documentation, not proof that a print has dried.
 
 ## Quality and limitations
 
@@ -111,7 +111,7 @@ Tests depending on excluded third-party reference material are not shipped. The 
 
 Copyright (c) 2026 Christer Törnkvist. InkProf's own code and documentation are **GNU GPL version 3 or later** (`GPL-3.0-or-later`). See [LICENSE](LICENSE), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [licenses/](licenses/).
 
-Third-party resources keep their own licences. ArgyllCMS is installed separately; the reviewed 3.5.0 tools report AGPLv3. MATLAB is proprietary and requires a separate licence. No MATLAB, Python or Argyll runtime is bundled. The unmodified CxF3 schema carries its own included licence. Other product names are descriptive; InkProf is not endorsed by their vendors.
+Third-party resources keep their own licences. The macOS distribution includes separately licensed ArgyllCMS 3.5.0; the tools report AGPLv3. MATLAB is proprietary and requires a separate licence. MATLAB is not bundled. Python is prepared per computer; macOS Argyll tools are bundled under their upstream terms. The unmodified CxF3 schema carries its own included licence. Other product names are descriptive; InkProf is not endorsed by their vendors.
 
 ### Warranty and responsibility
 
@@ -146,7 +146,7 @@ Post-release source update (2026-10-11): full Python setup checks now test actua
 
 Optional CGATS delivery for i1Profiler is available through a checkbox in workflow rows 14/19. See [export instructions, supported measurements and verified import](docs/usage/i1profiler-cgats-test.md).
 
-Technical implementation: [English description](docs/TECHNICAL_DESCRIPTION_EN.md) · [English PDF](docs/usage/InkProf_Technical_Description_EN.pdf) · [Swedish PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf). Includes file/dependency appendices; updated for v1.4.1.
+Technical implementation: [English description](docs/TECHNICAL_DESCRIPTION_EN.md) · [English PDF](docs/usage/InkProf_Technical_Description_EN.pdf) · [Swedish PDF](docs/usage/InkProf_Teknisk_beskrivning_SV.pdf). Includes file/dependency appendices; updated for v1.4.2.
 
 ## Pythonmiljö och datorbyte
 
@@ -156,9 +156,9 @@ Programmet använder en egen `.venv` med Python 3.13.6 och samma fullständiga p
 
 ArgyllCMS 3.5.0 följer med i `third_party/argyll`, separat för Apple Silicon och Intel. InkProf väljer den version som motsvarar datorns fysiska arkitektur och verifierar att verktygen kan starta. Dessa mappar ska följa med när programmet flyttas. Gamla absoluta Argyll-sökvägar behövs inte för standardstart.
 
-## Refinement source update - 2026-10-25
+## Refinement source update - 2026-10-27
 
-Release 1.4.1 adds printable gamut-boundary exploration, immutable
+Release 1.4.2 adds printable gamut-boundary exploration, immutable
 extension of the latest completed target, and measured Lab-density review
 with separate balanced ICC trials. Select all/Clear all control group use;
 Recalculate applies adjustable provisional thresholds. A trial is not selected
@@ -166,6 +166,6 @@ automatically. Activity timers show analysis/build phases. The optional print
 copy defaults to Downloads after the project target has been saved.
 
 The handbooks, presentations, technical descriptions and MATLAB workflow guide
-were updated from editable sources for these changes. These changes are included in release v1.4.1. See
+were updated from editable sources for these changes. These changes are included in release v1.4.2. See
 [workflow updates](docs/usage/workflow-updates-20261025.md) and
 [gamut and measured-density instructions](docs/usage/gamut-surface.md).

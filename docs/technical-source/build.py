@@ -41,7 +41,7 @@ class Flow(Flowable):
   cv.setFont('Body',8);cv.drawString(0,7,'Data + identitet + SHA-256' if self.sv else 'Data + identity + SHA-256')
 def footer(cv,doc):
  cv.saveState();cv.setStrokeColor(colors.HexColor('#bad0d7'));cv.line(54,50,541,50)
- cv.setFont('Body',7);cv.setFillColor(C);cv.drawString(54,39,f'InkProf {VERSION} | 2026-10-25');cv.drawRightString(541,39,str(doc.page))
+ cv.setFont('Body',7);cv.setFillColor(C);cv.drawString(54,39,f'InkProf {VERSION} | 2026-10-27');cv.drawRightString(541,39,str(doc.page))
  cv.setFont('Body',6.6);cv.drawString(54,27,'christer@borgasundsfotografiska.se | https://github.com/chto0703009/InkProf-public');cv.restoreState()
 def build(lang):
  path=ROOT/'docs'/f'TECHNICAL_DESCRIPTION_{lang}.md';lines=path.read_text().splitlines();story=[];i=0

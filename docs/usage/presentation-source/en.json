@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -33,7 +33,7 @@
     "compact": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "links": [
       [
         "[1] Adobe - Understanding color management",
@@ -77,7 +77,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "From colour target to decision",
     "callout": "TIFF16 files are saved for separate printing. Measurement takes place in the app. Save the ICC profile and the PDF/HTML certificate wherever you need them; the project keeps the evidence and history.",
     "lead": "InkProf is a project-based MATLAB app for profiling RGB printers, meaning printers that receive RGB data through their driver. This includes most inkjet photo printers. The app guides the work and preserves the link between inputs and results.",
@@ -109,7 +109,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "links": [
       [
         "MediaStandard Print 2018, Table 30, page 50",
@@ -152,7 +152,7 @@
     "compact": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "images": [
       [
         "patch-target.png",
@@ -173,7 +173,7 @@
     "targetExample": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "images": [
       [
         "gamut-L50-en.png",
@@ -203,7 +203,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Catch errors before they carry forward",
     "callout": "These checks reduce the risk of carrying faulty prints or readings forward. A passed check must still be followed by profile review and verification.",
     "lead": "InkProf helps you handle measurement errors and check that readings are plausible before they are used to build the profile.",
@@ -227,7 +227,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "links": [
       [
         "Open source and downloads",
@@ -281,7 +281,7 @@
     "compact": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Identify every printed target",
     "sections": [
       [
@@ -295,7 +295,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "From verification to certificate",
     "sections": [
       [
@@ -314,7 +314,7 @@
     "compact": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Clearer workflow and retained evidence",
     "sections": [
       [
@@ -333,7 +333,7 @@
     "callout": "Numerical diagnostics do not replace an independent verification print."
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Measured refinement with preserved originals",
     "sections": [
       [

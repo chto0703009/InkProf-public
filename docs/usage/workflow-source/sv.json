@@ -1,11 +1,11 @@
 [
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Från färgmål till ICC",
     "sections": [
       [
         "Krav och uppstart",
-        "Källkodsversion 1.4.1, utgiven 2026-10-25. Testad med grundversionen av MATLAB R2025b (inga extra MATLAB-verktygslådor) och Python 3.13.6 på macOS. Programmappen för macOS innehåller separat licensierade ArgyllCMS 3.5.0-verktyg för Apple Silicon och Intel. MATLAB installeras separat; setup_python_environment förbereder programmets egen låsta Python-miljö och kräver en lämplig Python 3.13.6-tolk. Python sköter analys och rapportering; MATLAB tillhandahåller appen och arbetsflödet. Windows och Linux är otestade och kräver kompatibla verktyg; en POSIX-brygga innebär inte att Linux är kvalificerat."
+        "Källkodsversion 1.4.2, utgiven 2026-10-27. Testad med grundversionen av MATLAB R2025b (inga extra MATLAB-verktygslådor) och Python 3.13.6 på macOS. Programmappen för macOS innehåller separat licensierade ArgyllCMS 3.5.0-verktyg för Apple Silicon och Intel. MATLAB installeras separat; setup_python_environment förbereder programmets egen låsta Python-miljö och kräver en lämplig Python 3.13.6-tolk. Python sköter analys och rapportering; MATLAB tillhandahåller appen och arbetsflödet. Windows och Linux är otestade och kräver kompatibla verktyg; en POSIX-brygga innebär inte att Linux är kvalificerat."
       ],
       [
         "Så använder du guiden",
@@ -15,7 +15,7 @@
     "lead": "InkProf - Kvalitetsprofilering för RGB-skrivare"
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Ett projekt, en källa till inställningar",
     "sections": [
       [
@@ -29,7 +29,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Arbetsflödesrader 1-10",
     "sections": [
       [
@@ -96,7 +96,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Arbetsflödesrader 11-19",
     "sections": [
       [
@@ -178,7 +178,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Mål, papper och mätning",
     "sections": [
       [
@@ -204,7 +204,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Förfining och skuggor",
     "sections": [
       [
@@ -223,7 +223,7 @@
     "lead": "Öppna rad 15, Refinement tools, för att välja källa för ytterligare fält."
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Skalförfining och fortsättning",
     "sections": [
       [
@@ -243,7 +243,7 @@
     "callout": "Iteration: 16 -> 17 (interna byggdiagnostiker) -> 8 (aktuella arbetsflödeskontroller) -> 18 (jämförelse)\nUtskriftsverifierad leverans: 9 -> 10 -> 11 -> 12 -> 13 -> 14\nEnbart numerisk leverans: 18 -> 19"
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Tolka och leverera",
     "sections": [
       [
@@ -265,12 +265,12 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Kod, licenser och körtidskontroller",
     "sections": [
       [
         "",
-        "InkProfs kod och egenförfattad dokumentation omfattas av GNU GPL v3 eller senare, utan garanti; se LICENSE och THIRD_PARTY_NOTICES.md. macOS-distributionen innehåller separat licensierade ArgyllCMS 3.5.0-verktyg för ARM och Intel, med ursprungliga licensnotiser och ursprungsuppgifter. MATLAB och en portabel Python-körmiljö medföljer inte; den isolerade Python-miljön förbereds lokalt. Beroenden, scheman och typsnitt har sina egna villkor. Se docs/releases/v1.4.1.md och LICENSE_SCOPE.md för aktuell omfattning. Granskningen i licenses/review-v1.0.0.md är historiskt underlag, inte en juridisk granskning av hela den aktuella utgåvan."
+        "InkProfs kod och egenförfattad dokumentation omfattas av GNU GPL v3 eller senare, utan garanti; se LICENSE och THIRD_PARTY_NOTICES.md. macOS-distributionen innehåller separat licensierade ArgyllCMS 3.5.0-verktyg för ARM och Intel, med ursprungliga licensnotiser och ursprungsuppgifter. MATLAB och en portabel Python-körmiljö medföljer inte; den isolerade Python-miljön förbereds lokalt. Beroenden, scheman och typsnitt har sina egna villkor. Se docs/releases/v1.4.2.md och LICENSE_SCOPE.md för aktuell omfattning. Granskningen i licenses/review-v1.0.0.md är historiskt underlag, inte en juridisk granskning av hela den aktuella utgåvan."
       ],
       [
         "Versionskontroller och felrapportering",
@@ -279,7 +279,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Identifiera det utskrivna målet före mätning",
     "sections": [
       [
@@ -298,7 +298,7 @@
     "lead": "Ett sparat datum räcker inte. Matcha måltyp, antal sidor och det ursprungliga paketets sökväg mot det fysiska arket."
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Läsbara utskriftsmappar och spårbarhet",
     "sections": [
       [
@@ -325,7 +325,7 @@
     "lead": "Copy TIFF16 for printing skapar en separat leverans med projektnamnet i stället för en mapp med enbart UUID."
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Verifiering och fullständig leverans",
     "sections": [
       [
@@ -351,7 +351,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Aktuellt arbetsflöde: beslut och navigering",
     "sections": [
       [
@@ -373,7 +373,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Aktuellt arbetsflöde: mätning och leverans",
     "sections": [
       [
@@ -395,7 +395,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Gamutgränser och utökade mål",
     "sections": [
       [
@@ -413,7 +413,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Granska uppmätt Lab-täthet",
     "sections": [
       [
@@ -431,7 +431,7 @@
     ]
   },
   {
-    "tag": "MATLAB-ARBETSFLÖDE | v1.4.1",
+    "tag": "MATLAB-ARBETSFLÖDE | v1.4.2",
     "title": "Aktivitet, ursprung och datorbyten",
     "sections": [
       [
@@ -444,7 +444,7 @@
       ],
       [
         "Medföljande Argyll och dokumentationens omfattning",
-        "Programmappen innehåller separat licensierad ArgyllCMS 3.5.0 för ARM- och Intel-macOS, med ursprungliga licensnotiser och ursprungsuppgifter. Verktyg för datorns egen processorarkitektur prioriteras och kontrolleras genom faktisk start. Detta dokument beskriver utgåva 1.4.1. Starta om appen efter uppdateringar av källkoden."
+        "Programmappen innehåller separat licensierad ArgyllCMS 3.5.0 för ARM- och Intel-macOS, med ursprungliga licensnotiser och ursprungsuppgifter. Verktyg för datorns egen processorarkitektur prioriteras och kontrolleras genom faktisk start. Detta dokument beskriver utgåva 1.4.2. Starta om appen efter uppdateringar av källkoden."
       ]
     ]
   }

@@ -1,3 +1,12 @@
+# InkProf 1.4.2 - 2026-10-27
+
+- Publish the private native Python preparation already committed after 1.4.1. macOS Prepare obtains pinned Python 3.13.6 with checksum-verified tooling without modifying system Python.
+- Preserve isolated per-program environments, read-only identify/check and failed-install rollback.
+- Align current Swedish/English handbooks, technical descriptions, presentations and workflow guides with version 1.4.2.
+- Preserve existing project definitions, measurements, ICC profiles and profiling calculations.
+
+See VALIDATION.txt and docs/documentation-update-v1.4.2.json for startup and PDF checks. Prior physical qualification and historical test counts are not relabelled as new validation. The public source snapshot excludes private projects, original measurements and private development history.
+
 # Changelog
 
 ## 1.4.1 - 2026-10-25

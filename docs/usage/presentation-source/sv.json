@@ -1,6 +1,6 @@
 [
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "images": [
       [
         "../handbook-source/examples/measurement-instrument.jpg",
@@ -33,7 +33,7 @@
     "compact": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "links": [
       [
         "[1] Adobe - Understanding color management",
@@ -77,7 +77,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Från färgmål till beslut",
     "callout": "TIFF16 sparas för separat utskrift. Mätningen sker i appen. Spara ICC-profilen och PDF/HTML-certifikatet där du behöver dem; projektet bevarar underlag och historik.",
     "lead": "InkProf är en projektbaserad MATLAB-app för profilering av RGB-styrda skrivare, alltså skrivare som tar emot RGB-data via drivrutinen. Dit hör de flesta fotoskrivare med bläckstråle. Appen vägleder arbetet och bevarar kopplingen mellan underlag och resultat.",
@@ -109,7 +109,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "links": [
       [
         "MediaStandard Print 2018, Table 30, page 50",
@@ -152,7 +152,7 @@
     "compact": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "images": [
       [
         "patch-target.png",
@@ -173,7 +173,7 @@
     "targetExample": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "images": [
       [
         "gamut-L50-sv.png",
@@ -203,7 +203,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Upptäck fel innan de följer med",
     "callout": "Kontrollerna minskar risken att felaktiga utskrifter eller mätningar går vidare. En godkänd kontroll behöver fortfarande följas av granskning och verifiering av profilen.",
     "lead": "InkProf hjälper dig att hantera felmätningar och kontrollera att mätvärdena är rimliga innan de används för att bygga profilen.",
@@ -227,7 +227,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "links": [
       [
         "Öppen källkod och nedladdning",
@@ -281,7 +281,7 @@
     "compact": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Identifiera varje utskrift",
     "sections": [
       [
@@ -295,7 +295,7 @@
     ]
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Från verifiering till certifikat",
     "sections": [
       [
@@ -314,7 +314,7 @@
     "compact": true
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Tydligare flöde och bevarade underlag",
     "sections": [
       [
@@ -333,7 +333,7 @@
     "callout": "Numerisk diagnostik ersätter inte en oberoende verifieringsutskrift."
   },
   {
-    "tag": "InkProf | v1.4.1 | 2026-10-25",
+    "tag": "InkProf | v1.4.2 | 2026-10-27",
     "title": "Uppmätt förfining med bevarade original",
     "sections": [
       [

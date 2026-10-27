@@ -1,3 +1,11 @@
+InkProf v1.4.2 validation - 2026-10-27
+=====================================
+PASS: MATLAB read-only interpreter discovery and full isolated Python 3.13.6 environment health check, including compiled modules and pip check.
+PASS: three focused Python runtime/import-error tests.
+PASS: eight maintained PDF guides rebuilt with current version/date labels; PDF text and rendered changed pages reviewed.
+Public source notice/resource checks, clean-commit packaging, privacy exclusions and per-file SHA-256 verification precede publication.
+No new physical instrument or printer qualification. Original user projects, measurements and ICC profiles are unchanged. Historical validation follows with its original release identity.
+
 InkProf v1.4.1 validation - 2026-10-25
 =====================================
 PASS: current executable code audited against documentation: 59 targeted MATLAB tests, all passed; 29 Python tests, all passed with bundled native Argyll on PATH. No incomplete MATLAB tests.

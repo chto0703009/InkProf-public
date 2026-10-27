@@ -6,11 +6,11 @@ christer@borgasundsfotografiska.se
 
 https://github.com/chto0703009/InkProf-public
 
-Version 1.4.1 | 2026-10-25 | GPL-3.0-or-later
+Version 1.4.2 | 2026-10-27 | GPL-3.0-or-later
 
 Implementation, calculation chain and data contracts
 
-This description covers version 1.4.1, released 2026-10-25. It follows the data from target definition through measurement, ICC construction, numerical diagnostics, physical verification and delivery. The handbook describes the operator's click sequence; this document explains what those steps mean and which files they depend on.
+This description covers version 1.4.2, released 2026-10-27. It follows the data from target definition through measurement, ICC construction, numerical diagnostics, physical verification and delivery. The handbook describes the operator's click sequence; this document explains what those steps mean and which files they depend on.
 
 Older interface illustrations are explicitly identified as documentation examples. They show fictional projects, not measurements proving printer quality. File paths in the appendices are relative to the installation or project root; generated UUIDs and directory names vary.
 
@@ -36,6 +36,11 @@ Older interface illustrations are explicitly identified as documentation example
 | 18 | Appendix I. Measured Lab density and separate candidate |
 | 19 | Appendix J. Activity, provenance and runtime |
 ---PAGE---
+## Portable Python preparation
+
+Startup checks the isolated Python 3.13.6 .venv. On macOS, Prepare can obtain a private interpreter in .python with checksum-verified tooling; system Python is unchanged. First preparation requires internet. Identify/check are read-only. A failed dependency installation restores the prior environment. See PYTHON_ENVIRONMENT.md. Original measurements and ICC profiles are preserved.
+
+
 ## 1. Architecture and scope
 
 InkProf coordinates RGB output profiling for a specified printer, paper, ink and printing configuration. It does not control an analogue camera or profile a digital camera. Its printed RGB targets are distinct from a photographed ColorChecker. InkProf supports configurable printer patch sets without restriction to a particular photographed ColorChecker model.
@@ -72,7 +77,7 @@ The matching TI2/layout is essential: a measurement is not merely a list of Lab 
 
 ![Measurement interface](docs/usage/handbook-source/examples/measurement-window.png)
 
-Figure 1. Documentation interface example captured 2026-10-09 before instrument start. It does not demonstrate an actual measurement. Interface labels may differ from version 1.4.1.
+Figure 1. Documentation interface example captured 2026-10-09 before instrument start. It does not demonstrate an actual measurement. Interface labels may differ from version 1.4.2.
 
 A remeasurement creates a candidate and then an accepted revision; it must not silently replace registered readings. Paired scans, repeats and spot corrections answer different questions. Repeatability estimates only describe the repetitions actually acquired; they do not quantify every source of printer, instrument or environmental uncertainty.
 
@@ -171,7 +176,7 @@ Source map: `ProjectWorkflow.m`, `updateProject.m`, `verifyProject.m`, `+interna
 | Component | Role and requirement |
 | --- | --- |
 | MATLAB | App, geometry and orchestration. Base MATLAB R2025b tested on macOS; do not infer Windows/Linux qualification. |
-| Python | External worker process. Release 1.4.1 uses Python 3.13.6 in its own isolated .venv with the full pinned requirements; check/sync/rebuild use setup_python_environment. |
+| Python | External worker process. Release 1.4.2 uses Python 3.13.6 in its own isolated .venv with the full pinned requirements; check/sync/rebuild use setup_python_environment. |
 | ArgyllCMS | Updated macOS folder includes separately licensed ArgyllCMS 3.5.0 for ARM/Intel, with native startup checks. Other platforms need a compatible installation. Tools include targen, printtarg, chartread/spotread, colprof, xicclu and profcheck. |
 | NumPy, SciPy, colour-science | Numerical and spectral analysis. Exact pins are in requirements.txt; `requirements-analysis.txt` references the same list. |
 | Pillow / LittleCMS | ICC processing and comparison routes; original ICC and transform conditions matter. |
@@ -223,13 +228,13 @@ For a new measurement workflow, the user supplies physical printer/paper/ink/set
 | What was physically verified? | C2 package, matching print measurement and C3 report |
 | What was approved? | Explicit intended-use decision and delivery scope, not just a completed row |
 
-Primary implementation references are the source files named in each chapter. Paths without a prefix in those source maps are under `src/+inkprof/`. Public source and release: https://github.com/chto0703009/InkProf-public and https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.1.
+Primary implementation references are the source files named in each chapter. Paths without a prefix in those source maps are under `src/+inkprof/`. Public source and release: https://github.com/chto0703009/InkProf-public and https://github.com/chto0703009/InkProf-public/releases/tag/v1.4.2.
 
-Detailed companion documents in the repository: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.4.1.md`, `VALIDATION.txt` and the licence files. Some older guide headings retain historical version numbers; this document uses the v1.4.1 implementation baseline.
+Detailed companion documents in the repository: `docs/usage/rgb-target-designer.md`, `docs/usage/workflow-v1.0.md`, `docs/usage/profiling-paths.md`, `docs/usage/profiling-best-practice.md`, `docs/usage/verify-existing-icc.md`, `docs/usage/measurement-certificate.md`, `docs/releases/v1.4.2.md`, `VALIDATION.txt` and the licence files. Some older guide headings retain historical version numbers; this document uses the v1.4.2 implementation baseline.
 
-Release 1.4.1 was checked in the separate public source checkout with 59 passing targeted MATLAB tests and 29 passing Python tests; no MATLAB failures or incomplete tests were reported. Environment and PDF/package checks are documented in VALIDATION.txt and docs/releases/v1.4.1.md. Synthetic fixtures and isolated projects do not constitute new physical instrument or printer qualification.
+Historical validation for release 1.4.1 covered 59 targeted MATLAB tests and 29 Python tests. Current 1.4.2 startup and documentation checks are recorded separately in VALIDATION.txt and docs/releases/v1.4.2.md.
 
-Historical evidence: release 1.2.2 had 23 targeted MATLAB checks. This older record does not describe the 1.4.1 test scope.
+Historical evidence: release 1.2.2 had 23 targeted MATLAB checks. This older record does not describe the 1.4.2 test scope.
 
 Known limits remain: sampled diagnostics do not cover every transform input; profile comparison is not measurement; unknown conditions cannot be recovered from a file name; FWA simulation is not measured M1; later use of verification colours as training changes their independence. Preserve the evidence needed to interpret a result rather than relying on the ICC file alone.
 

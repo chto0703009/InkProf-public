@@ -1,4 +1,4 @@
-# InkProf documentation - v1.4.1, documentation update 2026-10-25
+# InkProf documentation - v1.4.2, documentation update 2026-10-27
 
 
 Current additions include explicit verification-target selection, RGB print controls and reasoned overrides, ColorChecker certificate swatches, portable ICC/PDF/HTML/JPG delivery, shorter iteration identifiers and improved dialog handling. Historical development records retain their original dates and version references. The current handbooks take precedence over earlier screenshots.
@@ -82,7 +82,7 @@ Earlier release candidate notes: [v1.0.0-rc.4](releases/v1.0.0-rc.4.md). The cur
 
 ## Historical records
 
-The planning, decisions and research folders retain dated development evidence, not a claim of current feature status or repeated validation. Some private reference datasets are deliberately excluded from the public distribution. [ISSUE-001](issues/001-inverse-measurement-noise.md), inverse sensitivity to measurement noise, was closed by user decision on 2026-10-25 after several measurements without observed problems. The remaining uncertainty was accepted for current use; no full noise-propagation study is claimed.
+The planning, decisions and research folders retain dated development evidence, not a claim of current feature status or repeated validation. Some private reference datasets are deliberately excluded from the public distribution. [ISSUE-001](issues/001-inverse-measurement-noise.md), inverse sensitivity to measurement noise, was closed by user decision on 2026-10-27 after several measurements without observed problems. The remaining uncertainty was accepted for current use; no full noise-propagation study is claimed.
 
 Existing ICC profiles can be tested in the separate **Verify existing ICC** project mode. See [Verify an existing printer ICC](usage/verify-existing-icc.md).
 
@@ -149,10 +149,10 @@ Both handbooks now have 76 physical pages (cover plus 75 numbered pages). The ne
 
 ## v1.2.5 patch additions
 
-Unicode paths and ICC names, RGB start audio and C2 TIFF/ICC copying are documented in [measurement instructions](usage/chart-measurement.md#updates-in-v125), [project organization](usage/project-organization.md#unicode-paths-in-v125) and [ICC naming](usage/measurement-certificate.md#unicode-icc-names-in-v125). At that release the PDF guides retained the reviewed v1.2.4 edition; see the current 2026-10-25 revision below.
+Unicode paths and ICC names, RGB start audio and C2 TIFF/ICC copying are documented in [measurement instructions](usage/chart-measurement.md#updates-in-v125), [project organization](usage/project-organization.md#unicode-paths-in-v125) and [ICC naming](usage/measurement-certificate.md#unicode-icc-names-in-v125). At that release the PDF guides retained the reviewed v1.2.4 edition; see the current 2026-10-27 revision below.
 
 ## v1.2.6 preservation safeguards
 
-See [original project preservation](usage/project-organization.md#original-project-preservation-safeguards) and [release notes](releases/v1.2.6.md). Print-copy folders are separate from the editable project. Original measurements must not be overwritten, deleted or sent to Trash. At that release PDFs retained the v1.2.4 baseline; see the current 2026-10-25 revision below.
+See [original project preservation](usage/project-organization.md#original-project-preservation-safeguards) and [release notes](releases/v1.2.6.md). Print-copy folders are separate from the editable project. Original measurements must not be overwritten, deleted or sent to Trash. At that release PDFs retained the v1.2.4 baseline; see the current 2026-10-27 revision below.
 
-Current documentation revision: **2026-10-25**, for **1.4.1**. See [workflow update notes](usage/workflow-updates-20261025.md). Handbooks, technical descriptions, presentations and the MATLAB workflow guide have been rebuilt. Older screenshots illustrate their dated interface; updated text describes the current behaviour. Planning/research PDFs and the future-opportunities document retain their historical scope.
+Current documentation revision: **2026-10-27**, for **1.4.2**. See [workflow update notes](usage/workflow-updates-20261025.md). Handbooks, technical descriptions, presentations and the MATLAB workflow guide have been rebuilt. Older screenshots illustrate their dated interface; updated text describes the current behaviour. Planning/research PDFs and the future-opportunities document retain their historical scope.
