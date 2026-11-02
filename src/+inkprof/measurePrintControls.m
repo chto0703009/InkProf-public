@@ -131,7 +131,16 @@ uiwait(fig);
       if ~check.referenceAvailable&&check.status~="review-required",reference.Enable='on';end
       if check.complete&&check.status=="review-required",override.Enable='on';end
      case 'error'
-      stop(poller);action.Enable='off';restart.Enable='on';status.Text=string(e.message);notice.Text='Chart readings are retained. Print controls require review; partial spots are also retained.';
+      stop(poller);action.Enable='off';restart.Enable='on';status.Text=string(e.message);
+      notice.Text='Chart readings and partial RGB spots are retained. Restart to try again.';
+      if isfield(e,'communicationFailure')&&e.communicationFailure
+       notice.Text='Close other instrument applications, reconnect the i1 Pro 2 USB connection, then choose Restart all RGB checks.';
+      end
+      if isfield(e,'transcript')&&strlength(string(e.transcript))>0
+       notice.Tooltip="Instrument log: "+string(e.transcript);
+       status.Tooltip="Instrument log: "+string(e.transcript);
+       if isfield(e,'diagnostic'),status.Tooltip=string(e.diagnostic)+newline+status.Tooltip;end
+      end
     end
    end
   catch err,stop(poller);action.Enable='off';restart.Enable='on';status.Text=string(err.message);end

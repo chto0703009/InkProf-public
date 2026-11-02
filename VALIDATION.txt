@@ -1,3 +1,13 @@
+InkProf 1.5.0 release validation - 2026-11-02
+
+PASS: 224 Python unittest cases in both the private development and reviewed public checkouts (Python 3.13 isolated environment).
+PASS: public source release version/notices/resource checks and installed dependency licence inventory hashes. Inventory refreshed for the already pinned numpy 2.3.2, reportlab 5.0.1 and charset-normalizer 3.5.2.
+PASS: 6 targeted MATLAB R2025b tests: main-window UI resume, no-project button state, selection/evidence validity, external verification workflow and two RunProgress cleanup tests.
+PASS: sRGB appendix regression checks include PDF text and actual colour-fill operators; synthetic numerical appendix rendered and visually reviewed.
+PASS: both rebuilt handbooks (84 pages each) rendered and visually reviewed; Downloads copies match repository SHA-256.
+The full MATLAB suite was not rerun. No physical instrument/print qualification or Windows/Linux validation is claimed. Existing project data and registered certificates were not regenerated.
+Other PDF guides retain their 1.4.2 scope. Private fixtures and history are excluded from the public snapshot.
+
 InkProf v1.4.2 validation - 2026-10-27
 =====================================
 PASS: MATLAB read-only interpreter discovery and full isolated Python 3.13.6 environment health check, including compiled modules and pip check.

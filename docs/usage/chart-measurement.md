@@ -563,3 +563,9 @@ Older print-copy folders are not modified automatically. A manually added ICC ca
 Spot start sounds apply to screen-triggered and i1 Pro 2 instrument-button measurements, including RGB controls, patch replacements and paper white. RGB colour rows show page, colour and progress; the temporary Test measurement sound button has been removed. Page changes are shown inline. Skip / close can cancel while calibration waits; saved evidence remains. Partial process lines and debug text after prompts are handled without blocking GUI polling.
 
 See [current workflow notes](workflow-updates-20261025.md). Applies to 1.3.0.
+
+## RGB control instrument startup failure
+
+If spotread finds the i1Pro 2 but reports a communication failure during initialisation, no RGB result is available. InkProf shows the communication error and the saved/expected reading count rather than a generic incomplete-test message. Hover over the status or explanation to locate the original instrument transcript.
+
+Close other applications using the instrument, reconnect its USB connection and choose **Restart all RGB checks**. The retry creates a separate attempt; prior chart readings, partial RGB readings and transcripts are retained. A successful process startup does not establish that the USB instrument initialised. These failures are separate from LibRaw/camera RAW decoding.

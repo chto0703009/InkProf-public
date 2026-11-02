@@ -16,7 +16,7 @@ class AppendixTests(unittest.TestCase):
     def test_complete_records_are_separate_and_identifiable(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder=Path(tmp)
-            records=[dict(sampleId=f'PATCH-{i:03}',deltaE00=1.,hex='#8899aa') for i in range(50)]
+            records=[dict(sampleId=f'PATCH-{i:03}',deltaE00=1.,hex='#8899aa',rgbPercent=[12.34,56.78,90.12]) for i in range(50)]
             report=dict(project=dict(name='Synthetic QA'),iteration=1,createdUTC='2026-10-12T00:00:00Z',
                         certificateId='TEST-CERT',profile=dict(sha256='a'*64),approval=dict(notes='Synthetic example'),
                         patchOutliers=dict(allPatches=records,patches=[],message='Synthetic',overviewText='50 synthetic colours',basis='Synthetic',colourNote='Preview colours'),results={})
@@ -29,6 +29,8 @@ class AppendixTests(unittest.TestCase):
                 self.assertNotIn(record['sampleId'],main)
                 self.assertIn(record['sampleId'],''.join(annex.split()))
             self.assertIn('TEST-CERT',main);self.assertIn('TEST-CERT',annex)
+            self.assertIn('RGB %',annex)
+            self.assertIn('12.34, 56.78, 90.12',' '.join(annex.split()))
             self.assertIn('Example history',annex);self.assertNotIn('Example history',main)
             metadata=json.loads((folder/'measurement-appendix.json').read_text())
             self.assertEqual(metadata['sha256'],hashlib.sha256((folder/'measurement-appendix.pdf').read_bytes()).hexdigest())
@@ -79,6 +81,15 @@ class AppendixTests(unittest.TestCase):
             self.assertIn('Numerical evidence: fit', annex)
             self.assertIn('ACCEPTED-01',annex)
             self.assertIn('FIT-ACCEPTED-01',annex)
+            self.assertIn('Measured Lab / sRGB',annex)
+            self.assertIn('Predicted Lab / sRGB',annex)
+            from certificate_swatches import lab_hex
+            from reportlab.lib.colors import HexColor
+            expected=HexColor(lab_hex([30.,2.,3.]))
+            from pypdf.generic import ContentStream
+            fills=[args for page in PdfReader(folder/'measurement-appendix.pdf').pages
+                   for args,operator in ContentStream(page.get_contents(), page.pdf).operations if operator==b'rg']
+            self.assertTrue(any(all(abs(float(a)-b)<1e-5 for a,b in zip(fill,expected.rgb())) for fill in fills))
             self.assertNotIn('FIT-ACCEPTED-01',main)
             self.assertIn('QA-CERTIFICATE',main);self.assertIn('QA-CERTIFICATE',annex)
             self.assertIn('measurement-appendix.pdf',(folder/'final-report.html').read_text())

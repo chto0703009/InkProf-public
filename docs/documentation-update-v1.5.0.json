@@ -1,0 +1,14 @@
+{
+  "SourceVersion": "1.5.0",
+  "DocumentationDate": "2026-11-02",
+  "Documents": [
+    {
+      "Path": "docs/usage/InkProf-user-handbook-English.pdf",
+      "SHA256": "53c82eba049492cb930c7dc052a78122466263f8be33285f40e23fa486e12b00"
+    },
+    {
+      "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
+      "SHA256": "b5c39bb2c1a5dca8b99cb127801920c62bf8340c60e7f859248e4addc038a421"
+    }
+  ]
+}

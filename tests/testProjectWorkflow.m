@@ -79,6 +79,29 @@ verifyEqual(tc,t.Data{1,2},'Complete');verifyEqual(tc,t.Data{2,2},'Ready');verif
 verifyNotEmpty(tc,findobj(f,'Tag','closeWorkflowApp'));
 verifyNotEmpty(tc,findobj(f,'Tag','openResultLog'));verifyNotEmpty(tc,findobj(f,'Tag','iterationHistory'));verifyNotEmpty(tc,findobj(f,'Tag','openFinalReport'));
 end
+function testUIWithoutProjectDisablesProjectActions(tc)
+f=inkprof.app();cleanup=onCleanup(@()delete(f));drawnow;
+for tag=["openStepResults","openResultLog","iterationHistory","runWorkflowStep","openFinalReport","showProfile3D","showGamut","copyPrintTIFF","photoGradientCheck"]
+ verifyEqual(tc,string(findobj(f,'Tag',tag).Enable),"off",tag);
+end
+for tag=["newProject","openProject","refreshWorkflow","licenseNotice","closeWorkflowApp"]
+ verifyEqual(tc,string(findobj(f,'Tag',tag).Enable),"on",tag);
+end
+end
+function testUIResultsFollowSelectionAndIntegrity(tc)
+w=tc.TestData.w;saveDefinition(tc);
+f=inkprof.app(w.Root);cleanup=onCleanup(@()delete(f));drawnow;
+b=findobj(f,'Tag','openStepResults');t=findobj(f,'Tag','workflowSteps');
+verifyEqual(tc,string(b.Enable),"on");
+verifyEqual(tc,string(findobj(f,'Tag','openResultLog').Enable),"on");
+verifyEqual(tc,string(findobj(f,'Tag','iterationHistory').Enable),"on");
+t.CellSelectionCallback(t,struct('Indices',[2 1]));
+verifyEqual(tc,string(b.Enable),"off"); % Ready render step has no results yet.
+t.CellSelectionCallback(t,struct('Indices',[1 1]));verifyEqual(tc,string(b.Enable),"on");
+file=w.output('definition','definition');fid=fopen(file,'a');fprintf(fid,'\n# modified\n');fclose(fid);
+refresh=findobj(f,'Tag','refreshWorkflow');refresh.ButtonPushedFcn(refresh,[]);
+verifyEqual(tc,string(b.Enable),"off"); % Changed evidence must not be offered as current.
+end
 function saveDefinition(tc)
 f=fullfile(tc.TestData.project,'sources','test.ti1');
 if ~isfile(f)

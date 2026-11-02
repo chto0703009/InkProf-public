@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.4.2 | 2026-10-27",
+    "tag": "USER HANDBOOK | v1.5.0 | 2026-11-02",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Open methods and clear conditions",
-        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.4.2, documented 2026-10-27; app buttons and field names are English."
+        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.5.0, documented 2026-11-02; app buttons and field names are English."
       ]
     ],
     "callout": "InkProf brings profiling, checks and documentation together in one project. Print the colour targets using a separate printing application."
@@ -38,7 +38,7 @@
       ],
       [
         "1. Use the updated code folder",
-        "Download the v1.4.2 source ZIP from the public release page, extract it and open the complete InkProf folder. Alternatively: git clone --branch v1.4.2 https://github.com/chto0703009/InkProf-public.git . Do not mix files from different installations."
+        "Download the v1.4.2 source ZIP from the public release page, extract it and open the complete InkProf folder. Alternatively: git clone --branch v1.5.0 https://github.com/chto0703009/InkProf-public.git . Do not mix files from different installations."
       ],
       [
         "2. Prepare this program environment",
@@ -964,7 +964,7 @@
       ],
       [
         "Basis of this handbook",
-        "This handbook describes InkProf 1.4.2, released 27 October 2026, with document revision 2026-10-27. The release tag identifies the published source version. Documentation and numerical tests are not new physical validation."
+        "This handbook describes InkProf 1.5.0, released 2 November 2026, with document revision 2026-11-02. The release tag identifies the published source version. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -1072,7 +1072,7 @@
       ],
       [
         "Release status",
-        "This handbook describes InkProf 1.4.2, released 27 October 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. The macOS program folder includes ARM and Intel Argyll tools. Prepare MATLAB and the separate Python environment using the installation instructions."
+        "This handbook describes InkProf 1.5.0, released 2 November 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. The macOS program folder includes ARM and Intel Argyll tools. Prepare MATLAB and the separate Python environment using the installation instructions."
       ]
     ],
     "links": [
@@ -1789,7 +1789,7 @@
         "An incorrect or incompatible Python or dependency-package version can prevent analysis from working even when the package is installed. InkProf checks the Python version requirement and tests that required packages and their compiled libraries load. Setup also checks that Argyll tools start and report version information. Use the package versions in the requirements files supplied with your InkProf release. The checks test functionality and basic requirements; they do not replace the package versions specified in those files."
       ]
     ],
-    "callout": "This guidance applies to InkProf 1.4.2, document revision 2026-10-27. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
+    "callout": "This guidance applies to InkProf 1.4.2, document revision 2026-11-02. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
     "links": [
       [
         "Details and repair commands",
@@ -2326,6 +2326,37 @@
       [
         "Environment recovery",
         "Each installation builds its own pinned .venv. Failed installation restores the prior environment. Keep the complete program folder together; original projects, measurements and ICC profiles remain unchanged. See PYTHON_ENVIRONMENT.md."
+      ]
+    ]
+  },
+  {
+    "tag": "APPENDIX | MIRAGE | 2026-10-29",
+    "title": "Canon PRO-2600 and Mirage",
+    "lead": "The paper selection in Mirage still applies in Color Mode: Profile Creation. This mode disables ICC colour management; the paper and print settings still apply.",
+    "sections": [
+      [
+        "Which paper selection controls the job?",
+        "According to the DINAX support reply from Marvin in ticket 36912, the printer uses the medium selected in Mirage when the job is sent through Mirage. The paper selection on the Canon imagePROGRAF PRO-2600 panel does not determine the Mirage medium for that job. Still load the physical paper you intend to profile."
+      ],
+      [
+        "Three settings with different purposes",
+        "The printer panel shows the paper type when the roll is loaded. Print to … on [paper] in Mirage selects the medium for the print job. According to the supplied note, Color Mode: Profiling / Profile Creation applies no colour management and uses no ICC profiles for the measurement target. Select the correct Mirage medium, quality and resolution in this mode as well."
+      ],
+      [
+        "A reproducible profiling workflow",
+        "1. Load the intended paper and select the intended medium and quality/resolution in Mirage.\n2. Select Color Mode: Profile Creation for the profiling target; do not apply an existing ICC profile.\n3. Print at the intended size and allow the print to dry before measuring. Record the Mirage medium, quality and Chroma Optimizer (CO) setting, where applicable, in the project.\n4. Associate the completed ICC profile with the same Mirage medium and retain the same print settings when printing images."
+      ],
+      [
+        "Canon PRO-2600: Chroma Optimizer (CO) and the profile",
+        "This guidance applies to the Canon imagePROGRAF PRO-2600 with Chroma Optimizer. It is not a general requirement for other printers. The CO setting is part of the printing combination described by the ICC profile. Record it and use the same CO setting for the profiling target, verification print and subsequent images. Do not use a profile made with CO for printing without CO, or vice versa, without fresh verification. If the CO setting changes, verify the existing profile with a new print; create a separate profile if the result requires it. Check this setting in the print workflow even when ICC colour management is disabled."
+      ],
+      [
+        "Distinguish the InkProf C2a verification target",
+        "The instructions above concern profiling targets. The profile has already been applied once to an InkProf C2a TIFF. Apply no additional ICC conversion when printing it. Retain the medium and physical print settings represented by the profile; do not apply the profile again in Mirage."
+      ],
+      [
+        "Source",
+        "Source: mirage-profiling-paper-settings.pdf supplied by the user. The note reports the reply from Marvin at DINAX, ticket 36912, and refers to Mirage User Guide: Profile Creation and Custom Medium."
       ]
     ]
   }

@@ -20,14 +20,14 @@ def complete_rows(report, folder):
         data=json.loads(path.read_text())
         for patch in data.get('patches',[]):
             rows.append(dict(group=label,id=str(patch.get('sampleId','')),role=patch.get('role','fitting'),
-                coordinate=patch.get('coordinate',''),reference=patch.get('desiredLab') if key=='c3_report' else patch.get('predictedLab'),
+                coordinate=patch.get('coordinate',''),rgb=patch.get('rgbPercent'),reference=patch.get('desiredLab') if key=='c3_report' else patch.get('predictedLab'),
                 measured=patch.get('measuredLab'),predicted=patch.get('predictedLab'),delta=patch['deltaE00']))
     if not any(row['group']=='Verification' for row in rows):
         legacy=report.get('patchOutliers',{}).get('allPatches',[])
         if isinstance(legacy,dict):legacy=[legacy]
         for patch in legacy:
             rows.append(dict(group='Verification',id=str(patch.get('sampleId','')),role=patch.get('role','colour'),
-                coordinate=patch.get('coordinate',''),reference=patch.get('desiredLab'),measured=patch.get('measuredLab'),
+                coordinate=patch.get('coordinate',''),rgb=patch.get('rgbPercent'),reference=patch.get('desiredLab'),measured=patch.get('measuredLab'),
                 predicted=patch.get('predictedLab'),delta=patch['deltaE00']))
     return sorted(rows,key=lambda row: row['delta'])
 
@@ -37,7 +37,7 @@ def complete_table(report, folder, paragraph):
     from reportlab.lib import colors
     from reportlab.lib.units import mm
     rows=complete_rows(report,folder)
-    note='All saved fitting and current verification patches, including repeats and paper white. No Delta E00 cutoff. Ordered from smallest to largest unrounded deviation. Fitting compares model with measured Lab; verification compares measured with desired Lab. These comparisons are distinct. Lab order: L*, a*, b*. Each group retains its saved colourimetry.'
+    note='All saved fitting and current verification patches, including repeats and paper white. No Delta E00 cutoff. Ordered from smallest to largest unrounded deviation. Fitting compares model with measured Lab; verification compares measured with desired Lab. These comparisons are distinct. RGB order: R, G, B in percent (printer input); its swatch is an sRGB preview, not a measured colour. Lab order: L*, a*, b*. Each group retains its saved colourimetry.'
     if not rows:
         return [paragraph('No per-patch evidence available.')]
     def lab(value):
@@ -46,18 +46,27 @@ def complete_table(report, folder, paragraph):
         from certificate_swatches import lab_hex
         if value is None:
             return paragraph('Unavailable','DetailReport')
-        swatch=Table([['']],colWidths=[27*mm],rowHeights=[6*mm])
+        swatch=Table([['']],colWidths=[23*mm],rowHeights=[6*mm])
         swatch.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.HexColor(lab_hex(value))),
             ('BOX',(0,0),(-1,-1),.3,colors.grey)]))
-        cell=Table([[swatch],[paragraph(lab(value),'DetailReport')]],colWidths=[29*mm])
+        cell=Table([[swatch],[paragraph(lab(value),'DetailReport')]],colWidths=[25*mm])
         cell.setStyle(TableStyle([('LEFTPADDING',(0,0),(-1,-1),0),('RIGHTPADDING',(0,0),(-1,-1),0)]))
         return cell
-    cells=[[paragraph(s,'DetailHeading') for s in ['Group / role','Patch / location','Reference Lab','Measured Lab','Predicted Lab','Delta E00']]]
+    def coloured_rgb(value):
+        if value is None:
+            return paragraph('Unavailable','DetailReport')
+        swatch=Table([['']],colWidths=[23*mm],rowHeights=[6*mm])
+        swatch.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.Color(*(max(0, min(100, x))/100 for x in value))),
+            ('BOX',(0,0),(-1,-1),.3,colors.grey)]))
+        cell=Table([[swatch],[paragraph(lab(value),'DetailReport')]],colWidths=[25*mm])
+        cell.setStyle(TableStyle([('LEFTPADDING',(0,0),(-1,-1),0),('RIGHTPADDING',(0,0),(-1,-1),0)]))
+        return cell
+    cells=[[paragraph(s,'DetailHeading') for s in ['Group / role','Patch / location','RGB %','Reference Lab','Measured Lab','Predicted Lab','Delta E00']]]
     for row in rows:
         cells.append([paragraph(row['group']+' / '+row['role'],'DetailReport'),
             paragraph(row['id']+' / '+row['coordinate'],'DetailReport'),
-            coloured_lab(row['reference']),coloured_lab(row['measured']),coloured_lab(row['predicted']),
+            coloured_rgb(row['rgb']),coloured_lab(row['reference']),coloured_lab(row['measured']),coloured_lab(row['predicted']),
             paragraph(f"{row['delta']:.4f}",'DetailReport')])
-    table=Table(cells,colWidths=[29*mm,22*mm,34*mm,34*mm,34*mm,21*mm],repeatRows=1,hAlign='LEFT')
+    table=Table(cells,colWidths=[23*mm,20*mm,29*mm,29*mm,29*mm,29*mm,15*mm],repeatRows=1,hAlign='LEFT')
     table.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('GRID',(0,0),(-1,-1),.25,colors.HexColor('#ccd8de')),('BACKGROUND',(0,0),(-1,0),colors.HexColor('#eef3f5')),('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5)]))
     return [paragraph(note),paragraph(f'{len(rows)} patches; patch IDs and locations retained for traceability.'),table]

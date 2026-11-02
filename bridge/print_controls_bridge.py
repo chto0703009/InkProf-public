@@ -8,6 +8,28 @@ from pty_transport import read_ready
 from spotread_bridge import parse_reading, prompt_state, emit
 
 
+
+class ControlProcessError(RuntimeError):
+    """Preserve the instrument's failure instead of hiding it behind spot count."""
+    def __init__(self, transcript, folder, code, recorded, expected):
+        lines = [line.strip() for line in transcript.splitlines() if line.strip()]
+        self.diagnostic = next((line for line in reversed(lines)
+                                if 'Instrument initialisation failed' in line), '')
+        self.communication_failure = bool(re.search(r'communications? failure', transcript, re.I))
+        if self.communication_failure:
+            message = 'i1 Pro 2 USB communication failed during initialisation.' if recorded == 0 else 'Instrument communication failed during RGB measurement.'
+        else:
+            self.diagnostic = self.diagnostic or next((line for line in reversed(lines)
+                if re.search(r'error|failed|failure', line, re.I)), '')
+            message = self.diagnostic or f'RGB measurement process stopped (exit code {code}).'
+        message += f' Saved RGB readings: {recorded}/{expected}.'
+        self.transcript_file = str(folder / 'transcript.txt')
+        self.exit_code = code
+        self.recorded = recorded
+        self.expected = expected
+        super().__init__(message)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('folder'); parser.add_argument('executable')
@@ -91,7 +113,8 @@ def main():
                             armed = False
                             os.write(master, b' '); buffer = ''; state = 'busy'; emit('state', kind=state)
         code = proc.wait(timeout=5)
-        if code != 0 or count != len(request['readings']): raise RuntimeError('Control test ended before all spots were recorded.')
+        if code != 0 or count != len(request['readings']):
+            raise ControlProcessError(full, folder, code, count, len(request['readings']))
         emit('completed', count=count)
     finally:
         if proc is not None and proc.poll() is None:
@@ -106,4 +129,11 @@ def main():
 
 if __name__ == '__main__':
     try: main()
-    except Exception as error: emit('error', message=str(error)); sys.exit(1)
+    except Exception as error:
+        details = {}
+        if isinstance(error, ControlProcessError):
+            details = dict(diagnostic=error.diagnostic, transcript=error.transcript_file,
+                           communicationFailure=error.communication_failure,
+                           exitCode=error.exit_code, recorded=error.recorded, expected=error.expected)
+        emit('error', message=str(error), **details)
+        sys.exit(1)

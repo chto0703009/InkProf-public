@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.4.2 | 2026-10-27",
+    "tag": "ANVÄNDARHANDBOK | v1.5.0 | 2026-11-02",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Öppen metod och tydliga förutsättningar",
-        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.4.2, dokumenterad 2026-10-27; appens knappar och fältnamn är engelska."
+        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.5.0, dokumenterad 2026-11-02; appens knappar och fältnamn är engelska."
       ]
     ],
     "callout": "InkProf samlar profilering, kontroll och dokumentation i ett projekt. Utskriften av färgmålen gör du i ett separat utskriftsprogram."
@@ -38,7 +38,7 @@
       ],
       [
         "1. Använd uppdaterad kodmapp",
-        "Hämta källkods-ZIP för v1.4.2 från den publika releasesidan, packa upp och öppna hela InkProf-mappen. Alternativt: git clone --branch v1.4.2 https://github.com/chto0703009/InkProf-public.git . Blanda inte filer från olika installationer."
+        "Hämta källkods-ZIP för v1.4.2 från den publika releasesidan, packa upp och öppna hela InkProf-mappen. Alternativt: git clone --branch v1.5.0 https://github.com/chto0703009/InkProf-public.git . Blanda inte filer från olika installationer."
       ],
       [
         "2. Förbered programmets miljö",
@@ -1002,7 +1002,7 @@
       ],
       [
         "Underlag för denna handbok",
-        "Handboken beskriver InkProf 1.4.2, utgiven 27 oktober 2026, med dokumentrevision 2026-10-27. Releasetaggen identifierar den publicerade källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
+        "Handboken beskriver InkProf 1.5.0, utgiven 2 november 2026, med dokumentrevision 2026-11-02. Releasetaggen identifierar den publicerade källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
       ]
     ],
     "links": [
@@ -1072,7 +1072,7 @@
       ],
       [
         "Utgåvestatus",
-        "Handboken beskriver InkProf 1.4.2, utgiven 27 oktober 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. macOS-programmappen innehåller Argyll för ARM och Intel. MATLAB och den separata Pythonmiljön behöver förberedas enligt installationsanvisningen."
+        "Handboken beskriver InkProf 1.5.0, utgiven 2 november 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. macOS-programmappen innehåller Argyll för ARM och Intel. MATLAB och den separata Pythonmiljön behöver förberedas enligt installationsanvisningen."
       ]
     ],
     "links": [
@@ -1785,7 +1785,7 @@
         "En felaktig eller inkompatibel version av Python eller ett beroendepaket kan göra att analysen inte fungerar, även om paketet är installerat. InkProf kontrollerar Python-versionens grundkrav och provar att de nödvändiga paketen och deras kompilerade bibliotek kan laddas. Vid installation kontrolleras även att Argyll-verktygen kan startas och lämna versionsinformation. Använd paketversionerna i requirements-filerna som hör till din InkProf-utgåva. Kontrollen prövar funktion och grundkrav; den ersätter inte installationsfilernas angivna paketversioner."
       ]
     ],
-    "callout": "Anvisningen gäller InkProf 1.4.2, dokumentrevision 2026-10-27. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
+    "callout": "Anvisningen gäller InkProf 1.4.2, dokumentrevision 2026-11-02. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
     "links": [
       [
         "Detaljer och reparationskommandon",
@@ -2322,6 +2322,37 @@
       [
         "Återställning av miljön",
         "Varje installation bygger sin egen .venv med låsta paketversioner. Misslyckad installation återställer den föregående miljön. Behåll hela programmappen samlad; originalprojekt, mätningar och ICC-profiler ändras inte. Se PYTHON_ENVIRONMENT.md."
+      ]
+    ]
+  },
+  {
+    "tag": "APPENDIX | MIRAGE | 2026-10-29",
+    "title": "Canon PRO-2600 och Mirage",
+    "lead": "Pappersvalet i Mirage gäller även i Color Mode: Profile Creation. Läget stänger av ICC-färgstyrningen, men pappers- och utskriftsinställningarna gäller fortfarande.",
+    "sections": [
+      [
+        "Vilket pappersval styr?",
+        "Enligt DINAX-supportens svar från Marvin i ärende 36912 använder skrivaren det medium som valts i Mirage när jobbet skickas därifrån. Pappersvalet på Canon imagePROGRAF PRO-2600:s panel avgör inte Mirages medium för jobbet. Ladda ändå det fysiska papper som ska profileras."
+      ],
+      [
+        "Tre inställningar med olika uppgifter",
+        "Skrivarens panel visar papperstypen vid laddning. Print to … on [paper] i Mirage väljer mediet för utskriftsjobbet. Color Mode: Profiling / Profile Creation innebär enligt underlaget att ingen färgstyrning tillämpas och inga ICC-profiler används för mätkartan. Välj därför rätt Mirage-medium, kvalitet och upplösning även i detta läge."
+      ],
+      [
+        "Så får du en reproducerbar profil",
+        "1. Ladda rätt papper och välj avsett medium samt kvalitet/upplösning i Mirage.\n2. Välj Color Mode: Profile Creation för profileringsmålet; använd ingen befintlig ICC-profil.\n3. Skriv ut i avsedd storlek och låt utskriften torka före mätning. Dokumentera Mirage-medium, kvalitet och Chroma Optimizer (CO), om tillämpligt, i projektet.\n4. Koppla den färdiga ICC-profilen till samma Mirage-medium och behåll samma utskriftsinställningar när du skriver ut bilder."
+      ],
+      [
+        "Canon PRO-2600: Chroma Optimizer (CO) och profilen",
+        "Denna anvisning gäller Canon imagePROGRAF PRO-2600 med Chroma Optimizer. Den är inte ett generellt krav för andra skrivare. CO-läget är en del av utskriftskombinationen som ICC-profilen beskriver. Dokumentera inställningen och använd samma CO-läge för profileringsmålet, verifieringsutskriften och senare bilder. En profil framtagen med CO ska inte utan ny verifiering användas för utskrift utan CO, eller tvärtom. Om CO-läget ändras: verifiera den befintliga profilen med en ny utskrift; skapa en separat profil om resultatet kräver det. Kontrollera inställningen i utskriftsflödet även när ICC-färgstyrningen är avstängd."
+      ],
+      [
+        "Skillnad mot C2a-verifieringsmålet i InkProf",
+        "Anvisningen ovan gäller profileringsmål. På InkProfs C2a-TIFF har profilen redan applicerats en gång. Vid utskrift ska ingen ytterligare ICC-konvertering göras. Behåll det medium och de fysiska utskriftsinställningar som profilen avser; applicera inte profilen igen i Mirage."
+      ],
+      [
+        "Underlag",
+        "Underlag: mirage-profiling-paper-settings.pdf, tillhandahållen av användaren. Dokumentet återger Marvin på DINAX, ärende 36912, och hänvisar till Mirage User Guide: Profile Creation och Custom Medium."
       ]
     ]
   }

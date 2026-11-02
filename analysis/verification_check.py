@@ -99,6 +99,7 @@ def analyse(reference, measurement, readings):
         predicted = np.asarray(p['predictedLabD50Absolute'])
         patches.append(dict(sampleId=str(p['id']), referenceName=p.get('referenceName'), measurementSampleId=printed_id(p), coordinate=p['placement']['coordinate'], page=p['placement']['page'],
                             role=p['role'], gamutAssessment=p['gamutAssessment'], numericalInverseResidualDE00=p.get('numericalInverseResidualDE00'), repeatOf=p['repeatOf'] or None,
+                            rgbPercent=[float(x)*100 for x in p['deviceRGB']],
                             desiredLab=desired.tolist(), measuredLab=lab.tolist(), predictedLab=predicted.tolist(),
                             deltaE00=float(colour.delta_E(desired, lab, method='CIE 2000')),
                             predictedDeltaE00=float(colour.delta_E(predicted, lab, method='CIE 2000')),

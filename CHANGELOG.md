@@ -1,3 +1,14 @@
+# InkProf 1.5.0 - 2026-11-02
+
+- Add sRGB colour previews for measured and predicted Lab values in numerical measurement-appendix tables. Include printer RGB percentages and previews in print-verification appendix tables.
+- Retain printer RGB values in new verification evidence. Printer input percentages and Lab-derived sRGB previews are identified separately.
+- Enable main-window actions only when the selected step and required saved files support them. Disable unavailable results, empty log/history actions and actions blocked during processing.
+- Preserve stopped-build diagnostic access and restore action availability after processing.
+- Include workflow progress cleanup and RGB control failure diagnostics committed after 1.4.2.
+- Update the Swedish and English handbooks, including the supplied Canon PRO-2600/Mirage paper and Chroma Optimizer guidance.
+
+Existing projects, original measurements, profiles and registered reports are preserved. Export a new certificate to obtain the updated appendix. No new physical instrument or print qualification is claimed. Other PDF guides retain their dated 1.4.2 scope. See VALIDATION.txt for the checks run for this release.
+
 # InkProf 1.4.2 - 2026-10-27
 
 - Publish the private native Python preparation already committed after 1.4.1. macOS Prepare obtains pinned Python 3.13.6 with checksum-verified tooling without modifying system Python.

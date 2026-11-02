@@ -256,11 +256,24 @@ def create(folder, language="en"):
                 return Paragraph(html.escape(str(value)), styles['RecordCell'])
             def triplet(value):
                 return ' / '.join(format(v, '.3f') for v in value) if isinstance(value, list) else 'Not recorded'
-            rows = [[cell(label) for label in ['Index', 'Patch ID / location', 'RGB %', 'Measured Lab', 'Predicted Lab', 'Delta E00']]]
+            def colour_cell(value):
+                if value is None:
+                    return cell('Not recorded')
+                from certificate_swatches import lab_hex
+                swatch = Table([['']], colWidths=[28*mm], rowHeights=[6*mm])
+                swatch.setStyle(TableStyle([
+                    ('BACKGROUND',(0,0),(-1,-1),colors.HexColor(lab_hex(value))),
+                    ('BOX',(0,0),(-1,-1),.3,colors.grey)]))
+                result = Table([[swatch],[cell(triplet(value))]], colWidths=[29*mm])
+                result.setStyle(TableStyle([('LEFTPADDING',(0,0),(-1,-1),0),
+                                           ('RIGHTPADDING',(0,0),(-1,-1),0)]))
+                return result
+            story.append(Paragraph('Colour swatches are sRGB previews converted from CIELAB D50 (clipped to the sRGB display range). RGB % records printer input, not sRGB. The previews do not represent a separate print verification.', styles['ReportBody']))
+            rows = [[cell(label) for label in ['Index', 'Patch ID / location', 'RGB %', 'Measured Lab / sRGB', 'Predicted Lab / sRGB', 'Delta E00']]]
             for patch in fitting_records:
                 rows.append([cell(patch.get('sourceIndex', '')), cell(str(patch.get('sampleId', ''))+' / '+str(patch.get('coordinate', ''))),
-                    cell(triplet(patch.get('rgbPercent'))), cell(triplet(patch.get('measuredLab'))),
-                    cell(triplet(patch.get('predictedLab'))), cell(format(patch['deltaE00'], '.4f'))])
+                    cell(triplet(patch.get('rgbPercent'))), colour_cell(patch.get('measuredLab')),
+                    colour_cell(patch.get('predictedLab')), cell(format(patch['deltaE00'], '.4f'))])
             grid = Table(rows, colWidths=[10*mm, 47*mm, 29*mm, 35*mm, 35*mm, 18*mm], repeatRows=1)
             grid.setStyle(TableStyle([('VALIGN',(0,0),(-1,-1),'TOP'),('GRID',(0,0),(-1,-1),.2,colors.lightgrey)]))
             story.append(grid)

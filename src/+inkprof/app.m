@@ -17,9 +17,9 @@ bar=uigridlayout(g,[1 8]);bar.Padding=[0 0 0 0];bar.ColumnWidth={115,115,130,85,
 uibutton(bar,'Text','New project','Tag','newProject','ButtonPushedFcn',@newProject);
 uibutton(bar,'Text','Open project','Tag','openProject','ButtonPushedFcn',@openProject);
 detailsButton=uibutton(bar,'Text','Project details','Tag','editProjectDetails','Enable','off','ButtonPushedFcn',@editDetails);
-uibutton(bar,'Text','Refresh','ButtonPushedFcn',@(~,~)refresh());
-uibutton(bar,'Text','Open results log','Tag','openResultLog','ButtonPushedFcn',@openLog);
-uibutton(bar,'Text','Iteration history','Tag','iterationHistory','ButtonPushedFcn',@history);
+uibutton(bar,'Text','Refresh','Tag','refreshWorkflow','ButtonPushedFcn',@(~,~)refresh());
+logButton=uibutton(bar,'Text','Open results log','Tag','openResultLog','Enable','off','ButtonPushedFcn',@openLog);
+historyButton=uibutton(bar,'Text','Iteration history','Tag','iterationHistory','Enable','off','ButtonPushedFcn',@history);
 reportButton=uibutton(bar,'Text','Open report','Tag','openFinalReport','Enable','off','ButtonPushedFcn',@openReport);
 labButton=uibutton(bar,'Text','View 3D','Tag','showProfile3D','Enable','off','ButtonPushedFcn',@show3D);
 projectBar=uigridlayout(g,[1 4]);projectBar.ColumnWidth={'1x',200,120,140};projectBar.Padding=[0 0 0 0];
@@ -36,7 +36,7 @@ details=uitextarea(right,'Editable','off','Tag','workflowDetails');
 stepActions=uigridlayout(right,[1 2]);stepActions.Padding=[0 0 0 0];
 runButton=uibutton(stepActions,'Text','Run selected step','Tag','runWorkflowStep','Enable','off','ButtonPushedFcn',@run);
 nextButton=uibutton(stepActions,'Text','Go to suggested next step','Tag','goToSuggestedStep','Enable','off','ButtonPushedFcn',@goNext);
-uibutton(right,'Text','Open selected step results','ButtonPushedFcn',@openResult);
+resultButton=uibutton(right,'Text','Open selected step results','Tag','openStepResults','Enable','off','ButtonPushedFcn',@openResult);
 printButton=uibutton(right,'Text','Copy TIFF16 for printing…','Tag','copyPrintTIFF','Enable','off','ButtonPushedFcn',@copyPrint);
 cgatsCheck=uicheckbox(right,'Text','Include CGATS for i1Profiler when saving ICC/certificate','Value',false,'Tag','includeI1ProfilerCGATS','Enable','off', ...
  'Tooltip','Selected original native M0 measurement only; not accumulated refinements or C2. TXT and provenance JSON are included in the delivery.');
@@ -70,7 +70,7 @@ end
     end
     function remeasureRefinement(~,~)
         if isempty(w)||busy,return;end
-        busy=true;
+        busy=true;disableActions();
         try
             w.restoreRefinementForRemeasurement();selected="refinemeasurement";
             message='Existing refinement target restored. Step 16: Run selected step, then Measure the corrected print.';
@@ -180,22 +180,60 @@ end
         selected=string(defs(e.Indices(1),1).id);refresh();
         % Selecting a row only navigates. Run explicitly from the action button.
     end
+    function disableActions()
+        buttons=findall(fig,'Type','uibutton');
+        for button=buttons'
+            if ~any(string(button.Tag)==["licenseNotice","closeWorkflowApp"])
+                button.Enable='off';
+            end
+        end
+        cgatsCheck.Enable='off';
+    end
+    function yes=hasOutput(id,key)
+        yes=isfield(w.State.steps.(id).outputs,key);
+        if yes
+            path=w.resolve(w.State.steps.(id).outputs.(key));
+            yes=isfile(path)||isfolder(path);
+        end
+    end
+    function names=availableResults(id)
+        names={};
+        if isempty(w),return;end
+        if id=="continue"&&string(w.State.steps.(id).status)=="failed"
+            if ~isempty(inkprof.internal.failedIterationReports(w.Root)),names={'stoppedBuild'};end
+            return;
+        end
+        if ~w.valid(id),return;end
+        candidates=fieldnames(w.State.steps.(id).outputs);
+        for k=1:numel(candidates)
+            path=w.resolve(w.State.steps.(id).outputs.(candidates{k}));
+            if isfile(path)||isfolder(path),names{end+1}=candidates{k};end %#ok<AGROW>
+        end
+    end
     function refresh()
-        if isempty(w)||busy,return;end
+        disableActions();
+        if busy,return;end
+        for tag=["newProject","openProject","refreshWorkflow"]
+            button=findobj(fig,'Tag',tag);button.Enable='on';
+        end
+        if isempty(w),return;end
         try
-            w.reload();cgatsCheck.Enable=matlab.lang.OnOffSwitchState(w.mode()~="verification"&&any(selected==["export","numericalExport"]));detailsButton.Enable='on';verifyButton.Enable='on';assessment=w.inspect();data=cell(numel(defs),2);
-            remeasureButton.Enable=matlab.lang.OnOffSwitchState(isfield(w.State.steps.refine.outputs,'proposal')&&isfield(w.State.steps.refine.outputs,'target'));
+            w.reload();logButton.Enable=matlab.lang.OnOffSwitchState(isfile(fullfile(w.Root,'result-log.txt')));
+            historyButton.Enable=matlab.lang.OnOffSwitchState(~isempty(w.State.history));
+            resultButton.Enable=matlab.lang.OnOffSwitchState(~isempty(availableResults(selected)));
+            cgatsCheck.Enable=matlab.lang.OnOffSwitchState(w.mode()~="verification"&&any(selected==["export","numericalExport"])&&w.ready(selected));detailsButton.Enable='on';verifyButton.Enable='on';assessment=w.inspect();data=cell(numel(defs),2);
+            remeasureButton.Enable=matlab.lang.OnOffSwitchState(hasOutput('refine','proposal')&&hasOutput('refine','target'));
             for k=1:numel(defs)
                 id=string(defs(k).id);valid=assessment.(id).valid;ready=assessment.(id).ready;
                 s=string(w.State.steps.(id).status);
                 if valid,s="Complete";elseif s=="completed",s="Out of date";elseif s=="running",s="Interrupted / running";elseif s=="failed",s="Failed";elseif ready,s="Ready";else,s="Locked";end
                 data(k,:)={defs(k).label,char(s)};
             end
-            reportButton.Enable=matlab.lang.OnOffSwitchState((assessment.export.valid&&isfield(w.State.steps.export.outputs,'finalReport'))||(assessment.numericalExport.valid&&isfield(w.State.steps.numericalExport.outputs,'finalReport')));
-            labButton.Enable=matlab.lang.OnOffSwitchState(assessment.c2.valid);
-            gamutButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid);
-            compareButton.Enable=matlab.lang.OnOffSwitchState(assessment.input.valid);
-            photoButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid);
+            reportButton.Enable=matlab.lang.OnOffSwitchState((assessment.export.valid&&hasOutput('export','finalReport'))||(assessment.numericalExport.valid&&hasOutput('numericalExport','finalReport')));
+            labButton.Enable=matlab.lang.OnOffSwitchState(assessment.c2.valid&&hasOutput('c2','reference'));
+            gamutButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid&&hasOutput('profile','profile'));
+            compareButton.Enable=matlab.lang.OnOffSwitchState(assessment.input.valid&&hasOutput('input','input'));
+            photoButton.Enable=matlab.lang.OnOffSwitchState(assessment.profile.valid&&hasOutput('profile','job'));
             refinementButton.Enable=matlab.lang.OnOffSwitchState(assessment.refine.ready);
             table.Data=data;index=find(string({defs.id})==selected);titleLabel.Text=defs(index).label;
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
@@ -209,11 +247,13 @@ end
                 if selected=="export",guide="Save the measurement certificate and its evidence in a portable folder. Results apply to this print and these settings; no new ICC is built.";end
             end
             recommendation=inkprof.internal.recommendWorkflowStep(w.State,assessment,w.mode());
-            suggested=recommendation.id;nextButton.Enable=matlab.lang.OnOffSwitchState(recommendation.ready);
+            suggested=recommendation.id;nextButton.Enable=matlab.lang.OnOffSwitchState(recommendation.ready&&suggested~=selected);
             suggestion="Suggested next step: "+recommendation.label;
             if suggested=="",suggestion="Workflow guidance";end
             hint.Value=cellstr([suggestion;recommendation.reason;"";reason;guide]);
-            printButton.Enable=matlab.lang.OnOffSwitchState(assessment.(selected).valid&&any(startsWith(string(fieldnames(w.State.steps.(selected).outputs)),"TIFF16_")));
+            printKeys=string(fieldnames(w.State.steps.(selected).outputs));
+            printKeys=printKeys(startsWith(printKeys,"TIFF16_"));
+            printButton.Enable=matlab.lang.OnOffSwitchState(assessment.(selected).valid&&~isempty(printKeys)&&all(arrayfun(@(key)hasOutput(selected,key),printKeys)));
             printButton.Text='Copy TIFF16 for printing…';
             if any(selected==["export","numericalExport"])
                 printButton.Text='Save delivery elsewhere…';
@@ -266,7 +306,13 @@ end
             heading.Text="InkProf | Iteration "+w.State.cycle;
             if w.mode()=="verification",heading.Text="InkProf | Verify existing ICC";end
             status.Text="Last active step: "+string(w.State.currentStep)+" | saved revision "+w.State.revision;
-        catch err,status.Text=err.message;runButton.Enable='off';end
+        catch err
+            disableActions();
+            for tag=["newProject","openProject","refreshWorkflow"]
+                button=findobj(fig,'Tag',tag);button.Enable='on';
+            end
+            status.Text=err.message;
+        end
     end
     function goNext(~,~)
         if isempty(w)||busy,return;end
@@ -279,13 +325,13 @@ end
     end
     function photoCheck(~,~)
         if isempty(w)||busy,return;end
-        busy=true;
+        busy=true;disableActions();
         try,inkprof.checkPhotoGradients(fileparts(w.output('profile','job')));catch err,uialert(fig,err.message,'Photographic gradients');end
         busy=false;refresh();
     end
     function compareTradeoffs(~,~)
         if isempty(w)||busy,return;end
-        busy=true;compareButton.Enable='off';
+        busy=true;disableActions();compareButton.Enable='off';
         try,inkprof.internal.profileTradeoffDialog(w,fig);catch err,uialert(fig,err.message,'Profile comparison');end
         busy=false;refresh();
     end
@@ -293,7 +339,7 @@ end
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
         if nargin<3,saveElsewhere=false;end
         if isempty(w)||busy,return;end
-        progress=[];watch=[];started=[];finished=false;message="";
+        progress=[];watch=[];operation=[];started=[];finished=false;message="";
         active=selected;
         try
             preflight=inkprof.internal.calculationProgress("Checking project inputs","Checking saved files and prerequisites before starting.",Parent=fig);
@@ -307,8 +353,9 @@ end
                 uialert(fig,reason,'Step not available','Icon','info');return;
             end
             o=optionsFor(selected,saveElsewhere);if isempty(o),return;end
-            busy=true;setappdata(fig,'InkProfRunning',true);
-            operationCleanup=onCleanup(@releaseRunState); %#ok<NASGU>
+            busy=true;disableActions();setappdata(fig,'InkProfRunning',true);
+            operation=inkprof.internal.RunProgress(@releaseRunState);
+            operationCleanup=operation.guard(); %#ok<NASGU>
             fig.Visible='on';figure(fig);runButton.Enable='off';started=datetime('now');
             index=find(string({defs.id})==active);
             data=table.Data;data{index,2}='Running';table.Data=data;
@@ -322,9 +369,10 @@ end
                     'Preparing measurements. This can take several minutes.', ...
                     'Indeterminate','on','Cancelable','off');
             end
-            watch=timer('ExecutionMode','fixedSpacing','Period',1,'BusyMode','drop','TimerFcn',@updateProgress);
-            start(watch);
-            w.run(active,o);finished=true;
+            operation.Progress=progress;
+            watch=inkprof.internal.workflowProgressTimer(fig,w,active,string(defs(index).label),started,progress,details,status);
+            operation.Watch=watch;start(watch);
+            w.run(active,o);finished=true;operation.Finished=true;
             message="Complete: "+string(defs(index).label)+". Results saved.";
             saved=inkprof.internal.savedTargetSummary(w,active);
             if ~isempty(saved),message=message+" "+saved(1);end
@@ -354,39 +402,20 @@ end
                 'Options',{'Copy for printing','Done'},'DefaultOption',1,'CancelOption',2,'Icon','success');
             if strcmp(choice,'Copy for printing'),copyPrintStep(active);end
         end
-        function updateProgress(~,~)
-            if ~isvalid(fig),return;end
-            elapsed=seconds(datetime('now')-started);
-            phase=string(defs(index).label);
-            if isappdata(fig,'InkProfCalculationPhase'),phase=getappdata(fig,'InkProfCalculationPhase');end
-            text=phase+" — elapsed "+floor(elapsed/60)+" min "+mod(floor(elapsed),60)+" sec";
-            logs=dir(fullfile(w.Root,'profiles','iterations','*','progress.log'));
-            if any(active==["profile","continue"])&&~isempty(logs)
-                [~,last]=max([logs.datenum]);entry=logs(last);
-                if entry.datenum>=datenum(started)
-                    try
-                        lines=splitlines(strtrim(string(fileread(fullfile(entry.folder,entry.name)))));
-                        text=text+newline+lines(end);
-                    catch
-                        % The writer may be replacing the progress file.
-                    end
-                end
-            end
-            if ~isempty(progress)&&isvalid(progress),progress.Message=char(text);end
-            details.Value=cellstr(splitlines(text+newline+"Work is in progress. Complete any open input dialog; otherwise please wait."));status.Text="Running: "+phase+". Please wait.";
-        end
-        function releaseRunState()
-            % Also runs for Ctrl+C, which bypasses the normal catch/end path.
-            stopProgress();busy=false;
-            if isgraphics(fig)&&~finished
-                runButton.Enable='on';
-                status.Text='Operation stopped. Saved files are retained. Refresh to continue.';
-            end
-        end
         function stopProgress()
             if isgraphics(fig),setappdata(fig,'InkProfRunning',false);end
-            if ~isempty(watch)&&isvalid(watch),stop(watch);delete(watch);end
-            if ~isempty(progress)&&isvalid(progress),close(progress);end
+            if ~isempty(operation),operation.stop();end
+        end
+    end
+    function releaseRunState(finished)
+        % Sibling of run: no dependency on its exiting callback workspace.
+        busy=false;
+        if isgraphics(fig)
+            setappdata(fig,'InkProfRunning',false);
+            if ~finished
+                refresh();
+                status.Text='Operation stopped. Saved files are retained. Refresh to continue.';
+            end
         end
     end
     function copyPrint(~,~)
@@ -650,11 +679,11 @@ end
         [n,p]=inkprof.internal.withFocus(fig,@uigetfile,filter,label,char(w.Root));file="";if ~isequal(n,0),file=string(fullfile(p,n));end
     end
     function openLog(~,~)
-        if isempty(w),return;end
+        if isempty(w)||busy,return;end
         p=fullfile(w.Root,'result-log.txt');if isfile(p),edit(p);else,uialert(fig,'The log is created when the first operation runs.','Results log');end
     end
     function openReport(~,~)
-        if isempty(w),return;end
+        if isempty(w)||busy,return;end
         w.reload();id="export";
         if w.valid('numericalExport')&&(selected=="numericalExport"||~w.valid('export')),id="numericalExport";end
         [valid,reason]=w.valid(id);
@@ -664,7 +693,7 @@ end
     function showGamutView(~,~)
         if busy || isempty(w),return;end
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
-        busy=true;setappdata(fig,'InkProfRunning',true);
+        busy=true;disableActions();setappdata(fig,'InkProfRunning',true);
         busyGuard=onCleanup(@finishGamut); %#ok<NASGU>
         try
             w.reload();[ok,why]=w.valid('profile');
@@ -677,18 +706,18 @@ end
     end
     function finishGamut()
         busy=false;
-        if isgraphics(fig),setappdata(fig,'InkProfRunning',false);end
+        if isgraphics(fig),setappdata(fig,'InkProfRunning',false);refresh();end
     end
     function show3D(~,~)
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
-        if isempty(w),return;end
+        if isempty(w)||busy,return;end
         w.reload();[ok,why]=w.valid('c2');
         if ~ok,uialert(fig,char(why),'3D data unavailable');return;end
         inkprof.showVerificationLab(w.output('c2','reference'));
     end
     function history(~,~)
         focusGuard=inkprof.internal.restoreAppFocus(fig); %#ok<NASGU>
-        if isempty(w),return;end
+        if isempty(w)||busy,return;end
         w.reload();h=w.State.history;if isstruct(h),h=num2cell(h);end
         rows=cell(0,4);
         for k=1:numel(h)
@@ -707,7 +736,9 @@ end
     end
     function openResult(~,~)
         if isempty(w)||busy,return;end
-        w.reload();s=w.State.steps.(selected);
+        w.reload();names=availableResults(selected);
+        if isempty(names),refresh();return;end
+        s=w.State.steps.(selected);
         if selected=="feedback"&&isfield(s.outputs,'feedback')
             showFeedback();return;
         end
@@ -721,8 +752,6 @@ end
                 return;
             end
         end
-        names=fieldnames(s.outputs);
-        if isempty(names),return;end
         labels=names;
         deliveryStep=any(selected==["export","numericalExport"]);
         if deliveryStep
