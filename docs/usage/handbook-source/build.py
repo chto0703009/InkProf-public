@@ -15,7 +15,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 ROOT=Path(__file__).resolve().parent
 VERSION=(ROOT.parents[2]/'VERSION').read_text().strip()
-DATE='2026-11-02'
+DATE=json.loads((ROOT.parents[2]/'resources/release.json').read_text())['date']
 CODE_REVISION='v'+VERSION
 LANG=sys.argv[2] if len(sys.argv)>2 else 'en'
 if LANG not in ('sv','en'):raise ValueError('Language must be sv or en.')
@@ -36,8 +36,22 @@ class Pages(canvas.Canvas):
   n=len(self.states);ann=self._annotationCount
   for st in self.states:
    self.__dict__.update(st);self._annotationCount=ann
+   chapter_index=self._pageNumber-2
+   if 0<=chapter_index<len(chapters):
+    key=f'chapter-{chapter_index}'
+    self.bookmarkPage(key)
+    self.addOutlineEntry(chapters[chapter_index]['title'],key)
+   elif chapter_index==len(chapters):
+    self.bookmarkPage('contents')
+    self.addOutlineEntry(contents_label,'contents')
+   self.setFont('Vera',8)
+   self.setFillColor(TEAL)
+   self.drawRightString(192*mm,16*mm if self._pageNumber==1 else 11*mm,contents_label)
+   link_y=16*mm if self._pageNumber==1 else 11*mm
+   link_width=self.stringWidth(contents_label,'Vera',8)
+   self.linkRect('', 'contents',(192*mm-link_width,link_y-2,192*mm,link_y+8),relative=0,thickness=0)
    if self._pageNumber==1:
-    super().showPage()
+    ann=self._annotationCount;super().showPage()
     continue
    self.setFont('VeraBold',10);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,local('InkProf - Kvalitetsprofilering för RGB-skrivare | ','InkProf - Quality profiling for RGB printers | ')+VERSION)
    self.setFillColor(MUTED)
@@ -115,6 +129,8 @@ class WorkflowDiagram(Flowable):
 def table(rows):
  n=len(rows[0]);widths=([15,81,78] if n==3 else [51,123]);t=Table([[p(escape(v),'cell') for v in r] for r in rows],colWidths=[w*mm for w in widths],repeatRows=1,hAlign='LEFT')
  t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),PALE),('VALIGN',(0,0),(-1,-1),'TOP'),('LINEBELOW',(0,0),(-1,-1),.4,LINE),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]));return t
+chapters=json.loads((ROOT/f'content-{LANG}.json').read_text())
+contents_label=local('Innehåll','Contents')
 coverTitle=ParagraphStyle('coverTitle',parent=S['title'],fontSize=44,leading=52,spaceAfter=8)
 coverSubtitle=ParagraphStyle('coverSubtitle',parent=S['lead'],fontSize=24,leading=30,spaceAfter=12)
 coverAuthor=ParagraphStyle('coverAuthor',parent=S['lead'],alignment=2)
@@ -128,7 +144,7 @@ story=[Spacer(1,8*mm),p(local('ANVÄNDARHANDBOK','USER HANDBOOK'),'tag'),
  Image(str(ROOT/'examples/cover-gamut.png'),width=174*mm,height=100*mm,kind='proportional'),
  Spacer(1,5*mm),Paragraph('<b>Christer Törnkvist</b>',coverAuthor),
  Paragraph(local('Datum: ','Date: ')+DATE+'<br/>'+local('Programversion: ','Program version: ')+escape(VERSION)+'<br/>'+local('Dokumentrevision: ','Document revision: ')+DATE+' | '+local('Kod: ','Code: ')+CODE_REVISION,coverDetails),PageBreak()]
-for i,page in enumerate(json.loads((ROOT/f'content-{LANG}.json').read_text())):
+for i,page in enumerate(chapters):
  if i:story.append(PageBreak())
  story.extend([p(escape(page['tag'].replace('v1.0.1','v'+VERSION)),'tag'),p(escape(page['title']),'title')])
  if page.get('lead'):story.append(p(escape(page['lead']),'lead'))
@@ -150,6 +166,12 @@ for i,page in enumerate(json.loads((ROOT/f'content-{LANG}.json').read_text())):
   t=Table([[p(escape(page['callout']))]],colWidths=[174*mm]);t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),PALE),('BOX',(0,0),(-1,-1),.5,LINE),('LEFTPADDING',(0,0),(-1,-1),11),('RIGHTPADDING',(0,0),(-1,-1),11),('TOPPADDING',(0,0),(-1,-1),9),('BOTTOMPADDING',(0,0),(-1,-1),6)]));story.extend([Spacer(1,4*mm),t]);
   if page.get('links'):story.append(Spacer(1,4*mm))
  for label,url in page.get('links',[]):story.append(p(f'<link href="{url}" color="#007F83">{escape(label)}</link>','small'))
+for start in range(0,len(chapters),26):
+ story.append(PageBreak())
+ story.append(p(contents_label,'title'))
+ for i,chapter in enumerate(chapters[start:start+26],start):
+  label=escape(chapter['title'])
+  story.append(p(f'<link href="#chapter-{i}" color="#007F83">{label}</link>','body'))
 doc=SimpleDocTemplate(str(OUT),pagesize=(210*mm,297*mm),leftMargin=18*mm,rightMargin=18*mm,topMargin=32*mm,bottomMargin=29*mm,title=local('InkProf - Användarhandbok','InkProf - User Handbook'),author='Christer Törnkvist',subject='App windows, workflow steps, measurements, iterations and measurement certificates')
 doc.build(story,canvasmaker=Pages)
 print(OUT)

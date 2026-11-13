@@ -13,7 +13,7 @@
     "measurement-window.png",
     "profiling-recipe.png"
   ],
-  "gamutPresentation": "Same ICC gamut surface; overlapping helper axes removed, labels moved to axis edges, depth sorting enabled for this documentation example. InkProf app code unchanged.",
+  "gamutPresentation": "Captured on 2026-11-13 in MATLAB R2025b from InkProf 1.5.1 View gamut using the synthetic example-sRGB.icc.",
   "measurement": "Before start; no spectrometer connection or physical measurement.",
   "recipe": "Example 575-patch input; compact layout for documentation export; cancelled without building a profile.",
   "iccVersionChoice": "Project details and Profiling screenshots recaptured from the actual updated dialog on 2026-10-09. Delivered ICC versions = Both; fictional settings; dialog cancelled without saving.",

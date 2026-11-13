@@ -28,13 +28,13 @@ All 3D Lab views show a contrasting L* reference through a*=b*=0, labeled from 0
 
 ## Select an area for additional measurements
 
-In the MATLAB **View gamut** window:
+In **step 15 → Add patches near the gamut boundary**, choose **Selected RGB neighbourhoods**:
 
 1. Rotate the surface to expose the area, then click **Select area**. Click the coloured surface; a white marker identifies the selected mesh vertex. Select several positions around an indentation if needed. **Rotate view** restores dragging; **Clear selection** removes all markers.
 2. Review the selected printer R/G/B percentages and **ΔE76 offset** in the side table. These are device values, not the clipped sRGB display colours. The offset is the distance between the mesh vertex and its nearest sampled forward ICC colour; it is **not measured print error**.
 3. Set **Neighbour radius** (default 3 RGB percentage points per channel), **Minimum spacing** (default 1), and **Maximum new patches** (default 100). The proposal explores a 3×3×3 RGB neighbourhood for each selected area, clipped at the device cube boundary. Already-measured training colours and near duplicates are excluded; the requested budget is an upper limit.
 4. Click **Review patches / create TIFF16**, uncheck unwanted rows, then **Create TIFF16 target**. Review the paper plan. InkProf saves the proposal and the unmanaged print package in a new project `refinements/` folder. Controls and development patches are assigned before measurement; extra controls and configured matte-shadow samples can increase the printed total.
-5. In app **step 15 → From gamut selection**, use the latest selection (or select its `proposal.json`). This registers a new immutable print package for the workflow and includes pending C2 patches when applicable. Print **this step-15 package**, measure in **step 16**, then build the next profile in **step 17**.
+5. InkProf registers the saved print package in step 15 and returns to the workflow. Print that package, measure in **step 16**, then build the next profile in **step 17**.
 
 The mesh comes from Argyll's envelope and does not carry original device RGB coordinates. The interactive window therefore associates vertices with nearest forward samples from 65-level RGB cube faces and a 17-level interior grid, in absolute CIELAB D50. This is an approximate association; its distance and sampled Lab are retained in the saved anchors. A picked point is not proof of a profile defect, and extra measurements cannot extend the physical gamut. Assess the rebuilt profile with a fresh independent verification print.
 
@@ -42,7 +42,7 @@ ICC files outside a successful InkProf profile job can be inspected and selected
 
 ## Add measurements in an inner gamut shell
 
-In **View gamut**, the sampling menu defaults to **Whole inner gamut shell**.
+In **Add patches near the gamut boundary**, the sampling menu defaults to **Whole inner gamut shell**.
 No surface selection is needed. Set **Shell thickness (ΔE76)** (default 3,
 maximum 50), **Minimum spacing** in device RGB percentage points, and
 **Maximum new patches**. Review the proposal and continue through the same
@@ -78,12 +78,10 @@ from InkProf's Argyll gamut result.
 
 ## Shared refinement tools and higher ICC grid trials
 
-Use **Refinement tools** in the main app (also the menu in step 15).
-It groups **From image**, **Manual gamut points / inner shell**,
-**From saved gamut selection**, **From verification errors**, and
-**Try higher ICC grid (same measurements)**. Manual gamut / shell opens the
-same gamut viewer; save the reviewed proposal there, then choose the saved
-gamut selection in this menu to create the step-15 measurement package.
+The **Refinement tools** button is a shortcut to step 15. Choose
+**Add patches near the gamut boundary** to select patches and create the
+measurement package. Use **Resume saved gamut selection** for an earlier
+proposal. The main **View gamut** button opens the ICC surface for inspection.
 
 The grid trial offers High or Ultra for **B2A only** or **A2B and B2A**.
 Argyll controls resolution through its `-q` and `-b` quality settings; this
@@ -122,23 +120,15 @@ BPC off and float LittleCMS buffers. `grid-curves.json` saves their values
 and both ICC hashes. These are numerical verification plots, not a print
 measurement or proof that a visible artefact has been removed.
 
-After a direct gamut proposal creates its print package, a folder chooser
-lets you save a complete copy elsewhere. Cancel retains the project copy.
-Copied files are hash-checked and existing deliveries are not overwritten.
-This direct package remains the proposal package; for workflow measurement,
-use the step-15 package described above. The gamut viewer also has a visible
-**Close** button below its sampling panel.
+After the target is saved and registered in step 15, the folder chooser offers
+to save a complete copy elsewhere. Cancel retains the project copy.
 
 ## Register an already printed shell for step 16
 
-If a shell was printed directly from the gamut viewer but step 16 is locked,
-choose **Refinement tools → From saved gamut selection**, select its proposal,
-and choose **Use existing print package**. This registers the exact saved TI2
-and patch roles in step 15, after verifying the current ICC and print-package
-hashes. It does not regenerate the target or add pending C2 patches. Complete
-the assessment note; step 16 then measures that same printed package.
-When the gamut viewer was opened from step 15, close it after saving to return
-to this registration flow. A new print package always requires its own print.
+To measure an earlier printed package, choose **Resume saved gamut selection**
+in step 15, select its proposal and choose **Use existing print package**.
+InkProf verifies the current ICC and package hashes, then registers the exact
+TI2 and patch roles for step 16. A new print package requires its own print.
 
 ## Explore the current gamut boundary
 
@@ -156,7 +146,7 @@ guaranteed. The inner shell options continue to sample inward only.
 
 ## Extend the latest unmeasured target
 
-In **View gamut**, tick **Extend latest target**, choose the shell/area and
+In **Add patches near the gamut boundary**, tick **Extend latest target**, choose the shell/area and
 additional patch budget, then **Review patches / create TIFF16**. InkProf
 resolves the latest saved gamut target for the exact current ICC and verifies
 its TIFF package, TI2, roles and source training snapshot. The review lists
@@ -185,7 +175,7 @@ a separate print-package copy there; **Cancel** skips this optional copy and
 keeps the completed project target available for measurement.
 
 After successful TIFF16 creation and the optional external-copy dialog,
-**View gamut** closes automatically. Cancelling patch review or encountering
+the step 15 gamut window closes automatically. Cancelling patch review or encountering
 an error leaves the viewer open so the selection can be corrected.
 
 ## Review measured Lab density and a balanced candidate
@@ -255,4 +245,4 @@ Selection uses the lower quarter of the current ICC's predicted black-to-white L
 
 The new target contains device RGB with no profile applied. Print without colour conversion, measure the new TI2, and build the next iteration through the ordinary refinement workflow. Existing targets, measurements and profiles are preserved. A separate fresh verification print is required to assess shadow neutrality, tone separation and changes elsewhere. This cannot guarantee a lower physical paper black point.
 
-Enable this in **Project details > Project and materials > Paper finish: Matte**, then **Profiling > Matte shadows: Extra shadow detail for Matte**. Defaults: **Dark patch emphasis 2**, **Shadow grid emphasis 1.3**, **Extra iteration patches 48**. In Refinement tools choose **Manual gamut points / inner shell**, select an area, then **Review patches / create TIFF16**. Shadow patches are added automatically to the new refinement target; they are additional to the selected gamut points. **Extend latest target** creates a new complete print version when extension is eligible; print all its pages and use its new TI2.
+Enable this in **Project details > Project and materials > Paper finish: Matte**, then **Profiling > Matte shadows: Extra shadow detail for Matte**. Defaults: **Dark patch emphasis 2**, **Shadow grid emphasis 1.3**, **Extra iteration patches 48**. In Refinement tools choose **Add patches near the gamut boundary**, select an area, then **Review patches / create TIFF16**. Shadow patches are added automatically to the new refinement target; they are additional to the selected gamut points. **Extend latest target** creates a new complete print version when extension is eligible; print all its pages and use its new TI2.

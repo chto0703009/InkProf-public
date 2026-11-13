@@ -1,6 +1,6 @@
-# InkProf v1.5.0 - Measurement appendix and workflow actions
+# InkProf v1.5.1 - A single workflow for refinement
 
-> **New in v1.5.0:** sRGB previews in measurement appendix tables, availability-aware main-window buttons and updated bilingual handbooks.
+> **New in v1.5.1:** Add measurement patches in step 15. **Refinement tools** opens the same menu, and **View gamut** opens the ICC gamut for inspection.
 
 **Keep your i1Pro 2. Take control of your prints.**
 
@@ -27,9 +27,9 @@ Version **1.1.1** adds saved whole-row measurement checkpoints and guided resump
 
 InkProf is **free to download** under GPL version 3 or later. **MATLAB requires a licence**; base MATLAB is sufficient. A compatible spectrophotometer is required. The macOS folder includes separately licensed ArgyllCMS; Prepare can obtain private Python 3.13.6. The complete workflow is tested on **macOS with the i1Pro 2**; Windows/Linux and all instrument modes are not qualified.
 
-[Download the stable v1.5.0 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.5.0) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
+[Download the stable v1.5.1 source release](https://github.com/chto0703009/InkProf-public/releases/tag/v1.5.1) · [Swedish overview](README.sv.md) · [English benefit presentation](docs/usage/InkProf-presentation-English.pdf) · [English user handbook](docs/usage/InkProf-user-handbook-English.pdf)
 
-The English and Swedish handbooks are updated for 1.5.0. Other PDF guides retain their dated 1.4.2 scope. See [release notes](docs/releases/v1.5.0.md) and [validation](VALIDATION.txt).
+The English and Swedish handbooks and MATLAB workflow guides are updated for 1.5.1. See [release notes](docs/releases/v1.5.1.md) and [validation](VALIDATION.txt).
 
 Print accuracy depends on the printer, paper, ink and settings. Numerical checks and screen previews do not replace physical verification. Certificates document evidence and decisions; they are not accredited certification or a declaration of full ISO conformity.
 
@@ -46,7 +46,7 @@ This is a **MATLAB source release**. Install MATLAB separately. On macOS, Prepar
 Clone the stable source release:
 
 ```sh
-git clone --branch v1.5.0 https://github.com/chto0703009/InkProf-public.git
+git clone --branch v1.5.1 https://github.com/chto0703009/InkProf-public.git
 cd InkProf-public
 ```
 
@@ -66,7 +66,7 @@ Choose **New project → Verify existing ICC** for a separate seven-step workflo
 
 ## Documentation
 
-The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.5.0 release notes](docs/releases/v1.5.0.md) for the current changes.
+The user handbook is maintained in matching Swedish and English editions. App labels remain English. See the [v1.5.1 release notes](docs/releases/v1.5.1.md) for the current changes.
 
 - [Swedish user handbook (PDF)](docs/usage/InkProf-anvandarhandbok-svenska.pdf)
 - [English user handbook (PDF)](docs/usage/InkProf-user-handbook-English.pdf)
@@ -74,7 +74,7 @@ The user handbook is maintained in matching Swedish and English editions. App la
 - [Swedish presentation (PDF)](docs/usage/InkProf-presentation-svenska.pdf)
 - [English presentation (PDF)](docs/usage/InkProf-presentation-English.pdf)
 - [English profiling workflow and MATLAB guide (PDF)](docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf)
-- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.5.0.md) and [public release scope](RELEASE_SCOPE.md)
+- [Release notes](CHANGELOG.md), [release checklist](docs/releases/v1.5.1.md) and [public release scope](RELEASE_SCOPE.md)
 
 The guides describe callable operations as well as the project workflow. Historical research notes may refer to private experiments or fixtures that are not part of this public release. The release notes and this README take precedence for installation and current scope.
 

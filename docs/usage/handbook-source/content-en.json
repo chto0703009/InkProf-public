@@ -1,6 +1,6 @@
 [
   {
-    "tag": "USER HANDBOOK | v1.5.0 | 2026-11-02",
+    "tag": "USER HANDBOOK | v1.5.1 | 2026-11-13",
     "title": "What is InkProf?",
     "lead": "InkProf is an open-source MATLAB app for creating, checking and improving ICC profiles for RGB-driven printers.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Open methods and clear conditions",
-        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.5.0, documented 2026-11-02; app buttons and field names are English."
+        "The source code is open and the reports document how results were obtained. Profile capabilities depend on what the printer, paper and ink can reproduce. This handbook describes 1.5.1, documented 2026-11-13; app buttons and field names are English."
       ]
     ],
     "callout": "InkProf brings profiling, checks and documentation together in one project. Print the colour targets using a separate printing application."
@@ -38,7 +38,7 @@
       ],
       [
         "1. Use the updated code folder",
-        "Download the v1.4.2 source ZIP from the public release page, extract it and open the complete InkProf folder. Alternatively: git clone --branch v1.5.0 https://github.com/chto0703009/InkProf-public.git . Do not mix files from different installations."
+        "Download the v1.5.1 source ZIP from the public release page, extract it and open the complete InkProf folder. Alternatively: git clone --branch v1.5.1 https://github.com/chto0703009/InkProf-public.git . Do not mix files from different installations."
       ],
       [
         "2. Prepare this program environment",
@@ -964,7 +964,7 @@
       ],
       [
         "Basis of this handbook",
-        "This handbook describes InkProf 1.5.0, released 2 November 2026, with document revision 2026-11-02. The release tag identifies the published source version. Documentation and numerical tests are not new physical validation."
+        "This handbook describes InkProf 1.5.1, released 13 November 2026, with document revision 2026-11-13. The release tag identifies the published source version. Documentation and numerical tests are not new physical validation."
       ]
     ],
     "rows": [
@@ -1072,7 +1072,7 @@
       ],
       [
         "Release status",
-        "This handbook describes InkProf 1.5.0, released 2 November 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. The macOS program folder includes ARM and Intel Argyll tools. Prepare MATLAB and the separate Python environment using the installation instructions."
+        "This handbook describes InkProf 1.5.1, released 13 November 2026. macOS is tested; Windows/Linux and every instrument mode are not qualified. The macOS program folder includes ARM and Intel Argyll tools. Prepare MATLAB and the separate Python environment using the installation instructions."
       ]
     ],
     "links": [
@@ -1620,7 +1620,7 @@
   {
     "tag": "REFINEMENT | STEPS 15-17",
     "title": "Manual points and an inner shell",
-    "lead": "Refinement tools is the shared entry point. Choose Manual gamut points / inner shell. The current profile and C1 checks must be complete.",
+    "lead": "Open step 15 directly or through the Refinement tools shortcut. Choose Add patches near the gamut boundary. The current profile and C1 checks must be complete.",
     "sections": [
       [
         "1. Choose a method",
@@ -1640,7 +1640,7 @@
       ],
       [
         "5. Register the exact print in row 15",
-        "After closing, row 15 returns to registration. For already printed sheets: From saved gamut selection, select the correct proposal.json and Use existing print package. Record your reason. The same TI2 and patch order are preserved; pending C2 patches are not added. Create new print package requires a new print."
+        "InkProf registers a new target in step 15 as soon as it is saved. To resume an earlier printed target, choose Resume saved gamut selection, select its proposal.json and choose Use existing print package. This preserves the TI2 and patch order."
       ],
       [
         "6. Measure and rebuild",
@@ -1789,7 +1789,7 @@
         "An incorrect or incompatible Python or dependency-package version can prevent analysis from working even when the package is installed. InkProf checks the Python version requirement and tests that required packages and their compiled libraries load. Setup also checks that Argyll tools start and report version information. Use the package versions in the requirements files supplied with your InkProf release. The checks test functionality and basic requirements; they do not replace the package versions specified in those files."
       ]
     ],
-    "callout": "This guidance applies to InkProf 1.4.2, document revision 2026-11-02. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
+    "callout": "This guidance applies to InkProf 1.4.2, document revision 2026-11-13. Older release archives may retain older dependencies. Checks and installation do not change saved projects or measurements.",
     "links": [
       [
         "Details and repair commands",
@@ -2256,7 +2256,7 @@
       ],
       [
         "Refinement print copies",
-        "After successfully saving and registering gamut patches from Refinement tools, the workflow gamut window closes. The standalone viewer also closes after successful TIFF16 creation. To copy an existing refinement target, select row 15 in the main table and use Copy TIFF16 for printing..., then choose Downloads. The new folder identifies the project and iteration and contains printing files and traceability information. The source project is preserved."
+        "After successfully saving and registering gamut patches from Refinement tools, the workflow gamut window closes. To copy an existing refinement target, select row 15 in the main table and use Copy TIFF16 for printing..., then choose Downloads. The new folder identifies the project and iteration and contains printing files and traceability information. The source project is preserved."
       ],
       [
         "Timed certificate delivery",
@@ -2270,7 +2270,7 @@
     "sections": [
       [
         "Explore the current model boundary",
-        "View gamut offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in Delta E76, minimum RGB spacing and maximum new patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion."
+        "Step 15 offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in Delta E76, minimum RGB spacing and maximum new patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion."
       ],
       [
         "Extend latest target",
@@ -2278,7 +2278,7 @@
       ],
       [
         "Print and measure the new version",
-        "The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Row 16 measures the new TI2, and row 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. View gamut closes after successful creation and the copy dialog; cancellation/error leaves it open."
+        "The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Row 16 measures the new TI2, and row 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. The step 15 gamut window closes after successful creation and the copy dialog; cancellation/error leaves it open."
       ]
     ]
   },
@@ -2314,7 +2314,7 @@
       ],
       [
         "Native Argyll and documentation scope",
-        "The program folder includes separately licensed ArgyllCMS 3.5.0 for ARM and Intel macOS, with upstream notices and provenance. Native tools are preferred and checked for actual startup. This document describes release 1.4.2. Restart the app after source updates."
+        "The program folder includes separately licensed ArgyllCMS 3.5.0 for ARM and Intel macOS, with upstream notices and provenance. Native tools are preferred and checked for actual startup. This guide describes InkProf 1.5.1. Restart the app after source updates."
       ]
     ]
   },

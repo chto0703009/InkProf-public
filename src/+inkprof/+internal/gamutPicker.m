@@ -1,14 +1,13 @@
 % Copyright (c) 2026 Christer Törnkvist.
 % SPDX-License-Identifier: GPL-3.0-or-later
 % Distributed WITHOUT ANY WARRANTY; see LICENSE and THIRD_PARTY_NOTICES.md.
-function gamutPicker(f,ax,surface,data,profile,closeAfterCreate)
-if nargin<6,closeAfterCreate=false;end
+function gamutPicker(f,ax,surface,data,profile)
 % Add explicit selection/rotation modes to the existing gamut figure.
 anchors=struct('vertexIndex',{},'lab',{},'rgbPercent',{},'mappedLab',{},'distanceDeltaE76',{},'profileSHA256',{});
 marker=line(ax,NaN,NaN,NaN,'LineStyle','none','Marker','o','MarkerSize',9, ...
  'MarkerEdgeColor','k','MarkerFaceColor','w','HitTest','off','PickableParts','none');
 panel=uipanel(f,'Units','normalized','Position',[.69 .03 .30 .93],'Title','Add measurements in a gamut area','BackgroundColor','white');
-control('text','Choose an inner shell or explore both sides of the current gamut boundary. Print, measure, then build the next iteration.',[.04 .86 .92 .10]);
+control('text','Choose where to add patches. For selected areas, click Select area and mark points on the surface.',[.04 .86 .92 .10]);
 select=control('pushbutton','Select area',[.04 .81 .44 .045]);select.Tag='gamutSelectMode';select.Callback=@(~,~)mode(false);
 rotate=control('pushbutton','Rotate view',[.52 .81 .44 .045]);rotate.Callback=@(~,~)mode(true);
 t=uitable(panel,'Units','normalized','Position',[.04 .46 .92 .33],'Data',cell(0,5), ...
@@ -89,7 +88,6 @@ surface.ButtonDownFcn=@pick;surface.PickableParts='visible';mode(true);update();
     MinSpacingPercent=str2double(spacing.String),MaxNewPatches=str2double(budget.String), ...
     ExtendLatestTarget=logical(extend.Value),SamplingMode=samplingMode,ShellThicknessDeltaE76=shellThickness,Surface=data,RegionRadiusDeltaE76=str2double(region.String),Activity=activity.stage);
    if ~isempty(proposal)&&isgraphics(f)
-    info.String=char("Saved: "+folder+newline+"Registered in step 15. Continue with step 16 to measure this exact package, then step 17 to build. Refresh the project view if needed.");
     fprintf('Gamut selection and TIFF16: %s\n',folder);
     % A completed target returns control to the workflow in every entry path.
     clear activityCleanup;delete(f);return

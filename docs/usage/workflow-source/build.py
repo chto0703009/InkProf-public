@@ -15,6 +15,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 ROOT=Path(__file__).resolve().parent
 VERSION=(ROOT.parents[2]/'VERSION').read_text().strip()
+DATE=json.loads((ROOT.parents[2]/'resources/release.json').read_text())['date']
 LANG=sys.argv[1] if len(sys.argv)>1 else 'en'
 if LANG not in ('en','sv'):raise ValueError('Supported languages: en, sv.')
 OUT=Path(sys.argv[2]) if len(sys.argv)>2 else ROOT.parent/('InkProf-profileringsarbetsflode-MATLAB-guide-svenska.pdf' if LANG=='sv' else 'InkProf-profiling-workflow-MATLAB-guide-English.pdf')
@@ -33,11 +34,25 @@ class Pages(canvas.Canvas):
   n=len(self.states);ann=self._annotationCount
   for st in self.states:
    self.__dict__.update(st);self._annotationCount=ann
+   chapter_index=self._pageNumber-1
+   if 0<=chapter_index<len(chapters):
+    key=f'chapter-{chapter_index}'
+    self.bookmarkPage(key)
+    self.addOutlineEntry(chapters[chapter_index]['title'],key)
+   elif chapter_index==len(chapters):
+    self.bookmarkPage('contents')
+    self.addOutlineEntry(contents_label,'contents')
+   self.setFont('Vera',8)
+   self.setFillColor(TEAL)
+   self.drawRightString(192*mm,11*mm,contents_label)
+   link_y=11*mm
+   link_width=self.stringWidth(contents_label,'Vera',8)
+   self.linkRect('', 'contents',(192*mm-link_width,link_y-2,192*mm,link_y+8),relative=0,thickness=0)
    self.setFont('VeraBold',11);self.setFillColor(INK);self.drawCentredString(105*mm,283*mm,('InkProf - Kvalitetsprofilering för RGB-skrivare | ' if LANG=='sv' else 'InkProf - Quality profiling for RGB printers | ')+VERSION)
    self.setFillColor(MUTED)
    self.setStrokeColor(LINE);self.setLineWidth(.6)
    self.line(18*mm,273.5*mm,192*mm,273.5*mm);self.line(18*mm,22*mm,192*mm,22*mm)
-   self.setFont('Vera',8);self.drawString(18*mm,16*mm,'2026-10-27');self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber} ({n})')
+   self.setFont('Vera',8);self.drawString(18*mm,16*mm,DATE);self.drawCentredString(105*mm,16*mm,'Christer Törnkvist');self.drawRightString(192*mm,16*mm,f'{self._pageNumber} ({n})')
    self.setFillColor(TEAL);self.drawCentredString(105*mm,11*mm,'christer@borgasundsfotografiska.se')
    url='https://github.com/chto0703009/InkProf-public';self.setFont('Vera',7);self.drawCentredString(105*mm,6*mm,'GitHub | InkProf v'+VERSION);self.linkURL(url,(45*mm,4*mm,165*mm,9*mm),relative=0)
    ann=self._annotationCount;super().showPage()
@@ -48,8 +63,10 @@ class Pages(canvas.Canvas):
 def table(rows):
  n=len(rows[0]);widths=([15,81,78] if n==3 else [51,123]);t=Table([[p(escape(v),'cell') for v in r] for r in rows],colWidths=[w*mm for w in widths],repeatRows=1,hAlign='LEFT')
  t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),PALE),('VALIGN',(0,0),(-1,-1),'TOP'),('LINEBELOW',(0,0),(-1,-1),.4,LINE),('LEFTPADDING',(0,0),(-1,-1),7),('RIGHTPADDING',(0,0),(-1,-1),7),('TOPPADDING',(0,0),(-1,-1),4),('BOTTOMPADDING',(0,0),(-1,-1),4)]));return t
+chapters=json.loads((Path(sys.argv[3]) if len(sys.argv)>3 else ROOT/(LANG+'.json')).read_text())
+contents_label='Innehåll' if LANG=='sv' else 'Contents'
 story=[]
-for i,page in enumerate(json.loads((Path(sys.argv[3]) if len(sys.argv)>3 else ROOT/(LANG+'.json')).read_text())):
+for i,page in enumerate(chapters):
  if i:story.append(PageBreak())
  story.extend([p(escape(page['tag']),'tag'),p(escape(page['title']),'title')])
  if page.get('lead'):story.append(p(escape(page['lead']),'lead'))
@@ -61,6 +78,12 @@ for i,page in enumerate(json.loads((Path(sys.argv[3]) if len(sys.argv)>3 else RO
   t=Table([[p(escape(page['callout']).replace('\n','<br/>'))]],colWidths=[174*mm]);t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),PALE),('BOX',(0,0),(-1,-1),.5,LINE),('LEFTPADDING',(0,0),(-1,-1),11),('RIGHTPADDING',(0,0),(-1,-1),11),('TOPPADDING',(0,0),(-1,-1),9),('BOTTOMPADDING',(0,0),(-1,-1),6)]));story.extend([Spacer(1,4*mm),t])
  if page.get('small'):story.append(p(escape(page['small']),'small'))
  for label,url in page.get('links',[]):story.append(p(f'<link href="{url}" color="#007F83">{escape(label)}</link>','small'))
+for start in range(0,len(chapters),26):
+ story.append(PageBreak())
+ story.append(p(contents_label,'title'))
+ for i,chapter in enumerate(chapters[start:start+26],start):
+  label=escape(chapter['title'])
+  story.append(p(f'<link href="#chapter-{i}" color="#007F83">{label}</link>','body'))
 doc=SimpleDocTemplate(str(OUT),pagesize=(210*mm,297*mm),leftMargin=18*mm,rightMargin=18*mm,topMargin=32*mm,bottomMargin=29*mm,title=('InkProf - Profileringsarbetsflöde och MATLAB-guide' if LANG=='sv' else 'InkProf - Profiling workflow and MATLAB guide'),author='Christer Törnkvist',subject='Project workflow, installation and MATLAB operations')
 doc.build(story,canvasmaker=Pages)
 print(OUT)

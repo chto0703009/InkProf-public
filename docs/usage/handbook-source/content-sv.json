@@ -1,6 +1,6 @@
 [
   {
-    "tag": "ANVÄNDARHANDBOK | v1.5.0 | 2026-11-02",
+    "tag": "ANVÄNDARHANDBOK | v1.5.1 | 2026-11-13",
     "title": "Vad är InkProf?",
     "lead": "InkProf är en öppen MATLAB-app för att skapa, kontrollera och förbättra ICC-profiler för RGB-styrda skrivare.",
     "sections": [
@@ -22,7 +22,7 @@
       ],
       [
         "Öppen metod och tydliga förutsättningar",
-        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.5.0, dokumenterad 2026-11-02; appens knappar och fältnamn är engelska."
+        "Källkoden är öppen och rapporterna visar hur resultaten tagits fram. Profilens möjligheter beror på vad skrivare, papper och bläck kan återge. Handboken beskriver version 1.5.1, dokumenterad 2026-11-13; appens knappar och fältnamn är engelska."
       ]
     ],
     "callout": "InkProf samlar profilering, kontroll och dokumentation i ett projekt. Utskriften av färgmålen gör du i ett separat utskriftsprogram."
@@ -38,7 +38,7 @@
       ],
       [
         "1. Använd uppdaterad kodmapp",
-        "Hämta källkods-ZIP för v1.4.2 från den publika releasesidan, packa upp och öppna hela InkProf-mappen. Alternativt: git clone --branch v1.5.0 https://github.com/chto0703009/InkProf-public.git . Blanda inte filer från olika installationer."
+        "Hämta källkods-ZIP för v1.5.1 från den publika releasesidan, packa upp och öppna hela InkProf-mappen. Alternativt: git clone --branch v1.5.1 https://github.com/chto0703009/InkProf-public.git . Blanda inte filer från olika installationer."
       ],
       [
         "2. Förbered programmets miljö",
@@ -1002,7 +1002,7 @@
       ],
       [
         "Underlag för denna handbok",
-        "Handboken beskriver InkProf 1.5.0, utgiven 2 november 2026, med dokumentrevision 2026-11-02. Releasetaggen identifierar den publicerade källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
+        "Handboken beskriver InkProf 1.5.1, utgiven 13 november 2026, med dokumentrevision 2026-11-13. Releasetaggen identifierar den publicerade källversionen. Dokumentation och numeriska tester är inte ny fysisk validering."
       ]
     ],
     "links": [
@@ -1072,7 +1072,7 @@
       ],
       [
         "Utgåvestatus",
-        "Handboken beskriver InkProf 1.5.0, utgiven 2 november 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. macOS-programmappen innehåller Argyll för ARM och Intel. MATLAB och den separata Pythonmiljön behöver förberedas enligt installationsanvisningen."
+        "Handboken beskriver InkProf 1.5.1, utgiven 13 november 2026. macOS är testat; Windows/Linux och alla instrumentlägen är inte kvalificerade. macOS-programmappen innehåller Argyll för ARM och Intel. MATLAB och den separata Pythonmiljön behöver förberedas enligt installationsanvisningen."
       ]
     ],
     "links": [
@@ -1616,7 +1616,7 @@
   {
     "tag": "FÖRTÄTNING | RAD 15-17",
     "title": "Manuella punkter och inre skal",
-    "lead": "Refinement tools är den gemensamma ingången. Välj Manual gamut points / inner shell. Aktuell profil och C1-kontroller måste vara klara.",
+    "lead": "Öppna steg 15 direkt eller via genvägen Refinement tools. Välj Add patches near the gamut boundary. Aktuell profil och C1-kontroller måste vara klara.",
     "sections": [
       [
         "1. Välj metod",
@@ -1636,7 +1636,7 @@
       ],
       [
         "5. Registrera exakt utskrift i rad 15",
-        "Efter stängning återgår rad 15 till registreringen. För redan utskrivna ark: From saved gamut selection, välj rätt proposal.json och Use existing print package. Ange motivering. Samma TI2 och färgprovens ordning bevaras; inga väntande C2-färgprov läggs till. Create new print package kräver en ny utskrift."
+        "InkProf registrerar det nya målet i steg 15 när det sparas. För ett tidigare utskrivet mål, välj Resume saved gamut selection, välj dess proposal.json och sedan Use existing print package. Samma TI2 och färgprovens ordning bevaras."
       ],
       [
         "6. Mät och bygg vidare",
@@ -1785,7 +1785,7 @@
         "En felaktig eller inkompatibel version av Python eller ett beroendepaket kan göra att analysen inte fungerar, även om paketet är installerat. InkProf kontrollerar Python-versionens grundkrav och provar att de nödvändiga paketen och deras kompilerade bibliotek kan laddas. Vid installation kontrolleras även att Argyll-verktygen kan startas och lämna versionsinformation. Använd paketversionerna i requirements-filerna som hör till din InkProf-utgåva. Kontrollen prövar funktion och grundkrav; den ersätter inte installationsfilernas angivna paketversioner."
       ]
     ],
-    "callout": "Anvisningen gäller InkProf 1.4.2, dokumentrevision 2026-11-02. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
+    "callout": "Anvisningen gäller InkProf 1.4.2, dokumentrevision 2026-11-13. Äldre releasearkiv kan ha äldre beroenden. Kontroll och installation ändrar inte sparade projekt eller mätfiler.",
     "links": [
       [
         "Detaljer och reparationskommandon",
@@ -2252,7 +2252,7 @@
       ],
       [
         "Utskriftskopia av komplettering",
-        "När gamutpatchar har sparats och registrerats från Refinement tools stängs arbetsflödets gamutfönster. Även den fristående gamutvisaren stängs efter lyckad TIFF16-skapning. För att kopiera en befintlig komplettering: markera rad 15 i huvudlistan, välj Copy TIFF16 for printing... och välj Downloads. En ny mapp identifierar projekt och iteration och innehåller utskriftsfiler och spårbarhet. Originalprojektet bevaras."
+        "När gamutpatchar har sparats och registrerats från Refinement tools stängs arbetsflödets gamutfönster. För att kopiera en befintlig komplettering: markera rad 15 i huvudlistan, välj Copy TIFF16 for printing... och välj Downloads. En ny mapp identifierar projekt och iteration och innehåller utskriftsfiler och spårbarhet. Originalprojektet bevaras."
       ],
       [
         "Aktivitet vid certifikatleverans",
@@ -2266,7 +2266,7 @@
     "sections": [
       [
         "Undersök modellens gräns",
-        "View gamut har Gamut boundary exploration (both sides), utöver inre skal och valda områden. Ange Boundary distance i Delta E76, minsta RGB-avstånd och högsta antal nya punkter. Kandidaterna har utskrivbara skrivar-RGB-värden. Negativt signerat avstånd betyder beräknat utanför den befintliga modellens yta; det bevisar inte ett större fysiskt färgomfång."
+        "Steg 15 har Gamut boundary exploration (both sides), utöver inre skal och valda områden. Ange Boundary distance i Delta E76, minsta RGB-avstånd och högsta antal nya punkter. Kandidaterna har utskrivbara skrivar-RGB-värden. Negativt signerat avstånd betyder beräknat utanför den befintliga modellens yta; det bevisar inte ett större fysiskt färgomfång."
       ],
       [
         "Extend latest target",
@@ -2274,7 +2274,7 @@
       ],
       [
         "Skriv ut och mät den nya versionen",
-        "Hela målet sparas normalt i projektet. Dialogen för frivillig extern kopia öppnas i Downloads; Cancel hoppar bara över kopian. Skriv ut alla sidor utan färgkonvertering. Rad 16 mäter nya TI2 och rad 17 bygger nästa profil med tidigare träningsdata. Använd inte äldre utskriftslayout med nya TI2. View gamut stängs efter lyckad målskapning och kopieringsdialog; vid avbrott/fel finns fönstret kvar."
+        "Hela målet sparas normalt i projektet. Dialogen för frivillig extern kopia öppnas i Downloads; Cancel hoppar bara över kopian. Skriv ut alla sidor utan färgkonvertering. Rad 16 mäter nya TI2 och rad 17 bygger nästa profil med tidigare träningsdata. Använd inte äldre utskriftslayout med nya TI2. Gamutvyn i steg 15 stängs efter lyckad målskapning och kopieringsdialog; vid avbrott/fel finns fönstret kvar."
       ]
     ]
   },

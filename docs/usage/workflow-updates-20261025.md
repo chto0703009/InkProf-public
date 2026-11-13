@@ -38,7 +38,7 @@ Step 14 shows activity and elapsed time while collecting evidence, rendering fig
 
 ### Explore the current model boundary
 
-View gamut offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in Delta E76, minimum RGB spacing and maximum NEW patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion.
+Step 15 → Add patches near the gamut boundary offers Gamut boundary exploration (both sides), alongside the existing inner-shell and selected-area methods. Set Boundary distance in Delta E76, minimum RGB spacing and maximum NEW patches. Candidates are printable device RGB, not invented out-of-range colours. A negative signed distance means predicted outside the current mesh; it does not prove physical gamut expansion.
 
 ### Extend latest target
 
@@ -46,7 +46,7 @@ Tick Extend latest target to combine the latest completed gamut print for the ex
 
 ### Print and measure the NEW version
 
-The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Step 16 measures the new TI2, and step 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. View gamut closes after successful creation and the copy dialog; cancellation/error leaves it open.
+The complete target is saved normally in the project. The optional external-copy dialog defaults to Downloads; Cancel skips only the external copy. Print every page without colour conversion. Step 16 measures the new TI2, and step 17 builds the next profile with the earlier training. Do not measure an earlier layout with the new TI2. The step 15 gamut window closes after successful creation and the copy dialog; cancellation/error leaves it open.
 
 
 ## Review measured Lab density

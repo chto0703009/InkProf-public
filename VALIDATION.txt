@@ -1,3 +1,12 @@
+InkProf 1.5.1 release validation - 2026-11-13
+
+PASS: 224 Python unittest cases in both the development checkout and the reviewed public snapshot.
+PASS: public snapshot version, notices, schema, resource and dependency licence checks.
+PASS: 18 targeted MATLAB R2025b tests for gamut selection, activity, target extension and workflow recommendations.
+PASS: MATLAB R2025b opened the synthetic ICC in both modes. View gamut showed the surface without patch controls or device mapping. The step 15 mode provided both.
+PASS: Swedish and English handbooks (84 pages each) and MATLAB workflow guides (17 pages each) rebuilt. Changed pages and covers rendered and visually checked. Navigation update: 88 pages per handbook and 18 per workflow guide. Verified each contents link, bookmark and return link. Downloads copies match the repository files.
+No physical instrument or print qualification was performed for this update.
+
 InkProf 1.5.0 release validation - 2026-11-02
 
 PASS: 224 Python unittest cases in both the private development and reviewed public checkouts (Python 3.13 isolated environment).

@@ -1,0 +1,22 @@
+{
+  "SourceVersion": "1.5.1",
+  "DocumentationDate": "2026-11-13",
+  "Documents": [
+    {
+      "Path": "docs/usage/InkProf-anvandarhandbok-svenska.pdf",
+      "SHA256": "272450afefd132399acfc03a80ce71bbb51e5f9a69d0b4746aff4065d5524e63"
+    },
+    {
+      "Path": "docs/usage/InkProf-profileringsarbetsflode-MATLAB-guide-svenska.pdf",
+      "SHA256": "8ad3b7f2383928b8423333400f08c814891854ecb0667c51b51979897500b51f"
+    },
+    {
+      "Path": "docs/usage/InkProf-profiling-workflow-MATLAB-guide-English.pdf",
+      "SHA256": "a93e4c642bcc91fcfee46db1afbcdaa6aba0400a6470cc2398e36446561396cd"
+    },
+    {
+      "Path": "docs/usage/InkProf-user-handbook-English.pdf",
+      "SHA256": "1a97f193a799f115c70d0b8c5447861795902216930b36416403ab6be6b2d312"
+    }
+  ]
+}

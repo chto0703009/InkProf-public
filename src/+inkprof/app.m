@@ -238,6 +238,7 @@ end
             table.Data=data;index=find(string({defs.id})==selected);titleLabel.Text=defs(index).label;
             ok=assessment.(selected).ready;reason=assessment.(selected).reason;runButton.Enable=matlab.lang.OnOffSwitchState(ok);
             runButton.Text='Run selected step';
+            if selected=="refine",runButton.Text='Open refinement tools';end
             if selected=="approve",runButton.Text='Open review and approval';end
             if selected=="export",runButton.Text='Save ICC and certificate...';end
             guide=instruction(selected);
@@ -321,7 +322,11 @@ end
     end
     function openRefinementTools(~,~)
         if isempty(w)||busy,return;end
-        selected="refine";refresh();run([],[]);
+        selected="refine";
+        index=find(string({defs.id})==selected,1);
+        table.Selection=[index 1];
+        refresh();
+        run([],[]);
     end
     function photoCheck(~,~)
         if isempty(w)||busy,return;end
@@ -529,8 +534,8 @@ end
             o=inkprof.internal.approvalDialog(w);
         elseif any(id==["review","refine"])
             if id=="refine"
-                sources={'From image','Manual gamut points / inner shell','From saved gamut selection','From verification errors','Try higher ICC grid (same measurements)','Review measured Lab density / balanced trial'};
-                [index,accepted]=inkprof.internal.withFocus(fig,@listdlg,'PromptString','Refinement tools: choose additional measurements or a separate ICC grid trial.', ...
+                sources={'From image','Add patches near the gamut boundary','Resume saved gamut selection','From verification errors','Try higher ICC grid (same measurements)','Review measured Lab density / balanced trial'};
+                [index,accepted]=inkprof.internal.withFocus(fig,@listdlg,'PromptString','Step 15: choose how to add measurement patches or open a profile trial.', ...
                     'SelectionMode','single','ListString',sources,'Name','Refinement tools','ListSize',[430 150]);
                 if ~accepted,o=[];return;end
                 choice=sources{index};
@@ -547,16 +552,18 @@ end
                 if strcmp(choice,'Try higher ICC grid (same measurements)')
                     inkprof.internal.profileGridTrialDialog(w,fig);o=[];return;
                 end
-                if strcmp(choice,'Manual gamut points / inner shell')
-                    previous=inkprof.internal.latestGamutProposal(w.Root,w.output('profile','profile'));
-                    gamutFigure=inkprof.showGamut(w.output('profile','profile'),CloseAfterCreate=true);waitfor(gamutFigure);
-                    latest=inkprof.internal.latestGamutProposal(w.Root,w.output('profile','profile'));
-                    if latest==""||latest==previous,o=[];return;end
-                    w.reload();
-                    if w.valid('refine')&&w.output('refine','proposal')==latest,o=[];refresh();return;end
-                    choice='From gamut selection';
+                if strcmp(choice,'Add patches near the gamut boundary')
+                    busy=true;
+                    disableActions();
+                    setappdata(fig,'InkProfRunning',true);
+                    gamutGuard=onCleanup(@finishGamut);
+                    gamutFigure=inkprof.showGamut(w.output('profile','profile'),ForRefinement=true);
+                    waitfor(gamutFigure);
+                    clear gamutGuard;
+                    o=[];
+                    return;
                 end
-                if strcmp(choice,'From saved gamut selection'),choice='From gamut selection';end
+                if strcmp(choice,'Resume saved gamut selection'),choice='From gamut selection';end
                 o.Method="image";
                 if strcmp(choice,'From gamut selection')
                     o.Method="gamut";latest=inkprof.internal.latestGamutProposal(w.Root,w.output('profile','profile'));
@@ -830,7 +837,7 @@ switch id
  case "feedback",s="Run this step to analyse the current C3 results and open the feedback window. To read saved feedback again, use Open selected step results. Review the findings before recording your assessment in the next step.";
  case "compare",s="Compare this ICC with the previous iteration on common RGB and Lab samples. Profile differences do not prove improved print accuracy; fresh independent print verification is still required.";
  case "approve",s="Record the intended use, quality requirements and accepted limitations. This is the user's decision after physical C2/C3 verification, not ISO certification.";
- case "refine",s="Add patches from an image, a saved gamut-area selection, or current verification errors. Use Manual gamut points / inner shell here to create a proposal, then From saved gamut selection to make the step-15 print package. Try higher ICC grid builds a separate candidate from the same measurements. Image and gamut refinement use the current checked ICC; error-driven refinement requires C3 feedback. Print the TIFF16 package saved by this step. Record why you are adding patches.";
+ case "refine",s="Create a TIFF16 measurement target from an image, the gamut boundary, or verification errors. Choose Add patches near the gamut boundary to select patches and save the print package here. Use Resume saved gamut selection to return to an earlier selection. Print the saved package and measure it in step 16. Verification errors require C3 feedback.";
  case "profile",s="Automatic iteration or manual B3. Manual B3 requires B2. A successful job produces a candidate, not an approval of print quality.";
  case "checks",s="Run numerical checks. Review the reports before printing; these checks do not replace C2/C3.";
  case "continue",s="Link refinement to previous inputs and patch roles. The next iteration requires new checks and new physical C2/C3 verification.";
